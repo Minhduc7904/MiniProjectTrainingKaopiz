@@ -1,0 +1,64 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace MediaService.Infrastructure.Persistence.Scaffolded;
+
+public partial class MediaObject
+{
+    /// <summary>
+    /// UUID định danh media
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Tên bucket MinIO chứa object
+    /// </summary>
+    public string Bucket { get; set; } = null!;
+
+    /// <summary>
+    /// Khóa object duy nhất trong bucket; không trả trực tiếp cho client
+    /// </summary>
+    public string ObjectKey { get; set; } = null!;
+
+    /// <summary>
+    /// IMAGE | VIDEO | DOCUMENT | AUDIO | OTHER
+    /// </summary>
+    public string MediaType { get; set; } = null!;
+
+    /// <summary>
+    /// MIME type đã xác thực
+    /// </summary>
+    public string ContentType { get; set; } = null!;
+
+    /// <summary>
+    /// Tên file do người dùng upload, chỉ để hiển thị
+    /// </summary>
+    public string OriginalFileName { get; set; } = null!;
+
+    /// <summary>
+    /// Kích thước object theo byte
+    /// </summary>
+    public ulong SizeBytes { get; set; }
+
+    /// <summary>
+    /// Hash SHA-256 kiểm tra toàn vẹn
+    /// </summary>
+    public string ChecksumSha256 { get; set; } = null!;
+
+    /// <summary>
+    /// UUID user/admin upload media; logical reference
+    /// </summary>
+    public Guid UploadedBy { get; set; }
+
+    /// <summary>
+    /// Thời điểm upload hoàn tất, UTC
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Soft-delete timestamp; null khi media còn hoạt động
+    /// </summary>
+    public DateTime? DeletedAt { get; set; }
+
+    public virtual ICollection<MediaUsage> MediaUsages { get; set; } = new List<MediaUsage>();
+}

@@ -1,0 +1,64 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace MediaService.Infrastructure.Persistence.Scaffolded;
+
+public partial class MediaUsage
+{
+    /// <summary>
+    /// UUID định danh liên kết usage
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// UUID media_objects.id trong Media Service database
+    /// </summary>
+    public Guid MediaId { get; set; }
+
+    /// <summary>
+    /// COURSE | NOTIFICATION
+    /// </summary>
+    public string OwnerService { get; set; } = null!;
+
+    /// <summary>
+    /// COURSE_THUMBNAIL | COURSE_DESCRIPTION | LESSON_CONTENT | NOTIFICATION_BODY
+    /// </summary>
+    public string OwnerType { get; set; } = null!;
+
+    /// <summary>
+    /// UUID owner ở owner_service; logical reference
+    /// </summary>
+    public Guid OwnerId { get; set; }
+
+    /// <summary>
+    /// THUMBNAIL | EMBED | ATTACHMENT
+    /// </summary>
+    public string UsageType { get; set; } = null!;
+
+    /// <summary>
+    /// Thứ tự render media trong cùng một owner
+    /// </summary>
+    public uint DisplayOrder { get; set; }
+
+    /// <summary>
+    /// UUID user/admin tạo liên kết; logical reference
+    /// </summary>
+    public Guid CreatedBy { get; set; }
+
+    /// <summary>
+    /// Thời điểm tạo liên kết, UTC
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Soft-delete timestamp; null khi usage còn hiệu lực
+    /// </summary>
+    public DateTime? DeletedAt { get; set; }
+
+    /// <summary>
+    /// Owner Course có thumbnail còn hiệu lực; dùng để đảm bảo tối đa một thumbnail
+    /// </summary>
+    public Guid? ActiveCourseThumbnailOwnerId { get; set; }
+
+    public virtual MediaObject Media { get; set; } = null!;
+}

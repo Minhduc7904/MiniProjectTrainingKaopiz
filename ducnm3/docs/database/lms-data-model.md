@@ -195,3 +195,15 @@ UNIQUE(notification_job_id, recipient_student_id)
 - API chỉ render Markdown bằng sanitizer/allowlist ở client hoặc renderer; không cho phép raw HTML và script.
 - Media được nhúng bằng public/proxy URL do Media Service cấp, ví dụ `![Sơ đồ](/api/media/{mediaId}/content)`.
 - Sau khi owner tạo hoặc cập nhật Markdown, owner service gọi Media Service để đăng ký/xóa `media_usages`; Media Service xác thực `media_id` và ownership trước khi tạo usage.
+
+## Physical schema migration
+
+`V002` của từng service tạo các bảng ở trên bằng MySQL InnoDB, dùng `CHAR(36)` cho UUID và `DATETIME(6)` theo UTC. Foreign key chỉ tồn tại giữa bảng trong cùng service database:
+
+- Course: `lessons.course_id`, `enrollments.course_id`, `lesson_progresses.lesson_id`.
+- Media: `media_usages.media_id`.
+- Notification: các liên kết giữa Job, Job Item và Notification.
+
+`student_id`, `course_id`, `uploaded_by`, `created_by`, `recipient_student_id`, và các owner ID từ service khác chỉ là logical reference, không có cross-database FK.
+
+Để đảm bảo chỉ một thumbnail Course còn hiệu lực, `media_usages` có generated column kỹ thuật `active_course_thumbnail_owner_id`. Giá trị này chỉ có khi `owner_type = COURSE_THUMBNAIL` và `deleted_at IS NULL`; unique index trên cột này chặn thumbnail active thứ hai cho cùng Course.

@@ -34,6 +34,8 @@ cp .env.example .env
 
 Set real local passwords in `.env`. Never place passwords, root credentials, or connection strings in source code or `appsettings.json`.
 
+Quote connection-string values in `.env` because `User ID` contains a space and the file is also loaded by shell-based automation.
+
 Each API receives only its own `ConnectionStrings__Database` environment variable. Docker Compose forwards the matching runtime connection string from `.env`. Manual automation uses:
 
 - `COURSE_DB_LOCAL_CONNECTION_STRING`
@@ -185,9 +187,12 @@ The command uses:
 dotnet ef dbcontext scaffold
 Pomelo.EntityFrameworkCore.MySql
 --no-onconfiguring
---use-database-names
+--no-build
 --force
 ```
+
+Automation chỉ chọn bảng nghiệp vụ của service; không scaffold technical table `schema_migrations`.
+`--no-build` cho phép scaffold lại ngay cả khi generated source hiện tại chưa khớp schema; luôn chạy `dotnet build` ngay sau scaffold.
 
 Generated code belongs only in the matching service Infrastructure project:
 
