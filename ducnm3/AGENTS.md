@@ -23,6 +23,7 @@
 - `docs/business-flows/`: actor-facing business flows and expected data changes.
 - `docs/database/`: schema, data rules, and migrations.
 - `docs/development/`: environment setup and development workflow.
+- `docs/guide/`: practical setup and operational guides.
 - `docs/plan/`: five-day implementation plan and daily deliverables.
 - `docs/runbooks/`: operational and recovery procedures.
 - `rules/`: concise requirements that apply to implementation and reviews.

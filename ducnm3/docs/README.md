@@ -23,13 +23,14 @@ This directory contains the LMS microservices plan, organized by subject. Treat 
 
 ## API and data
 
-- `api/minimum-api.md`: media upload, single/bulk notification, inbox, and minimum endpoint set.
+- `api/`: API contracts grouped by Course, Student, Media, and Notification Service.
 - `api/error-handling-observability.md`: error contract, logging, and observability.
 - `database/lms-data-model.md`: LMS, multi-media, notification-job, and student-inbox entities.
 
 ## Development and operations
 
 - `development/`: stack, MinIO, Docker, performance, delivery, and preparation guides.
+- `guide/`: practical setup and operational guides, including Docker Compose and shared Swagger.
 - `runbooks/notification-batch.md`: batch, retry, idempotency, and failure handling.
 - `runbooks/demo-script.md`: 30-minute demo procedure.
 

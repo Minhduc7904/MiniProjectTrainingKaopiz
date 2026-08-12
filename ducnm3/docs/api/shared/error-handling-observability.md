@@ -1,12 +1,8 @@
-# 35. Error Handling
+# Error Handling and Observability
 
-Tạo global middleware:
+## Error handling
 
-```text
-ExceptionHandlingMiddleware
-```
-
-Mapping:
+Use global `ExceptionHandlingMiddleware` and the shared response contract in [error-format.md](error-format.md).
 
 ```text
 ValidationException
@@ -22,29 +18,11 @@ Unhandled Exception
     → 500
 ```
 
-Response format:
+Never expose stack traces, connection strings, internal SQL, or secrets.
 
-```json
-{
-  "code": "COURSE_NOT_FOUND",
-  "message": "Course not found",
-  "traceId": "..."
-}
-```
+## Logging and observability
 
-Không expose:
-
-- Stack trace.
-- Connection string.
-- SQL nội bộ.
-- Secret.
-
----
-# 36. Logging / Observability
-
-Sử dụng Serilog.
-
-Nên log:
+Use structured logs (for example, Serilog) with:
 
 ```text
 Request
@@ -64,7 +42,7 @@ Database slow operation
 Unhandled exception
 ```
 
-Ví dụ:
+Example:
 
 ```text
 JobId=123
@@ -74,5 +52,3 @@ Success=493
 Failed=7
 ElapsedMs=836
 ```
-
----

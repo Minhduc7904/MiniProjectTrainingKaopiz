@@ -1,0 +1,128 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mysql-init:
+    image: mysql:8.4
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}
+      COURSE_DB_NAME: ${COURSE_DB_NAME:?COURSE_DB_NAME must be set}
+      COURSE_DB_USER: ${COURSE_DB_USER:?COURSE_DB_USER must be set}
+      COURSE_DB_PASSWORD: ${COURSE_DB_PASSWORD:?COURSE_DB_PASSWORD must be set}
+      STUDENT_DB_NAME: ${STUDENT_DB_NAME:?STUDENT_DB_NAME must be set}
+      STUDENT_DB_USER: ${STUDENT_DB_USER:?STUDENT_DB_USER must be set}
+      STUDENT_DB_PASSWORD: ${STUDENT_DB_PASSWORD:?STUDENT_DB_PASSWORD must be set}
+      MEDIA_DB_NAME: ${MEDIA_DB_NAME:?MEDIA_DB_NAME must be set}
+      MEDIA_DB_USER: ${MEDIA_DB_USER:?MEDIA_DB_USER must be set}
+      MEDIA_DB_PASSWORD: ${MEDIA_DB_PASSWORD:?MEDIA_DB_PASSWORD must be set}
+      NOTIFICATION_DB_NAME: ${NOTIFICATION_DB_NAME:?NOTIFICATION_DB_NAME must be set}
+      NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER:?NOTIFICATION_DB_USER must be set}
+      NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?NOTIFICATION_DB_PASSWORD must be set}
+    volumes:
+      - ./backend/database/bootstrap/init-databases.sh:/bootstrap/init-databases.sh:ro
+    entrypoint: ["/bin/sh", "/bootstrap/init-databases.sh"]
+    restart: "no"
+
+  course-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Course/CourseService.Api/CourseService.Api.csproj
+    command: CourseService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      ConnectionStrings__Database: ${COURSE_DB_CONNECTION_STRING:?COURSE_DB_CONNECTION_STRING must be set}
+    ports:
+      - "5101:8080"
+
+  student-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Student/StudentService.Api/StudentService.Api.csproj
+    command: StudentService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      ConnectionStrings__Database: ${STUDENT_DB_CONNECTION_STRING:?STUDENT_DB_CONNECTION_STRING must be set}
+    ports:
+      - "5102:8080"
+
+  media-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Media/MediaService.Api/MediaService.Api.csproj
+    command: MediaService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      ConnectionStrings__Database: ${MEDIA_DB_CONNECTION_STRING:?MEDIA_DB_CONNECTION_STRING must be set}
+    ports:
+      - "5103:8080"
+
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Notification/NotificationService.Api/NotificationService.Api.csproj
+    command: NotificationService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      ConnectionStrings__Database: ${NOTIFICATION_DB_CONNECTION_STRING:?NOTIFICATION_DB_CONNECTION_STRING must be set}
+    ports:
+      - "5104:8080"
+
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Gateway/Lms.ApiGateway/Lms.ApiGateway.csproj
+    command: Lms.ApiGateway.dll
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+    ports:
+      - "5100:8080"
+
+volumes:
+  mysql-data:
