@@ -114,3 +114,9 @@ Each service exposes `GET /health`. It has no request body, query parameters, or
 - `200`: the HTTP service is running and its owned database accepts `SELECT 1`.
 - `503 DATABASE_UNAVAILABLE`: the HTTP service is running but its owned database cannot be reached.
 - `503 SERVICE_UNAVAILABLE`: API Gateway cannot connect to a downstream service.
+
+Media Service also includes `data.storage.status` on success because MinIO is
+an owned operational dependency. Its additional failures are:
+
+- `503 STORAGE_UNAVAILABLE`: only the MinIO dependency is unavailable.
+- `503 DEPENDENCY_UNAVAILABLE`: both the Media database and MinIO are unavailable.

@@ -1,7 +1,7 @@
-﻿using MediaService.Infrastructure.Health;
+using MediaService.Infrastructure.Health;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace MediaService.UnitTests;
+namespace MediaService.UnitTests.Health;
 
 public class MediaDatabaseHealthProbeTests
 {

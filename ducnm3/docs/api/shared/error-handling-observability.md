@@ -20,6 +20,12 @@ Unhandled Exception
 Database unavailable
     → 503 DATABASE_UNAVAILABLE
 
+Media storage unavailable
+    → 503 STORAGE_UNAVAILABLE
+
+Media database and storage unavailable
+    → 503 DEPENDENCY_UNAVAILABLE
+
 Downstream service unavailable at API Gateway
     → 503 SERVICE_UNAVAILABLE
 ```

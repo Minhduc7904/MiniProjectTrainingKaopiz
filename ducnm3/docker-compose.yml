@@ -35,8 +35,47 @@ services:
       NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER:?NOTIFICATION_DB_USER must be set}
       NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?NOTIFICATION_DB_PASSWORD must be set}
     volumes:
-      - ./backend/database/bootstrap/init-databases.sh:/bootstrap/init-databases.sh:ro
+      - ./scripts/database/bootstrap/init-databases.sh:/bootstrap/init-databases.sh:ro
     entrypoint: ["/bin/sh", "/bootstrap/init-databases.sh"]
+    restart: "no"
+
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - minio-data:/data
+
+  minio-init:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
+      MINIO_APP_ACCESS_KEY: ${MINIO_APP_ACCESS_KEY:?MINIO_APP_ACCESS_KEY must be set}
+      MINIO_APP_SECRET_KEY: ${MINIO_APP_SECRET_KEY:?MINIO_APP_SECRET_KEY must be set}
+      MINIO_IMAGE_BUCKET: ${MINIO_IMAGE_BUCKET:-images}
+      MINIO_VIDEO_BUCKET: ${MINIO_VIDEO_BUCKET:-videos}
+      MINIO_DOCUMENT_BUCKET: ${MINIO_DOCUMENT_BUCKET:-documents}
+      MINIO_AUDIO_BUCKET: ${MINIO_AUDIO_BUCKET:-audios}
+      MINIO_OTHER_BUCKET: ${MINIO_OTHER_BUCKET:-other}
+    volumes:
+      - ./scripts/storage/minio/init-media-storage.sh:/bootstrap/init-media-storage.sh:ro
+    entrypoint: ["/bin/sh", "/bootstrap/init-media-storage.sh"]
     restart: "no"
 
   course-service:
@@ -85,11 +124,23 @@ services:
     depends_on:
       mysql-init:
         condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
       ConnectionStrings__Database: ${MEDIA_DB_CONNECTION_STRING:?MEDIA_DB_CONNECTION_STRING must be set}
+      Storage__Minio__Endpoint: minio:9000
+      Storage__Minio__AccessKey: ${MINIO_APP_ACCESS_KEY:?MINIO_APP_ACCESS_KEY must be set}
+      Storage__Minio__SecretKey: ${MINIO_APP_SECRET_KEY:?MINIO_APP_SECRET_KEY must be set}
+      Storage__Minio__UseSsl: ${MINIO_USE_SSL:-false}
+      Storage__Minio__ImageBucket: ${MINIO_IMAGE_BUCKET:-images}
+      Storage__Minio__VideoBucket: ${MINIO_VIDEO_BUCKET:-videos}
+      Storage__Minio__DocumentBucket: ${MINIO_DOCUMENT_BUCKET:-documents}
+      Storage__Minio__AudioBucket: ${MINIO_AUDIO_BUCKET:-audios}
+      Storage__Minio__OtherBucket: ${MINIO_OTHER_BUCKET:-other}
+      Storage__Minio__HealthTimeoutSeconds: ${MINIO_HEALTH_TIMEOUT_SECONDS:-3}
     ports:
       - "5103:8080"
 
@@ -131,3 +182,4 @@ services:
 
 volumes:
   mysql-data:
+  minio-data:

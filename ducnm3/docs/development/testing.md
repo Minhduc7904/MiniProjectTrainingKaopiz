@@ -11,10 +11,18 @@ backend/
 │   ├── Endpoints/
 │   └── Gateway/
 └── Services/<Service>/
-    └── <Service>Service.UnitTests/
+    ├── <Service>Service.UnitTests/
+    └── <Service>Service.IntegrationTests/
 ```
 
 Do not create empty test projects. Add a service test project with the first behavior owned by that service.
+
+## Detailed test catalogue
+
+The executable test catalogue is organized in
+[`../tests/README.md`](../tests/README.md), then by owning service or shared
+component and test type. Each page documents the source test name, setup,
+input/dependency state, expected result, and exact pass condition.
 
 ## Run tests
 
@@ -30,6 +38,7 @@ Run one service:
 dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTests.csproj
 dotnet test backend/Services/Student/StudentService.UnitTests/StudentService.UnitTests.csproj
 dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
+dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 dotnet test backend/Services/Notification/NotificationService.UnitTests/NotificationService.UnitTests.csproj
 ```
 
@@ -39,7 +48,7 @@ dotnet test backend/Services/Notification/NotificationService.UnitTests/Notifica
 | --- | --- | --- |
 | Unit | Domain, Application, deterministic Infrastructure behavior | None; mock or fake interfaces |
 | Component | Middleware, minimal API endpoints, response envelopes | `TestServer`, no network or database |
-| Service integration | API, SQL migration, repositories, scaffolded DbContext | Isolated MySQL Testcontainers database |
+| Service integration | Storage adapters, API, SQL migration, repositories, scaffolded DbContext | Isolated dependency containers |
 | Gateway integration | YARP prefixes, downstream errors, Swagger proxying | TestServer and fake downstream HTTP handler |
 | Cross-service integration | Service boundaries through Gateway | Docker Compose or dedicated Testcontainers |
 | End-to-end | Browser workflow across frontend and backend | Playwright plus isolated system stack |
@@ -51,3 +60,15 @@ dotnet test backend/Services/Notification/NotificationService.UnitTests/Notifica
 3. Add a service integration project only when the change needs real MySQL, SQL migration, or generated DbContext behavior.
 4. Keep cross-service tests outside an individual service, in root `tests/`.
 5. Every test must create its own data and clean up through its isolated test environment.
+
+## Media Service storage tests
+
+`MediaService.UnitTests` covers storage option validation, bucket mapping, UTC
+object-key generation, upload request validation, database cancellation, and
+all four database/MinIO health combinations.
+
+`MediaService.IntegrationTests` starts an isolated MinIO Testcontainer. It
+creates all five buckets and verifies upload, existence, download, metadata,
+delete, category mapping, and storage health without depending on the
+developer's Docker Compose stack. Docker must be running to execute this
+project.

@@ -10,6 +10,20 @@ Media Service alone owns:
 
 Course Service owns Course/ Lesson Markdown. Notification Service owns notification Markdown. Neither service may use MinIO SDK or query the Media Service database.
 
+## Storage boundary
+
+`MediaService.Application` defines the `IStorage` and `IStorageHealthProbe`
+ports with no MinIO dependency. `MediaService.Infrastructure` owns the MinIO
+SDK adapter, configuration validation, category-to-bucket mapping, object-key
+generation, and SDK exception translation. `MediaService.Api` only composes
+these dependencies and exposes operational health.
+
+The configured buckets are `images`, `videos`, `documents`, `audios`, and
+`other`. Upload object keys follow `yyyy/MM/dd/{uuid}.{extension}` in UTC. Media
+Service startup validates the endpoint, credentials, timeout, and all five
+distinct bucket names. Bucket provisioning remains an infrastructure operation
+performed by `minio-init`, not by the application process.
+
 ## Markdown fields
 
 | Owner | Field | Purpose |
@@ -22,6 +36,9 @@ Course Service owns Course/ Lesson Markdown. Notification Service owns notificat
 The stored value is Markdown source. Raw HTML, JavaScript, inline event handlers, and unsafe URL schemes must be stripped by the renderer.
 
 ## Media lifecycle
+
+The HTTP upload/download use cases in this lifecycle are planned; the current
+implementation provides the storage port and adapter only.
 
 1. Client uploads multipart data to Media Service.
 2. Media Service validates the file, writes it to MinIO, and creates `media_objects`.
