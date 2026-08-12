@@ -39,6 +39,14 @@ Domain
 Each service Infrastructure implements `IDatabaseHealthProbe` with its own MySQL connection string and a `SELECT 1` query. API maps `GET /health`; a reachable API with an unavailable database returns `503 DATABASE_UNAVAILABLE`. API Gateway maps unreachable downstream services to `503 SERVICE_UNAVAILABLE`.
 
 Domain and Application do not depend on ASP.NET Core, MySQL, or the presentation project.
+
+## Test organization
+
+- Shared API behavior lives in `BuildingBlocks.Presentation.Tests`, separated by `Middleware/`, `Endpoints/`, and `Gateway/`.
+- Each service owns its `*Service.UnitTests` project beside its API, Application, Domain, and Infrastructure projects.
+- Future integration tests use `*Service.IntegrationTests` beside their service and a real isolated MySQL container.
+- Cross-service and end-to-end tests belong in the root `tests/` directory, not in an individual service.
+
 # 10. Folder Structure tổng thể
 
 ```text
@@ -50,7 +58,8 @@ lms-mini/
 │   │   ├── BuildingBlocks.Contracts/
 │   │   ├── BuildingBlocks.Shared/
 │   │   ├── BuildingBlocks.DatabaseMigration/
-│   │   └── BuildingBlocks.Presentation/
+│   │   ├── BuildingBlocks.Presentation/
+│   │   └── BuildingBlocks.Presentation.Tests/
 │   │
 │   ├── Gateway/
 │   │   └── Lms.ApiGateway/
@@ -61,25 +70,29 @@ lms-mini/
 │   │   │   ├── CourseService.Api/
 │   │   │   ├── CourseService.Application/
 │   │   │   ├── CourseService.Domain/
-│   │   │   └── CourseService.Infrastructure/
+│   │   │   ├── CourseService.Infrastructure/
+│   │   │   └── CourseService.UnitTests/
 │   │   │
 │   │   ├── Student/
 │   │   │   ├── StudentService.Api/
 │   │   │   ├── StudentService.Application/
 │   │   │   ├── StudentService.Domain/
-│   │   │   └── StudentService.Infrastructure/
+│   │   │   ├── StudentService.Infrastructure/
+│   │   │   └── StudentService.UnitTests/
 │   │   │
 │   │   ├── Media/
 │   │   │   ├── MediaService.Api/
 │   │   │   ├── MediaService.Application/
 │   │   │   ├── MediaService.Domain/
-│   │   │   └── MediaService.Infrastructure/
+│   │   │   ├── MediaService.Infrastructure/
+│   │   │   └── MediaService.UnitTests/
 │   │   │
 │   │   └── Notification/
 │   │       ├── NotificationService.Api/
 │   │       ├── NotificationService.Application/
 │   │       ├── NotificationService.Domain/
-│   │       └── NotificationService.Infrastructure/
+│   │       ├── NotificationService.Infrastructure/
+│   │       └── NotificationService.UnitTests/
 │   │
 │   └── Workers/
 │       └── NotificationWorker/
