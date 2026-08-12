@@ -107,7 +107,7 @@ Write schema SQL there. Then run the service migration locally:
 set -a
 . ./.env
 set +a
-sh backend/database/tools/migrate.sh course
+sh scripts/database/tools/migrate.sh course
 ```
 
 The same migration runs automatically before the API starts in Docker.
@@ -176,7 +176,7 @@ Run scaffold only after SQL migrations succeed. Scaffold is a development action
 set -a
 . ./.env
 set +a
-sh backend/database/tools/scaffold.sh course
+sh scripts/database/tools/scaffold.sh course
 ```
 
 Replace `course` with `student`, `media`, or `notification`.

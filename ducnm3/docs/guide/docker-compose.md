@@ -26,7 +26,12 @@ docker compose down
 ## Service ports
 
 - API Gateway and shared Swagger UI: `http://localhost:5100`
-- Course Service, Student Service, Media Service, and Notification Service expose port `8080` only on the internal Docker network.
+- Course Service: `http://localhost:5101`
+- Student Service: `http://localhost:5102`
+- Media Service: `http://localhost:5103`
+- Notification Service: `http://localhost:5104`
+- MinIO API: `http://localhost:9000`
+- MinIO console: `http://localhost:9001`
 
 Gateway routes external requests by service prefix:
 
@@ -57,15 +62,50 @@ No browser-to-service CORS configuration is needed because the UI and documents 
 
 ## Environment configuration
 
-`.env` contains non-secret local development values:
+`.env` contains local development configuration and credentials:
 
 ```dotenv
 ASPNETCORE_ENVIRONMENT=Development
 ASPNETCORE_URLS=http://+:8080
 Swagger__Enabled=true
+MINIO_ROOT_USER=minio-root-user
+MINIO_ROOT_PASSWORD=replace-with-a-long-root-secret
+MINIO_APP_ACCESS_KEY=media-storage-app
+MINIO_APP_SECRET_KEY=replace-with-a-long-app-secret
+MINIO_IMAGE_BUCKET=images
+MINIO_VIDEO_BUCKET=videos
+MINIO_DOCUMENT_BUCKET=documents
+MINIO_AUDIO_BUCKET=audios
+MINIO_OTHER_BUCKET=other
 ```
 
-Do not store passwords, connection strings, API keys, or production secrets in this file. Use a secure deployment secret store when infrastructure is added.
+`.env` is ignored by Git. Never put production credentials in `.env.example`;
+use a deployment secret store outside local development.
+
+## MinIO provisioning
+
+`minio` stores object data in the persistent `minio-data` volume. `minio-init`
+waits for the MinIO health endpoint, creates the five Media Service buckets,
+and provisions a least-privilege application user. The initialization script is
+safe to run repeatedly and the Media Service waits for it to finish.
+
+Run only the storage dependencies:
+
+```bash
+docker compose up -d minio minio-init
+```
+
+Remove containers while preserving data:
+
+```bash
+docker compose down
+```
+
+Remove containers and both MySQL/MinIO development volumes:
+
+```bash
+docker compose down -v
+```
 
 ## Troubleshooting
 

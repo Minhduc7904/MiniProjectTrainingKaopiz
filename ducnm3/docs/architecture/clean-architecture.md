@@ -119,6 +119,11 @@ lms-mini/
 │   └── minio/
 │
 ├── scripts/
+│   ├── database/
+│   │   ├── bootstrap/
+│   │   └── tools/
+│   ├── storage/
+│   │   └── minio/
 │   ├── seed/
 │   │   ├── seed-10k.sql
 │   │   ├── seed-100k.sql

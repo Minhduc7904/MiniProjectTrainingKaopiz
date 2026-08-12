@@ -1,9 +1,8 @@
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
-using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Presentation.Extensions;
-using MediaService.Infrastructure.Health;
-using Microsoft.Extensions.Logging;
+using MediaService.Api.Endpoints;
+using MediaService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
@@ -21,10 +20,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Media Service.");
 }
 
-builder.Services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
-    new MediaDatabaseHealthProbe(
-        connectionString,
-        serviceProvider.GetRequiredService<ILogger<MediaDatabaseHealthProbe>>()));
+builder.Services.AddMediaInfrastructure(builder.Configuration, connectionString);
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(
@@ -53,6 +49,6 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 }
 
 app.MapServiceInfoEndpoint(ServiceNames.Media);
-app.MapDatabaseHealthEndpoint(ServiceNames.Media);
+app.MapMediaHealthEndpoint();
 
 app.Run();

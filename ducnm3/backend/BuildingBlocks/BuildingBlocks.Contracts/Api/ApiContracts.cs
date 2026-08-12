@@ -20,4 +20,12 @@ public sealed record ServiceHealthResponse(
 
 public sealed record DatabaseHealthResponse(string Status);
 
+public sealed record StorageHealthResponse(string Status);
+
+public sealed record MediaServiceHealthResponse(
+    string Service,
+    string Status,
+    DatabaseHealthResponse Database,
+    StorageHealthResponse Storage);
+
 public sealed record ServiceInfoResponse(string Service, string Status);

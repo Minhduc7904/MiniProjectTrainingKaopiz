@@ -2,7 +2,8 @@
 set -eu
 
 service="${1:?Usage: migrate.sh <course|student|media|notification>}"
-backend_root="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
+project_root="$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)"
+backend_root="$project_root/backend"
 
 case "$service" in
   course)

@@ -3,6 +3,8 @@ namespace BuildingBlocks.Contracts.Api;
 public static class ApiErrorCodes
 {
     public const string DatabaseUnavailable = "DATABASE_UNAVAILABLE";
+    public const string StorageUnavailable = "STORAGE_UNAVAILABLE";
+    public const string DependencyUnavailable = "DEPENDENCY_UNAVAILABLE";
     public const string ServiceUnavailable = "SERVICE_UNAVAILABLE";
     public const string UnexpectedError = "UNEXPECTED_ERROR";
     public const string ValidationFailed = "VALIDATION_FAILED";
@@ -11,6 +13,8 @@ public static class ApiErrorCodes
 public static class ApiErrorMessages
 {
     public const string DatabaseUnavailable = "Database is temporarily unavailable.";
+    public const string StorageUnavailable = "Storage is temporarily unavailable.";
+    public const string DependencyUnavailable = "One or more service dependencies are temporarily unavailable.";
     public const string ServiceUnavailable = "Service is temporarily unavailable.";
     public const string UnexpectedError = "An unexpected error occurred.";
     public const string ValidationFailed = "One or more validation errors occurred.";
