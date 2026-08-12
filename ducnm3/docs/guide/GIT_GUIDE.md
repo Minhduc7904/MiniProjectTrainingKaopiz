@@ -22,6 +22,7 @@ Keep each branch scoped to one purpose. Do not include generated artifacts, cred
 git status --short
 git diff --check
 dotnet build backend/Lms.sln -m:1
+dotnet test backend/Lms.sln -m:1
 git add <changed-files>
 git commit -m "add database-backed service health checks"
 ```
@@ -32,8 +33,9 @@ Use an imperative commit subject that describes the outcome. Before committing, 
 
 ```bash
 git push -u origin feature/ducnm3_<short-description>
-gh pr create --base ducnm3 --title "<concise title>" --body "<summary and test plan>"
 ```
+
+Create the pull request in Bitbucket Server, selecting `ducnm3` as the target branch. The push output includes the direct “Create pull request” URL for the new source branch.
 
 The PR should state:
 

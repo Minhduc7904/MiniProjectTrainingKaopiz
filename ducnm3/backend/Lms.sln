@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.DatabaseMigr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Presentation", "BuildingBlocks\BuildingBlocks.Presentation\BuildingBlocks.Presentation.csproj", "{F268D479-F5C3-4D4D-8C56-07966B5DC7D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Presentation.Tests", "BuildingBlocks\BuildingBlocks.Presentation.Tests\BuildingBlocks.Presentation.Tests.csproj", "{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -337,6 +339,18 @@ Global
 		{F268D479-F5C3-4D4D-8C56-07966B5DC7D8}.Release|x64.Build.0 = Release|Any CPU
 		{F268D479-F5C3-4D4D-8C56-07966B5DC7D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{F268D479-F5C3-4D4D-8C56-07966B5DC7D8}.Release|x86.Build.0 = Release|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Debug|x64.Build.0 = Debug|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Debug|x86.Build.0 = Debug|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Release|x64.ActiveCfg = Release|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Release|x64.Build.0 = Release|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Release|x86.ActiveCfg = Release|Any CPU
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -368,5 +382,6 @@ Global
 		{143426BD-5D3F-446C-AB66-6D102BAC2634} = {7D0AC44D-5CF2-302B-7FCE-391173F4F6DF}
 		{E6D4888A-0CDC-4481-BEDB-CE65D92DEA7F} = {7266C4A9-E384-DC00-0EB6-47F6002CFBA7}
 		{F268D479-F5C3-4D4D-8C56-07966B5DC7D8} = {7266C4A9-E384-DC00-0EB6-47F6002CFBA7}
+		{E02D45FA-FC07-45F4-BCE7-10EAD8ABC667} = {7266C4A9-E384-DC00-0EB6-47F6002CFBA7}
 	EndGlobalSection
 EndGlobal

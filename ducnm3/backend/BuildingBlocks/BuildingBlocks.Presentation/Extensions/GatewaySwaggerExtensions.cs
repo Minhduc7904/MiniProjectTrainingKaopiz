@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
@@ -18,26 +19,41 @@ public static class GatewaySwaggerExtensions
                     IHttpClientFactory httpClientFactory,
                     CancellationToken cancellationToken) =>
                 {
-                    using var response = await httpClientFactory
-                        .CreateClient(serviceName)
-                        .GetAsync(ApiPaths.OpenApiDocument, cancellationToken);
+                    try
+                    {
+                        using var response = await httpClientFactory
+                            .CreateClient(serviceName)
+                            .GetAsync(ApiPaths.OpenApiDocument, cancellationToken);
 
-                    if (!response.IsSuccessStatusCode)
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            return ServiceUnavailable(context);
+                        }
+
+                        var document = JsonNode.Parse(
+                            await response.Content.ReadAsStringAsync(cancellationToken));
+                        if (document is null)
+                        {
+                            return ServiceUnavailable(context);
+                        }
+
+                        document["servers"] = new JsonArray(
+                            new JsonObject { ["url"] = gatewayPrefix });
+
+                        return Results.Json(document);
+                    }
+                    catch (HttpRequestException)
                     {
                         return ServiceUnavailable(context);
                     }
-
-                    var document = JsonNode.Parse(
-                        await response.Content.ReadAsStringAsync(cancellationToken));
-                    if (document is null)
+                    catch (JsonException)
                     {
                         return ServiceUnavailable(context);
                     }
-
-                    document["servers"] = new JsonArray(
-                        new JsonObject { ["url"] = gatewayPrefix });
-
-                    return Results.Json(document);
+                    catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                    {
+                        return ServiceUnavailable(context);
+                    }
                 })
             .WithName($"{serviceName}-gateway-openapi");
     }

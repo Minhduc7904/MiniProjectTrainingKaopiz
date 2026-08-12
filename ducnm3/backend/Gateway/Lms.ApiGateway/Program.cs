@@ -95,5 +95,9 @@ static void RegisterServiceHttpClient(WebApplicationBuilder builder, string serv
             $"Missing service endpoint configuration for {serviceName}.");
     }
 
-    builder.Services.AddHttpClient(serviceName, client => client.BaseAddress = new Uri(address));
+    builder.Services.AddHttpClient(serviceName, client =>
+    {
+        client.BaseAddress = new Uri(address);
+        client.Timeout = TimeSpan.FromSeconds(5);
+    });
 }
