@@ -39,14 +39,14 @@ For example, Course health is available through `http://localhost:5100/course/he
 
 ## Shared Swagger UI
 
-`api-gateway` serves a single NSwag UI at `http://localhost:5100/swagger`. It displays four OpenAPI documents in a service selector:
+`api-gateway` serves a single NSwag UI at `http://localhost:5100/swagger`. Use the document selector to load the APIs for one service at a time:
 
 - Course Service
 - Student Service
 - Media Service
 - Notification Service
 
-The Gateway proxies all documents through the same origin:
+The Gateway proxies each document through the same origin:
 
 - `/course/swagger/v1/swagger.json`
 - `/student/swagger/v1/swagger.json`

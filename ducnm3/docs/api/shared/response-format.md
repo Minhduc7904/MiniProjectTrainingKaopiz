@@ -91,3 +91,26 @@ All JSON endpoints use this envelope. CSV export, file streams, and redirects to
 - `error.message`: safe message for API consumers.
 - `error.details`: optional validation detail array; omit when no details apply.
 - Never expose stack traces, SQL, credentials, MinIO bucket names, or object keys.
+
+## Service health
+
+Each service exposes `GET /health`. It has no request body, query parameters, or pagination.
+
+```json
+{
+  "data": {
+    "service": "course-service",
+    "status": "healthy",
+    "database": {
+      "status": "healthy"
+    }
+  },
+  "meta": {
+    "traceId": "01J..."
+  }
+}
+```
+
+- `200`: the HTTP service is running and its owned database accepts `SELECT 1`.
+- `503 DATABASE_UNAVAILABLE`: the HTTP service is running but its owned database cannot be reached.
+- `503 SERVICE_UNAVAILABLE`: API Gateway cannot connect to a downstream service.
