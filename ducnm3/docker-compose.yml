@@ -122,6 +122,10 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
+      ServiceEndpoints__course-service: http://course-service:8080/
+      ServiceEndpoints__student-service: http://student-service:8080/
+      ServiceEndpoints__media-service: http://media-service:8080/
+      ServiceEndpoints__notification-service: http://notification-service:8080/
     ports:
       - "5100:8080"
 

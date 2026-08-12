@@ -31,6 +31,14 @@ Domain
 ```
 
 ---
+
+# Shared API health and error handling
+
+`BuildingBlocks.Contracts` owns framework-independent response DTOs, health-probe interfaces, error codes, header names, and status constants. `BuildingBlocks.Presentation` owns ASP.NET Core middleware, response mapping, and reusable endpoint mappings.
+
+Each service Infrastructure implements `IDatabaseHealthProbe` with its own MySQL connection string and a `SELECT 1` query. API maps `GET /health`; a reachable API with an unavailable database returns `503 DATABASE_UNAVAILABLE`. API Gateway maps unreachable downstream services to `503 SERVICE_UNAVAILABLE`.
+
+Domain and Application do not depend on ASP.NET Core, MySQL, or the presentation project.
 # 10. Folder Structure tổng thể
 
 ```text
@@ -40,7 +48,9 @@ lms-mini/
 │   │
 │   ├── BuildingBlocks/
 │   │   ├── BuildingBlocks.Contracts/
-│   │   └── BuildingBlocks.Shared/
+│   │   ├── BuildingBlocks.Shared/
+│   │   ├── BuildingBlocks.DatabaseMigration/
+│   │   └── BuildingBlocks.Presentation/
 │   │
 │   ├── Gateway/
 │   │   └── Lms.ApiGateway/

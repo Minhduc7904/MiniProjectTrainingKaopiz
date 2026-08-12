@@ -16,6 +16,12 @@ ConflictException
 
 Unhandled Exception
     → 500
+
+Database unavailable
+    → 503 DATABASE_UNAVAILABLE
+
+Downstream service unavailable at API Gateway
+    → 503 SERVICE_UNAVAILABLE
 ```
 
 Never expose stack traces, connection strings, internal SQL, or secrets.
