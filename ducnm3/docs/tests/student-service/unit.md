@@ -3,8 +3,9 @@
 ## Phạm vi
 
 Dự án: `backend/Services/Student/StudentService.UnitTests`
-Mã nguồn: `UnitTest1.cs`
-Thành phần phụ thuộc: không có MySQL hoặc mạng.
+Mã nguồn: `GetStudentByIdHandlerTests.cs` và `StudentEndpointTests.cs`
+Thành phần phụ thuộc: không có MySQL hoặc external network; endpoint test dùng
+ASP.NET Core `TestServer`.
 
 Chạy:
 
@@ -16,7 +17,10 @@ dotnet test backend/Services/Student/StudentService.UnitTests/StudentService.Uni
 
 | Kiểm thử | Thiết lập và thao tác | Đạt khi |
 | --- | --- | --- |
-| `CheckAsyncPropagatesRequestCancellation` | Tạo `StudentDatabaseHealthProbe` với chuỗi kết nối có cổng không hợp lệ; hủy token trước khi gọi `CheckAsync`. | `OperationCanceledException` được truyền tiếp; thao tác hủy không bị trả thành kết quả cơ sở dữ liệu lỗi. |
+| `ExistingStudentIsReturned` | Repository stub trả một `StudentDetails` tồn tại. | Handler trả nguyên thông tin `id`, `email`, `displayName`, `status` để Media Service có thể parse response envelope. |
+| `MissingStudentReturnsNotFound` | Repository stub trả `null`. | Handler ném `StudentApplicationException` có code `STUDENT_NOT_FOUND`. |
+| `GetStudentMapsExpectedStatus` | Gửi lần lượt ID tồn tại, UUID không tồn tại và chuỗi không phải UUID qua `TestServer`. | Endpoint lần lượt trả `200`, `404`, `400` theo response envelope dùng chung. |
 
-Kiểm thử hiện tại giới hạn ở hợp đồng hủy của trình kiểm tra sức khỏe. Kiểm thử tích hợp
-với MySQL thật chưa được tạo.
+Tests hiện bao phủ lookup Học viên thành công/không tồn tại, validation UUID và
+status mapping ở HTTP endpoint. Typed-client Media → Student và lookup với MySQL
+thật chưa có integration test chuyên biệt.

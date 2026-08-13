@@ -3,8 +3,10 @@
 ## Phạm vi
 
 Dự án: `backend/Services/Media/MediaService.IntegrationTests`
-Mã nguồn: `Storage/MinioStorageServiceTests.cs`
-Thành phần phụ thuộc: một Testcontainer MinIO cô lập; Docker Engine phải chạy.
+Mã nguồn: `Storage/MinioStorageServiceTests.cs` và
+`Flows/MediaUploadUsageFlowTests.cs`
+Thành phần phụ thuộc: các Testcontainer MinIO và MySQL 8.4 cô lập; Docker Engine
+phải chạy.
 Kiểm thử không dùng MinIO trong Docker Compose của lập trình viên.
 
 Chạy:
@@ -20,6 +22,11 @@ container, tạo năm bucket `images`, `videos`, `documents`, `audios`, `other`,
 sau đó khởi tạo `MinioStorageService`. `StopMinioAsync` giải phóng máy khách và
 container sau bộ kiểm thử.
 
+Flow fixture khởi động MySQL 8.4 và MinIO riêng, áp dụng migration Media thật,
+tạo năm bucket dành cho test rồi chạy Application handler với
+`EfMediaRepository` và `MinioStorageService` thật. Student lookup được thay bằng
+stub trong bộ nhớ để test không phụ thuộc Student Service qua mạng.
+
 ## Ca kiểm thử
 
 | Kiểm thử | Dữ liệu / thao tác | Đạt khi |
@@ -30,7 +37,13 @@ container sau bộ kiểm thử.
 | `StorageLifecycleWorksForEachMediaCategory` — AUDIO | Cùng vòng đời với `audio/mpeg`, phần mở rộng `mp3`. | Bucket `audios`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
 | `StorageLifecycleWorksForEachMediaCategory` — OTHER | Cùng vòng đời với `application/octet-stream`, phần mở rộng `bin`. | Bucket `other`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
 | `HealthProbeIsHealthyWhenAllBucketsExist` | Gọi `IStorageHealthProbe.CheckAsync` sau khi bộ kiểm thử tạo đủ năm bucket. | `IsHealthy = true`. |
+| `UploadPersistsReadyChecksumAndUsageReplacesStudentAvatar` | Upload ảnh A và B bằng handler thật; gán avatar A → B → A trên MySQL đã áp dụng V003, rồi gửi lại A khi A đang active. | Media là `READY`; checksum đúng; có ba usage history nhưng chỉ một active trỏ lại A; soft-deleted reference được tái sử dụng; duplicate active trả `MEDIA_USAGE_CONFLICT`. |
 
-Các kiểm thử vòng đời bắt buộc dùng khóa đối tượng do dịch vụ lưu trữ sinh ra,
-không cho kiểm thử tự chọn bucket hay khóa đối tượng. Điều này bảo vệ ánh xạ loại
-→ bucket và hợp đồng luồng của adapter.
+Các kiểm thử vòng đời dùng `MinioStorageLocationAllocator` để reserve
+bucket/object key trước khi gọi storage adapter. Điều này bảo vệ ánh xạ loại →
+bucket và hợp đồng DB-first của flow.
+
+Flow integration bảo vệ database-first upload ở kết quả bền vững, checksum thật
+và transaction thay avatar/active uniqueness. Nhánh lỗi/compensation được kiểm
+tra bằng unit test; Media endpoint được kiểm tra qua `TestServer`. Gateway
+pass-through và cleanup `PENDING` stale chưa có automated test.

@@ -1,4 +1,4 @@
-namespace MediaService.Application.Storage;
+namespace MediaService.Application.Abstractions.Storage;
 
 public interface IStorageHealthProbe
 {

@@ -1,5 +1,5 @@
 using System.Text;
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 using MediaService.Infrastructure.Storage.Minio;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -16,6 +16,7 @@ public sealed class MinioStorageServiceTests
         "minio/minio:RELEASE.2025-09-07T16-13-09Z").Build();
     private IMinioClient client = null!;
     private MinioStorageService storage = null!;
+    private MinioStorageLocationAllocator locationAllocator = null!;
 
     [OneTimeSetUp]
     public async Task StartMinioAsync()
@@ -35,10 +36,13 @@ public sealed class MinioStorageServiceTests
             await client.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucket));
         }
 
+        var objectKeyGenerator = new MinioObjectKeyGenerator(TimeProvider.System);
+        locationAllocator = new MinioStorageLocationAllocator(
+            Options.Create(options),
+            objectKeyGenerator);
         storage = new MinioStorageService(
             client,
             Options.Create(options),
-            new MinioObjectKeyGenerator(TimeProvider.System),
             NullLogger<MinioStorageService>.Instance);
     }
 
@@ -62,22 +66,22 @@ public sealed class MinioStorageServiceTests
     {
         var bytes = Encoding.UTF8.GetBytes($"integration-{category}");
         await using var uploadStream = new MemoryStream(bytes);
+        var location = locationAllocator.Allocate(category, extension);
 
         var uploaded = await storage.UploadAsync(
             new StorageUploadRequest(
-                category,
+                location,
                 contentType,
-                extension,
                 uploadStream,
                 uploadStream.Length),
             CancellationToken.None);
-        var location = new StorageObjectLocation(uploaded.Bucket, uploaded.ObjectKey);
 
         Assert.Multiple(() =>
         {
             Assert.That(uploaded.Bucket, Is.EqualTo(expectedBucket));
             Assert.That(uploaded.ObjectKey, Does.EndWith($".{extension}"));
             Assert.That(uploaded.Size, Is.EqualTo(bytes.Length));
+            Assert.That(uploaded.ChecksumSha256, Has.Length.EqualTo(64));
         });
         Assert.That(
             await storage.ExistsAsync(location, CancellationToken.None),

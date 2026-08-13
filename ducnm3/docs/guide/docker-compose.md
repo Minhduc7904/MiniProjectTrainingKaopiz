@@ -46,6 +46,14 @@ Gateway định tuyến các yêu cầu bên ngoài theo tiền tố dịch vụ
 
 Ví dụ, trạng thái sức khỏe của Course Service có tại `http://localhost:5100/course/health`.
 
+Các command Media đã triển khai dùng:
+
+- upload công khai `POST /media/api/media` → service path `POST /api/media`;
+- tạo avatar usage công khai `POST /media/api/media/usages` → service path
+  `POST /api/media/usages`.
+
+Gateway giữ nguyên multipart body khi bỏ tiền tố `/media`.
+
 ## Swagger UI dùng chung
 
 `api-gateway` cung cấp một NSwag UI duy nhất tại `http://localhost:5100/swagger`. Dùng trình chọn tài liệu để tải API của từng dịch vụ:
@@ -86,6 +94,12 @@ MINIO_VIDEO_BUCKET=videos
 MINIO_DOCUMENT_BUCKET=documents
 MINIO_AUDIO_BUCKET=audios
 MINIO_OTHER_BUCKET=other
+MEDIA_UPLOAD_IMAGE_MAX_BYTES=10485760
+MEDIA_UPLOAD_VIDEO_MAX_BYTES=524288000
+MEDIA_UPLOAD_DOCUMENT_MAX_BYTES=52428800
+MEDIA_UPLOAD_AUDIO_MAX_BYTES=104857600
+MEDIA_UPLOAD_OTHER_MAX_BYTES=26214400
+MEDIA_UPLOAD_REQUEST_MAX_BYTES=550502400
 RABBITMQ_USER=lms_app
 RABBITMQ_PASSWORD=replace-with-a-long-rabbitmq-secret
 RABBITMQ_VHOST=/
@@ -101,6 +115,11 @@ hãy dùng kho lưu trữ bí mật của hệ thống triển khai bên ngoài 
 đợi điểm cuối sức khỏe của MinIO, tạo năm bucket của Media Service và cấp phát
 người dùng ứng dụng theo nguyên tắc đặc quyền tối thiểu. Có thể chạy lại tập lệnh
 khởi tạo một cách an toàn và Media Service sẽ đợi tập lệnh hoàn tất.
+
+Upload ghi database `PENDING` trước khi gọi MinIO, tính checksum SHA-256 trong
+stream rồi chuyển `READY`; lỗi được compensation bằng xóa object và chuyển
+`FAILED` theo best effort. Scheduler cleanup cho hàng `PENDING` stale chưa được
+triển khai.
 
 Chỉ chạy các thành phần phụ thuộc về lưu trữ:
 
@@ -118,6 +137,13 @@ prefetch và concurrency nằm một lần trong `.env` qua nhóm biến
 
 Mở management UI bằng credential `RABBITMQ_USER`/`RABBITMQ_PASSWORD` để xem
 exchange, queue và các queue `_error`.
+
+## HTTP query giữa Media và Student
+
+`media-service` nhận cả messaging environment và `HTTP_QUERY_*` environment
+anchor. Typed client dùng `ServiceEndpoints__student-service`; timeout/retry
+được quản lý tập trung bởi `BuildingBlocks.Http`, không cấu hình riêng trong
+`StudentLookupClient`.
 
 Xóa các container nhưng giữ nguyên dữ liệu:
 

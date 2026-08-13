@@ -7,9 +7,10 @@ các cổng `IStorage` và `IStorageHealthProbe`; `MediaService.Infrastructure`
 triển khai cả hai cổng bằng MinIO SDK.
 
 Thiết lập này bao gồm thao tác lưu trữ, kiểm tra hợp lệ, tiêm phụ thuộc,
-khởi tạo tài nguyên, kiểm tra trạng thái và kiểm thử. Theo chủ đích, thiết lập
-này chưa cung cấp endpoint HTTP tải lên/tải xuống hoặc ghi bản ghi
-`media_objects`.
+khởi tạo tài nguyên, kiểm tra trạng thái và kiểm thử. Endpoint upload hiện đã
+được triển khai tại Gateway `POST /media/api/media` và service path
+`POST /api/media`; endpoint tạo avatar usage là
+`POST /media/api/media/usages` qua Gateway.
 
 ## Bucket và object key
 
@@ -57,6 +58,12 @@ MINIO_VIDEO_BUCKET=videos
 MINIO_DOCUMENT_BUCKET=documents
 MINIO_AUDIO_BUCKET=audios
 MINIO_OTHER_BUCKET=other
+MEDIA_UPLOAD_IMAGE_MAX_BYTES=10485760
+MEDIA_UPLOAD_VIDEO_MAX_BYTES=524288000
+MEDIA_UPLOAD_DOCUMENT_MAX_BYTES=52428800
+MEDIA_UPLOAD_AUDIO_MAX_BYTES=104857600
+MEDIA_UPLOAD_OTHER_MAX_BYTES=26214400
+MEDIA_UPLOAD_REQUEST_MAX_BYTES=550502400
 ```
 
 Docker Compose ánh xạ các giá trị này sang cấu hình `Storage__Minio__*` cho
@@ -92,13 +99,37 @@ tại, tra cứu metadata và xóa. Trước khi gọi MinIO, service kiểm tra
 Ngoại lệ của MinIO SDK được bọc thành ngoại lệ lưu trữ do ứng dụng sở hữu.
 Thông tin xác thực và tham chiếu object không được ghi vào log.
 
+## Vòng đời upload và compensation
+
+Media Service dùng trình tự database-first:
+
+1. Xác minh actor `STUDENT` qua Student Service.
+2. Tạo `media_objects` ở trạng thái `PENDING`.
+3. Stream object vào bucket tương ứng và tính checksum SHA-256 trong lúc đọc.
+4. Lưu checksum, `completed_at` và chuyển trạng thái sang `READY`.
+
+Nếu upload bị hủy/lỗi, checksum không được tạo hoặc bước hoàn tất database lỗi,
+service cố gắng xóa object rồi đánh dấu bản ghi `FAILED`. Cả hai bước
+compensation là best effort. Bản ghi `PENDING` stale do process dừng đột ngột
+được để cho Scheduler cleanup trong tương lai; hiện chưa có job quét tự động.
+
+Không dùng MinIO console để sửa/xóa object của một media active vì database là
+nguồn trạng thái của workflow, còn bucket/object key là chi tiết nội bộ.
+
 ## Kiểm tra trạng thái
 
 `GET /health` kiểm tra database của Media Service và cả năm bucket MinIO. Bước
 thăm dò lưu trữ sử dụng các lời gọi kiểm tra sự tồn tại của bucket với thời gian
 chờ ngắn; không bao giờ tải object kiểm thử lên.
 
-Chạy các kiểm thử MinIO cô lập:
+Chạy kiểm thử unit cho workflow và storage validation:
+
+```bash
+dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
+```
+
+Chạy kiểm thử integration cô lập. Dự án này dùng MinIO Testcontainer cho vòng
+đời storage, đồng thời dùng MySQL và MinIO Testcontainer cho luồng upload/usage:
 
 ```bash
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj

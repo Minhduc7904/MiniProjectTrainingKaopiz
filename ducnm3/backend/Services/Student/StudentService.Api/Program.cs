@@ -1,10 +1,11 @@
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
-using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
-using StudentService.Infrastructure.Health;
 using Microsoft.Extensions.Logging;
+using StudentService.Api.Endpoints;
+using StudentService.Application;
+using StudentService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
@@ -27,10 +28,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Student Service.");
 }
 
-builder.Services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
-    new StudentDatabaseHealthProbe(
-        connectionString,
-        serviceProvider.GetRequiredService<ILogger<StudentDatabaseHealthProbe>>()));
+builder.Services
+    .AddStudentApplication()
+    .AddStudentInfrastructure(connectionString);
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(
@@ -60,5 +60,6 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Student);
 app.MapDatabaseHealthEndpoint(ServiceNames.Student);
+app.MapGetStudentById();
 
 app.Run();

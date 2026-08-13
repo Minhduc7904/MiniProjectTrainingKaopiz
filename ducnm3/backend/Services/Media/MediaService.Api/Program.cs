@@ -3,9 +3,20 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Endpoints;
+using MediaService.Api.Endpoints.Media;
+using MediaService.Application;
+using MediaService.Application.Features.Media.Upload;
 using MediaService.Infrastructure;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+var mediaRequestMaxBytes = builder.Configuration.GetValue<long>(
+    $"{MediaUploadOptions.SectionName}:RequestMaxBytes",
+    525L * 1024 * 1024);
+builder.WebHost.ConfigureKestrel(options =>
+    options.Limits.MaxRequestBodySize = mediaRequestMaxBytes);
+builder.Services.Configure<FormOptions>(options =>
+    options.MultipartBodyLengthLimit = mediaRequestMaxBytes);
 builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
@@ -26,7 +37,11 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Media Service.");
 }
 
-builder.Services.AddMediaInfrastructure(builder.Configuration, connectionString);
+if (!migrationsRunOnly)
+{
+    builder.Services.AddMediaApplication(builder.Configuration);
+    builder.Services.AddMediaInfrastructure(builder.Configuration, connectionString);
+}
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(
@@ -56,5 +71,8 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Media);
 app.MapMediaHealthEndpoint();
+app.MapUploadMedia();
+app.MapCreateMediaUsage();
+app.MapGetMediaContent();
 
 app.Run();

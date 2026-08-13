@@ -10,6 +10,10 @@ Chỉ Media Service sở hữu:
 
 Course Service sở hữu Markdown của Khóa học/Bài học. Notification Service sở hữu Markdown của Thông báo. Cả hai dịch vụ đều không được dùng SDK MinIO hoặc truy vấn cơ sở dữ liệu của Media Service.
 
+Student Service sở hữu hồ sơ Học viên. Media Service gọi endpoint query
+`GET /api/students/{studentId}` qua typed HTTP client để xác minh actor và owner
+của avatar; Media Service không truy vấn database Student.
+
 ## Ranh giới lưu trữ
 
 `MediaService.Application` định nghĩa các cổng `IStorage` và
@@ -35,27 +39,60 @@ tầng do `minio-init` thực hiện, không phải do tiến trình ứng dụn
 
 Giá trị được lưu là mã nguồn Markdown. Bộ hiển thị phải loại bỏ HTML thô, JavaScript, các trình xử lý sự kiện nội tuyến và những lược đồ URL không an toàn.
 
-## Vòng đời media
+## Vòng đời upload hiện tại
 
-Các ca sử dụng tải lên/tải xuống qua HTTP trong vòng đời này mới ở giai đoạn lập
-kế hoạch; phần triển khai hiện tại chỉ cung cấp cổng lưu trữ và bộ chuyển đổi.
+1. Client gửi multipart đến Gateway `POST /media/api/media`; Gateway chuyển tới
+   Media Service path `POST /api/media`.
+2. Media Service xác minh request actor qua Student Service, cấp phát location
+   nội bộ rồi ghi `media_objects` trạng thái `PENDING` trước khi gọi MinIO.
+3. Adapter MinIO stream object và tính checksum SHA-256. Sau khi thành công,
+   Media Service lưu checksum và chuyển hàng sang `READY`.
+4. Chỉ media `READY`, chưa bị xóa mềm mới được tham chiếu bởi usage.
+5. Khi upload/lấy checksum/hoàn tất database lỗi, Media Service cố gắng xóa
+   object và chuyển hàng sang `FAILED`. Đây là compensation best effort.
+6. Việc thu hồi hàng `PENDING` stale khi process dừng giữa luồng được hoãn cho
+   Scheduler; job này chưa được triển khai.
 
-1. Ứng dụng khách tải dữ liệu multipart lên Media Service.
-2. Media Service xác thực tệp, ghi tệp vào MinIO và tạo `media_objects`.
-3. Ứng dụng khách nhận `mediaId` cùng URL nội dung rồi đưa URL vào Markdown, ví dụ `![Hình ảnh Khóa học](/api/media/{mediaId}/content)`.
-4. Course Service hoặc Notification Service lưu mã nguồn Markdown.
-5. Dịch vụ sở hữu gọi Media Service để tạo `media_usages` cho từng ảnh đại diện, tệp đính kèm hoặc nội dung nhúng.
-6. Khi nội dung loại bỏ một tham chiếu, dịch vụ sở hữu xóa lượt sử dụng tương ứng. Media Service có thể thu gom media không còn lượt sử dụng hoạt động sau thời gian lưu giữ.
+Request upload hiện không idempotent. Mỗi lần gửi thành công tạo một `mediaId`
+và object riêng. Bucket, object key và `failure_reason` chỉ là dữ liệu nội bộ.
 
-Khóa học không lưu `thumbnail_media_id`. Để hiển thị ảnh đại diện, Khóa học yêu cầu Media Service trả về lượt sử dụng đang hoạt động với `ownerService=COURSE`, `ownerType=COURSE_THUMBNAIL` và `ownerId={courseId}`.
+`GET /api/media/{mediaId}/content` dùng Application capability chỉ public
+metadata và thao tác `CopyToAsync`; bucket/object key vẫn nằm trong adapter
+boundary. API stream thẳng MinIO vào response, không buffer toàn file. Phiên bản
+hiện tại dùng `Cache-Control: no-store`, chưa có auth, range request hoặc
+presigned URL.
+
+## Request identity tạm thời
+
+Hệ thống chưa có authentication middleware cho hai command Media. Vì vậy:
+
+- upload nhận `uploadedByType/uploadedBy`;
+- tạo usage nhận `createdByType/createdBy`;
+- hai cặp field được validate bằng actor strategy hiện chỉ hỗ trợ `STUDENT`;
+- khi có JWT, actor sẽ được ánh xạ từ claim thay vì tin cậy field do client gửi.
+
+Actor fields mô tả người thực hiện thao tác và được lưu riêng. Chúng khác
+`ownerService/ownerType/ownerId`, là logical reference tới tài nguyên sở hữu.
+Đặc biệt, `createdByType=STUDENT` không đồng nghĩa với
+`ownerType=STUDENT_AVATAR`.
 
 ## Ngữ nghĩa sử dụng
 
+- `AVATAR`: phiên bản hiện tại hỗ trợ
+  `STUDENT/STUDENT_AVATAR/AVATAR`. Khi thay avatar, usage active cũ được xóa mềm
+  và usage mới được tạo trong transaction `SERIALIZABLE`. Generated
+  `active_reference_guard` chỉ áp dụng unique reference cho usage active, nên
+  chuỗi thay avatar A → B → A hợp lệ nhưng duplicate active vẫn bị chặn.
 - `THUMBNAIL`: mỗi Khóa học chỉ có đúng một lượt sử dụng `COURSE_THUMBNAIL` đang hoạt động; đây là nguồn dữ liệu chuẩn cho hình ảnh hiển thị.
 - `EMBED`: media được hiển thị nội tuyến trong Markdown.
 - `ATTACHMENT`: media có thể tải xuống, được liên kết với đối tượng sở hữu nhưng không hiển thị nội tuyến.
 
 `owner_service`, `owner_type` và `owner_id` trong `media_usages` là các tham chiếu logic giữa các dịch vụ. Chúng được chủ đích không thiết lập làm khóa ngoại của cơ sở dữ liệu.
+
+Generated column `active_student_avatar_owner_id` cùng unique index bảo đảm mỗi
+Học viên có tối đa một avatar active, kể cả khi có request đồng thời. Các usage
+Khóa học/Thông báo vẫn có trong mô hình dữ liệu định hướng; command tạo usage
+hiện tại chưa chấp nhận các tổ hợp đó.
 
 ## Phân phối thông báo
 

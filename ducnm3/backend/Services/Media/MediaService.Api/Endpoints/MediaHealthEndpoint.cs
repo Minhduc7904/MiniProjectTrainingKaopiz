@@ -1,7 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Presentation.Api;
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 
 namespace MediaService.Api.Endpoints;
 

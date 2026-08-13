@@ -105,6 +105,7 @@ touch backend/Services/Course/CourseService.Infrastructure/Database/Migrations/V
 Viết SQL định nghĩa schema tại đó. Sau đó chạy migration của dịch vụ ở môi trường cục bộ:
 
 ```bash
+dotnet tool restore
 set -a
 . ./.env
 set +a
@@ -197,7 +198,7 @@ Thay `course` bằng `student`, `media`, `notification` hoặc `scheduler`.
 Lệnh sử dụng:
 
 ```text
-dotnet ef dbcontext scaffold
+dotnet tool run dotnet-ef dbcontext scaffold
 Pomelo.EntityFrameworkCore.MySql
 --no-onconfiguring
 --no-build

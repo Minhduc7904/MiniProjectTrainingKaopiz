@@ -41,9 +41,9 @@ public partial class MediaObject
     public ulong SizeBytes { get; set; }
 
     /// <summary>
-    /// Hash SHA-256 kiểm tra toàn vẹn
+    /// Hash SHA-256 kiểm tra toàn vẹn; null khi upload chưa READY
     /// </summary>
-    public string ChecksumSha256 { get; set; } = null!;
+    public string? ChecksumSha256 { get; set; }
 
     /// <summary>
     /// UUID user/admin upload media; logical reference
@@ -51,7 +51,32 @@ public partial class MediaObject
     public Guid UploadedBy { get; set; }
 
     /// <summary>
-    /// Thời điểm upload hoàn tất, UTC
+    /// Actor type thực hiện upload; được Application validate
+    /// </summary>
+    public string UploadedByType { get; set; } = null!;
+
+    /// <summary>
+    /// PENDING | READY | FAILED
+    /// </summary>
+    public string Status { get; set; } = null!;
+
+    /// <summary>
+    /// Lỗi an toàn nội bộ khi upload FAILED; không trả cho client
+    /// </summary>
+    public string? FailureReason { get; set; }
+
+    /// <summary>
+    /// Thời điểm upload chuyển READY, UTC
+    /// </summary>
+    public DateTime? CompletedAt { get; set; }
+
+    /// <summary>
+    /// Thời điểm media record cập nhật gần nhất, UTC
+    /// </summary>
+    public DateTime UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Thời điểm tạo media record, UTC
     /// </summary>
     public DateTime CreatedAt { get; set; }
 

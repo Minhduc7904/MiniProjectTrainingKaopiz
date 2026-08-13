@@ -3,7 +3,10 @@
 ## Phạm vi
 
 Dự án: `backend/Services/Media/MediaService.UnitTests`
-Mã nguồn: `Health/MediaDatabaseHealthProbeTests.cs` và `Storage/*.cs`
+Mã nguồn: `Application/MediaCommandHandlerTests.cs`,
+`Application/GetMediaContentHandlerTests.cs`, `Clients/StudentLookupClientTests.cs`,
+`Endpoints/MediaRequestParserTests.cs`,
+`Health/MediaDatabaseHealthProbeTests.cs` và `Storage/*.cs`
 Thành phần phụ thuộc: không gọi MinIO, MySQL, mạng hoặc Docker.
 
 Chạy:
@@ -25,6 +28,18 @@ dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests
 | Kiểm tra tải lên | `ValidateUploadRejectsMismatchedCategory` | Truyền loại `VIDEO` với MIME `image/png`. | Ném `StorageValidationException`. |
 | Kiểm tra tải lên | `ValidateUploadRejectsUnsafeExtension` | Truyền phần mở rộng `../png`. | Ném `StorageValidationException`. |
 | Kiểm tra tải lên | `ValidateUploadRejectsSizeMismatch` | Luồng có 2 byte nhưng khai báo kích thước 1. | Ném `StorageValidationException`. |
+| Workflow upload | `UploadCreatesPendingBeforeStorageAndThenMarksReady` | Dùng repository/storage giả ghi lại thứ tự event. | Thứ tự là `pending -> upload -> ready`; response `READY`; actor được chuẩn hóa thành `STUDENT`. |
+| Compensation upload | `UploadFailureDeletesObjectAndMarksRecordFailed` | Storage giả ném lỗi khi upload. | Thứ tự là `pending -> upload -> delete -> failed` và handler trả `MEDIA_UPLOAD_FAILED`. |
+| Actor và owner | `UsageKeepsCreatorActorSeparateFromOwner` | Tạo avatar usage với `createdBy` khác `ownerId`. | Actor được xác minh riêng, owner được tra cứu riêng, repository nhận đúng hai ID và `ownerType=STUDENT_AVATAR`. |
+| Mở rộng actor | `ActorValidationDispatchesWithoutChangingHandlers` | Đăng ký validator `STUDENT` và validator giả `ADMIN`, gửi actor viết thường `admin`. | Actor được chuẩn hóa; chỉ validator `ADMIN` được gọi, không cần đổi command handler. |
+| Content handler | READY/missing/PENDING/storage failure | Dùng repository/storage stub để đọc media ở từng trạng thái và copy stream. | READY copy đúng bytes, missing trả `404`, PENDING trả `409`, storage failure trả `503`; result không public storage location. |
+| Multipart limit | `MultipartLengthLimitReturnsPayloadTooLarge` | Parse multipart vượt `MultipartBodyLengthLimit`. | Trả `413 PAYLOAD_TOO_LARGE`. |
+| Student client | route/200/404/503 | Gọi client qua stub HTTP handler. | Dùng shared route/contract; deserialize `200`, `404 -> null`, dependency failure -> safe `503`. |
 
 Các tổ hợp sức khỏe HTTP của Media được chạy qua `TestServer`, vì vậy được ghi trong
 [`component.md`](component.md), không lặp lại ở đây.
+
+Unit tests hiện bảo vệ trình tự database-first `PENDING -> READY`, nhánh
+compensation sang `FAILED`, content streaming/error mapping, shared Student
+contract và việc tách request actor khỏi owner. Checksum thật,
+transaction/unique index avatar và MinIO thật thuộc kiểm thử integration.

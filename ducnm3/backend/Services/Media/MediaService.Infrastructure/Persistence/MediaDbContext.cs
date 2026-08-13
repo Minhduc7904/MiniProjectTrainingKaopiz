@@ -28,6 +28,8 @@ public partial class MediaDbContext : DbContext
 
             entity.ToTable("media_objects");
 
+            entity.HasIndex(e => new { e.Status, e.CreatedAt }, "ix_media_objects_status_created_at");
+
             entity.HasIndex(e => new { e.UploadedBy, e.CreatedAt }, "ix_media_objects_uploaded_by_created_at").IsDescending(false, true);
 
             entity.HasIndex(e => new { e.Bucket, e.ObjectKey }, "uq_media_objects_bucket_object_key").IsUnique();
@@ -46,10 +48,14 @@ public partial class MediaDbContext : DbContext
             entity.Property(e => e.ChecksumSha256)
                 .HasMaxLength(64)
                 .IsFixedLength()
-                .HasComment("Hash SHA-256 kiểm tra toàn vẹn")
+                .HasComment("Hash SHA-256 kiểm tra toàn vẹn; null khi upload chưa READY")
                 .HasColumnName("checksum_sha256")
                 .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
+            entity.Property(e => e.CompletedAt)
+                .HasMaxLength(6)
+                .HasComment("Thời điểm upload chuyển READY, UTC")
+                .HasColumnName("completed_at");
             entity.Property(e => e.ContentType)
                 .HasMaxLength(255)
                 .HasComment("MIME type đã xác thực")
@@ -59,12 +65,16 @@ public partial class MediaDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasMaxLength(6)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
-                .HasComment("Thời điểm upload hoàn tất, UTC")
+                .HasComment("Thời điểm tạo media record, UTC")
                 .HasColumnName("created_at");
             entity.Property(e => e.DeletedAt)
                 .HasMaxLength(6)
                 .HasComment("Soft-delete timestamp; null khi media còn hoạt động")
                 .HasColumnName("deleted_at");
+            entity.Property(e => e.FailureReason)
+                .HasMaxLength(500)
+                .HasComment("Lỗi an toàn nội bộ khi upload FAILED; không trả cho client")
+                .HasColumnName("failure_reason");
             entity.Property(e => e.MediaType)
                 .HasMaxLength(20)
                 .HasComment("IMAGE | VIDEO | DOCUMENT | AUDIO | OTHER")
@@ -84,10 +94,30 @@ public partial class MediaDbContext : DbContext
             entity.Property(e => e.SizeBytes)
                 .HasComment("Kích thước object theo byte")
                 .HasColumnName("size_bytes");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValueSql("'PENDING'")
+                .HasComment("PENDING | READY | FAILED")
+                .HasColumnName("status")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.UpdatedAt)
+                .HasMaxLength(6)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasComment("Thời điểm media record cập nhật gần nhất, UTC")
+                .HasColumnName("updated_at");
             entity.Property(e => e.UploadedBy)
                 .HasComment("UUID user/admin upload media; logical reference")
                 .HasColumnName("uploaded_by")
                 .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.UploadedByType)
+                .HasMaxLength(32)
+                .HasDefaultValueSql("'STUDENT'")
+                .HasComment("Actor type thực hiện upload; được Application validate")
+                .HasColumnName("uploaded_by_type")
+                .UseCollation("ascii_general_ci")
                 .HasCharSet("ascii");
         });
 
@@ -101,7 +131,9 @@ public partial class MediaDbContext : DbContext
 
             entity.HasIndex(e => e.ActiveCourseThumbnailOwnerId, "uq_media_usages_active_course_thumbnail").IsUnique();
 
-            entity.HasIndex(e => new { e.MediaId, e.OwnerService, e.OwnerType, e.OwnerId, e.UsageType }, "uq_media_usages_reference").IsUnique();
+            entity.HasIndex(e => e.ActiveStudentAvatarOwnerId, "uq_media_usages_active_student_avatar").IsUnique();
+
+            entity.HasIndex(e => new { e.MediaId, e.OwnerService, e.OwnerType, e.OwnerId, e.UsageType, e.ActiveReferenceGuard }, "uq_media_usages_active_reference").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasComment("UUID định danh liên kết usage")
@@ -109,9 +141,19 @@ public partial class MediaDbContext : DbContext
                 .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
             entity.Property(e => e.ActiveCourseThumbnailOwnerId)
-                .HasComputedColumnSql("case when ((`owner_type` = _utf8mb4'COURSE_THUMBNAIL') and (`deleted_at` is null)) then `owner_id` else NULL end", true)
+                .HasComputedColumnSql("case when ((`owner_type` = _ascii'COURSE_THUMBNAIL') and (`deleted_at` is null)) then `owner_id` else NULL end", true)
                 .HasComment("Owner Course có thumbnail còn hiệu lực; dùng để đảm bảo tối đa một thumbnail")
                 .HasColumnName("active_course_thumbnail_owner_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ActiveReferenceGuard)
+                .HasComputedColumnSql("case when (`deleted_at` is null) then 1 else NULL end", true)
+                .HasComment("Chỉ áp dụng unique reference cho usage active")
+                .HasColumnName("active_reference_guard");
+            entity.Property(e => e.ActiveStudentAvatarOwnerId)
+                .HasComputedColumnSql("case when ((`owner_service` = _utf8mb4'STUDENT') and (`owner_type` = _utf8mb4'STUDENT_AVATAR') and (`usage_type` = _utf8mb4'AVATAR') and (`deleted_at` is null)) then `owner_id` else NULL end", true)
+                .HasComment("Student có avatar active; đảm bảo tối đa một avatar")
+                .HasColumnName("active_student_avatar_owner_id")
                 .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
             entity.Property(e => e.CreatedAt)
@@ -123,6 +165,13 @@ public partial class MediaDbContext : DbContext
                 .HasComment("UUID user/admin tạo liên kết; logical reference")
                 .HasColumnName("created_by")
                 .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.CreatedByType)
+                .HasMaxLength(32)
+                .HasDefaultValueSql("'STUDENT'")
+                .HasComment("Actor type tạo usage; được Application validate")
+                .HasColumnName("created_by_type")
+                .UseCollation("ascii_general_ci")
                 .HasCharSet("ascii");
             entity.Property(e => e.DeletedAt)
                 .HasMaxLength(6)

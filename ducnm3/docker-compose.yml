@@ -177,7 +177,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: *messaging-environment
+      <<: [*messaging-environment, *http-query-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -192,6 +192,13 @@ services:
       Storage__Minio__AudioBucket: ${MINIO_AUDIO_BUCKET:-audios}
       Storage__Minio__OtherBucket: ${MINIO_OTHER_BUCKET:-other}
       Storage__Minio__HealthTimeoutSeconds: ${MINIO_HEALTH_TIMEOUT_SECONDS:-3}
+      MediaUpload__ImageMaxBytes: ${MEDIA_UPLOAD_IMAGE_MAX_BYTES:-10485760}
+      MediaUpload__VideoMaxBytes: ${MEDIA_UPLOAD_VIDEO_MAX_BYTES:-524288000}
+      MediaUpload__DocumentMaxBytes: ${MEDIA_UPLOAD_DOCUMENT_MAX_BYTES:-52428800}
+      MediaUpload__AudioMaxBytes: ${MEDIA_UPLOAD_AUDIO_MAX_BYTES:-104857600}
+      MediaUpload__OtherMaxBytes: ${MEDIA_UPLOAD_OTHER_MAX_BYTES:-26214400}
+      MediaUpload__RequestMaxBytes: ${MEDIA_UPLOAD_REQUEST_MAX_BYTES:-550502400}
+      ServiceEndpoints__student-service: http://student-service:8080/
     ports:
       - "5103:8080"
 
@@ -288,6 +295,7 @@ services:
       ServiceEndpoints__media-service: http://media-service:8080/
       ServiceEndpoints__notification-service: http://notification-service:8080/
       ServiceEndpoints__scheduler-service: http://scheduler-service:8080/
+      Proxy__MaxRequestBodySize: ${MEDIA_UPLOAD_REQUEST_MAX_BYTES:-550502400}
     ports:
       - "5100:8080"
 

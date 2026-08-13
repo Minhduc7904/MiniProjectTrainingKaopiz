@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
-using MediaService.Application.Storage;
+using MediaService.Application;
+using MediaService.Application.Abstractions.Storage;
+using MediaService.Application.Features.Media;
 
 namespace MediaService.Infrastructure.Storage.Minio;
 
@@ -8,11 +10,6 @@ public static partial class MinioStorageRequestValidator
     public static ValidatedStorageUpload ValidateUpload(StorageUploadRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-
-        if (!Enum.IsDefined(request.Category))
-        {
-            throw new StorageValidationException($"Unsupported media category '{request.Category}'.");
-        }
 
         if (!request.Content.CanRead)
         {
@@ -29,15 +26,18 @@ public static partial class MinioStorageRequestValidator
             throw new StorageValidationException("The declared upload size does not match the remaining stream length.");
         }
 
-        var contentType = NormalizeContentType(request.ContentType);
-        if (!StorageMediaTypeRules.Matches(request.Category, contentType))
+        ValidateLocation(request.Location, []);
+        string contentType;
+        try
         {
-            throw new StorageValidationException(
-                $"Content type '{contentType}' does not match category '{request.Category}'.");
+            contentType = MediaContentTypeRules.Normalize(request.ContentType);
+        }
+        catch (MediaApplicationException exception)
+        {
+            throw new StorageValidationException(exception.SafeMessage);
         }
 
-        var extension = NormalizeExtension(request.Extension);
-        return new ValidatedStorageUpload(contentType, extension);
+        return new ValidatedStorageUpload(contentType);
     }
 
     public static void ValidateLocation(
@@ -46,7 +46,8 @@ public static partial class MinioStorageRequestValidator
     {
         ArgumentNullException.ThrowIfNull(location);
 
-        if (!allowedBuckets.Contains(location.Bucket, StringComparer.Ordinal))
+        if (allowedBuckets.Count > 0 &&
+            !allowedBuckets.Contains(location.Bucket, StringComparer.Ordinal))
         {
             throw new StorageValidationException("The storage bucket is not configured for Media Service.");
         }
@@ -60,23 +61,7 @@ public static partial class MinioStorageRequestValidator
         }
     }
 
-    private static string NormalizeContentType(string contentType)
-    {
-        if (string.IsNullOrWhiteSpace(contentType))
-        {
-            throw new StorageValidationException("Content type is required.");
-        }
-
-        var normalized = contentType.Split(';', 2)[0].Trim().ToLowerInvariant();
-        if (!ContentTypePattern().IsMatch(normalized))
-        {
-            throw new StorageValidationException("Content type is invalid.");
-        }
-
-        return normalized;
-    }
-
-    private static string NormalizeExtension(string extension)
+    public static string NormalizeExtension(string extension)
     {
         if (string.IsNullOrWhiteSpace(extension))
         {
@@ -93,11 +78,6 @@ public static partial class MinioStorageRequestValidator
         return normalized;
     }
 
-    [GeneratedRegex("^[a-z0-9][a-z0-9!#$&^_.+-]*/[a-z0-9][a-z0-9!#$&^_.+-]*$", RegexOptions.CultureInvariant)]
-    private static partial Regex ContentTypePattern();
-
     [GeneratedRegex("^[a-z0-9]{1,16}$", RegexOptions.CultureInvariant)]
     private static partial Regex ExtensionPattern();
 }
-
-public sealed record ValidatedStorageUpload(string ContentType, string Extension);

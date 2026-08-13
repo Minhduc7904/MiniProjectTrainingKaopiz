@@ -78,12 +78,19 @@ dotnet test backend/BuildingBlocks/BuildingBlocks.Messaging.IntegrationTests/Bui
 
 `MediaService.UnitTests` bao phủ việc kiểm tra hợp lệ option storage, ánh xạ
 bucket, sinh object key theo UTC, kiểm tra hợp lệ request upload, hủy thao tác
-database và cả bốn tổ hợp trạng thái database/MinIO.
+database, cả bốn tổ hợp trạng thái database/MinIO, trình tự command
+`PENDING -> READY`, compensation sang `FAILED` và việc tách actor khỏi owner.
 
-`MediaService.IntegrationTests` khởi động một MinIO Testcontainer cô lập. Dự án
-này tạo đủ năm bucket và kiểm tra upload, tồn tại, download, metadata, xóa, ánh
-xạ category và trạng thái storage mà không phụ thuộc vào Docker Compose stack
-của lập trình viên. Docker phải đang chạy để thực thi dự án này.
+`MediaService.IntegrationTests` khởi động các MinIO/MySQL Testcontainer cô lập.
+Dự án kiểm tra upload, tồn tại, download, metadata, xóa, ánh xạ category và
+trạng thái storage; flow test còn áp dụng migration thật, xác minh
+`checksum_sha256`, trạng thái `READY` và transaction thay avatar sao cho chỉ một
+usage active. Các test không phụ thuộc Docker Compose stack của lập trình viên;
+Docker phải đang chạy.
+
+`StudentService.UnitTests` kiểm tra lookup Học viên thành công và
+`STUDENT_NOT_FOUND`. Component test HTTP cho hai command Media, typed HTTP client
+Media → Student, Gateway routes và Scheduler cleanup `PENDING` stale chưa có.
 
 ## Kiểm thử Scheduler Service
 

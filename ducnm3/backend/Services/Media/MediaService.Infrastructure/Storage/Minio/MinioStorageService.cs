@@ -1,4 +1,4 @@
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -11,7 +11,6 @@ namespace MediaService.Infrastructure.Storage.Minio;
 public sealed partial class MinioStorageService(
     IMinioClient client,
     IOptions<MinioStorageOptions> options,
-    MinioObjectKeyGenerator objectKeyGenerator,
     ILogger<MinioStorageService> logger) : IStorage, IStorageHealthProbe
 {
     private readonly MinioStorageOptions storageOptions = options.Value;
@@ -21,26 +20,29 @@ public sealed partial class MinioStorageService(
         CancellationToken cancellationToken)
     {
         var validated = MinioStorageRequestValidator.ValidateUpload(request);
-        var bucket = storageOptions.GetBucket(request.Category);
-        var objectKey = objectKeyGenerator.Create(validated.Extension);
+        MinioStorageRequestValidator.ValidateLocation(
+            request.Location,
+            storageOptions.GetBuckets());
 
         try
         {
+            using var hashingStream = new Sha256ReadStream(request.Content);
             var result = await client.PutObjectAsync(
                 new PutObjectArgs()
-                    .WithBucket(bucket)
-                    .WithObject(objectKey)
-                    .WithStreamData(request.Content)
+                    .WithBucket(request.Location.Bucket)
+                    .WithObject(request.Location.ObjectKey)
+                    .WithStreamData(hashingStream)
                     .WithObjectSize(request.Size)
                     .WithContentType(validated.ContentType),
                 cancellationToken);
 
             return new StorageObjectInfo(
-                bucket,
-                objectKey,
+                request.Location.Bucket,
+                request.Location.ObjectKey,
                 validated.ContentType,
                 result.Size,
-                result.Etag);
+                result.Etag,
+                hashingStream.GetChecksumHex());
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -215,7 +217,7 @@ public sealed partial class MinioStorageService(
     private static partial class StorageLog
     {
         [LoggerMessage(
-            EventId = 2101,
+            EventId = 2201,
             Level = LogLevel.Warning,
             Message = "Media storage health probe failed.")]
         public static partial void DependencyUnavailable(ILogger logger, Exception? exception);

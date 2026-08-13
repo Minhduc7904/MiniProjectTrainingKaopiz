@@ -25,6 +25,26 @@ public sealed partial class ApiExceptionHandlingMiddleware(
                 exception.SafeMessage,
                 exception.Details);
         }
+        catch (BadHttpRequestException exception) when (
+            !context.Response.HasStarted &&
+            exception.StatusCode == StatusCodes.Status413PayloadTooLarge)
+        {
+            ApiLog.InvalidRequest(logger, exception, context.TraceIdentifier);
+            await WriteErrorAsync(
+                context,
+                StatusCodes.Status413PayloadTooLarge,
+                ApiErrorCodes.PayloadTooLarge,
+                ApiErrorMessages.PayloadTooLarge);
+        }
+        catch (BadHttpRequestException exception) when (!context.Response.HasStarted)
+        {
+            ApiLog.InvalidRequest(logger, exception, context.TraceIdentifier);
+            await WriteErrorAsync(
+                context,
+                StatusCodes.Status400BadRequest,
+                ApiErrorCodes.ValidationFailed,
+                ApiErrorMessages.ValidationFailed);
+        }
         catch (Exception exception) when (!context.Response.HasStarted)
         {
             ApiLog.UnhandledException(logger, exception, context.TraceIdentifier);
@@ -59,6 +79,15 @@ public sealed partial class ApiExceptionHandlingMiddleware(
             Level = LogLevel.Error,
             Message = "Unhandled API exception. TraceId: {TraceId}")]
         public static partial void UnhandledException(
+            ILogger logger,
+            Exception exception,
+            string traceId);
+
+        [LoggerMessage(
+            EventId = 1002,
+            Level = LogLevel.Debug,
+            Message = "Invalid API request. TraceId: {TraceId}")]
+        public static partial void InvalidRequest(
             ILogger logger,
             Exception exception,
             string traceId);
