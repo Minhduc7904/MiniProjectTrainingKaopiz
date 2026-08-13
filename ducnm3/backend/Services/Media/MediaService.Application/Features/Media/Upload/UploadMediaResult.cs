@@ -5,4 +5,7 @@ public sealed record UploadMediaResult(
     string MediaType,
     string ContentType,
     long SizeBytes,
-    string Status);
+    string Status,
+    string ThumbnailStatus = "NOT_REQUIRED",
+    Guid? ThumbnailMediaId = null,
+    Guid? ThumbnailJobId = null);

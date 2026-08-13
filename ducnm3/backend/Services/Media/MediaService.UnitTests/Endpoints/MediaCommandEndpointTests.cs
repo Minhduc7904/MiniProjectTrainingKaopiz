@@ -6,6 +6,7 @@ using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
 using MediaService.Application.Abstractions.Clients;
+using MediaService.Application.Abstractions.Derivation;
 using MediaService.Application.Abstractions.Persistence;
 using MediaService.Application.Abstractions.Storage;
 using MediaService.Domain.Actors;
@@ -32,6 +33,12 @@ public sealed class MediaCommandEndpointTests
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<IMediaRepository>(repository);
+        builder.Services.AddSingleton<IMediaUploadFinalizer>(
+            new ComponentUploadFinalizer(repository));
+        builder.Services.AddSingleton<IMediaDerivationRepository>(
+            new ComponentDerivationRepository());
+        builder.Services.AddSingleton<IThumbnailGenerator, UnusedThumbnailGenerator>();
+        builder.Services.AddSingleton<ITemporaryMediaFileFactory, UnusedTemporaryFileFactory>();
         builder.Services.AddSingleton<IStorage>(storage);
         builder.Services.AddSingleton<IStorageLocationAllocator, ComponentAllocator>();
         builder.Services.AddSingleton<IStudentLookup, StubStudentLookup>();
@@ -161,5 +168,78 @@ public sealed class MediaCommandEndpointTests
             StorageMediaCategory category,
             string extension) =>
             new("images", "2026/08/13/component.png");
+    }
+
+    private sealed class ComponentUploadFinalizer(StubMediaRepository repository)
+        : IMediaUploadFinalizer
+    {
+        public async Task<MediaUploadFinalizationResult> FinalizeAsync(
+            MediaUploadFinalizationRequest request,
+            CancellationToken cancellationToken)
+        {
+            await repository.MarkReadyAsync(
+                request.SourceMediaId,
+                request.SourceChecksumSha256,
+                request.CompletedAtUtc,
+                cancellationToken);
+            return new MediaUploadFinalizationResult(
+                request.Thumbnail is null ? "NOT_REQUIRED" : "QUEUED",
+                request.Thumbnail?.MediaId,
+                request.Thumbnail?.JobId);
+        }
+    }
+
+    private sealed class ComponentDerivationRepository
+        : IMediaDerivationRepository
+    {
+        public Task<ThumbnailDerivationWork?> BeginAsync(
+            Guid jobId,
+            Guid sourceMediaId,
+            Guid derivativeMediaId,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<ThumbnailDerivationWork?>(null);
+
+        public Task CompleteAsync(
+            Guid jobId,
+            Guid derivativeMediaId,
+            string checksumSha256,
+            long sizeBytes,
+            DateTime completedAtUtc,
+            CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task MarkFailedAsync(
+            Guid jobId,
+            Guid derivativeMediaId,
+            string safeError,
+            DateTime failedAtUtc,
+            CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task<MediaThumbnailStatusRecord?> GetThumbnailStatusAsync(
+            Guid sourceMediaId,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<MediaThumbnailStatusRecord?>(null);
+
+        public Task<MediaThumbnailStatusRecord> RetryAsync(
+            Guid sourceMediaId,
+            ActorReference requestedBy,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class UnusedThumbnailGenerator : IThumbnailGenerator
+    {
+        public Task<GeneratedThumbnail> GenerateAsync(
+            ThumbnailGenerationRequest request,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class UnusedTemporaryFileFactory : ITemporaryMediaFileFactory
+    {
+        public Task<ITemporaryMediaFile> CreateAsync(
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 }

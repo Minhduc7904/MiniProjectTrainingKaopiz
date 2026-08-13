@@ -24,4 +24,8 @@ public interface IMediaRepository
     Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);
+
+    Task<MediaUsageRecord> ReplaceMediaThumbnailAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken);
 }

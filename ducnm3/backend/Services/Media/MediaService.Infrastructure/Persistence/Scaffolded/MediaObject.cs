@@ -11,6 +11,16 @@ public partial class MediaObject
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Media gốc của object dẫn xuất; null với file upload gốc
+    /// </summary>
+    public Guid? SourceMediaId { get; set; }
+
+    /// <summary>
+    /// THUMBNAIL với object dẫn xuất; null với file upload gốc
+    /// </summary>
+    public string? DerivationType { get; set; }
+
+    /// <summary>
     /// Tên bucket MinIO chứa object
     /// </summary>
     public string Bucket { get; set; } = null!;
@@ -85,5 +95,13 @@ public partial class MediaObject
     /// </summary>
     public DateTime? DeletedAt { get; set; }
 
+    public virtual ICollection<MediaObject> InverseSourceMedia { get; set; } = new List<MediaObject>();
+
+    public virtual MediaDerivationJob? MediaDerivationJobDerivativeMedia { get; set; }
+
+    public virtual ICollection<MediaDerivationJob> MediaDerivationJobSourceMedia { get; set; } = new List<MediaDerivationJob>();
+
     public virtual ICollection<MediaUsage> MediaUsages { get; set; } = new List<MediaUsage>();
+
+    public virtual MediaObject? SourceMedia { get; set; }
 }

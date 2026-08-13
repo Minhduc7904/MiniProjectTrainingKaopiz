@@ -31,7 +31,7 @@ case "$service" in
     context_name="MediaDbContext"
     namespace="MediaService.Infrastructure.Persistence.Scaffolded"
     context_namespace="MediaService.Infrastructure.Persistence"
-    table_args="--table media_objects --table media_usages"
+    table_args="--table media_objects --table media_usages --table media_derivation_jobs"
     ;;
   notification)
     connection_string="${NOTIFICATION_DB_LOCAL_CONNECTION_STRING:?NOTIFICATION_DB_LOCAL_CONNECTION_STRING must be set}"

@@ -188,6 +188,7 @@
                   "const payload = pm.response.json();",
                   "if (payload && payload.data && payload.data.id) {",
                   "  pm.collectionVariables.set(\"mediaId\", payload.data.id);",
+                  "  pm.collectionVariables.set(\"thumbnailMediaId\", payload.data.thumbnailMediaId || \"\");",
                   "}"
                 ]
               }
@@ -338,6 +339,105 @@
               ]
             },
             "description": "Business flow: docs/business-flows/media/get-media-content.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Media thumbnail status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Thumbnail state is valid\", function () {",
+                  "  pm.expect([\"QUEUED\", \"PROCESSING\", \"READY\", \"FAILED\"]).to.include(payload.data.status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/{{mediaId}}/thumbnail",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "api",
+                "media",
+                "{{mediaId}}",
+                "thumbnail"
+              ]
+            },
+            "description": "API contract: docs/api/media-service/endpoints/get-media-thumbnail.md"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Retry media thumbnail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Accepted\", function () { pm.response.to.have.status(202); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Thumbnail is queued\", function () { pm.expect(payload.data.status).to.eql(\"QUEUED\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestedByType\": \"STUDENT\",\n  \"requestedBy\": \"{{studentId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/{{mediaId}}/thumbnail/retry",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "api",
+                "media",
+                "{{mediaId}}",
+                "thumbnail",
+                "retry"
+              ]
+            },
+            "description": "Only succeeds after the thumbnail job reaches FAILED. API contract: docs/api/media-service/endpoints/post-media-thumbnail-retry.md"
           },
           "response": []
         }

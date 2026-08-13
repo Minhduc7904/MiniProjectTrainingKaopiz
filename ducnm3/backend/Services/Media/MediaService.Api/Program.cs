@@ -7,6 +7,8 @@ using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
 using MediaService.Application.Features.Media.Upload;
 using MediaService.Infrastructure;
+using MediaService.Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +23,15 @@ builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
 {
-    builder.Services.AddLmsMessaging(builder.Configuration, ServiceNames.Media);
+    builder.Services.AddLmsMessaging(
+        builder.Configuration,
+        ServiceNames.Media,
+        registration => registration
+            .AddEntityFrameworkOutbox<MediaDbContext>(outbox =>
+            {
+                outbox.UseMySql();
+                outbox.UseBusOutbox();
+            }));
 }
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(document =>
@@ -74,5 +84,7 @@ app.MapMediaHealthEndpoint();
 app.MapUploadMedia();
 app.MapCreateMediaUsage();
 app.MapGetMediaContent();
+app.MapGetMediaThumbnailStatus();
+app.MapRetryMediaThumbnail();
 
 app.Run();

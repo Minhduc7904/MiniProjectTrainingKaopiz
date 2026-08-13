@@ -36,6 +36,9 @@ public class MediaCommandHandlerTests
         {
             Assert.That(events, Is.EqualTo(SuccessfulUploadEvents));
             Assert.That(result.Status, Is.EqualTo(MediaObjectStatuses.Ready));
+            Assert.That(result.ThumbnailStatus, Is.EqualTo("QUEUED"));
+            Assert.That(result.ThumbnailMediaId, Is.Not.Null);
+            Assert.That(result.ThumbnailJobId, Is.Not.Null);
             Assert.That(repository.Pending!.UploadedBy.Type, Is.EqualTo(ActorTypes.Student));
         });
     }
@@ -132,13 +135,14 @@ public class MediaCommandHandlerTests
     }
 
     private static UploadMediaHandler CreateUploadHandler(
-        IMediaRepository repository,
+        StubMediaRepository repository,
         IStorage storage) =>
         new(
             new FakeActorValidationService(),
             new FakeLocationAllocator(),
             storage,
             repository,
+            new FakeUploadFinalizer(repository.Events),
             new MediaUploadOptions(),
             TimeProvider.System,
             NullLogger<UploadMediaHandler>.Instance);
@@ -188,5 +192,21 @@ public class MediaCommandHandlerTests
             StorageMediaCategory category,
             string extension) =>
             new("images", "2026/08/13/file.png");
+    }
+
+    private sealed class FakeUploadFinalizer(List<string> events)
+        : IMediaUploadFinalizer
+    {
+        public Task<MediaUploadFinalizationResult> FinalizeAsync(
+            MediaUploadFinalizationRequest request,
+            CancellationToken cancellationToken)
+        {
+            events.Add("ready");
+            return Task.FromResult(
+                new MediaUploadFinalizationResult(
+                    request.Thumbnail is null ? "NOT_REQUIRED" : "QUEUED",
+                    request.Thumbnail?.MediaId,
+                    request.Thumbnail?.JobId));
+        }
     }
 }

@@ -15,6 +15,20 @@ public static class MessagingServiceCollectionExtensions
         string serviceName) =>
         AddLmsMessagingCore(services, configuration, serviceName, null);
 
+    public static IServiceCollection AddLmsMessaging(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string serviceName,
+        Action<IBusRegistrationConfigurator> configureRegistration)
+    {
+        ArgumentNullException.ThrowIfNull(configureRegistration);
+        return AddLmsMessagingCore(
+            services,
+            configuration,
+            serviceName,
+            configureRegistration);
+    }
+
     public static IServiceCollection AddLmsMessagingWithConsumers(
         this IServiceCollection services,
         IConfiguration configuration,

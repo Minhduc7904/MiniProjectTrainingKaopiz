@@ -2,8 +2,8 @@
 
 ## Mục đích
 
-Đăng ký một media `READY` làm avatar của Học viên. Media Service sở hữu liên kết
-usage và bảo đảm mỗi Học viên chỉ có một avatar active.
+Đăng ký một media `READY` làm avatar Học viên hoặc thumbnail của media gốc.
+Media Service sở hữu liên kết usage và soft-delete usage cũ khi thay thế.
 
 Đường dẫn công khai qua Gateway là `POST /media/api/media/usages`; đường dẫn
 trực tiếp tại Media Service là `POST /api/media/usages`.
@@ -44,17 +44,18 @@ Content type bắt buộc là `application/json`.
 | Field | Kiểu | Bắt buộc | Quy tắc |
 | --- | --- | --- | --- |
 | `mediaId` | UUID | Có | Media phải tồn tại, chưa bị xóa và có trạng thái `READY`. |
-| `ownerService` | string | Có | Phiên bản hiện tại chỉ nhận `STUDENT`. |
-| `ownerType` | string | Có | Phiên bản hiện tại chỉ nhận `STUDENT_AVATAR`. |
-| `ownerId` | UUID | Có | ID Học viên sở hữu avatar; phải tồn tại nếu khác actor đang tạo usage. |
-| `usageType` | string | Có | Phiên bản hiện tại chỉ nhận `AVATAR`. |
+| `ownerService` | string | Có | `STUDENT` hoặc `MEDIA`. |
+| `ownerType` | string | Có | `STUDENT_AVATAR` hoặc `MEDIA_THUMBNAIL`, khớp owner service. |
+| `ownerId` | UUID | Có | ID Học viên hoặc ID media gốc sở hữu thumbnail. |
+| `usageType` | string | Có | `AVATAR` hoặc `THUMBNAIL`, khớp owner type. |
 | `displayOrder` | uint | Có | Số nguyên không âm; với avatar thường dùng `0`. |
 | `createdByType` | string | Có | Actor type tạo usage; hiện chỉ hỗ trợ `STUDENT`. |
 | `createdBy` | UUID | Có | ID actor tạo usage; phải tồn tại trong Student Service. |
 
-Tổ hợp duy nhất được hỗ trợ hiện tại là
-`STUDENT/STUDENT_AVATAR/AVATAR`. Các giá trị enum không phân biệt hoa/thường ở
-tầng Application.
+Hai tổ hợp được hỗ trợ là `STUDENT/STUDENT_AVATAR/AVATAR` và
+`MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`. Với thumbnail, `mediaId` phải là media dẫn
+xuất `READY`, `image/webp`, còn `ownerId` phải là media gốc `READY`; actor phải
+sở hữu cả media gốc và source của thumbnail dẫn xuất.
 
 ## Phản hồi thành công
 
@@ -85,7 +86,7 @@ Location: /api/media/usages/555b1076-2cb1-4211-9207-c2ae685b9e06
 
 ## Mã trạng thái HTTP
 
-- `201`: usage mới được tạo và trở thành avatar active.
+- `201`: usage mới được tạo và trở thành avatar/thumbnail active.
 - `400 INVALID_MEDIA`: UUID không hợp lệ hoặc tổ hợp
   `ownerService/ownerType/usageType` chưa được hỗ trợ.
 - `400 INVALID_ACTOR_TYPE`: actor type thiếu hoặc chưa được hỗ trợ.
@@ -111,6 +112,9 @@ Location: /api/media/usages/555b1076-2cb1-4211-9207-c2ae685b9e06
 - Generated column `active_student_avatar_owner_id` cùng unique index bảo vệ
   quy tắc tối đa một avatar active cho mỗi Học viên, kể cả khi có request đồng
   thời.
+- Với `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`, transaction tương tự soft-delete
+  thumbnail active cũ. Generated column `active_media_thumbnail_owner_id` bảo
+  đảm mỗi media gốc chỉ có một thumbnail active.
 - `createdByType/createdBy` được lưu riêng với
   `ownerService/ownerType/ownerId`; hai nhóm field không được dùng thay thế nhau.
 - Request không có idempotency key. Gửi lại sẽ thay usage active; xung đột đồng

@@ -1,4 +1,5 @@
 using MediaService.Application.Actors;
+using MediaService.Application.Features.Derivations;
 using MediaService.Application.Features.Media.GetContent;
 using MediaService.Application.Features.Media.Upload;
 using MediaService.Application.Features.Usages.Create;
@@ -20,14 +21,22 @@ public static class DependencyInjection
             .GetSection(MediaUploadOptions.SectionName)
             .Get<MediaUploadOptions>() ?? new MediaUploadOptions();
         uploadOptions.Validate();
+        var thumbnailOptions = configuration
+            .GetSection(MediaThumbnailOptions.SectionName)
+            .Get<MediaThumbnailOptions>() ?? new MediaThumbnailOptions();
+        thumbnailOptions.Validate();
 
         services.AddSingleton(uploadOptions);
+        services.AddSingleton(thumbnailOptions);
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IActorValidator, StudentActorValidator>();
         services.AddScoped<IActorValidationService, ActorValidationService>();
         services.AddScoped<UploadMediaHandler>();
         services.AddScoped<GetMediaContentHandler>();
         services.AddScoped<CreateMediaUsageHandler>();
+        services.AddScoped<GenerateMediaThumbnailHandler>();
+        services.AddScoped<GetMediaThumbnailStatusHandler>();
+        services.AddScoped<RetryMediaThumbnailHandler>();
 
         return services;
     }

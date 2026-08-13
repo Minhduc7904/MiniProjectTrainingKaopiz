@@ -70,6 +70,15 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
     public Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)
+        => ReplaceUsageAsync(usage);
+
+    public Task<MediaUsageRecord> ReplaceMediaThumbnailAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken)
+        => ReplaceUsageAsync(usage);
+
+    private Task<MediaUsageRecord> ReplaceUsageAsync(
+        CreateMediaUsageRecord usage)
     {
         CreatedUsage = usage;
         return Task.FromResult(

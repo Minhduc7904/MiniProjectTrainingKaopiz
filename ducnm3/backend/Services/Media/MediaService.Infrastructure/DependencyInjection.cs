@@ -1,10 +1,12 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Http;
+using MediaService.Application.Abstractions.Derivation;
 using MediaService.Application.Abstractions.Clients;
 using MediaService.Application.Abstractions.Persistence;
 using MediaService.Application.Abstractions.Storage;
 using MediaService.Infrastructure.Clients.Student;
+using MediaService.Infrastructure.Derivation;
 using MediaService.Infrastructure.Health;
 using MediaService.Infrastructure.Persistence;
 using MediaService.Infrastructure.Storage.Minio;
@@ -53,6 +55,10 @@ public static class DependencyInjection
         services.AddSingleton<IStorageHealthProbe>(serviceProvider =>
             serviceProvider.GetRequiredService<MinioStorageService>());
         services.AddScoped<IMediaRepository, EfMediaRepository>();
+        services.AddScoped<IMediaUploadFinalizer, EfMediaUploadFinalizer>();
+        services.AddScoped<IMediaDerivationRepository, EfMediaDerivationRepository>();
+        services.AddSingleton<ITemporaryMediaFileFactory, TemporaryMediaFileFactory>();
+        services.AddSingleton<IThumbnailGenerator, MediaThumbnailGenerator>();
         services.AddServiceQueryClient<IStudentLookup, StudentLookupClient>(
             configuration,
             ServiceNames.Student);

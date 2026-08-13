@@ -1,11 +1,11 @@
-# `POST /media/api/media/usages` — Đặt avatar Học viên
+# `POST /media/api/media/usages` — Thay avatar hoặc thumbnail
 
 API contract: [`post-media-usages.md`](../../api/media-service/endpoints/post-media-usages.md)
 
 ## Mục tiêu
 
-Đăng ký một media `READY` làm avatar active của Học viên, đồng thời giữ history
-usage đã soft-delete.
+Đăng ký một media `READY` làm avatar Học viên hoặc thumbnail của media gốc,
+đồng thời giữ history usage đã soft-delete.
 
 ## Actor và thành phần
 
@@ -19,7 +19,8 @@ usage đã soft-delete.
 
 - Actor và owner tồn tại.
 - Media tồn tại, chưa soft-delete và đang `READY`.
-- Tuple hiện hỗ trợ là `STUDENT/STUDENT_AVATAR/AVATAR`.
+- Tuple hỗ trợ là `STUDENT/STUDENT_AVATAR/AVATAR` và
+  `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`.
 
 ## Luồng chính
 
@@ -27,7 +28,7 @@ usage đã soft-delete.
 2. Media Service validate actor tách biệt với owner.
 3. Service tra cứu owner khi actor không phải chính owner.
 4. Repository mở transaction `SERIALIZABLE`.
-5. Usage avatar active cũ được soft-delete và usage mới được tạo.
+5. Usage avatar/thumbnail active cũ được soft-delete và usage mới được tạo.
 6. API trả `201` với actor/owner không bị trộn lẫn.
 
 ## Luồng lỗi
@@ -41,7 +42,7 @@ usage đã soft-delete.
 
 - Soft-delete usage active cũ.
 - Tạo một hàng `media_usages`.
-- Generated guards bảo đảm chỉ một avatar active.
+- Generated guards bảo đảm chỉ một avatar hoặc thumbnail active trên mỗi owner.
 - Chuỗi A → B → A hợp lệ; gửi lại A khi A đang active trả conflict.
 
 ## Test mapping

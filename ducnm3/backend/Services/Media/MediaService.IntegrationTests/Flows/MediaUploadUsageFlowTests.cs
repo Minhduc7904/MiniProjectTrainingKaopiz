@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.DatabaseMigration;
 using MediaService.Application;
@@ -93,6 +94,9 @@ public sealed class MediaUploadUsageFlowTests
             .Options;
         await using var dbContext = new MediaDbContext(dbOptions);
         var repository = new EfMediaRepository(dbContext, TimeProvider.System);
+        var uploadFinalizer = new EfMediaUploadFinalizer(
+            dbContext,
+            new StubCommandSender());
         var studentLookup = new ExistingStudentLookup();
         var actorValidation = new ActorValidationService(
             [new StudentActorValidator(studentLookup)]);
@@ -101,6 +105,7 @@ public sealed class MediaUploadUsageFlowTests
             allocator,
             storage,
             repository,
+            uploadFinalizer,
             new MediaUploadOptions(),
             TimeProvider.System,
             NullLogger<UploadMediaHandler>.Instance);
@@ -130,6 +135,45 @@ public sealed class MediaUploadUsageFlowTests
                 CancellationToken.None),
             Is.True);
 
+        var derivationJob = await dbContext.MediaDerivationJobs
+            .AsNoTracking()
+            .SingleAsync(item => item.SourceMediaId == firstMedia.Id);
+        var derivationRepository = new EfMediaDerivationRepository(
+            dbContext,
+            new StubCommandSender(),
+            TimeProvider.System);
+        var work = await derivationRepository.BeginAsync(
+            derivationJob.Id,
+            derivationJob.SourceMediaId,
+            derivationJob.DerivativeMediaId,
+            CancellationToken.None);
+        Assert.That(work, Is.Not.Null);
+        await derivationRepository.CompleteAsync(
+            derivationJob.Id,
+            derivationJob.DerivativeMediaId,
+            new string('a', 64),
+            100,
+            DateTime.UtcNow,
+            CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        var generatedThumbnail = await dbContext.MediaObjects
+            .AsNoTracking()
+            .SingleAsync(item => item.Id == derivationJob.DerivativeMediaId);
+        var thumbnailUsage = await dbContext.MediaUsages
+            .AsNoTracking()
+            .SingleAsync(item =>
+                item.OwnerService == MediaOwnerServices.Media &&
+                item.OwnerId == firstMedia.Id &&
+                item.DeletedAt == null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                generatedThumbnail.Status,
+                Is.EqualTo(MediaObjectStatuses.Ready));
+            Assert.That(generatedThumbnail.ContentType, Is.EqualTo("image/webp"));
+            Assert.That(thumbnailUsage.MediaId, Is.EqualTo(generatedThumbnail.Id));
+        });
+
         var usageHandler = new CreateMediaUsageHandler(
             actorValidation,
             studentLookup,
@@ -142,6 +186,32 @@ public sealed class MediaUploadUsageFlowTests
         await using var secondContent = new MemoryStream(new byte[] { 5, 6, 7 });
         var secondMedia = await uploadHandler.HandleAsync(
             CreateUploadCommand(secondContent, actorId, "second.png"),
+            CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        var secondDerivationJob = await dbContext.MediaDerivationJobs
+            .AsNoTracking()
+            .SingleAsync(item => item.SourceMediaId == secondMedia.Id);
+        await derivationRepository.BeginAsync(
+            secondDerivationJob.Id,
+            secondDerivationJob.SourceMediaId,
+            secondDerivationJob.DerivativeMediaId,
+            CancellationToken.None);
+        await derivationRepository.CompleteAsync(
+            secondDerivationJob.Id,
+            secondDerivationJob.DerivativeMediaId,
+            new string('b', 64),
+            120,
+            DateTime.UtcNow,
+            CancellationToken.None);
+        await usageHandler.HandleAsync(
+            new CreateMediaUsageCommand(
+                secondDerivationJob.DerivativeMediaId,
+                MediaOwnerServices.Media,
+                MediaOwnerTypes.MediaThumbnail,
+                firstMedia.Id,
+                MediaUsageTypes.Thumbnail,
+                0,
+                new ActorReference(ActorTypes.Student, actorId)),
             CancellationToken.None);
         await usageHandler.HandleAsync(
             CreateUsageCommand(secondMedia.Id, ownerId, actorId),
@@ -160,6 +230,12 @@ public sealed class MediaUploadUsageFlowTests
             .Where(item => item.OwnerId == ownerId)
             .OrderBy(item => item.CreatedAt)
             .ToListAsync();
+        var thumbnailUsages = await dbContext.MediaUsages
+            .AsNoTracking()
+            .Where(item =>
+                item.OwnerService == MediaOwnerServices.Media &&
+                item.OwnerId == firstMedia.Id)
+            .ToListAsync();
         Assert.Multiple(() =>
         {
             Assert.That(usages, Has.Count.EqualTo(3));
@@ -169,6 +245,10 @@ public sealed class MediaUploadUsageFlowTests
             Assert.That(
                 conflict!.ErrorCode,
                 Is.EqualTo(MediaErrorCodes.MediaUsageConflict));
+            Assert.That(thumbnailUsages, Has.Count.EqualTo(2));
+            Assert.That(
+                thumbnailUsages.Single(item => item.DeletedAt is null).MediaId,
+                Is.EqualTo(secondDerivationJob.DerivativeMediaId));
         });
     }
 
@@ -222,5 +302,15 @@ public sealed class MediaUploadUsageFlowTests
                     "student@example.com",
                     "Student",
                     "ACTIVE"));
+    }
+
+    private sealed class StubCommandSender : ICommandSender
+    {
+        public Task SendAsync<TCommand>(
+            string destinationService,
+            TCommand command,
+            CancellationToken cancellationToken = default)
+            where TCommand : class, ICommand =>
+            Task.CompletedTask;
     }
 }
