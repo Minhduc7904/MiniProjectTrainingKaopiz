@@ -1,67 +1,87 @@
-# NGÀY 2 — LMS cốt lõi + MinIO + N+1
+# NGÀY 2 — LMS core, Media API, giao tiếp service và dữ liệu development
 
-## Mục tiêu
+## Kết quả thực tế
 
-Có phần cốt lõi của LMS đủ để demo tối ưu truy vấn.
+Ngày 2 gồm 5 task, được tách theo lịch sử thay đổi trên nhánh `ducnm3` ngày
+13/08/2026: ba pull request đã merge và hai commit được push trực tiếp. Phạm vi
+đã hoàn thành tập trung vào dữ liệu development, giao tiếp giữa service và Media
+API; CRUD Course/Lesson và benchmark N+1 vẫn chưa xuất hiện trong lịch sử ngày
+này.
 
-### Nhiệm vụ
+## Ước lượng thời gian
 
-#### Khóa học
+Ước lượng được làm tròn theo mốc 30 phút và phản ánh phạm vi task đã tách,
+không phải thời gian thực tế của pull request hoặc commit.
 
-- Tạo khóa học.
-- Liệt kê khóa học.
-- Tạo bài học.
-- Ghi danh.
-- Tiến độ học tập.
+| Task | Nguồn | Ước lượng |
+| --- | --- | --- |
+| Deterministic development data seeder | PR #143 | 1 giờ 30 phút |
+| Việt hóa tài liệu project | commit `69af2aa2` | 1 giờ |
+| Nền tảng HTTP và RabbitMQ | PR #144 | 1 giờ 30 phút |
+| Media upload/content và Student avatar usage | PR #145 | 2 giờ 30 phút |
+| Workflow agent, API artifact và Postman | commit `518e9618` | 1 giờ 30 phút |
+| **Tổng** |  | **8 giờ** |
 
-#### MinIO
+## Task đã hoàn thành
 
-- Media Service tạo `media_objects` và `media_usages` để lưu metadata, loại media, và vị trí sử dụng.
-- Tải thumbnail/tài liệu lên qua Media Service; Course Service không gọi MinIO.
-- Course Service lưu Markdown và gọi Media Service để liên kết thumbnail, nội
-  dung nhúng hoặc tệp đính kèm.
-- Tải xuống/lấy URL ký trước qua Media Service.
+### 1. Tạo deterministic development data seeder
 
-#### N+1
+- [x] Thêm công cụ `Lms.DataSeeder`, script chạy seed và service Docker để tạo
+  dữ liệu development có thể lặp lại.
+- [x] Bổ sung unit/integration test, tài liệu data-seed, hướng dẫn Docker và
+  runbook reset database.
+- Ước lượng: 1 giờ 30 phút.
+- Nguồn: [PR #143 — add deterministic development data seeder](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/143/overview).
 
-Tạo:
+### 2. Việt hóa tài liệu project
 
-```text
-GET /courses/details-naive
-GET /courses/details-optimized
-```
+- [x] Chuẩn hóa tài liệu hiện có sang tiếng Việt, đồng thời giữ các thuật ngữ kỹ
+  thuật phổ biến để bảo toàn ngữ cảnh triển khai.
+- Ước lượng: 1 giờ.
+- Nguồn: [commit `69af2aa2` — localize project documentation in Vietnamese](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/commits/69af2aa2d5536af42453795bf95c67d4574c79cc).
 
-Cách đơn giản:
+### 3. Xây nền tảng HTTP và RabbitMQ cho giao tiếp service
 
-```text
-N+1
-```
+- [x] Thêm Building Blocks cho HTTP client có correlation ID và truy vấn service
+  nội bộ.
+- [x] Thêm abstraction/implementation RabbitMQ-MassTransit, cấu hình transport,
+  consumer registration, message contract và messaging health probe.
+- [x] Bổ sung Docker Compose, tài liệu và unit/integration test cho communication
+  foundation.
+- Ước lượng: 1 giờ 30 phút.
+- Nguồn: [PR #144 — add HTTP and RabbitMQ communication foundation](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/144/overview).
 
-Đã tối ưu:
+### 4. Hoàn thiện Media upload/content và liên kết avatar Student
 
-```text
-Phép chiếu / Phép nối
-```
+- [x] Cài đặt upload media, lưu metadata `media_objects`, đọc nội dung dạng
+  stream và tạo `media_usages`.
+- [x] Thêm kiểm tra Student qua HTTP client để liên kết avatar, migration cho
+  media upload lifecycle và test unit/component/integration cho luồng này.
+- [x] Bổ sung `GET /students/{id}` để Media Service xác thực Student owner.
+- Ước lượng: 2 giờ 30 phút.
+- Nguồn: [PR #145 — add Media upload and Student avatar usage APIs](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/145/overview).
 
-Bật ghi log SQL.
+### 5. Chuẩn hóa workflow agent, API artifact và Postman collection
 
-### Dữ liệu seed
+- [x] Thêm workflow skill theo HTTP method, unit/component/integration test và
+  database migration.
+- [x] Chuẩn hóa API endpoint template, tách business flow theo endpoint và thêm
+  Postman collection/hướng dẫn sử dụng.
+- Ước lượng: 1 giờ 30 phút.
+- Nguồn: [commit `518e9618` — add agent workflow skills and API artifacts](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/commits/518e9618f0c161e1cda4d3565e9acd0fa97884c3).
 
-```text
-100 khóa học
-20 bài học/khóa học
-các bản ghi tiến độ
-```
+## Tiêu chí hoàn thành Ngày 2
 
-### Tiêu chí hoàn thành Ngày 2
+- [x] Có deterministic development data seeder và tài liệu/test đi kèm.
+- [x] Media Service hỗ trợ upload, streaming content, lưu metadata và liên kết
+  usage cho avatar Student.
+- [x] Có foundation HTTP/RabbitMQ cho giao tiếp giữa service.
+- [x] Workflow tài liệu, test, migration và Postman đã được chuẩn hóa.
 
-- [ ] CRUD khóa học hoạt động.
-- [ ] Bài học hoạt động.
-- [ ] Tiến độ học tập hoạt động.
-- [ ] Tải lên/tải xuống MinIO hoạt động.
-- [ ] Khóa học hoặc bài học dùng được nhiều loại media qua Media Service.
-- [ ] Có điểm cuối N+1.
-- [ ] Có điểm cuối đã tối ưu.
-- [ ] Có log SQL để so sánh số lượng truy vấn.
+## Công việc chưa hoàn thành trong lịch sử Ngày 2
 
----
+- [ ] CRUD Course và Lesson.
+- [ ] Ghi danh và tiến độ học tập.
+- [ ] Liên kết media cho Course/Lesson.
+- [ ] `GET /courses/details-naive` và `GET /courses/details-optimized`.
+- [ ] SQL log và benchmark để so sánh N+1 với truy vấn đã tối ưu.
