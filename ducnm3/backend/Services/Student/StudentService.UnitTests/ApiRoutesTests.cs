@@ -13,6 +13,12 @@ public sealed class ApiRoutesTests
         Assert.Multiple(() =>
         {
             Assert.That(
+                ApiRoutes.Students.ListServicePath(),
+                Is.EqualTo("api/students"));
+            Assert.That(
+                ApiRoutes.Students.ListPublicPath(),
+                Is.EqualTo("/student/api/students"));
+            Assert.That(
                 ApiRoutes.Students.GetByIdServicePath(ResourceId),
                 Is.EqualTo(
                     "api/students/11111111-1111-1111-1111-111111111111"));

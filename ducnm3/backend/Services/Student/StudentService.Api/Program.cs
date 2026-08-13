@@ -60,6 +60,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Student);
 app.MapDatabaseHealthEndpoint(ServiceNames.Student);
+app.MapGetStudents();
 app.MapGetStudentById();
 
 app.Run();

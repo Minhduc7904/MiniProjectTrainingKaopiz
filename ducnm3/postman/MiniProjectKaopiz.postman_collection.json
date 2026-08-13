@@ -25,6 +25,31 @@
       "key": "mediaId",
       "value": "00000000-0000-0000-0000-000000000001",
       "type": "string"
+    },
+    {
+      "key": "studentStatus",
+      "value": "ACTIVE",
+      "type": "string"
+    },
+    {
+      "key": "studentSortBy",
+      "value": "createdAt",
+      "type": "string"
+    },
+    {
+      "key": "studentSortDirection",
+      "value": "desc",
+      "type": "string"
+    },
+    {
+      "key": "studentPage",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "studentPageSize",
+      "value": "20",
+      "type": "string"
     }
   ],
   "item": [
@@ -35,6 +60,75 @@
     {
       "name": "StudentService",
       "item": [
+        {
+          "name": "GET Students",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK with offset pagination\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const payload = pm.response.json();",
+                  "  pm.expect(payload.data).to.be.an(\"array\");",
+                  "  pm.expect(payload.meta.traceId).to.be.a(\"string\");",
+                  "  pm.expect(payload.meta.pagination.type).to.eql(\"offset\");",
+                  "  pm.expect(payload.meta.pagination.page).to.eql(Number(pm.collectionVariables.get(\"studentPage\")));",
+                  "  pm.expect(payload.meta.pagination.pageSize).to.eql(Number(pm.collectionVariables.get(\"studentPageSize\")));",
+                  "  pm.expect(payload.meta.pagination.totalItems).to.be.a(\"number\");",
+                  "  pm.expect(payload.meta.pagination.totalPages).to.be.a(\"number\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student/api/students?status={{studentStatus}}&sortBy={{studentSortBy}}&sortDirection={{studentSortDirection}}&page={{studentPage}}&pageSize={{studentPageSize}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "student",
+                "api",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "{{studentStatus}}"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "{{studentSortBy}}"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "{{studentSortDirection}}"
+                },
+                {
+                  "key": "page",
+                  "value": "{{studentPage}}"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "{{studentPageSize}}"
+                }
+              ]
+            },
+            "description": "Business flow: docs/business-flows/students/get-students.md"
+          },
+          "response": []
+        },
         {
           "name": "GET Student by ID",
           "event": [

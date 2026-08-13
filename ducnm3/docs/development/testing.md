@@ -51,6 +51,8 @@ Chạy kiểm thử cho một service:
 ```bash
 dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTests.csproj
 dotnet test backend/Services/Student/StudentService.UnitTests/StudentService.UnitTests.csproj
+dotnet test backend/Services/Student/StudentService.ComponentTests/StudentService.ComponentTests.csproj
+dotnet test backend/Services/Student/StudentService.IntegrationTests/StudentService.IntegrationTests.csproj
 dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 dotnet test backend/Services/Notification/NotificationService.UnitTests/NotificationService.UnitTests.csproj
@@ -96,9 +98,11 @@ trạng thái storage; flow test còn áp dụng migration thật, xác minh
 usage active. Các test không phụ thuộc Docker Compose stack của lập trình viên;
 Docker phải đang chạy.
 
-`StudentService.UnitTests` kiểm tra lookup Học viên thành công và
-`STUDENT_NOT_FOUND`. Component test HTTP cho hai command Media, typed HTTP client
-Media → Student, Gateway routes và Scheduler cleanup `PENDING` stale chưa có.
+`StudentService.UnitTests` kiểm tra lookup Học viên, validation và orchestration
+cho GET list. `StudentService.ComponentTests` kiểm tra HTTP contract list bằng
+TestServer; `StudentService.IntegrationTests` kiểm tra filter/order/pagination
+trên MySQL Testcontainer. Typed HTTP client Media → Student detail đã có unit
+coverage nhưng chưa có integration test cross-service.
 
 ## Kiểm thử Scheduler Service
 

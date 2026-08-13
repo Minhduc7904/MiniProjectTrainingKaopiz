@@ -61,7 +61,11 @@ Danh mục Media Service:
 Danh mục Student Service:
 
 - [`student-service/unit.md`](student-service/unit.md): lookup Học viên thành
-  công và `STUDENT_NOT_FOUND`, phục vụ hợp đồng Media → Student.
+  công, `STUDENT_NOT_FOUND` và validation/orchestration cho GET list.
+- [`student-service/component.md`](student-service/component.md): HTTP binding,
+  response envelope và offset pagination metadata cho GET list.
+- [`student-service/integration.md`](student-service/integration.md): MySQL
+  filter, stable ordering và page boundaries với migration production.
 
 Coverage hiện tại của Media Upload/Usage tập trung ở unit và integration.
 Gateway public paths, HTTP request binding/response envelope của hai command,
