@@ -35,5 +35,7 @@ Quản trị viên.
 
 ## Nội dung liên quan
 
-- [Tải lên và sử dụng media](../media/media-upload-and-usage.md) cho ảnh đại diện, tệp đính kèm và media nhúng.
+- [Upload media](../media/post-media.md) và
+  [tạo media usage](../media/post-media-usages.md) cho ảnh đại diện, tệp đính
+  kèm và media nhúng.
 - [Ghi danh và tiến độ học tập](enrollment-and-learning-progress.md) cho quyền học của Học viên.

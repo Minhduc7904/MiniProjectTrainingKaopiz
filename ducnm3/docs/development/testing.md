@@ -15,6 +15,7 @@ backend/
 ├── BuildingBlocks/BuildingBlocks.Messaging.IntegrationTests/
 ├── Services/<Service>/
     ├── <Service>Service.UnitTests/
+    ├── <Service>Service.ComponentTests/
     └── <Service>Service.IntegrationTests/
 └── Tools/
     ├── Lms.DataSeeder.UnitTests/
@@ -23,6 +24,11 @@ backend/
 
 Không tạo project kiểm thử rỗng. Chỉ thêm project kiểm thử cho service khi có
 hành vi đầu tiên thuộc trách nhiệm của service đó.
+
+Project mới phải tách theo loại `UnitTests`, `ComponentTests` và
+`IntegrationTests`; không tiếp tục thêm component test vào `UnitTests`. Những
+component test cũ đang nằm trong project owner hiện tại được chuyển dần khi
+project `ComponentTests` của owner được tạo.
 
 ## Danh mục kiểm thử chi tiết
 
@@ -69,7 +75,9 @@ dotnet test backend/BuildingBlocks/BuildingBlocks.Messaging.IntegrationTests/Bui
 ## Thêm kiểm thử mới
 
 1. Đặt kiểm thử quy tắc nghiệp vụ trong `<Service>Service.UnitTests`.
-2. Thêm kiểm thử endpoint hoặc middleware vào project kiểm thử của component sở hữu.
+2. Thêm kiểm thử endpoint hoặc middleware vào
+   `<Service>Service.ComponentTests`; dùng `BuildingBlocks.<Name>.ComponentTests`
+   cho building block và `Lms.ApiGateway.ComponentTests` cho Gateway.
 3. Chỉ thêm project kiểm thử tích hợp service khi thay đổi cần MySQL thật, SQL migration hoặc hành vi của DbContext được sinh.
 4. Đặt kiểm thử liên service bên ngoài từng service riêng lẻ, trong thư mục gốc `tests/`.
 5. Mỗi kiểm thử phải tự tạo dữ liệu và dọn dẹp thông qua môi trường kiểm thử cô lập của chính nó.

@@ -8,6 +8,10 @@ usage và bảo đảm mỗi Học viên chỉ có một avatar active.
 Đường dẫn công khai qua Gateway là `POST /media/api/media/usages`; đường dẫn
 trực tiếp tại Media Service là `POST /api/media/usages`.
 
+Business flow:
+[`post-media-usages.md`](../../../business-flows/media/post-media-usages.md).
+Postman: `MediaService/POST Create media usage`.
+
 ## Xác thực và phân quyền
 
 - Xác thực: chưa bắt buộc trong phiên bản hiện tại.

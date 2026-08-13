@@ -1,0 +1,261 @@
+{
+  "info": {
+    "_postman_id": "dce3019e-f9af-41d7-a86d-dcd5601ce9b2",
+    "name": "MiniProjectKaopiz",
+    "description": "Gateway requests for implemented MiniProject APIs. Credentials and machine-specific secrets must stay in local environments.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5100",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "ownerId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "mediaId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "CourseService",
+      "item": []
+    },
+    {
+      "name": "StudentService",
+      "item": [
+        {
+          "name": "GET Student by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response has trace metadata\", function () {",
+                  "  const payload = pm.response.json();",
+                  "  pm.expect(payload.meta.traceId).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student/api/students/{{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "student",
+                "api",
+                "students",
+                "{{studentId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/students/get-student-by-id.md"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "MediaService",
+      "item": [
+        {
+          "name": "POST Upload media",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Created\", function () { pm.response.to.have.status(201); });",
+                  "const payload = pm.response.json();",
+                  "if (payload && payload.data && payload.data.id) {",
+                  "  pm.collectionVariables.set(\"mediaId\", payload.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "mediaType",
+                  "value": "IMAGE",
+                  "type": "text"
+                },
+                {
+                  "key": "uploadedByType",
+                  "value": "STUDENT",
+                  "type": "text"
+                },
+                {
+                  "key": "uploadedBy",
+                  "value": "{{studentId}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "api",
+                "media"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/media/post-media.md"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create media usage",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Created\", function () { pm.response.to.have.status(201); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Usage references media\", function () {",
+                  "  pm.expect(payload.data.mediaId).to.eql(pm.collectionVariables.get(\"mediaId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"ownerService\": \"STUDENT\",\n  \"ownerType\": \"STUDENT_AVATAR\",\n  \"ownerId\": \"{{ownerId}}\",\n  \"usageType\": \"AVATAR\",\n  \"displayOrder\": 0,\n  \"createdByType\": \"STUDENT\",\n  \"createdBy\": \"{{studentId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/usages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "api",
+                "media",
+                "usages"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/media/post-media-usages.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Media content",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Content headers are present\", function () {",
+                  "  pm.expect(pm.response.headers.has(\"Content-Type\")).to.be.true;",
+                  "  pm.expect(pm.response.headers.get(\"Cache-Control\")).to.eql(\"no-store\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/{{mediaId}}/content",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "media",
+                "api",
+                "media",
+                "{{mediaId}}",
+                "content"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/media/get-media-content.md"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "NotificationService",
+      "item": []
+    },
+    {
+      "name": "SchedulerService",
+      "item": []
+    }
+  ]
+}

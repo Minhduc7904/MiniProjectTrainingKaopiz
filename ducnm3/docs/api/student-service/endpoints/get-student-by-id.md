@@ -10,6 +10,10 @@ avatar; đây không phải truy vấn chéo database.
 `GET /student/api/students/{studentId}`. Đường dẫn trực tiếp và đường dẫn
 service-to-service tại Student Service là `GET /api/students/{studentId}`.
 
+Business flow:
+[`get-student-by-id.md`](../../../business-flows/students/get-student-by-id.md).
+Postman: `StudentService/GET Student by ID`.
+
 ## Xác thực và phân quyền
 
 - Xác thực: chưa bắt buộc trong phiên bản hiện tại.

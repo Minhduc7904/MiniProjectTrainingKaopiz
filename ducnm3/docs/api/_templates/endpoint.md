@@ -1,5 +1,8 @@
 # `METHOD /api/resource`
 
+Business flow:
+[`<method>-<resource>.md`](../../../business-flows/<domain>/<method>-<resource>.md).
+
 ## Mục đích
 
 Nêu kết quả đối với người dùng hoặc hệ thống và dịch vụ sở hữu.
@@ -65,3 +68,10 @@ Chỉ liệt kê các mã mà điểm cuối thực sự có thể trả về v�
 - Các bản ghi cơ sở dữ liệu được tạo hoặc thay đổi.
 - Sự kiện, tác vụ nền, lời gọi HTTP bên ngoài hoặc thao tác MinIO.
 - Hành vi lũy đẳng, phân trang, sắp xếp hoặc thử lại khi áp dụng.
+
+## Đồng bộ artifact
+
+- Postman item: `<Service>/<METHOD resource>` trong
+  `postman/MiniProjectKaopiz.postman_collection.json`.
+- Unit/component/integration test docs liên quan.
+- API doc và business-flow phải được cập nhật trong cùng change.

@@ -1,0 +1,52 @@
+# `POST /media/api/media` — Upload media
+
+API contract: [`post-media.md`](../../api/media-service/endpoints/post-media.md)
+
+## Mục tiêu
+
+Học viên upload file qua Gateway; Media Service lưu metadata và object, sau đó
+trả media `READY` cùng content URL công khai.
+
+## Actor và thành phần
+
+- Học viên/client.
+- API Gateway.
+- Media Service.
+- Student Service.
+- MySQL Media và MinIO.
+
+## Điều kiện trước
+
+- Multipart có `file`, `mediaType`, `uploadedByType`, `uploadedBy`.
+- Actor type được hỗ trợ và actor tồn tại trong Student Service.
+- MIME, extension và kích thước file hợp lệ.
+
+## Luồng chính
+
+1. Client gửi multipart tới Gateway.
+2. Media Service validate request và tra cứu actor qua Student Service.
+3. Application cấp phát storage location và ghi `media_objects=PENDING`.
+4. MinIO adapter stream object và tính SHA-256.
+5. Repository cập nhật metadata, checksum và trạng thái `READY`.
+6. API trả `201`, `Location` và Gateway `contentUrl`; bucket/object key không
+   xuất hiện trong response.
+
+## Luồng lỗi
+
+- Request/MIME/actor sai: `400`, `404` hoặc `415`.
+- Payload vượt giới hạn: `413 PAYLOAD_TOO_LARGE`.
+- Student Service hoặc MinIO lỗi: `503`.
+- Upload lỗi được compensation best effort bằng xóa object và chuyển `FAILED`.
+
+## Dữ liệu và side effects
+
+- Tạo một hàng `media_objects`.
+- Tạo object MinIO trong bucket theo media category.
+- Không thay đổi database Student.
+- Upload không idempotent; mỗi lần thành công tạo media mới.
+
+## Test mapping
+
+- Unit: validation, thứ tự `PENDING -> READY`, compensation.
+- Component: multipart, envelope, `contentUrl`, error mapping.
+- Integration: MySQL migration/repository và MinIO object/checksum thật.
