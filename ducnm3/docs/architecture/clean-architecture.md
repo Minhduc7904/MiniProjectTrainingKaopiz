@@ -1,6 +1,6 @@
-# 9. Clean Architecture trong mỗi Microservice
+# 9. Kiến trúc sạch trong mỗi vi dịch vụ
 
-Mỗi service giữ 4 layer:
+Mỗi dịch vụ có 4 tầng:
 
 ```text
 Domain
@@ -9,7 +9,7 @@ Infrastructure
 Api
 ```
 
-Dependency:
+Quan hệ phụ thuộc:
 
 ```text
 Api
@@ -27,46 +27,47 @@ Application
  └──────────────► Domain
 
 Domain
- └── không phụ thuộc layer nào
+ └── không phụ thuộc tầng nào
 ```
 
 ---
 
-# Shared API health and error handling
+# Cơ chế kiểm tra trạng thái và xử lý lỗi dùng chung cho API
 
-`BuildingBlocks.Contracts` owns framework-independent response DTOs, health-probe interfaces, error codes, header names, and status constants. `BuildingBlocks.Presentation` owns ASP.NET Core middleware, response mapping, and reusable endpoint mappings.
+`BuildingBlocks.Contracts` quản lý các DTO phản hồi không phụ thuộc khung phần mềm, giao diện thăm dò trạng thái, mã lỗi, tên tiêu đề HTTP và hằng số trạng thái. `BuildingBlocks.Presentation` quản lý phần mềm trung gian ASP.NET Core, ánh xạ phản hồi và các ánh xạ điểm cuối có thể tái sử dụng.
 
-Each service Infrastructure implements `IDatabaseHealthProbe` with its own MySQL connection string and a `SELECT 1` query. API maps `GET /health`; a reachable API with an unavailable database returns `503 DATABASE_UNAVAILABLE`. API Gateway maps unreachable downstream services to `503 SERVICE_UNAVAILABLE`.
+Tầng Infrastructure của mỗi dịch vụ triển khai `IDatabaseHealthProbe` bằng chuỗi kết nối MySQL riêng và truy vấn `SELECT 1`. API ánh xạ `GET /health`; nếu API vẫn truy cập được nhưng cơ sở dữ liệu không khả dụng thì trả về `503 DATABASE_UNAVAILABLE`. API Gateway ánh xạ các dịch vụ hạ nguồn không thể kết nối thành `503 SERVICE_UNAVAILABLE`.
 
-Domain and Application do not depend on ASP.NET Core, MySQL, or the presentation project.
+Domain và Application không phụ thuộc vào ASP.NET Core, MySQL hoặc dự án trình bày.
 
-Scheduler follows the same four layers and adds `SchedulerService.Worker` as a
-separate future background host. The current Worker is intentionally only a
-skeleton: it does not poll, claim, parse CRON, execute handlers, or call Media
-or Notification Service. Generic scheduling metadata remains in
-`lms_scheduler_db`; Notification recipient/content state remains in
+Scheduler tuân theo bốn tầng tương tự và bổ sung `SchedulerService.Worker` làm
+tiến trình nền độc lập trong tương lai. Worker hiện tại được chủ đích chỉ xây dựng
+ở dạng khung: chưa thăm dò, nhận xử lý, phân tích CRON, thực thi bộ xử lý hay gọi
+Media Service hoặc Notification Service. Siêu dữ liệu lập lịch dùng chung nằm trong
+`lms_scheduler_db`; trạng thái người nhận và nội dung thông báo nằm trong
 `lms_notification_db`.
 
-## Test organization
+## Tổ chức kiểm thử
 
-- Shared API behavior lives in `BuildingBlocks.Presentation.Tests`, separated by `Middleware/`, `Endpoints/`, and `Gateway/`.
-- Each service owns its `*Service.UnitTests` project beside its API, Application, Domain, and Infrastructure projects.
-- Future integration tests use `*Service.IntegrationTests` beside their service and a real isolated MySQL container.
-- Cross-service and end-to-end tests belong in the root `tests/` directory, not in an individual service.
+- Hành vi API dùng chung nằm trong `BuildingBlocks.Presentation.Tests`, được phân chia theo `Middleware/`, `Endpoints/` và `Gateway/`.
+- Mỗi dịch vụ sở hữu dự án `*Service.UnitTests` đặt cạnh các dự án API, Application, Domain và Infrastructure tương ứng.
+- Các kiểm thử tích hợp trong tương lai dùng dự án `*Service.IntegrationTests` đặt cạnh dịch vụ tương ứng và một container MySQL thật, biệt lập.
+- Kiểm thử liên dịch vụ và kiểm thử đầu cuối nằm trong thư mục gốc `tests/`, không thuộc riêng dịch vụ nào.
 
-## Development data tooling boundary
+## Ranh giới công cụ dữ liệu phát triển
 
-`backend/Tools/Lms.DataSeeder` is an opt-in development console tool, not a
-sixth microservice and not part of a business service dependency graph. It
-writes large deterministic datasets through separate Student/Course connection
-strings for local performance and demo preparation. APIs, Domain and
-Application projects do not reference it.
+`backend/Tools/Lms.DataSeeder` là công cụ dòng lệnh phát triển chỉ chạy khi được
+chủ động kích hoạt, không phải vi dịch vụ thứ sáu và không thuộc đồ thị phụ thuộc
+của các dịch vụ nghiệp vụ. Công cụ ghi các tập dữ liệu lớn, xác định được trước
+thông qua chuỗi kết nối Student Service/Course Service riêng để chuẩn bị kiểm thử hiệu năng cục bộ
+và trình diễn. Các dự án API, Domain và Application không tham chiếu đến công cụ này.
 
-Its unit and integration test projects remain beside the tool. The integration
-tests apply real service-owned SQL migrations to isolated MySQL containers;
-production/runtime services still own schema and business behavior.
+Các dự án kiểm thử đơn vị và kiểm thử tích hợp được đặt cạnh công cụ. Kiểm thử
+tích hợp áp dụng các bản thay đổi SQL thực tế do từng dịch vụ sở hữu lên các container
+MySQL biệt lập; các dịch vụ ở môi trường sản xuất/thời gian chạy vẫn sở hữu
+lược đồ và hành vi nghiệp vụ.
 
-# 10. Folder Structure tổng thể
+# 10. Cấu trúc thư mục tổng thể
 
 ```text
 lms-mini/
@@ -176,7 +177,7 @@ lms-mini/
 ```
 
 ---
-# 11. Folder Structure chi tiết cho Course Service
+# 11. Cấu trúc thư mục chi tiết cho Course Service
 
 ```text
 CourseService.Domain/
@@ -274,7 +275,7 @@ CourseService.Api/
 ```
 
 ---
-# 12. Media Service Structure
+# 12. Cấu trúc Media Service
 
 ```text
 MediaService.Domain/
@@ -339,7 +340,7 @@ MediaService.Api/
 ```
 
 ---
-# 13. Notification Service Structure
+# 13. Cấu trúc Notification Service
 
 ```text
 NotificationService.Domain/

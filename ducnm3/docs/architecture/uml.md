@@ -1,8 +1,8 @@
-# 41. UML cần chuẩn bị
+# 41. Các sơ đồ UML cần chuẩn bị
 
-Tối thiểu 4 diagram.
+Tối thiểu 4 sơ đồ.
 
-## 41.1. Component Diagram
+## 41.1. Sơ đồ thành phần
 
 ```mermaid
 flowchart LR
@@ -13,27 +13,27 @@ flowchart LR
     Gateway --> NotificationService
     Gateway --> SchedulerApi
 
-    CourseService --> CourseDB[(Course DB)]
+    CourseService --> CourseDB[(CSDL Khóa học)]
     CourseService --> MediaService
 
-    StudentService --> StudentDB[(Student DB)]
+    StudentService --> StudentDB[(CSDL Học viên)]
 
-    MediaService --> MediaDB[(Media DB)]
+    MediaService --> MediaDB[(CSDL Media)]
     MediaService --> MinIO[(MinIO)]
 
-    NotificationService --> NotificationDB[(Notification DB)]
+    NotificationService --> NotificationDB[(CSDL Thông báo)]
     NotificationService --> StudentService
     NotificationService --> MediaService
 
-    SchedulerApi --> SchedulerDB[(Scheduler DB)]
-    SchedulerWorker[Scheduler Worker skeleton] -. future .-> SchedulerDB
-    SchedulerWorker -. future HTTP .-> NotificationService
-    SchedulerWorker -. future HTTP .-> MediaService
+    SchedulerApi --> SchedulerDB[(CSDL Scheduler)]
+    SchedulerWorker[Khung Scheduler Worker] -. tương lai .-> SchedulerDB
+    SchedulerWorker -. HTTP trong tương lai .-> NotificationService
+    SchedulerWorker -. HTTP trong tương lai .-> MediaService
 ```
 
 ---
 
-## 41.2. Course Class Diagram
+## 41.2. Sơ đồ lớp Course
 
 ```mermaid
 classDiagram
@@ -71,48 +71,48 @@ classDiagram
 
 ---
 
-## 41.3. Notification Sequence Diagram
+## 41.3. Sơ đồ tuần tự Thông báo
 
 ```mermaid
 sequenceDiagram
-    participant Admin
-    participant API as Notification API
-    participant DB as Notification DB
-    participant Worker
+    participant Admin as Quản trị viên
+    participant API as API Thông báo
+    participant DB as CSDL Thông báo
+    participant Worker as Tiến trình nền
     participant Student as Student Service
 
     Admin->>API: POST /notification-batches
-    API->>DB: Create Batch + recipient snapshot
-    API-->>Admin: 202 Accepted
+    API->>DB: Tạo lô + chụp danh sách người nhận
+    API-->>Admin: 202 Đã chấp nhận
 
-    Note over Worker: Future phase; not implemented in foundation
-    Worker->>DB: Get pending batch
-    Worker->>Student: Get student batch
-    Student-->>Worker: 500 students
+    Note over Worker: Giai đoạn tương lai; phần nền tảng chưa triển khai
+    Worker->>DB: Lấy lô đang chờ
+    Worker->>Student: Lấy lô Học viên
+    Student-->>Worker: 500 Học viên
 
-    loop each batch
-        Worker->>Worker: Send notifications
-        Worker->>DB: Update item status
+    loop từng lô
+        Worker->>Worker: Gửi thông báo
+        Worker->>DB: Cập nhật trạng thái mục
     end
 
-    Worker->>DB: Complete batch
+    Worker->>DB: Hoàn tất lô
 ```
 
 ---
 
-## 41.4. Batch Activity Diagram
+## 41.4. Sơ đồ hoạt động xử lý hàng loạt
 
 ```mermaid
 flowchart TD
-    A[Start Batch] --> B[Load Recipient Chunk]
-    B --> C{Has Records?}
-    C -- No --> H[Complete Batch]
-    C -- Yes --> D[Send Notification]
-    D --> E{Success?}
-    E -- Yes --> F[Mark SUCCESS]
-    E -- No --> G{Retry Count < 1?}
-    G -- Yes --> D
-    G -- No --> I[Mark FAILED + Save Error]
+    A[Bắt đầu lô] --> B[Tải nhóm người nhận]
+    B --> C{Có bản ghi?}
+    C -- Không --> H[Hoàn tất lô]
+    C -- Có --> D[Gửi thông báo]
+    D --> E{Thành công?}
+    E -- Có --> F[Đánh dấu SUCCESS]
+    E -- Không --> G{Số lần thử lại < 1?}
+    G -- Có --> D
+    G -- Không --> I[Đánh dấu FAILED + Lưu lỗi]
     F --> B
     I --> B
 ```

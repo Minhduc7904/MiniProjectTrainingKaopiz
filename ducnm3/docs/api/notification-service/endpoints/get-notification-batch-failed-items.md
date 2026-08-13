@@ -1,25 +1,25 @@
 # `GET /api/notification-batches/{batchId}/failed-items`
 
-## Purpose
+## Mục đích
 
-Lists failed recipient items for a Notification Service bulk batch.
+Liệt kê các mục người nhận thất bại trong một lô hàng loạt của Notification Service.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: required.
-- Roles/scopes: notification administrators.
-- Ownership rule: access follows the owning organization's notification policy.
+- Xác thực: bắt buộc.
+- Vai trò/phạm vi: quản trị viên thông báo.
+- Quy tắc sở hữu: quyền truy cập tuân theo chính sách thông báo của tổ chức sở hữu.
 
-## Request
+## Yêu cầu
 
-- `batchId`: required UUID path parameter.
-- `cursor`: optional opaque continuation token.
-- `limit`: optional integer from 1 through 100; default 100.
-- No request body.
+- `batchId`: tham số đường dẫn UUID bắt buộc.
+- `cursor`: mã tiếp tục không trong suốt, không bắt buộc.
+- `limit`: số nguyên không bắt buộc từ 1 đến 100; mặc định là 100.
+- Không có nội dung yêu cầu.
 
-## Success response
+## Phản hồi thành công
 
-Ordering is stable by item ID. Clients must treat `nextCursor` as opaque.
+Thứ tự ổn định theo ID của mục. Máy khách phải coi `nextCursor` là giá trị không trong suốt.
 
 ```http
 200 OK
@@ -48,15 +48,15 @@ Ordering is stable by item ID. Clients must treat `nextCursor` as opaque.
 }
 ```
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `200`: failed items returned.
-- `400 VALIDATION_FAILED`: ID, limit, or cursor is invalid.
-- `401`: authentication is missing or invalid.
-- `403`: caller cannot inspect the batch.
-- `404 NOTIFICATION_BATCH_NOT_FOUND`: batch does not exist.
-- `500 UNEXPECTED_ERROR`: safe unexpected failure response.
+- `200`: đã trả về các mục thất bại.
+- `400 VALIDATION_FAILED`: ID, `limit` hoặc `cursor` không hợp lệ.
+- `401`: thiếu thông tin xác thực hoặc thông tin xác thực không hợp lệ.
+- `403`: bên gọi không có quyền xem lô.
+- `404 NOTIFICATION_BATCH_NOT_FOUND`: lô không tồn tại.
+- `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-Reads `notification_batch_items` with `status = FAILED`. The endpoint does not trigger retry or create Scheduler runs.
+Đọc `notification_batch_items` có `status = FAILED`. Điểm cuối không kích hoạt thử lại hoặc tạo lượt chạy Scheduler.

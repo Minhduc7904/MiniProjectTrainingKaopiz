@@ -8,42 +8,42 @@ LMS Mini
 ├── API Gateway
 │
 ├── Course Service
-│   ├── Clean Architecture
+│   ├── Kiến trúc sạch
 │   └── MySQL
 │
 ├── Student Service
-│   ├── Clean Architecture
+│   ├── Kiến trúc sạch
 │   └── MySQL
 │
 ├── Media Service
-│   ├── Clean Architecture
-│   ├── MySQL metadata + media usage
+│   ├── Kiến trúc sạch
+│   ├── Siêu dữ liệu MySQL + lượt sử dụng media
 │   └── MinIO
 │
 ├── Notification Service
-│   ├── Clean Architecture
-│   └── MySQL notification batches/inbox
+│   ├── Kiến trúc sạch
+│   └── Các lô thông báo/hộp thư đến trong MySQL
 │
 └── Scheduler Service
-    ├── Clean Architecture
-    ├── Worker skeleton
-    └── MySQL job definitions/run history
+    ├── Kiến trúc sạch
+    ├── Khung Worker
+    └── Định nghĩa tác vụ/lịch sử lượt chạy trong MySQL
 ```
 
-Scheduler execution và cross-service calls chưa được triển khai; Worker hiện
-không chạy background loop. Scheduler không thay thế dữ liệu batch nghiệp vụ
+Việc thực thi Scheduler và gọi liên dịch vụ chưa được triển khai; Worker hiện
+không chạy vòng lặp nền. Scheduler không thay thế dữ liệu lô nghiệp vụ
 của Notification Service.
 
-Điểm khác biệt của project:
+Điểm khác biệt của dự án:
 
 ```text
 Không phải:
 "Em làm được LMS."
 
 Mà là:
-"Em có thể chứng minh LMS thay đổi thế nào khi dataset tăng,
-phát hiện bottleneck bằng số liệu,
+"Em có thể chứng minh LMS thay đổi thế nào khi tập dữ liệu tăng,
+phát hiện điểm nghẽn bằng số liệu,
 sau đó tối ưu đúng nguyên nhân."
 ```
 
-Đó chính là thứ nên tập trung show trong buổi demo.
+Đó chính là nội dung nên tập trung trình bày trong buổi trình diễn.

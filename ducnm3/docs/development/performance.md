@@ -1,6 +1,6 @@
-# 23. Batch Performance Test
+# 23. Kiểm thử hiệu năng xử lý theo lô
 
-Dataset:
+Tập dữ liệu:
 
 ```text
 3,000
@@ -11,28 +11,28 @@ Dataset:
 Đo:
 
 ```text
-Execution Time
-Peak Memory
-Success Count
-Failure Count
-Throughput
+Thời gian thực thi
+Bộ nhớ cao nhất
+Số lượng thành công
+Số lượng thất bại
+Thông lượng
 ```
 
 Bảng kết quả:
 
-| Records | Strategy | Batch Size | Time | Peak RAM | Throughput |
+| Số bản ghi | Chiến lược | Kích thước lô | Thời gian | RAM cao nhất | Thông lượng |
 |---:|---|---:|---:|---:|---:|
-| 3k | Load All | - | đo thật | đo thật | đo thật |
-| 10k | Load All | - | đo thật | đo thật | đo thật |
-| 100k | Load All | - | đo thật | đo thật | đo thật |
-| 100k | Batch | 500 | đo thật | đo thật | đo thật |
+| 3k | Tải toàn bộ | - | đo thật | đo thật | đo thật |
+| 10k | Tải toàn bộ | - | đo thật | đo thật | đo thật |
+| 100k | Tải toàn bộ | - | đo thật | đo thật | đo thật |
+| 100k | Xử lý theo lô | 500 | đo thật | đo thật | đo thật |
 
 Không ghi số giả vào slide.
 
 ---
-# 24. CSV Export — Version 1
+# 24. Xuất CSV — Phiên bản 1
 
-Naive:
+Cách đơn giản:
 
 ```text
 SELECT ALL
@@ -41,10 +41,10 @@ SELECT ALL
 List<Course>
    │
    ▼
-Build giant CSV string
+Tạo chuỗi CSV khổng lồ
    │
    ▼
-HTTP Response
+Phản hồi HTTP
 ```
 
 Ví dụ:
@@ -57,40 +57,40 @@ var courses = await db.Courses
 var csv = BuildCsv(courses);
 ```
 
-Dùng làm benchmark **Before**.
+Dùng làm benchmark **Trước khi tối ưu**.
 
 ---
-# 25. CSV Export — Version 2
+# 25. Xuất CSV — Phiên bản 2
 
-Optimized:
+Đã tối ưu:
 
 ```text
-Database
+Cơ sở dữ liệu
    │
    ▼
-Read Batch / Stream
+Đọc theo lô / truyền phát
    │
    ▼
-Write Response Stream
+Ghi luồng phản hồi
 ```
 
-Không giữ 100k object và toàn bộ CSV string trong memory.
+Không giữ 100k object và toàn bộ chuỗi CSV trong bộ nhớ.
 
 Các kỹ thuật:
 
 ```text
 AsNoTracking()
 Projection
-Batch / Keyset query
+Truy vấn theo lô / keyset
 StreamWriter
 Response.Body
 CancellationToken
 ```
 
 ---
-# 26. CSV Benchmark
+# 26. Benchmark CSV
 
-Test:
+Kiểm thử:
 
 ```text
 10k
@@ -101,32 +101,32 @@ Test:
 Đo:
 
 ```text
-Total Time
+Tổng thời gian
 TTFB nếu đo được
-Peak Memory
-Output File Size
+Bộ nhớ cao nhất
+Kích thước tệp đầu ra
 ```
 
-Compare:
+So sánh:
 
 ```text
-SELECT ALL → Build String
+SELECT ALL → Tạo chuỗi
 
-vs
+so với
 
-Streaming
+Truyền phát
 ```
 
 ---
-# 27. N+1 Use Case
+# 27. Trường hợp sử dụng N+1
 
-Endpoint:
+Điểm cuối:
 
 ```http
 GET /api/courses/details
 ```
 
-Response:
+Phản hồi:
 
 ```json
 {
@@ -137,7 +137,7 @@ Response:
 }
 ```
 
-Bad implementation:
+Cách triển khai chưa tốt:
 
 ```text
 SELECT courses
@@ -147,18 +147,18 @@ foreach course
     SELECT progress
 ```
 
-Ví dụ 100 Course:
+Ví dụ với 100 khóa học:
 
 ```text
-1 Course query
-100 Lesson queries
-100 Progress queries
+1 truy vấn khóa học
+100 truy vấn bài học
+100 truy vấn tiến độ
 
-≈ 201 queries
+≈ 201 truy vấn
 ```
 
 ---
-# 28. Fix N+1
+# 28. Khắc phục N+1
 
 Sử dụng:
 
@@ -172,31 +172,31 @@ Include khi phù hợp
 Ví dụ mục tiêu:
 
 ```text
-201 queries
+201 truy vấn
      ↓
-1–3 queries
+1–3 truy vấn
 ```
 
 Bật:
 
 ```text
-EF Core SQL Logging
+Ghi log SQL EF Core
 ```
 
-để demo query count.
+để minh họa số lượng truy vấn.
 
 ---
-# 29. Index Use Case
+# 29. Trường hợp sử dụng index
 
-Seed:
+Dữ liệu seed:
 
 ```text
-10k Course
-100k Course
-1M Course
+10k khóa học
+100k khóa học
+1M khóa học
 ```
 
-Query demo:
+Truy vấn demo:
 
 ```sql
 SELECT id, name, status, created_at
@@ -207,7 +207,7 @@ ORDER BY created_at DESC
 LIMIT 20;
 ```
 
-Index thử nghiệm:
+Chỉ mục thử nghiệm:
 
 ```sql
 CREATE INDEX idx_courses_status_created_at
@@ -215,9 +215,9 @@ ON courses(status, created_at);
 ```
 
 ---
-# 30. Query Plan
+# 30. Kế hoạch thực thi truy vấn
 
-Trước index:
+Trước khi tạo index:
 
 ```sql
 EXPLAIN ANALYZE
@@ -227,47 +227,47 @@ SELECT ...
 Quan sát:
 
 ```text
-Table Scan
-Rows Examined
-Actual Time
+Quét toàn bộ bảng
+Số hàng đã xét
+Thời gian thực tế
 ```
 
-Sau index:
+Sau khi tạo index:
 
 ```text
-Index Range Scan
+Quét phạm vi chỉ mục
 ```
 
 So sánh:
 
 ```text
-Execution Time
-Rows Examined
-Access Type
-Index Used
+Thời gian thực thi
+Số hàng đã xét
+Kiểu truy cập
+Chỉ mục được dùng
 ```
 
 ---
-# 31. Điều cần giải thích về Index
+# 31. Điều cần giải thích về index
 
 Không nói:
 
-> Query chậm thì tạo index.
+> Truy vấn chậm thì tạo index.
 
 Phải hiểu:
 
-- Selectivity.
-- Cardinality.
-- Composite index order.
-- Covering index.
-- Index làm chậm INSERT/UPDATE.
-- Index tốn storage.
-- Index không phải lúc nào cũng được optimizer chọn.
+- Độ chọn lọc.
+- Lực lượng.
+- Thứ tự cột trong index kết hợp.
+- Chỉ mục bao phủ.
+- Chỉ mục làm chậm INSERT/UPDATE.
+- Chỉ mục tốn dung lượng lưu trữ.
+- Chỉ mục không phải lúc nào cũng được trình tối ưu chọn.
 
 ---
-# 32. Pagination — Offset
+# 32. Phân trang — Offset
 
-Endpoint:
+Điểm cuối:
 
 ```http
 GET /api/courses?page=5000&pageSize=20
@@ -279,7 +279,7 @@ SQL:
 LIMIT 20 OFFSET 100000
 ```
 
-Test:
+Kiểm thử:
 
 ```text
 OFFSET 0
@@ -288,12 +288,12 @@ OFFSET 100,000
 OFFSET 500,000
 ```
 
-Đo response time.
+Đo thời gian phản hồi.
 
 ---
-# 33. Pagination — Cursor / Keyset
+# 33. Phân trang — Cursor / Keyset
 
-Endpoint:
+Điểm cuối:
 
 ```http
 GET /api/courses/cursor?afterId=100000&limit=20
@@ -307,7 +307,7 @@ ORDER BY id
 LIMIT 20
 ```
 
-Nếu sort theo createdAt:
+Nếu sắp xếp theo createdAt:
 
 ```sql
 WHERE
@@ -320,16 +320,16 @@ ORDER BY created_at DESC, id DESC
 LIMIT 20
 ```
 
-Index:
+Chỉ mục:
 
 ```sql
 (created_at, id)
 ```
 
 ---
-# 34. API Benchmark
+# 34. Benchmark API
 
-Tối thiểu benchmark:
+Các endpoint cần benchmark tối thiểu:
 
 ```text
 GET /courses
@@ -338,7 +338,7 @@ GET /courses/export
 POST /notification-batches
 ```
 
-Tool có thể dùng:
+Công cụ có thể sử dụng:
 
 ```text
 curl
@@ -351,9 +351,9 @@ Postman Runner
 Nếu thiếu thời gian, dùng:
 
 ```text
-Stopwatch + logs + curl
+Stopwatch + nhật ký + curl
 ```
 
-nhưng tốt nhất có một benchmark tool.
+nhưng tốt nhất nên có một công cụ benchmark.
 
 ---

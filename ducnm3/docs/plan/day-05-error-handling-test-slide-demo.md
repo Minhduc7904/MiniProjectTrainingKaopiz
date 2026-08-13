@@ -1,69 +1,69 @@
-# DAY 5 — Error Handling + Test + Slide + Demo
+# NGÀY 5 — Xử lý lỗi + Kiểm thử + Bản trình chiếu + Demo
 
-## Morning
+## Buổi sáng
 
-### API Error Handling
+### Xử lý lỗi API
 
-- Validation.
-- Not Found.
-- Conflict.
-- DB/Unhandled error.
+- Kiểm tra hợp lệ.
+- Không tìm thấy.
+- Xung đột.
+- Lỗi cơ sở dữ liệu/lỗi chưa được xử lý.
 
-### Logging
+### Ghi log
 
 - CorrelationId.
-- Request duration.
-- Batch logs.
+- Thời gian xử lý yêu cầu.
+- Nhật ký xử lý theo lô.
 
-### Unit Tests
+### Kiểm thử đơn vị
 
-Tối thiểu test:
+Các kiểm thử tối thiểu:
 
 ```text
 CreateCourse
-Notification Retry
-Job Idempotency
-Validation
+Thử lại thông báo
+Tính idempotent của tác vụ
+Kiểm tra hợp lệ
 ```
 
-Không cố đạt coverage cực cao trong mini project.
+Không cố đạt độ bao phủ cực cao trong dự án nhỏ.
 
 ---
 
-## Afternoon
+## Buổi chiều
 
-### Slide
+### Bản trình chiếu
 
 Chuẩn bị:
 
 ```text
-Architecture
+Kiến trúc
 UML
 Docker
 MinIO
-Batch
-Retry
+Xử lý theo lô
+Thử lại
 CSV
 N+1
-Index
-Pagination
-Benchmark
-Conclusion
+Chỉ mục
+Phân trang
+Đánh giá hiệu năng
+Kết luận
 ```
 
-### Demo Rehearsal
+### Diễn tập demo
 
-Chạy đúng script ít nhất 1 lần trước demo.
+Chạy đúng tập lệnh ít nhất 1 lần trước demo.
 
-### Definition of Done Day 5
+### Tiêu chí hoàn thành Ngày 5
 
-- [ ] Slide hoàn chỉnh.
+- [ ] Bản trình chiếu hoàn chỉnh.
 - [ ] UML hoàn chỉnh.
-- [ ] Benchmark table hoàn chỉnh.
-- [ ] Demo script hoàn chỉnh.
-- [ ] Docker compose chạy ổn.
-- [ ] Seed script chạy được.
-- [ ] README có hướng dẫn run.
-- [ ] Có backup screenshot benchmark nếu demo live lỗi.
+- [ ] Bảng đánh giá hiệu năng hoàn chỉnh.
+- [ ] Kịch bản demo hoàn chỉnh.
+- [ ] Docker Compose chạy ổn.
+- [ ] Tập lệnh seed chạy được.
+- [ ] README có hướng dẫn chạy.
+- [ ] Có ảnh chụp màn hình đánh giá hiệu năng dự phòng nếu demo trực tiếp gặp lỗi.
 
 ---

@@ -1,45 +1,45 @@
-# 4. Kiến trúc Microservices đề xuất
+# 4. Kiến trúc vi dịch vụ đề xuất
 
-Hệ thống có **4 business services** và **1 platform service** là Scheduler. Media Service sở hữu MinIO; Scheduler sở hữu metadata lịch chạy generic nhưng không sở hữu dữ liệu nghiệp vụ của service khác.
+Hệ thống có **4 dịch vụ nghiệp vụ** và **1 dịch vụ nền tảng** là Scheduler. Media Service sở hữu MinIO; Scheduler sở hữu siêu dữ liệu lịch chạy dùng chung nhưng không sở hữu dữ liệu nghiệp vụ của dịch vụ khác.
 
 ```mermaid
 flowchart LR
-    Client --> Gateway[API Gateway]
+    Client[Ứng dụng khách] --> Gateway[Cổng API]
     Gateway --> Course[Course Service]
     Gateway --> Student[Student Service]
     Gateway --> Media[Media Service]
     Gateway --> Notification[Notification Service]
     Gateway --> Scheduler[Scheduler Service API]
-    Course --> CourseDb[(Course DB)]
-    Student --> StudentDb[(Student DB)]
-    Media --> MediaDb[(Media DB)]
+    Course --> CourseDb[(CSDL Khóa học)]
+    Student --> StudentDb[(CSDL Học viên)]
+    Media --> MediaDb[(CSDL Media)]
     Media --> MinIO[(MinIO)]
-    Notification --> NotificationDb[(Notification DB)]
-    Scheduler --> SchedulerDb[(Scheduler DB)]
-    SchedulerWorker[Scheduler Worker skeleton] -. future .-> SchedulerDb
-    SchedulerWorker -. future internal HTTP .-> Notification
-    SchedulerWorker -. future internal HTTP .-> Media
+    Notification --> NotificationDb[(CSDL Thông báo)]
+    Scheduler --> SchedulerDb[(CSDL Scheduler)]
+    SchedulerWorker[Khung Scheduler Worker] -. tương lai .-> SchedulerDb
+    SchedulerWorker -. HTTP nội bộ trong tương lai .-> Notification
+    SchedulerWorker -. HTTP nội bộ trong tương lai .-> Media
 ```
 
 ---
-# 5. Phân chia Service
+# 5. Phân chia dịch vụ
 
 ## 5.1. Course Service
 
 Chịu trách nhiệm:
 
-- Course
-- Lesson
-- Enrollment
-- Lesson Progress
-- Markdown source for Course description and Lesson content
-- CSV Export
-- N+1 demo
-- Index demo
-- Pagination demo
-- Query Plan demo
+- Khóa học
+- Bài học
+- Ghi danh
+- Tiến độ Bài học
+- Mã nguồn Markdown cho mô tả Khóa học và nội dung Bài học
+- Xuất CSV
+- Minh họa N+1
+- Minh họa chỉ mục
+- Minh họa phân trang
+- Minh họa kế hoạch truy vấn
 
-### Tables
+### Các bảng
 
 ```text
 courses
@@ -54,23 +54,23 @@ lesson_progresses
 
 Chịu trách nhiệm:
 
-- User/Student
-- Student profile
-- Student lookup
+- Người dùng/Học viên
+- Hồ sơ Học viên
+- Tra cứu Học viên
 
-### Tables
+### Các bảng
 
 ```text
 students
 ```
 
-Có thể seed:
+Có thể tạo dữ liệu mẫu:
 
 - 3,000 students
 - 10,000 students
 - 100,000 students
 
-để test batch.
+để kiểm thử xử lý hàng loạt.
 
 ---
 
@@ -78,13 +78,13 @@ Có thể seed:
 
 Chịu trách nhiệm:
 
-- Upload/download object với MinIO.
-- Metadata cho image, video, document, audio và các loại media khác.
-- Presigned/proxy URL, content type validation, size limit, và soft delete.
-- Liên kết media với Course description, Lesson content, Notification body, thumbnail hoặc attachment.
-- Quản lý `media_usages`; Course và Notification Service không truy cập MinIO hoặc Media database trực tiếp.
+- Tải lên/tải xuống đối tượng bằng MinIO.
+- Siêu dữ liệu cho hình ảnh, video, tài liệu, âm thanh và các loại media khác.
+- URL ký trước/URL proxy, xác thực loại nội dung, giới hạn kích thước và xóa mềm.
+- Liên kết media với mô tả Khóa học, nội dung Bài học, nội dung Thông báo, ảnh đại diện hoặc tệp đính kèm.
+- Quản lý `media_usages`; Course Service và Notification Service không truy cập trực tiếp MinIO hoặc cơ sở dữ liệu Media.
 
-### Tables
+### Các bảng
 
 ```text
 media_objects
@@ -97,16 +97,16 @@ media_usages
 
 Chịu trách nhiệm:
 
-- Broadcast notification
-- Gửi notification đơn lẻ
-- In-app inbox và read status của student
-- Notification batch data and recipient-level delivery state
-- Retry
-- Idempotency
-- Failure tracking
-- Batch benchmark
+- Phát thông báo hàng loạt
+- Gửi thông báo đơn lẻ
+- Hộp thư đến trong ứng dụng và trạng thái đọc của Học viên
+- Dữ liệu lô Thông báo và trạng thái phân phối của từng người nhận
+- Thử lại
+- Tính lũy đẳng
+- Theo dõi lỗi
+- Đo kiểm hiệu năng xử lý hàng loạt
 
-### Tables
+### Các bảng
 
 ```text
 notification_batches
@@ -118,66 +118,66 @@ notifications
 
 ## 5.5. Scheduler Service
 
-Scheduler là platform boundary cho định nghĩa job generic và lịch sử từng run:
+Scheduler là ranh giới nền tảng cho định nghĩa tác vụ dùng chung và lịch sử từng lượt chạy:
 
 - Lịch `MANUAL` hoặc `CRON`.
-- Trạng thái cấu hình, timeout, retry và concurrency metadata.
-- Run history, idempotency key, correlation và error/output metadata.
-- API health và Worker skeleton trong phase hiện tại.
+- Siêu dữ liệu trạng thái cấu hình, thời gian chờ, số lần thử lại và xử lý đồng thời.
+- Lịch sử lượt chạy, khóa lũy đẳng, mã tương quan và siêu dữ liệu lỗi/kết quả.
+- API kiểm tra trạng thái và khung Worker trong giai đoạn hiện tại.
 
 ```text
 background_jobs
 background_job_runs
 ```
 
-Scheduler không query `lms_media_db` hoặc `lms_notification_db`. CRON parsing, claim lock, handler execution và internal HTTP calls là follow-up.
+Scheduler không truy vấn `lms_media_db` hoặc `lms_notification_db`. Việc phân tích CRON, khóa nhận xử lý, thực thi bộ xử lý và gọi HTTP nội bộ sẽ được triển khai sau.
 
 ---
-# 6. Vì sao là 4 business services và 1 platform service?
+# 6. Vì sao là 4 dịch vụ nghiệp vụ và 1 dịch vụ nền tảng?
 
 Trong 5 ngày:
 
 ```text
-User Service
+Dịch vụ người dùng
 Course Service
-Lesson Service
-Enrollment Service
-Progress Service
+Dịch vụ bài học
+Dịch vụ ghi danh
+Dịch vụ tiến độ
 Notification Service
-Export Service
+Dịch vụ xuất dữ liệu
 ```
 
-là **over-engineering**.
+là **thiết kế quá mức cần thiết**.
 
-Microservice không có nghĩa là mỗi entity thành một service.
+Vi dịch vụ không có nghĩa là mỗi thực thể trở thành một dịch vụ.
 
-Boundary nên theo **business capability**:
+Ranh giới nên dựa trên **năng lực nghiệp vụ**:
 
 ```text
 Course Service
 Student Service
 Media Service
 Notification Service
-Scheduler Service (platform)
+Scheduler Service (nền tảng)
 ```
 
 Đủ để:
 
-- Có service boundary.
-- Có database ownership.
-- Có network communication.
-- Có Docker network.
-- Có Clean Architecture bên trong từng service.
-- Không làm mất 3 ngày chỉ để cấu hình infrastructure.
+- Có ranh giới dịch vụ.
+- Có quyền sở hữu cơ sở dữ liệu.
+- Có giao tiếp qua mạng.
+- Có mạng Docker.
+- Có kiến trúc sạch bên trong từng dịch vụ.
+- Không mất 3 ngày chỉ để cấu hình hạ tầng.
 
 ---
-# 7. Database ownership
+# 7. Quyền sở hữu cơ sở dữ liệu
 
 Nguyên tắc:
 
-> Mỗi service sở hữu database/schema của riêng nó.
+> Mỗi dịch vụ sở hữu cơ sở dữ liệu/lược đồ riêng.
 
-Trong demo có thể dùng **một MySQL container**, nhưng tạo database riêng:
+Trong bản trình diễn có thể dùng **một container MySQL**, nhưng tạo cơ sở dữ liệu riêng:
 
 ```text
 lms_course_db
@@ -192,7 +192,7 @@ Không nên:
 ```text
 Course Service
     │
-    └── query trực tiếp students table
+    └── truy vấn trực tiếp bảng students
 ```
 
 Nên:
@@ -203,8 +203,8 @@ Course Service
     └── HTTP → Student Service
 ```
 
-Tương tự, Course Service và Notification Service chỉ gọi HTTP tới Media Service để upload, lấy URL, hoặc đăng ký `media_usages`; tuyệt đối không gọi MinIO hay query `lms_media_db` trực tiếp.
+Tương tự, Course Service và Notification Service chỉ gọi HTTP tới Media Service để tải lên, lấy URL hoặc đăng ký `media_usages`; tuyệt đối không gọi MinIO hay truy vấn `lms_media_db` trực tiếp.
 
-Trong Scheduler foundation chưa có cross-service contract. Phase execution sau mới gọi internal HTTP endpoint của service sở hữu nghiệp vụ; không mở rộng sang event bus hoặc query chéo database.
+Phần nền tảng Scheduler chưa có hợp đồng liên dịch vụ. Giai đoạn thực thi sau mới gọi điểm cuối HTTP nội bộ của dịch vụ sở hữu nghiệp vụ; không mở rộng sang bus sự kiện hoặc truy vấn chéo cơ sở dữ liệu.
 
 ---

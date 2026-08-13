@@ -1,16 +1,16 @@
-# Get Student
+# Lấy học viên
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `GET /api/students/{studentId}`
 
-Success data payload `200 OK`:
+Dữ liệu phản hồi thành công `200 OK`:
 
 ```json
 {"id":"student-uuid","email":"student@example.com","displayName":"Student One","status":"ACTIVE"}
 ```
 
-- Validate: `studentId` is UUID.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 STUDENT_ACCESS_DENIED`, `404 STUDENT_NOT_FOUND`.
+- Kiểm tra hợp lệ: `studentId` là UUID.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 STUDENT_ACCESS_DENIED`, `404 STUDENT_NOT_FOUND`.

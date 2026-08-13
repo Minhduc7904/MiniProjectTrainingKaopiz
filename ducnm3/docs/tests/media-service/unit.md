@@ -1,10 +1,10 @@
-# Media Service Unit Tests
+# Kiểm thử đơn vị Media Service
 
-## Scope
+## Phạm vi
 
-Project: `backend/Services/Media/MediaService.UnitTests`
-Sources: `Health/MediaDatabaseHealthProbeTests.cs` and `Storage/*.cs`
-Dependency: không gọi MinIO, MySQL, network, hoặc Docker.
+Dự án: `backend/Services/Media/MediaService.UnitTests`
+Mã nguồn: `Health/MediaDatabaseHealthProbeTests.cs` và `Storage/*.cs`
+Thành phần phụ thuộc: không gọi MinIO, MySQL, mạng hoặc Docker.
 
 Chạy:
 
@@ -12,19 +12,19 @@ Chạy:
 dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
 ```
 
-## Test cases
+## Ca kiểm thử
 
-| Nhóm | Test case | Setup và thao tác | Pass khi |
+| Nhóm | Ca kiểm thử | Thiết lập và thao tác | Đạt khi |
 | --- | --- | --- | --- |
-| Database health | `CheckAsyncPropagatesRequestCancellation` | Tạo `MediaDatabaseHealthProbe` với connection string cổng không hợp lệ rồi huỷ token trước khi gọi. | Ném `OperationCanceledException`, không trả `IsHealthy = false`. |
-| MinIO options | `ValidatorAcceptsCompleteConfiguration` | Cung cấp endpoint, access/secret key, năm bucket hợp lệ và khác nhau. | `MinioStorageOptionsValidator` trả thành công. |
-| MinIO options | `ValidatorRejectsDuplicateOrMalformedBuckets` | Cấu hình bucket trùng `images` và bucket có ký tự không hợp lệ `Invalid_Bucket`. | Validation fail; lỗi chỉ ra bucket phải khác nhau và bucket không hợp lệ. |
-| Bucket mapping | `CategoryMapsToConfiguredBucket` | Lần lượt truyền `IMAGE`, `VIDEO`, `DOCUMENT`, `AUDIO`, `OTHER`. | Trả đúng `images`, `videos`, `documents`, `audios`, `other`. |
-| Object key | `CreateUsesUtcDateUuidAndNormalizedExtension` | Dùng `TimeProvider` cố định ở múi giờ `+07:00`, tạo key `png`. | Key dùng ngày UTC `2026/08/12`, UUID 32 ký tự hex và đuôi `.png`. |
-| Upload validation | `ValidateUploadAcceptsMatchingCategoryAndContentType` | Lần lượt kiểm tra 5 cặp category/MIME: PNG, MP4, PDF, MPEG, octet-stream. | MIME giữ nguyên và extension `.BIN` được chuẩn hoá thành `bin`. |
-| Upload validation | `ValidateUploadRejectsMismatchedCategory` | Truyền category `VIDEO` với MIME `image/png`. | Ném `StorageValidationException`. |
-| Upload validation | `ValidateUploadRejectsUnsafeExtension` | Truyền extension `../png`. | Ném `StorageValidationException`. |
-| Upload validation | `ValidateUploadRejectsSizeMismatch` | Stream có 2 bytes nhưng khai báo size 1. | Ném `StorageValidationException`. |
+| Sức khỏe cơ sở dữ liệu | `CheckAsyncPropagatesRequestCancellation` | Tạo `MediaDatabaseHealthProbe` với chuỗi kết nối có cổng không hợp lệ rồi hủy token trước khi gọi. | Ném `OperationCanceledException`, không trả `IsHealthy = false`. |
+| Tùy chọn MinIO | `ValidatorAcceptsCompleteConfiguration` | Cung cấp điểm cuối, khóa truy cập/bí mật, năm bucket hợp lệ và khác nhau. | `MinioStorageOptionsValidator` trả thành công. |
+| Tùy chọn MinIO | `ValidatorRejectsDuplicateOrMalformedBuckets` | Cấu hình bucket trùng `images` và bucket có ký tự không hợp lệ `Invalid_Bucket`. | Kiểm tra thất bại; lỗi chỉ ra các bucket phải khác nhau và bucket không hợp lệ. |
+| Ánh xạ bucket | `CategoryMapsToConfiguredBucket` | Lần lượt truyền `IMAGE`, `VIDEO`, `DOCUMENT`, `AUDIO`, `OTHER`. | Trả đúng `images`, `videos`, `documents`, `audios`, `other`. |
+| Khóa đối tượng | `CreateUsesUtcDateUuidAndNormalizedExtension` | Dùng `TimeProvider` cố định ở múi giờ `+07:00`, tạo khóa `png`. | Khóa dùng ngày UTC `2026/08/12`, UUID 32 ký tự hệ thập lục phân và đuôi `.png`. |
+| Kiểm tra tải lên | `ValidateUploadAcceptsMatchingCategoryAndContentType` | Lần lượt kiểm tra 5 cặp loại/MIME: PNG, MP4, PDF, MPEG, octet-stream. | MIME giữ nguyên và phần mở rộng `.BIN` được chuẩn hóa thành `bin`. |
+| Kiểm tra tải lên | `ValidateUploadRejectsMismatchedCategory` | Truyền loại `VIDEO` với MIME `image/png`. | Ném `StorageValidationException`. |
+| Kiểm tra tải lên | `ValidateUploadRejectsUnsafeExtension` | Truyền phần mở rộng `../png`. | Ném `StorageValidationException`. |
+| Kiểm tra tải lên | `ValidateUploadRejectsSizeMismatch` | Luồng có 2 byte nhưng khai báo kích thước 1. | Ném `StorageValidationException`. |
 
-Media health HTTP combinations được chạy qua `TestServer`, vì vậy được ghi trong
+Các tổ hợp sức khỏe HTTP của Media được chạy qua `TestServer`, vì vậy được ghi trong
 [`component.md`](component.md), không lặp lại ở đây.

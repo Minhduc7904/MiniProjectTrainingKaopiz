@@ -1,10 +1,10 @@
-# Notification Service Unit Tests
+# Kiểm thử đơn vị Notification Service
 
-## Scope
+## Phạm vi
 
-Project: `backend/Services/Notification/NotificationService.UnitTests`
-Source: `UnitTest1.cs`
-Dependency: không có MySQL hoặc network.
+Dự án: `backend/Services/Notification/NotificationService.UnitTests`
+Mã nguồn: `UnitTest1.cs`
+Thành phần phụ thuộc: không có MySQL hoặc mạng.
 
 Chạy:
 
@@ -12,11 +12,11 @@ Chạy:
 dotnet test backend/Services/Notification/NotificationService.UnitTests/NotificationService.UnitTests.csproj
 ```
 
-## Test cases
+## Ca kiểm thử
 
-| Test | Setup và thao tác | Pass khi |
+| Kiểm thử | Thiết lập và thao tác | Đạt khi |
 | --- | --- | --- |
-| `CheckAsyncPropagatesRequestCancellation` | Tạo `NotificationDatabaseHealthProbe` với connection string cổng không hợp lệ; huỷ token trước khi gọi `CheckAsync`. | Probe ném `OperationCanceledException`; request cancellation không bị nuốt hoặc ánh xạ thành `IsHealthy = false`. |
+| `CheckAsyncPropagatesRequestCancellation` | Tạo `NotificationDatabaseHealthProbe` với chuỗi kết nối có cổng không hợp lệ; hủy token trước khi gọi `CheckAsync`. | Trình kiểm tra ném `OperationCanceledException`; thao tác hủy yêu cầu không bị bỏ qua hoặc ánh xạ thành `IsHealthy = false`. |
 
-Test hiện tại chỉ bảo vệ cancellation behavior của database health probe. Chưa có
-test integration MySQL hoặc workflow notification trong project này.
+Kiểm thử hiện tại chỉ bảo vệ hành vi hủy của trình kiểm tra sức khỏe cơ sở dữ liệu. Chưa
+có kiểm thử tích hợp MySQL hoặc quy trình thông báo trong dự án này.

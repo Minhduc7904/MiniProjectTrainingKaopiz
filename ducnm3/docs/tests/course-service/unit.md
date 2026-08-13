@@ -1,10 +1,10 @@
-# Course Service Unit Tests
+# Kiểm thử đơn vị Course Service
 
-## Scope
+## Phạm vi
 
-Project: `backend/Services/Course/CourseService.UnitTests`
-Source: `UnitTest1.cs`
-Dependency: không có MySQL hoặc network.
+Dự án: `backend/Services/Course/CourseService.UnitTests`
+Mã nguồn: `UnitTest1.cs`
+Thành phần phụ thuộc: không có MySQL hoặc mạng.
 
 Chạy:
 
@@ -12,11 +12,11 @@ Chạy:
 dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTests.csproj
 ```
 
-## Test cases
+## Ca kiểm thử
 
-| Test | Setup và thao tác | Pass khi |
+| Kiểm thử | Thiết lập và thao tác | Đạt khi |
 | --- | --- | --- |
-| `CheckAsyncPropagatesRequestCancellation` | Tạo `CourseDatabaseHealthProbe` với connection string trỏ tới cổng không hợp lệ; huỷ `CancellationToken` trước khi gọi `CheckAsync`. | `CheckAsync` ném `OperationCanceledException`, không chuyển cancellation thành trạng thái database unhealthy. |
+| `CheckAsyncPropagatesRequestCancellation` | Tạo `CourseDatabaseHealthProbe` với chuỗi kết nối trỏ tới cổng không hợp lệ; hủy `CancellationToken` trước khi gọi `CheckAsync`. | `CheckAsync` ném `OperationCanceledException`, không chuyển thao tác hủy thành trạng thái cơ sở dữ liệu không khỏe mạnh. |
 
-Case này đảm bảo shutdown/request-abort được tôn trọng. Nó không kiểm tra
-availability của MySQL thật.
+Ca này bảo đảm thao tác tắt/hủy yêu cầu được tôn trọng. Nó không kiểm tra tính
+khả dụng của MySQL thật.

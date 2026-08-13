@@ -1,6 +1,6 @@
 # 37. Docker Compose
 
-Services:
+Các service:
 
 ```text
 api-gateway
@@ -26,21 +26,21 @@ mysql
 minio
 ```
 
-`SchedulerService.Worker` hiện là skeleton và chưa được chạy thành container
+`SchedulerService.Worker` hiện mới là khung cơ bản và chưa được chạy thành container
 cho tới khi có polling/claim/execution loop.
 
-`data-seeder` là one-shot development tool trong profile `seed`; nó không chạy
-khi dùng `docker compose up` bình thường. Chỉ gọi qua
+`data-seeder` là công cụ phát triển chạy một lần trong profile `seed`; nó không
+chạy khi dùng `docker compose up` bình thường. Chỉ gọi qua
 `scripts/seed/run-development-seed.sh --confirm`.
 
 ---
-# 38. Docker Network
+# 38. Mạng Docker
 
 ```text
 lms-network
 ```
 
-Container gọi nhau bằng service name:
+Các container gọi nhau bằng tên service:
 
 ```text
 course-service
@@ -68,7 +68,7 @@ localhost
 để gọi MySQL từ container.
 
 ---
-# 39. Docker Volume
+# 39. Volume Docker
 
 ```text
 mysql_data
@@ -92,7 +92,7 @@ docker compose down -v
 thì volume mới bị xóa.
 
 ---
-# 40. Environment Variables
+# 40. Biến môi trường
 
 `.env.example`:
 

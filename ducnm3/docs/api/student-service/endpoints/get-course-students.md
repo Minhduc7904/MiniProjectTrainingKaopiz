@@ -1,18 +1,18 @@
-# Get Students Enrolled in Course
+# Lấy học viên đã đăng ký khóa học
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `GET /api/students/course/{courseId}?cursor=opaque-token&limit=500`
 
-Success data payload `200 OK`:
+Dữ liệu phản hồi thành công `200 OK`:
 
 ```json
 {"items":[{"id":"student-uuid","status":"ACTIVE"}],"nextCursor":"opaque-token"}
 ```
 
-- Internal endpoint used by Notification Service for bulk recipients.
-- Validate: `courseId` is UUID; `limit` is 1–1000; cursor is opaque.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 INTERNAL_SERVICE_ONLY`, `404 COURSE_NOT_FOUND`.
-- Must return a stable, deterministic ordering to support idempotent job snapshots.
+- Điểm cuối nội bộ được Notification Service sử dụng để lấy hàng loạt người nhận.
+- Kiểm tra hợp lệ: `courseId` là UUID; `limit` trong khoảng 1–1000; con trỏ là giá trị không trong suốt.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 INTERNAL_SERVICE_ONLY`, `404 COURSE_NOT_FOUND`.
+- Phải trả về thứ tự ổn định, xác định được để hỗ trợ bản chụp tác vụ có tính lũy đẳng.

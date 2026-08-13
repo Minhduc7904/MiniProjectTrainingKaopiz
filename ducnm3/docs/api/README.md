@@ -1,6 +1,6 @@
-# API Documentation
+# Tài liệu API
 
-API contracts are organized by owning service. Do not document a Media Service endpoint in Course Service documentation, even when Course Service calls it.
+Các hợp đồng API được sắp xếp theo dịch vụ sở hữu. Không ghi tài liệu cho điểm cuối của Media Service trong tài liệu Course Service, kể cả khi Course Service gọi điểm cuối đó.
 
 ```text
 api/
@@ -26,18 +26,18 @@ api/
     └── endpoints/
 ```
 
-## Required endpoint contract
+## Hợp đồng bắt buộc của điểm cuối
 
-Every endpoint file must include:
+Mỗi tệp điểm cuối phải bao gồm:
 
-1. Purpose and owner service.
-2. HTTP method and path.
-3. Authentication and authorization conditions.
-4. Request parameters/body, with a concrete request example.
-5. Success response and a concrete response example.
-6. All expected HTTP status codes and error codes.
-7. Validation rules and business preconditions.
-8. Side effects: database records, media usage, background job, or external call.
-9. Pagination, idempotency, concurrency, and compatibility behavior when applicable.
+1. Mục đích và dịch vụ sở hữu.
+2. Phương thức và đường dẫn HTTP.
+3. Điều kiện xác thực và phân quyền.
+4. Tham số/thân yêu cầu, kèm ví dụ yêu cầu cụ thể.
+5. Phản hồi thành công và ví dụ phản hồi cụ thể.
+6. Tất cả mã trạng thái HTTP và mã lỗi dự kiến.
+7. Quy tắc kiểm tra hợp lệ và điều kiện tiên quyết về nghiệp vụ.
+8. Tác động phụ: bản ghi cơ sở dữ liệu, việc sử dụng phương tiện, tác vụ nền hoặc lời gọi bên ngoài.
+9. Hành vi phân trang, tính lũy đẳng, xử lý đồng thời và tương thích khi áp dụng.
 
-Use `_templates/endpoint.md` for new endpoint files. Update the service contract in the same change as implementation.
+Sử dụng `_templates/endpoint.md` cho các tệp điểm cuối mới. Cập nhật hợp đồng của dịch vụ trong cùng thay đổi với phần triển khai.

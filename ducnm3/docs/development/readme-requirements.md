@@ -1,25 +1,25 @@
 # 48. README cần có
 
 ```text
-Project Overview
+Tổng quan dự án
 
-Architecture
+Kiến trúc
 
-Requirements
+Yêu cầu
 
-How to Run
+Cách chạy
 
 docker compose up
 
-Database Migration
+Migration cơ sở dữ liệu
 
-Seed Data
+Dữ liệu seed
 
-API Endpoints
+Các endpoint API
 
-Benchmark
+Đánh giá hiệu năng
 
-Demo Script
+Kịch bản demo
 ```
 
 ---

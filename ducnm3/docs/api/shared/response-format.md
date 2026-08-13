@@ -1,8 +1,8 @@
-# Shared Response Format
+# Định dạng phản hồi dùng chung
 
-All JSON endpoints use this envelope. CSV export, file streams, and redirects to presigned media URLs are explicit non-JSON exceptions.
+Tất cả điểm cuối JSON đều sử dụng cấu trúc bao này. Xuất CSV, truyền tệp theo luồng và chuyển hướng đến URL phương tiện được ký trước là các ngoại lệ không dùng JSON đã được quy định rõ.
 
-## Successful single resource or command
+## Tài nguyên đơn hoặc lệnh thành công
 
 ```json
 {
@@ -16,10 +16,10 @@ All JSON endpoints use this envelope. CSV export, file streams, and redirects to
 }
 ```
 
-- `data`: requested resource, command result, or `null` for an intentional empty success.
-- `meta.traceId`: correlation ID for logs and support; always included in production responses.
+- `data`: tài nguyên được yêu cầu, kết quả lệnh hoặc `null` khi chủ đích trả về kết quả thành công rỗng.
+- `meta.traceId`: ID tương quan dùng cho nhật ký và hỗ trợ; luôn có trong phản hồi ở môi trường sản xuất.
 
-## Cursor pagination
+## Phân trang theo con trỏ
 
 ```json
 {
@@ -41,11 +41,11 @@ All JSON endpoints use this envelope. CSV export, file streams, and redirects to
 }
 ```
 
-- `nextCursor` is `null` when no next page exists.
-- Cursor is opaque, must not expose database IDs or internal ordering fields.
-- The endpoint defines and documents a stable ordering.
+- `nextCursor` là `null` khi không còn trang tiếp theo.
+- Con trỏ là giá trị không trong suốt, không được làm lộ ID cơ sở dữ liệu hoặc trường sắp xếp nội bộ.
+- Điểm cuối xác định và ghi tài liệu cho một thứ tự sắp xếp ổn định.
 
-## Offset pagination
+## Phân trang theo độ lệch
 
 ```json
 {
@@ -68,11 +68,11 @@ All JSON endpoints use this envelope. CSV export, file streams, and redirects to
 }
 ```
 
-- `page` starts at 1.
-- `pageSize` is the requested, validated size.
-- `totalItems` and `totalPages` are required only for offset pagination.
+- `page` bắt đầu từ 1.
+- `pageSize` là kích thước được yêu cầu và đã kiểm tra hợp lệ.
+- `totalItems` và `totalPages` chỉ bắt buộc với phân trang theo độ lệch.
 
-## Errors
+## Lỗi
 
 ```json
 {
@@ -87,14 +87,14 @@ All JSON endpoints use this envelope. CSV export, file streams, and redirects to
 }
 ```
 
-- `error.code`: stable application error code.
-- `error.message`: safe message for API consumers.
-- `error.details`: optional validation detail array; omit when no details apply.
-- Never expose stack traces, SQL, credentials, MinIO bucket names, or object keys.
+- `error.code`: mã lỗi ổn định của ứng dụng.
+- `error.message`: thông báo an toàn dành cho bên sử dụng API.
+- `error.details`: mảng chi tiết kiểm tra hợp lệ không bắt buộc; bỏ qua khi không có chi tiết phù hợp.
+- Tuyệt đối không làm lộ dấu vết ngăn xếp, SQL, thông tin xác thực, tên vùng lưu trữ MinIO hoặc khóa đối tượng.
 
-## Service health
+## Tình trạng dịch vụ
 
-Each service exposes `GET /health`. It has no request body, query parameters, or pagination.
+Mỗi dịch vụ cung cấp `GET /health`. Điểm cuối này không có nội dung yêu cầu, tham số truy vấn hoặc phân trang.
 
 ```json
 {
@@ -111,12 +111,12 @@ Each service exposes `GET /health`. It has no request body, query parameters, or
 }
 ```
 
-- `200`: the HTTP service is running and its owned database accepts `SELECT 1`.
-- `503 DATABASE_UNAVAILABLE`: the HTTP service is running but its owned database cannot be reached.
-- `503 SERVICE_UNAVAILABLE`: API Gateway cannot connect to a downstream service.
+- `200`: dịch vụ HTTP đang chạy và cơ sở dữ liệu do dịch vụ sở hữu chấp nhận `SELECT 1`.
+- `503 DATABASE_UNAVAILABLE`: dịch vụ HTTP đang chạy nhưng không thể kết nối đến cơ sở dữ liệu do dịch vụ sở hữu.
+- `503 SERVICE_UNAVAILABLE`: API Gateway không thể kết nối đến dịch vụ hạ nguồn.
 
-Media Service also includes `data.storage.status` on success because MinIO is
-an owned operational dependency. Its additional failures are:
+Media Service còn bao gồm `data.storage.status` khi thành công vì MinIO là
+thành phần phụ thuộc vận hành do dịch vụ sở hữu. Các lỗi bổ sung gồm:
 
-- `503 STORAGE_UNAVAILABLE`: only the MinIO dependency is unavailable.
-- `503 DEPENDENCY_UNAVAILABLE`: both the Media database and MinIO are unavailable.
+- `503 STORAGE_UNAVAILABLE`: chỉ thành phần phụ thuộc MinIO không khả dụng.
+- `503 DEPENDENCY_UNAVAILABLE`: cả cơ sở dữ liệu của Media Service và MinIO đều không khả dụng.

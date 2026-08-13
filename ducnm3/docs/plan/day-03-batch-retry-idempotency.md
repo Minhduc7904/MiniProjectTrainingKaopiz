@@ -1,14 +1,14 @@
-# DAY 3 — Batch + Retry + Idempotency
+# NGÀY 3 — Xử lý theo lô + Thử lại + Tính idempotent
 
-## Goal
+## Mục tiêu
 
-Demo background processing rõ ràng.
+Demo xử lý nền rõ ràng.
 
-### Task
+### Nhiệm vụ
 
-#### Student Seed
+#### Seed dữ liệu học viên
 
-Generate:
+Tạo:
 
 ```text
 3k
@@ -16,23 +16,23 @@ Generate:
 100k
 ```
 
-students.
+học viên.
 
-#### Notification Batch
+#### Thông báo theo lô
 
 ```http
 POST /notification-batches
 ```
 
-Flow:
+Luồng:
 
 ```text
-Create Batch
-→ Return 202
-→ Worker Process
+Tạo lô
+→ Trả về 202
+→ Worker xử lý
 ```
 
-#### Single notification and inbox
+#### Thông báo đơn lẻ và hộp thư đến
 
 ```http
 POST  /notifications
@@ -40,26 +40,26 @@ GET   /notifications/me
 PATCH /notifications/{id}/read
 ```
 
-- Gửi đơn lẻ tạo một inbox item cho đúng một student.
-- Student chỉ xem và đánh dấu đã đọc notification của chính mình.
-- Batch worker cũng tạo inbox item cho từng recipient.
-- Notification body lưu Markdown và đăng ký media embed/attachment qua Media Service.
+- Gửi đơn lẻ tạo một mục trong hộp thư đến cho đúng một học viên.
+- Học viên chỉ xem và đánh dấu đã đọc thông báo của chính mình.
+- Worker xử lý theo lô cũng tạo một mục trong hộp thư đến cho từng người nhận.
+- Nội dung thông báo lưu Markdown và đăng ký media nhúng/tệp đính kèm qua Media Service.
 
-#### Chunk
+#### Chia lô
 
 ```text
 batchSize = 500
 ```
 
-#### Retry
+#### Thử lại
 
 ```text
-retry 1 lần
+thử lại 1 lần
 ```
 
-#### Failure
+#### Lỗi
 
-Save:
+Lưu:
 
 ```text
 status
@@ -67,23 +67,23 @@ retry_count
 error_message
 ```
 
-#### Idempotency
+#### Tính idempotent
 
 ```text
 UNIQUE(batch_id, student_id)
 ```
 
-### Definition of Done Day 3
+### Tiêu chí hoàn thành Ngày 3
 
-- [ ] API return 202.
-- [ ] Scheduler run gọi Notification batch handler.
-- [ ] Batch 500.
-- [ ] Retry chạy.
-- [ ] Failed item được lưu.
-- [ ] Batch progress và Scheduler run history xem được ở đúng service.
-- [ ] Restart không tạo duplicate successful item.
-- [ ] Gửi đơn lẻ chạy và student đọc/đánh dấu đã đọc notification của mình.
-- [ ] Batch không tạo notification trùng khi worker retry hoặc restart.
-- [ ] Notification Markdown render media thông qua Media Service URL.
+- [ ] API trả về 202.
+- [ ] Lần chạy Scheduler gọi trình xử lý thông báo theo lô.
+- [ ] Mỗi lô gồm 500 mục.
+- [ ] Cơ chế thử lại hoạt động.
+- [ ] Mục thất bại được lưu.
+- [ ] Tiến độ lô và lịch sử chạy Scheduler xem được ở đúng service.
+- [ ] Khởi động lại không tạo trùng mục đã thành công.
+- [ ] Gửi đơn lẻ hoạt động và học viên đọc/đánh dấu đã đọc thông báo của mình.
+- [ ] Xử lý theo lô không tạo thông báo trùng khi worker thử lại hoặc khởi động lại.
+- [ ] Markdown của thông báo hiển thị media thông qua URL của Media Service.
 
 ---

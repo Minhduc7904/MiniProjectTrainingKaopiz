@@ -1,47 +1,47 @@
-# 8. Tech Stack đề xuất
+# 8. Ngăn xếp công nghệ đề xuất
 
-## Backend
+## Phía backend
 
 ```text
 ASP.NET Core
-.NET 10 hoặc version team đang sử dụng
+.NET 10 hoặc phiên bản nhóm đang sử dụng
 EF Core
 MySQL
 Pomelo.EntityFrameworkCore.MySql
 ```
 
-## Storage
+## Lưu trữ
 
 ```text
 MinIO
 ```
 
-## Logging
+## Ghi log
 
 ```text
 Serilog
 ```
 
-## Testing
+## Kiểm thử
 
 ```text
 NUnit
 ```
 
-## API Documentation
+## Tài liệu API
 
 ```text
 Swagger / OpenAPI
 ```
 
-## Deployment
+## Triển khai
 
 ```text
 Docker
 Docker Compose
 ```
 
-## Batch Processing
+## Xử lý theo lô
 
 Ưu tiên:
 
@@ -49,6 +49,6 @@ Docker Compose
 BackgroundService
 ```
 
-thay vì thêm Hangfire/RabbitMQ để giảm scope.
+thay vì thêm Hangfire/RabbitMQ để giảm phạm vi.
 
 ---

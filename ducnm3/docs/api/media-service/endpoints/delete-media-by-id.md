@@ -1,13 +1,13 @@
-# Delete Media
+# Xóa phương tiện
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `DELETE /api/media/{mediaId}`
 
-Success data payload `204 No Content`.
+Dữ liệu phản hồi thành công `204 No Content`.
 
-- Validate: `mediaId` is UUID; only uploader/Admin may delete.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 MEDIA_NOT_FOUND`, `409 MEDIA_IN_USE`.
-- Soft-deletes the metadata and schedules/executes object removal only after no active usage remains.
+- Kiểm tra hợp lệ: `mediaId` là UUID; chỉ người tải lên hoặc quản trị viên được phép xóa.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 MEDIA_NOT_FOUND`, `409 MEDIA_IN_USE`.
+- Xóa mềm siêu dữ liệu và chỉ lên lịch/thực thi việc xóa đối tượng sau khi không còn thông tin sử dụng nào đang hoạt động.

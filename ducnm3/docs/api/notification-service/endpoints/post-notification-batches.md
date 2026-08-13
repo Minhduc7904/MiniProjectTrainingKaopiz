@@ -1,18 +1,18 @@
 # `POST /api/notification-batches`
 
-## Purpose
+## Mục đích
 
-Creates a Notification Service-owned bulk delivery batch and snapshots its recipients. Execution is not implemented in the current foundation phase.
+Tạo một lô gửi hàng loạt thuộc sở hữu của Notification Service và lưu bản chụp danh sách người nhận. Việc thực thi chưa được triển khai trong giai đoạn nền tảng hiện tại.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: required.
-- Roles/scopes: admin with notification broadcast permission.
-- Ownership rule: Notification Service records the authenticated admin as `created_by`.
+- Xác thực: bắt buộc.
+- Vai trò/phạm vi: quản trị viên có quyền phát thông báo.
+- Quy tắc sở hữu: Notification Service ghi nhận quản trị viên đã xác thực vào `created_by`.
 
-## Request
+## Yêu cầu
 
-No path or query parameters.
+Không có tham số đường dẫn hoặc truy vấn.
 
 ```json
 {
@@ -24,13 +24,13 @@ No path or query parameters.
 }
 ```
 
-- `title`: required string, maximum 200 characters.
-- `bodyMarkdown`: required safe Markdown.
-- `targetScope`: `COURSE_ENROLLED`, `STUDENT_IDS`, or `ALL_STUDENTS`.
-- `courseId`: required UUID only for `COURSE_ENROLLED`.
-- `batchSize`: integer from 100 through 1000.
+- `title`: chuỗi bắt buộc, tối đa 200 ký tự.
+- `bodyMarkdown`: Markdown an toàn, bắt buộc.
+- `targetScope`: `COURSE_ENROLLED`, `STUDENT_IDS` hoặc `ALL_STUDENTS`.
+- `courseId`: UUID chỉ bắt buộc với `COURSE_ENROLLED`.
+- `batchSize`: số nguyên từ 100 đến 1000.
 
-## Success response
+## Phản hồi thành công
 
 ```http
 202 Accepted
@@ -49,16 +49,16 @@ No path or query parameters.
 }
 ```
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `202`: batch and recipient snapshot were accepted.
-- `400 VALIDATION_FAILED`: body or target scope is invalid.
-- `401`: authentication is missing or invalid.
-- `403`: caller cannot broadcast.
-- `404 COURSE_NOT_FOUND`: requested Course does not exist.
-- `409 BATCH_CONFLICT`: equivalent active batch conflicts with the request.
-- `500 UNEXPECTED_ERROR`: safe unexpected failure response.
+- `202`: lô và bản chụp người nhận đã được chấp nhận.
+- `400 VALIDATION_FAILED`: nội dung yêu cầu hoặc phạm vi đích không hợp lệ.
+- `401`: thiếu thông tin xác thực hoặc thông tin xác thực không hợp lệ.
+- `403`: bên gọi không có quyền phát thông báo.
+- `404 COURSE_NOT_FOUND`: khóa học được yêu cầu không tồn tại.
+- `409 BATCH_CONFLICT`: một lô tương đương đang hoạt động xung đột với yêu cầu.
+- `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-Creates `notification_batches` and `notification_batch_items`. It does not create a Scheduler job yet; future `NOTIFICATION_BATCH_DISPATCH` integration will pass only the logical `batchId`. Retry and worker execution remain follow-up work.
+Tạo `notification_batches` và `notification_batch_items`. Hiện chưa tạo tác vụ Scheduler; tích hợp `NOTIFICATION_BATCH_DISPATCH` trong tương lai sẽ chỉ truyền `batchId` logic. Cơ chế thử lại và việc thực thi tiến trình xử lý vẫn là công việc tiếp theo.

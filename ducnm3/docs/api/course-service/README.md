@@ -1,9 +1,9 @@
-# Course Service API
+# API của Course Service
 
-- [Create Course](endpoints/post-courses.md)
-- [Get Course](endpoints/get-course-by-id.md)
-- [List Courses](endpoints/get-courses.md)
-- [Cursor List Courses](endpoints/get-courses-cursor.md)
-- [Create Lesson](endpoints/post-course-lessons.md)
-- [Get Course Details](endpoints/get-course-details.md)
-- [Export Courses](endpoints/get-courses-export.md)
+- [Tạo khóa học](endpoints/post-courses.md)
+- [Lấy khóa học](endpoints/get-course-by-id.md)
+- [Liệt kê khóa học](endpoints/get-courses.md)
+- [Liệt kê khóa học theo con trỏ](endpoints/get-courses-cursor.md)
+- [Tạo bài học](endpoints/post-course-lessons.md)
+- [Lấy chi tiết khóa học](endpoints/get-course-details.md)
+- [Xuất khóa học](endpoints/get-courses-export.md)

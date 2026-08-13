@@ -1,64 +1,64 @@
-# 53. Definition of Done toàn project
+# 53. Tiêu chí hoàn thành toàn project
 
-## Infrastructure
+## Hạ tầng
 
-- [ ] 4 business services và Scheduler platform service chạy: Course, Student, Media, Notification, Scheduler.
+- [ ] 4 service nghiệp vụ và service nền tảng Scheduler hoạt động: Course, Student, Media, Notification, Scheduler.
 - [ ] MySQL chạy Docker.
 - [ ] MinIO chạy Docker.
-- [ ] Docker network đúng.
-- [ ] Volume persist data.
+- [ ] Mạng Docker đúng.
+- [ ] Volume lưu dữ liệu bền vững.
 - [ ] `.env.example` đầy đủ.
 
-## Course
+## Khóa học
 
-- [ ] Course CRUD cơ bản.
-- [ ] Lesson.
-- [ ] Enrollment.
-- [ ] Progress.
+- [ ] CRUD khóa học cơ bản.
+- [ ] Bài học.
+- [ ] Ghi danh.
+- [ ] Tiến độ học tập.
 
-## Media
+## Nội dung đa phương tiện
 
 - [ ] Chỉ Media Service truy cập MinIO.
-- [ ] Upload/download media với metadata và MIME validation.
-- [ ] `media_usages` liên kết thumbnail, embed, và attachment.
-- [ ] Markdown Course/Lesson/Notification nhúng media qua Media Service URL.
+- [ ] Tải lên/tải xuống media với metadata và kiểm tra hợp lệ MIME.
+- [ ] `media_usages` liên kết thumbnail, nội dung nhúng và tệp đính kèm.
+- [ ] Markdown của khóa học/bài học/thông báo nhúng media qua URL của Media Service.
 
-## Batch
+## Xử lý theo lô
 
-- [ ] Background job.
-- [ ] Chunking.
-- [ ] Retry 1 lần.
-- [ ] Failure tracking.
-- [ ] Idempotency.
-- [ ] Benchmark 3k/10k/100k.
+- [ ] Tác vụ chạy nền.
+- [ ] Chia lô.
+- [ ] Thử lại 1 lần.
+- [ ] Theo dõi lỗi.
+- [ ] Tính idempotent.
+- [ ] Đánh giá hiệu năng với 3k/10k/100k.
 
-## Performance
+## Hiệu năng
 
 - [ ] CSV 100k+.
-- [ ] CSV streaming.
-- [ ] N+1 demo.
-- [ ] N+1 optimized.
-- [ ] Index benchmark.
+- [ ] Truyền phát CSV.
+- [ ] Demo N+1.
+- [ ] N+1 đã tối ưu.
+- [ ] Đánh giá hiệu năng chỉ mục.
 - [ ] `EXPLAIN ANALYZE`.
-- [ ] Offset pagination benchmark.
-- [ ] Cursor pagination.
+- [ ] Đánh giá hiệu năng phân trang offset.
+- [ ] Phân trang theo con trỏ.
 
 ## API
 
-- [ ] Validation error.
-- [ ] Not Found.
-- [ ] Conflict.
-- [ ] Internal error.
-- [ ] Standard error response.
+- [ ] Lỗi kiểm tra hợp lệ.
+- [ ] Không tìm thấy.
+- [ ] Xung đột.
+- [ ] Lỗi nội bộ.
+- [ ] Phản hồi lỗi chuẩn.
 
-## Documentation
+## Tài liệu
 
-- [ ] Architecture diagram.
-- [ ] Class diagram.
-- [ ] Sequence diagram.
-- [ ] Activity diagram.
-- [ ] Benchmark result.
-- [ ] Slide.
-- [ ] Demo script.
+- [ ] Sơ đồ kiến trúc.
+- [ ] Sơ đồ lớp.
+- [ ] Sơ đồ tuần tự.
+- [ ] Sơ đồ hoạt động.
+- [ ] Kết quả đánh giá hiệu năng.
+- [ ] Bản trình chiếu.
+- [ ] Kịch bản demo.
 
 ---

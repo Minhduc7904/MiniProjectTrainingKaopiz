@@ -1,6 +1,6 @@
-# 18. Notification Batch — Naive Version
+# 18. Thông báo hàng loạt — Phiên bản đơn giản
 
-Version đầu tiên cố tình implement không tối ưu:
+Phiên bản đầu tiên được chủ ý triển khai chưa tối ưu:
 
 ```csharp
 var users = await studentClient.GetAllStudentsAsync();
@@ -13,57 +13,57 @@ foreach (var user in users)
 
 Vấn đề cần ghi nhận:
 
-- Load toàn bộ user vào RAM.
-- HTTP request chạy lâu.
-- Timeout.
-- Không resume.
-- Không retry tốt.
-- Khó trace.
-- Một lỗi có thể ảnh hưởng cả flow.
+- Nạp toàn bộ người dùng vào RAM.
+- Yêu cầu HTTP chạy lâu.
+- Hết thời gian chờ.
+- Không thể tiếp tục.
+- Cơ chế thử lại chưa tốt.
+- Khó theo dõi.
+- Một lỗi có thể ảnh hưởng cả luồng.
 
-Đây là **Before** trong demo.
+Đây là trạng thái **Trước** trong phần trình diễn.
 
 ---
-# 19. Notification Batch — Optimized Version
+# 19. Thông báo hàng loạt — Phiên bản tối ưu
 
-Các bước worker dưới đây là mục tiêu của phase execution, chưa được triển khai
-trong Scheduler foundation.
+Các bước của tiến trình xử lý nền dưới đây là mục tiêu của giai đoạn thực thi, chưa được triển
+khai trong nền tảng Scheduler.
 
-Flow:
+Luồng:
 
 ```text
 POST /notification-batches
         │
         ▼
-Create Notification Batch
+Tạo lô thông báo
         │
         ▼
 202 Accepted
         │
-        └───────────────── Client
+        └───────────────── Máy khách
 
-Background Worker
+Tiến trình xử lý nền
         │
         ▼
-Load 500 records
+Nạp 500 bản ghi
         │
         ▼
-Create in-app notification
+Tạo thông báo trong ứng dụng
         │
         ▼
-Update Batch Items
+Cập nhật các mục trong lô
         │
         ▼
-Next Batch
+Lô tiếp theo
 ```
 
-Recommended:
+Khuyến nghị:
 
 ```text
 batchSize = 500
 ```
 
-Có thể test:
+Có thể kiểm thử:
 
 ```text
 100
@@ -71,26 +71,26 @@ Có thể test:
 1000
 ```
 
-để có số liệu trade-off.
+để có số liệu về sự đánh đổi.
 
 ---
-# 20. Retry Strategy
+# 20. Chiến lược thử lại
 
-Rule:
+Quy tắc:
 
 ```text
-Attempt 1
+Lần thử 1
    │
-   ├── Success
+   ├── Thành công
    │
-   └── Fail
+   └── Thất bại
         │
         ▼
-     Retry 1
+     Lần thử lại 1
         │
-        ├── Success
+        ├── Thành công
         │
-        └── Fail
+        └── Thất bại
              │
              ▼
            FAILED
@@ -106,7 +106,7 @@ status
 ```
 
 ---
-# 21. Fake Notification Sender để demo lỗi
+# 21. Bộ gửi thông báo giả để trình diễn lỗi
 
 Không cần tích hợp email/SMS thật.
 
@@ -116,13 +116,13 @@ Có thể tạo:
 FakeNotificationSender
 ```
 
-Behavior:
+Hành vi:
 
 ```text
-5% request fail random
+5% yêu cầu thất bại ngẫu nhiên
 ```
 
-hoặc fail theo rule:
+hoặc thất bại theo quy tắc:
 
 ```text
 studentId % 20 == 0
@@ -130,36 +130,36 @@ studentId % 20 == 0
 
 Ưu điểm:
 
-- Demo deterministic.
+- Phần trình diễn có tính xác định.
 - Không phụ thuộc dịch vụ ngoài.
-- Có thể show retry rõ ràng.
+- Có thể trình bày cơ chế thử lại rõ ràng.
 
 ---
-# 22. Idempotency
+# 22. Tính lũy đẳng
 
-Tình huống demo:
-
-```text
-Batch xử lý student 1 → 500
-Worker crash
-Worker restart
-```
-
-Nếu không idempotent:
+Tình huống trình diễn:
 
 ```text
-student 1 → 500
-có thể nhận notification lần 2
+Lô xử lý học viên 1 → 500
+Tiến trình xử lý nền gặp sự cố
+Tiến trình xử lý nền khởi động lại
 ```
 
-Fix:
+Nếu không có tính lũy đẳng:
+
+```text
+học viên 1 → 500
+có thể nhận thông báo lần 2
+```
+
+Cách sửa:
 
 ```text
 UNIQUE(batch_id, student_id)
 UNIQUE(notification_batch_id, recipient_student_id)
 ```
 
-và chỉ process:
+và chỉ xử lý:
 
 ```text
 status IN (PENDING, RETRY)
@@ -171,11 +171,11 @@ Nếu:
 status = SUCCESS
 ```
 
-thì skip.
+thì bỏ qua.
 
-Khi retry, handler phải tái sử dụng hoặc kiểm tra notification đã tạo cho
-`batch_id + student_id` trước khi insert, để học viên không thấy hai inbox item
-giống nhau. Scheduler run dùng idempotency key riêng và không thay thế
-constraint nghiệp vụ này.
+Khi thử lại, bộ xử lý phải tái sử dụng hoặc kiểm tra thông báo đã tạo cho
+`batch_id + student_id` trước khi chèn, để học viên không thấy hai mục hộp thư
+đến giống nhau. Lần chạy Scheduler dùng khóa lũy đẳng riêng và không thay thế
+ràng buộc nghiệp vụ này.
 
 ---

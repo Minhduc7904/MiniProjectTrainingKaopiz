@@ -1,10 +1,10 @@
-# Shared Presentation Unit Tests
+# Kiểm thử đơn vị lớp Presentation dùng chung
 
-## Scope
+## Phạm vi
 
-Project: `backend/BuildingBlocks/BuildingBlocks.Presentation.Tests`
-Source: `Middleware/ApiMiddlewareTests.cs`
-Dependency: không gọi network, database, hoặc Docker.
+Dự án: `backend/BuildingBlocks/BuildingBlocks.Presentation.Tests`
+Mã nguồn: `Middleware/ApiMiddlewareTests.cs`
+Thành phần phụ thuộc: không gọi mạng, cơ sở dữ liệu hoặc Docker.
 
 Chạy:
 
@@ -12,12 +12,12 @@ Chạy:
 dotnet test backend/BuildingBlocks/BuildingBlocks.Presentation.Tests/BuildingBlocks.Presentation.Tests.csproj
 ```
 
-## Test cases
+## Ca kiểm thử
 
-| Test | Setup và thao tác | Pass khi |
+| Kiểm thử | Thiết lập và thao tác | Đạt khi |
 | --- | --- | --- |
-| `CorrelationIdMiddlewareGeneratesAndPropagatesTraceIdentifier` | Tạo `DefaultHttpContext` không có correlation ID, gọi `CorrelationIdMiddleware.InvokeAsync`. | `TraceIdentifier` được tạo không rỗng; header `X-Correlation-Id` trên request và response đều bằng đúng `TraceIdentifier`. |
-| `ExceptionMiddlewareReturnsStandardServiceUnavailableEnvelope` | Dùng `DefaultHttpContext` có trace ID `trace-id`; next middleware ném `ServiceUnavailableException`. Gọi `ApiExceptionHandlingMiddleware.InvokeAsync`. | HTTP status là `503`; response có `error.code = SERVICE_UNAVAILABLE`; `meta.traceId = trace-id`. |
+| `CorrelationIdMiddlewareGeneratesAndPropagatesTraceIdentifier` | Tạo `DefaultHttpContext` không có ID tương quan, gọi `CorrelationIdMiddleware.InvokeAsync`. | `TraceIdentifier` được tạo không rỗng; tiêu đề `X-Correlation-Id` trên yêu cầu và phản hồi đều bằng đúng `TraceIdentifier`. |
+| `ExceptionMiddlewareReturnsStandardServiceUnavailableEnvelope` | Dùng `DefaultHttpContext` có ID theo dõi `trace-id`; middleware tiếp theo ném `ServiceUnavailableException`. Gọi `ApiExceptionHandlingMiddleware.InvokeAsync`. | Trạng thái HTTP là `503`; phản hồi có `error.code = SERVICE_UNAVAILABLE`; `meta.traceId = trace-id`. |
 
-Hai test bảo vệ response middleware dùng shared API contract, không phụ thuộc
-triển khai của một service cụ thể.
+Hai kiểm thử bảo vệ middleware phản hồi dùng hợp đồng API chung, không phụ thuộc
+triển khai của một dịch vụ cụ thể.

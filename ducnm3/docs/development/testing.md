@@ -1,8 +1,9 @@
-# Testing Guide
+# Hướng dẫn kiểm thử
 
-## Framework and organization
+## Nền tảng kiểm thử và cách tổ chức
 
-All backend tests use NUnit. Test projects are named after their owning component and remain beside that component:
+Tất cả kiểm thử backend sử dụng NUnit. Các project kiểm thử được đặt tên theo
+component sở hữu và nằm cạnh component đó:
 
 ```text
 backend/
@@ -18,24 +19,26 @@ backend/
     └── Lms.DataSeeder.IntegrationTests/
 ```
 
-Do not create empty test projects. Add a service test project with the first behavior owned by that service.
+Không tạo project kiểm thử rỗng. Chỉ thêm project kiểm thử cho service khi có
+hành vi đầu tiên thuộc trách nhiệm của service đó.
 
-## Detailed test catalogue
+## Danh mục kiểm thử chi tiết
 
-The executable test catalogue is organized in
-[`../tests/README.md`](../tests/README.md), then by owning service or shared
-component and test type. Each page documents the source test name, setup,
-input/dependency state, expected result, and exact pass condition.
+Danh mục kiểm thử có thể thực thi được tổ chức trong
+[`../tests/README.md`](../tests/README.md), sau đó phân theo service hoặc
+component dùng chung sở hữu và loại kiểm thử. Mỗi trang ghi lại tên kiểm thử
+nguồn, bước chuẩn bị, trạng thái đầu vào/dependency, kết quả mong đợi và điều
+kiện đạt chính xác.
 
-## Run tests
+## Chạy kiểm thử
 
-Run all backend tests:
+Chạy toàn bộ kiểm thử backend:
 
 ```bash
 dotnet test backend/Lms.sln -m:1
 ```
 
-Run one service:
+Chạy kiểm thử cho một service:
 
 ```bash
 dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTests.csproj
@@ -48,52 +51,53 @@ dotnet test backend/Tools/Lms.DataSeeder.UnitTests/Lms.DataSeeder.UnitTests.cspr
 dotnet test backend/Tools/Lms.DataSeeder.IntegrationTests/Lms.DataSeeder.IntegrationTests.csproj
 ```
 
-## Test types
+## Các loại kiểm thử
 
-| Type | Scope | External dependencies |
+| Loại | Phạm vi | Phụ thuộc bên ngoài |
 | --- | --- | --- |
-| Unit | Domain, Application, deterministic Infrastructure behavior | None; mock or fake interfaces |
-| Component | Middleware, minimal API endpoints, response envelopes | `TestServer`, no network or database |
-| Service integration | Storage adapters, API, SQL migration, repositories, scaffolded DbContext | Isolated dependency containers |
-| Gateway integration | YARP prefixes, downstream errors, Swagger proxying | TestServer and fake downstream HTTP handler |
-| Cross-service integration | Service boundaries through Gateway | Docker Compose or dedicated Testcontainers |
-| End-to-end | Browser workflow across frontend and backend | Playwright plus isolated system stack |
+| Đơn vị | Domain, Application, hành vi Infrastructure có tính xác định | Không có; dùng interface giả lập |
+| Component | Middleware, endpoint API tối giản, cấu trúc bao phản hồi | `TestServer`, không dùng mạng hoặc database |
+| Tích hợp service | Adapter lưu trữ, API, SQL migration, repository, DbContext đã scaffold | Các container phụ thuộc cô lập |
+| Tích hợp Gateway | Tiền tố YARP, lỗi từ service phía sau, proxy Swagger | TestServer và HTTP handler phía sau giả |
+| Tích hợp liên service | Ranh giới service thông qua Gateway | Docker Compose hoặc Testcontainer chuyên biệt |
+| Đầu cuối | Luồng trình duyệt xuyên suốt frontend và backend | Playwright cùng ngăn xếp hệ thống cô lập |
 
-## Adding a new test
+## Thêm kiểm thử mới
 
-1. Put business-rule tests in `<Service>Service.UnitTests`.
-2. Add endpoint or middleware tests to the owning component test project.
-3. Add a service integration project only when the change needs real MySQL, SQL migration, or generated DbContext behavior.
-4. Keep cross-service tests outside an individual service, in root `tests/`.
-5. Every test must create its own data and clean up through its isolated test environment.
+1. Đặt kiểm thử quy tắc nghiệp vụ trong `<Service>Service.UnitTests`.
+2. Thêm kiểm thử endpoint hoặc middleware vào project kiểm thử của component sở hữu.
+3. Chỉ thêm project kiểm thử tích hợp service khi thay đổi cần MySQL thật, SQL migration hoặc hành vi của DbContext được sinh.
+4. Đặt kiểm thử liên service bên ngoài từng service riêng lẻ, trong thư mục gốc `tests/`.
+5. Mỗi kiểm thử phải tự tạo dữ liệu và dọn dẹp thông qua môi trường kiểm thử cô lập của chính nó.
 
-## Media Service storage tests
+## Kiểm thử storage của Media Service
 
-`MediaService.UnitTests` covers storage option validation, bucket mapping, UTC
-object-key generation, upload request validation, database cancellation, and
-all four database/MinIO health combinations.
+`MediaService.UnitTests` bao phủ việc kiểm tra hợp lệ option storage, ánh xạ
+bucket, sinh object key theo UTC, kiểm tra hợp lệ request upload, hủy thao tác
+database và cả bốn tổ hợp trạng thái database/MinIO.
 
-`MediaService.IntegrationTests` starts an isolated MinIO Testcontainer. It
-creates all five buckets and verifies upload, existence, download, metadata,
-delete, category mapping, and storage health without depending on the
-developer's Docker Compose stack. Docker must be running to execute this
-project.
+`MediaService.IntegrationTests` khởi động một MinIO Testcontainer cô lập. Dự án
+này tạo đủ năm bucket và kiểm tra upload, tồn tại, download, metadata, xóa, ánh
+xạ category và trạng thái storage mà không phụ thuộc vào Docker Compose stack
+của lập trình viên. Docker phải đang chạy để thực thi dự án này.
 
-## Scheduler Service tests
+## Kiểm thử Scheduler Service
 
-`SchedulerService.UnitTests` currently verifies that
-`SchedulerDatabaseHealthProbe` propagates request cancellation. Database
-availability response mapping is covered by the shared presentation component
-tests because Scheduler uses the common `MapDatabaseHealthEndpoint` mapping.
-No job execution tests exist yet: the Worker intentionally has no polling,
-claiming, CRON parsing, or handler loop in this phase.
+`SchedulerService.UnitTests` hiện kiểm tra
+`SchedulerDatabaseHealthProbe` truyền tiếp yêu cầu hủy. Việc ánh xạ phản hồi
+trạng thái sẵn sàng của database được bao phủ bởi kiểm thử component presentation
+dùng chung vì Scheduler sử dụng ánh xạ `MapDatabaseHealthEndpoint` chung.
+Chưa có kiểm thử thực thi job: trong giai đoạn này, Worker chủ đích chưa có vòng
+lặp polling, claiming, phân tích CRON hoặc xử lý handler.
 
-## Data Seeder tests
+## Kiểm thử Data Seeder
 
-`Lms.DataSeeder.UnitTests` covers deterministic UUID/data generation,
-relationship ranges, exact plan calculation and Development safety guards.
+`Lms.DataSeeder.UnitTests` bao phủ việc sinh UUID/dữ liệu có tính xác định, phạm
+vi quan hệ, tính toán kế hoạch chính xác và các chốt an toàn cho môi trường
+Development.
 
-`Lms.DataSeeder.IntegrationTests` starts isolated Student and Course MySQL 8.4
-containers, applies the real V001 migrations and verifies seed counts,
-relationship uniqueness, resume idempotency and non-empty database rejection.
-The test never uses local Compose databases.
+`Lms.DataSeeder.IntegrationTests` khởi động các container MySQL 8.4 cô lập cho
+Student và Course, áp dụng migration V001 thật, đồng thời kiểm tra số lượng dữ
+liệu seed, tính duy nhất của quan hệ, tính idempotent khi resume và việc từ chối
+database không rỗng. Kiểm thử này không bao giờ sử dụng các database Compose
+trên máy cục bộ.

@@ -1,5 +1,5 @@
-# Guides
+# Hướng dẫn
 
-- [Git workflow](GIT_GUIDE.md)
-- [Docker Compose and shared Swagger](docker-compose.md)
-- [Database First and SQL migrations](MIGRATION_GUIDE.md)
+- [Quy trình Git](GIT_GUIDE.md)
+- [Docker Compose và Swagger dùng chung](docker-compose.md)
+- [Database First và migration SQL](MIGRATION_GUIDE.md)

@@ -1,40 +1,40 @@
-# Docker Compose and Shared Swagger Guide
+# Hướng dẫn Docker Compose và Swagger dùng chung
 
-## Prerequisites
+## Điều kiện tiên quyết
 
-- Docker Engine and Docker Compose plugin are running.
-- Work from the `ducnm3/` directory, which contains `docker-compose.yml` and `.env`.
+- Docker Engine và plugin Docker Compose đang chạy.
+- Thực hiện trong thư mục `ducnm3/`, nơi chứa `docker-compose.yml` và `.env`.
 
-## Start the stack
+## Khởi động toàn bộ hệ thống
 
 ```bash
 docker compose up --build
 ```
 
-Run detached:
+Chạy ở chế độ nền:
 
 ```bash
 docker compose up -d --build
 ```
 
-Stop containers and the network:
+Dừng các container và mạng:
 
 ```bash
 docker compose down
 ```
 
-## Service ports
+## Cổng dịch vụ
 
-- API Gateway and shared Swagger UI: `http://localhost:5100`
+- API Gateway và Swagger UI dùng chung: `http://localhost:5100`
 - Course Service: `http://localhost:5101`
 - Student Service: `http://localhost:5102`
 - Media Service: `http://localhost:5103`
 - Notification Service: `http://localhost:5104`
 - Scheduler Service: `http://localhost:5105`
 - MinIO API: `http://localhost:9000`
-- MinIO console: `http://localhost:9001`
+- Bảng điều khiển MinIO: `http://localhost:9001`
 
-Gateway routes external requests by service prefix:
+Gateway định tuyến các yêu cầu bên ngoài theo tiền tố dịch vụ:
 
 - `/course/{path}` → Course Service
 - `/student/{path}` → Student Service
@@ -42,11 +42,11 @@ Gateway routes external requests by service prefix:
 - `/notification/{path}` → Notification Service
 - `/scheduler/{path}` → Scheduler Service
 
-For example, Course health is available through `http://localhost:5100/course/health`.
+Ví dụ, trạng thái sức khỏe của Course Service có tại `http://localhost:5100/course/health`.
 
-## Shared Swagger UI
+## Swagger UI dùng chung
 
-`api-gateway` serves a single NSwag UI at `http://localhost:5100/swagger`. Use the document selector to load the APIs for one service at a time:
+`api-gateway` cung cấp một NSwag UI duy nhất tại `http://localhost:5100/swagger`. Dùng trình chọn tài liệu để tải API của từng dịch vụ:
 
 - Course Service
 - Student Service
@@ -54,7 +54,7 @@ For example, Course health is available through `http://localhost:5100/course/he
 - Notification Service
 - Scheduler Service
 
-The Gateway proxies each document through the same origin:
+Gateway chuyển tiếp từng tài liệu qua cùng một origin:
 
 - `/course/swagger/v1/swagger.json`
 - `/student/swagger/v1/swagger.json`
@@ -62,11 +62,11 @@ The Gateway proxies each document through the same origin:
 - `/notification/swagger/v1/swagger.json`
 - `/scheduler/swagger/v1/swagger.json`
 
-No browser-to-service CORS configuration is needed because the UI and documents are served through the Gateway.
+Không cần cấu hình CORS từ trình duyệt đến dịch vụ vì giao diện và tài liệu đều được cung cấp qua Gateway.
 
-## Environment configuration
+## Cấu hình môi trường
 
-`.env` contains local development configuration and credentials:
+`.env` chứa cấu hình và thông tin xác thực cho môi trường phát triển cục bộ:
 
 ```dotenv
 ASPNETCORE_ENVIRONMENT=Development
@@ -86,61 +86,62 @@ MINIO_AUDIO_BUCKET=audios
 MINIO_OTHER_BUCKET=other
 ```
 
-`.env` is ignored by Git. Never put production credentials in `.env.example`;
-use a deployment secret store outside local development.
+Git bỏ qua `.env`. Tuyệt đối không đặt thông tin xác thực môi trường sản xuất trong `.env.example`;
+hãy dùng kho lưu trữ bí mật của hệ thống triển khai bên ngoài môi trường phát triển cục bộ.
 
-## MinIO provisioning
+## Cấp phát MinIO
 
-`minio` stores object data in the persistent `minio-data` volume. `minio-init`
-waits for the MinIO health endpoint, creates the five Media Service buckets,
-and provisions a least-privilege application user. The initialization script is
-safe to run repeatedly and the Media Service waits for it to finish.
+`minio` lưu dữ liệu đối tượng trong volume bền vững `minio-data`. `minio-init`
+đợi điểm cuối sức khỏe của MinIO, tạo năm bucket của Media Service và cấp phát
+người dùng ứng dụng theo nguyên tắc đặc quyền tối thiểu. Có thể chạy lại tập lệnh
+khởi tạo một cách an toàn và Media Service sẽ đợi tập lệnh hoàn tất.
 
-Run only the storage dependencies:
+Chỉ chạy các thành phần phụ thuộc về lưu trữ:
 
 ```bash
 docker compose up -d minio minio-init
 ```
 
-Remove containers while preserving data:
+Xóa các container nhưng giữ nguyên dữ liệu:
 
 ```bash
 docker compose down
 ```
 
-Remove containers and both MySQL/MinIO development volumes:
+Xóa các container cùng cả hai volume phát triển MySQL/MinIO:
 
 ```bash
 docker compose down -v
 ```
 
-## Opt-in data seeder profile
+## Cấu hình tạo dữ liệu theo lựa chọn
 
-`data-seeder` uses Compose profile `seed`, so regular `docker compose up` never
-creates development data. Run it only through the guarded wrapper:
+`data-seeder` dùng cấu hình Compose `seed`, vì vậy lệnh `docker compose up` thông
+thường không bao giờ tạo dữ liệu phát triển. Chỉ chạy công cụ này qua tập lệnh bao
+bọc có cơ chế bảo vệ:
 
 ```bash
 scripts/seed/run-development-seed.sh --confirm
 ```
 
-The wrapper prepares migrated Student/Course schemas and runs the one-shot
-console container. See [`DATA_SEED_GUIDE.md`](DATA_SEED_GUIDE.md).
+Tập lệnh bao bọc chuẩn bị schema Student/Course đã áp dụng migration và chạy
+container dòng lệnh một lần. Xem [`DATA_SEED_GUIDE.md`](DATA_SEED_GUIDE.md).
 
-## Troubleshooting
+## Khắc phục sự cố
 
-Check container status:
+Kiểm tra trạng thái container:
 
 ```bash
 docker compose ps
 ```
 
-Inspect all logs:
+Xem toàn bộ nhật ký:
 
 ```bash
 docker compose logs --follow
 ```
 
-Rebuild one service:
+Dựng lại một dịch vụ:
 
 ```bash
 docker compose build media-service

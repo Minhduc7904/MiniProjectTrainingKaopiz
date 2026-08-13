@@ -1,3 +1,3 @@
-# Runbooks
+# Sổ tay vận hành
 
-Add operational procedures here, including deployment, rollback, incident response, data recovery, and service-specific troubleshooting.
+Thêm các quy trình vận hành tại đây, bao gồm triển khai, hoàn tác, ứng phó sự cố, khôi phục dữ liệu và khắc phục sự cố riêng cho từng dịch vụ.

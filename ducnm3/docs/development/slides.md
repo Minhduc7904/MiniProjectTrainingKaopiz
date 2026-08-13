@@ -1,22 +1,22 @@
-# 45. Slide Structure
+# 45. Cấu trúc slide
 
 Khoảng 14 slide:
 
 ```text
-01. Project Overview
-02. Requirements Mapping
-03. System Architecture
-04. Microservice Boundary
-05. Clean Architecture
+01. Tổng quan dự án
+02. Đối chiếu yêu cầu
+03. Kiến trúc hệ thống
+04. Ranh giới microservice
+05. Kiến trúc sạch
 06. Docker + MinIO
-07. Batch Processing
-08. Retry + Idempotency
-09. Batch Benchmark
-10. CSV Streaming
+07. Xử lý theo lô
+08. Thử lại + Tính idempotent
+09. Đánh giá hiệu năng xử lý theo lô
+10. Truyền phát CSV
 11. N+1
-12. Index + Query Plan
-13. Pagination
-14. Overall Benchmark + Lessons Learned
+12. Chỉ mục + Kế hoạch truy vấn
+13. Phân trang
+14. Đánh giá hiệu năng tổng thể + Bài học kinh nghiệm
 ```
 
 ---

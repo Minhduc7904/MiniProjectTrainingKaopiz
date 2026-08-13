@@ -1,71 +1,71 @@
-# Mini Project LMS Microservices — Kế hoạch triển khai 5 ngày
+# Dự án thu gọn vi dịch vụ LMS — Kế hoạch triển khai 5 ngày
 
 ## 1. Mục tiêu dự án
 
-Xây dựng một **LMS mini** theo kiến trúc **Microservices + Clean Architecture**, đủ nhỏ để hoàn thành và demo trong **5 ngày**, nhưng vẫn cover được các bài toán backend mà lead yêu cầu:
+Xây dựng một **LMS thu gọn** theo kiến trúc **Vi dịch vụ + Kiến trúc sạch**, đủ nhỏ để hoàn thành và trình diễn trong **5 ngày**, nhưng vẫn bao quát được các bài toán phía máy chủ mà trưởng nhóm yêu cầu:
 
 - Docker / Docker Compose
 - MySQL
-- MinIO / Object Storage
-- Batch Job
-- Retry + Failure Tracking + Idempotency
-- Batch Performance
-- CSV Export 100k+ records
-- CSV Streaming / Chunking
-- N+1 Query
-- Database Index
+- MinIO / Lưu trữ đối tượng
+- Tác vụ theo lô
+- Thử lại + Theo dõi lỗi + Tính lũy đẳng
+- Hiệu năng xử lý theo lô
+- Xuất CSV trên 100 nghìn bản ghi
+- Truyền luồng / Phân đoạn CSV
+- Truy vấn N+1
+- Chỉ mục cơ sở dữ liệu
 - `EXPLAIN` / `EXPLAIN ANALYZE`
-- Offset Pagination vs Cursor Pagination
-- API Benchmark
-- Error Handling
-- UML / Architecture Diagram
-- Có số liệu **Before / After Optimization**
+- Phân trang theo độ lệch so với phân trang bằng con trỏ
+- Đo hiệu năng API
+- Xử lý lỗi
+- UML / Sơ đồ kiến trúc
+- Có số liệu **Trước / Sau tối ưu hóa**
 
-> Mục tiêu của mini project không phải làm một LMS đầy đủ tính năng.
-> Mục tiêu là tạo đủ "đất diễn" để chứng minh hiểu kiến trúc, database, performance, batch processing và reliability.
+> Mục tiêu của dự án thu gọn không phải làm một LMS đầy đủ tính năng.
+> Mục tiêu là tạo đủ "đất diễn" để chứng minh hiểu kiến trúc, cơ sở dữ liệu, hiệu năng, xử lý theo lô và độ tin cậy.
 
 ---
-# 2. Scope chức năng
+# 2. Phạm vi chức năng
 
-## 2.1. Actor
+## 2.1. Tác nhân
 
-### Admin
+### Quản trị viên
 
-- Tạo/sửa/xóa Course.
-- Tạo Lesson.
-- Upload và quản lý nhiều media: thumbnail, image, video, audio, tài liệu.
-- Xem danh sách Course.
-- Export Course CSV.
+- Tạo/sửa/xóa khóa học.
+- Tạo bài học.
+- Tải lên và quản lý nhiều loại nội dung đa phương tiện: ảnh thu nhỏ, hình ảnh, video, âm thanh, tài liệu.
+- Xem danh sách khóa học.
+- Xuất khóa học ra CSV.
 - Gửi thông báo cho một học viên.
 - Gửi thông báo hàng loạt cho học viên.
-- Xem trạng thái batch notification.
-- Xem các item gửi thất bại.
+- Xem trạng thái thông báo hàng loạt.
+- Xem các mục gửi thất bại.
 
-### Student
+### Học viên
 
-- Xem Course đã enroll.
-- Xem Lesson.
-- Cập nhật Lesson Progress.
-- Xem inbox notification của chính mình và đánh dấu đã đọc.
+- Xem khóa học đã ghi danh.
+- Xem bài học.
+- Cập nhật tiến độ bài học.
+- Xem thông báo trong hộp thư đến của chính mình và đánh dấu đã đọc.
 
 ---
 # 3. Những chức năng KHÔNG làm trong 5 ngày
 
-Để tránh scope nổ:
+Để tránh phạm vi tăng mất kiểm soát:
 
-- Payment
-- Exam realtime
-- Chat
-- Permission chi tiết
-- Refresh token phức tạp
-- Email template editor
-- Video transcoding
-- Search engine Elasticsearch
+- Thanh toán
+- Thi thời gian thực
+- Trò chuyện
+- Phân quyền chi tiết
+- Token làm mới phức tạp
+- Trình chỉnh sửa mẫu email
+- Chuyển mã video
+- Công cụ tìm kiếm Elasticsearch
 - Kafka/RabbitMQ
 - Kubernetes
-- Distributed tracing phức tạp
-- CQRS/Event Sourcing đầy đủ
+- Theo dõi phân tán phức tạp
+- CQRS/Lưu nguồn sự kiện đầy đủ
 
-Authentication có thể dùng JWT đơn giản nếu cần demo.
+Có thể dùng xác thực JWT đơn giản nếu cần trình diễn.
 
 ---

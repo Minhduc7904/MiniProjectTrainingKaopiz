@@ -1,8 +1,8 @@
-# Error Handling and Observability
+# Xử lý lỗi và khả năng quan sát
 
-## Error handling
+## Xử lý lỗi
 
-Use global `ExceptionHandlingMiddleware` and the shared response contract in [error-format.md](error-format.md).
+Sử dụng `ExceptionHandlingMiddleware` toàn cục và hợp đồng phản hồi dùng chung trong [error-format.md](error-format.md).
 
 ```text
 ValidationException
@@ -14,47 +14,47 @@ NotFoundException
 ConflictException
     → 409
 
-Unhandled Exception
+Ngoại lệ chưa được xử lý
     → 500
 
-Database unavailable
+Cơ sở dữ liệu không khả dụng
     → 503 DATABASE_UNAVAILABLE
 
-Media storage unavailable
+Kho lưu trữ phương tiện không khả dụng
     → 503 STORAGE_UNAVAILABLE
 
-Media database and storage unavailable
+Cơ sở dữ liệu và kho lưu trữ phương tiện không khả dụng
     → 503 DEPENDENCY_UNAVAILABLE
 
-Downstream service unavailable at API Gateway
+Dịch vụ hạ nguồn không khả dụng tại API Gateway
     → 503 SERVICE_UNAVAILABLE
 ```
 
-Never expose stack traces, connection strings, internal SQL, or secrets.
+Tuyệt đối không làm lộ dấu vết ngăn xếp, chuỗi kết nối, SQL nội bộ hoặc thông tin bí mật.
 
-## Logging and observability
+## Ghi nhật ký và khả năng quan sát
 
-Use structured logs (for example, Serilog) with:
+Sử dụng nhật ký có cấu trúc (ví dụ: Serilog) với các thông tin sau:
 
 ```text
-Request
-Response Status
-Elapsed Time
+Yêu cầu
+Trạng thái phản hồi
+Thời gian thực thi
 CorrelationId
 
-Batch Job Start
-Batch Number
-Batch Size
-Success Count
-Failure Count
-Retry
-Elapsed Time
+Bắt đầu tác vụ theo lô
+Số thứ tự lô
+Kích thước lô
+Số lượng thành công
+Số lượng thất bại
+Thử lại
+Thời gian thực thi
 
-Database slow operation
-Unhandled exception
+Thao tác cơ sở dữ liệu chậm
+Ngoại lệ chưa được xử lý
 ```
 
-Example:
+Ví dụ:
 
 ```text
 JobId=123

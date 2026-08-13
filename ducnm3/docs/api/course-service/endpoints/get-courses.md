@@ -1,17 +1,17 @@
-# List Courses
+# Liệt kê khóa học
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `GET /api/courses?status=PUBLISHED&page=1&pageSize=20`
 
-Success data payload `200 OK`:
+Dữ liệu phản hồi thành công `200 OK`:
 
 ```json
 {"items":[{"id":"course-uuid","name":"Backend Fundamentals","status":"PUBLISHED"}],"page":1,"pageSize":20,"total":1}
 ```
 
-- Validate: `page >= 1`; `pageSize` is 1–100; `status` is optional valid enum.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`.
-- Ordering must be documented when implementation is added.
+- Kiểm tra hợp lệ: `page >= 1`; `pageSize` trong khoảng 1–100; `status` là giá trị liệt kê hợp lệ và không bắt buộc.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`.
+- Phải ghi tài liệu về thứ tự sắp xếp khi bổ sung phần triển khai.

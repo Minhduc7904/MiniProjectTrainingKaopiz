@@ -1,20 +1,20 @@
 # `GET /health`
 
-## Purpose
+## Mục đích
 
-Checks that Course Service is running and its owned Course database accepts a lightweight query.
+Kiểm tra Course Service đang chạy và cơ sở dữ liệu Course do dịch vụ sở hữu chấp nhận một truy vấn nhẹ.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: not required.
-- Roles/scopes: none.
-- Ownership rule: not applicable.
+- Xác thực: không bắt buộc.
+- Vai trò/phạm vi: không có.
+- Quy tắc sở hữu: không áp dụng.
 
-## Request
+## Yêu cầu
 
-No path parameter, query parameter, or request body. Pagination does not apply.
+Không có tham số đường dẫn, tham số truy vấn hoặc nội dung yêu cầu. Không áp dụng phân trang.
 
-## Success response
+## Phản hồi thành công
 
 ```http
 200 OK
@@ -35,11 +35,11 @@ No path parameter, query parameter, or request body. Pagination does not apply.
 }
 ```
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `200`: Course Service and `lms_course_db` are available.
-- `503 DATABASE_UNAVAILABLE`: Course Service is running but cannot query its database.
+- `200`: Course Service và `lms_course_db` đều khả dụng.
+- `503 DATABASE_UNAVAILABLE`: Course Service đang chạy nhưng không thể truy vấn cơ sở dữ liệu của mình.
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-The endpoint executes `SELECT 1` against Course Service's own database only. It does not write data or call another service.
+Điểm cuối chỉ thực thi `SELECT 1` trên cơ sở dữ liệu riêng của Course Service. Điểm cuối không ghi dữ liệu hoặc gọi dịch vụ khác.

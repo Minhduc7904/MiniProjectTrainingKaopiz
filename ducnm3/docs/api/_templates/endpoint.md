@@ -1,22 +1,22 @@
 # `METHOD /api/resource`
 
-## Purpose
+## Mục đích
 
-State the user or system outcome and the owning service.
+Nêu kết quả đối với người dùng hoặc hệ thống và dịch vụ sở hữu.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: required or not required.
-- Roles/scopes: allowed callers.
-- Ownership rule: how the service confirms the caller may access the resource.
+- Xác thực: bắt buộc hoặc không bắt buộc.
+- Vai trò/phạm vi: các bên gọi được phép.
+- Quy tắc sở hữu: cách dịch vụ xác nhận bên gọi được phép truy cập tài nguyên.
 
-## Request
+## Yêu cầu
 
-### Path and query parameters
+### Tham số đường dẫn và truy vấn
 
-Document each name, type, required flag, default, and validation rule.
+Ghi rõ tên, kiểu, cờ bắt buộc, giá trị mặc định và quy tắc kiểm tra hợp lệ của từng tham số.
 
-### Body
+### Nội dung yêu cầu
 
 ```json
 {
@@ -24,11 +24,11 @@ Document each name, type, required flag, default, and validation rule.
 }
 ```
 
-Document each body field, its type, required flag, validation, and business meaning.
+Ghi rõ kiểu, cờ bắt buộc, quy tắc kiểm tra hợp lệ và ý nghĩa nghiệp vụ của từng trường trong nội dung yêu cầu.
 
-## Success response
+## Phản hồi thành công
 
-Use the envelope in [`../shared/response-format.md`](../shared/response-format.md).
+Sử dụng cấu trúc bao trong [`../shared/response-format.md`](../shared/response-format.md).
 
 ```http
 200 OK
@@ -45,23 +45,23 @@ Use the envelope in [`../shared/response-format.md`](../shared/response-format.m
 }
 ```
 
-For list endpoints, use the cursor or offset pagination envelope from the shared response format.
+Với điểm cuối dạng danh sách, sử dụng cấu trúc bao phân trang theo con trỏ hoặc độ lệch trong định dạng phản hồi dùng chung.
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `2xx`: success behavior.
-- `400`: request validation failures.
-- `401`: missing or invalid authentication.
-- `403`: authorization or ownership failure.
-- `404`: resource is not found.
-- `409`: business or concurrency conflict.
-- `5xx`: unexpected service or dependency failure.
+- `2xx`: hành vi khi thành công.
+- `400`: yêu cầu không vượt qua kiểm tra hợp lệ.
+- `401`: thiếu thông tin xác thực hoặc thông tin xác thực không hợp lệ.
+- `403`: không đáp ứng yêu cầu phân quyền hoặc quyền sở hữu.
+- `404`: không tìm thấy tài nguyên.
+- `409`: xung đột nghiệp vụ hoặc xử lý đồng thời.
+- `5xx`: lỗi không mong đợi từ dịch vụ hoặc thành phần phụ thuộc.
 
-List only codes that this endpoint can actually return and name the error code for each expected error.
+Chỉ liệt kê các mã mà điểm cuối thực sự có thể trả về và nêu mã lỗi cho từng lỗi dự kiến.
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-- Preconditions before execution.
-- Database records created or changed.
-- Events, background jobs, external HTTP calls, or MinIO operations.
-- Idempotency, pagination, ordering, or retry behavior when applicable.
+- Điều kiện tiên quyết trước khi thực thi.
+- Các bản ghi cơ sở dữ liệu được tạo hoặc thay đổi.
+- Sự kiện, tác vụ nền, lời gọi HTTP bên ngoài hoặc thao tác MinIO.
+- Hành vi lũy đẳng, phân trang, sắp xếp hoặc thử lại khi áp dụng.

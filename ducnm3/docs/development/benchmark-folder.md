@@ -1,4 +1,4 @@
-# 47. Benchmark Folder
+# 47. Thư mục benchmark
 
 ```text
 docs/benchmark/
@@ -10,10 +10,10 @@ docs/benchmark/
 └── pagination-results.md
 ```
 
-Format:
+Định dạng:
 
 ```text
-Environment
+Môi trường
 
 CPU:
 RAM:
@@ -21,19 +21,20 @@ MySQL:
 .NET:
 Docker:
 
-Dataset:
+Tập dữ liệu:
 100k
 
-Before:
+Trước khi tối ưu:
 ...
 
-After:
+Sau khi tối ưu:
 ...
 
-Conclusion:
+Kết luận:
 ...
 ```
 
-Việc ghi environment rất quan trọng vì benchmark không có context thì số liệu ít ý nghĩa.
+Việc ghi môi trường rất quan trọng vì số liệu benchmark sẽ ít ý nghĩa nếu không
+có ngữ cảnh.
 
 ---

@@ -1,4 +1,4 @@
-# 43. Priority nếu bị thiếu thời gian
+# 43. Mức ưu tiên khi thiếu thời gian
 
 ## P0 — bắt buộc
 
@@ -6,14 +6,14 @@
 Docker
 MySQL
 MinIO
-Batch
-Retry
+Xử lý theo lô
+Thử lại
 CSV
 N+1
-Index
-Pagination
-Error Handling
-Benchmark
+Chỉ mục
+Phân trang
+Xử lý lỗi
+Đánh giá hiệu năng
 ```
 
 ## P1 — nên có
@@ -23,18 +23,18 @@ API Gateway
 Serilog
 NUnit
 CorrelationId
-Cursor Pagination
-Idempotency
+Phân trang theo con trỏ
+Tính idempotent
 ```
 
 ## P2 — bỏ được
 
 ```text
-Frontend đẹp
+Giao diện đẹp
 JWT phức tạp
-Refresh Token
-Role Permission
-Message Broker
+Token làm mới
+Phân quyền theo vai trò
+Message broker (trình trung gian thông điệp)
 Redis
 Kubernetes
 ```

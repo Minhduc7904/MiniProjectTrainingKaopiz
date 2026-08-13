@@ -1,73 +1,73 @@
-# DAY 4 — Performance Day
+# NGÀY 4 — Ngày hiệu năng
 
 Đây là ngày quan trọng nhất.
 
-## Goal
+## Mục tiêu
 
-Hoàn thành toàn bộ Before / After benchmark.
+Hoàn thành toàn bộ benchmark trước và sau khi tối ưu.
 
 ---
 
-## Task 1 — CSV
+## Nhiệm vụ 1 — CSV
 
-Implement:
+Triển khai:
 
 ```text
 /courses/export-naive
 /courses/export-stream
 ```
 
-Test:
+Kiểm thử:
 
 ```text
 10k
 100k
 ```
 
-Record:
+Ghi lại:
 
 ```text
-Time
-Memory
-File size
+Thời gian
+Bộ nhớ
+Kích thước tệp
 ```
 
 ---
 
-## Task 2 — Index
+## Nhiệm vụ 2 — Chỉ mục
 
-Seed:
+Dữ liệu seed:
 
 ```text
 100k
-1M courses
+1M khóa học
 ```
 
-Nếu 1M seed quá lâu:
+Nếu seed 1M bản ghi mất quá nhiều thời gian:
 
 - Giữ script riêng.
-- Tạo ít nhất dataset đủ lớn để thấy khác biệt.
+- Tạo ít nhất một tập dữ liệu đủ lớn để thấy khác biệt.
 - Nhưng mục tiêu cuối vẫn là thử 1M nếu máy cho phép.
 
-Test query:
+Truy vấn kiểm thử:
 
 ```text
 status + created_at
 ```
 
-Before:
+Trước khi tối ưu:
 
 ```text
-No index
+Không có chỉ mục
 ```
 
-After:
+Sau khi tối ưu:
 
 ```text
-Composite index
+Chỉ mục kết hợp
 ```
 
-Run:
+Chạy:
 
 ```sql
 EXPLAIN ANALYZE
@@ -75,9 +75,9 @@ EXPLAIN ANALYZE
 
 ---
 
-## Task 3 — Pagination
+## Nhiệm vụ 3 — Phân trang
 
-Test:
+Kiểm thử:
 
 ```text
 OFFSET 0
@@ -86,19 +86,19 @@ OFFSET 100k
 OFFSET 500k
 ```
 
-Implement cursor:
+Triển khai cursor:
 
 ```text
 afterId
 ```
 
-Compare.
+So sánh.
 
 ---
 
-## Task 4 — Batch Benchmark
+## Nhiệm vụ 4 — Đánh giá hiệu năng xử lý theo lô
 
-Test:
+Kiểm thử:
 
 ```text
 3k
@@ -106,23 +106,23 @@ Test:
 100k
 ```
 
-Record:
+Ghi lại:
 
 ```text
-Time
-Memory
-Throughput
+Thời gian
+Bộ nhớ
+Thông lượng
 ```
 
 ---
 
-## Definition of Done Day 4
+## Tiêu chí hoàn thành Ngày 4
 
-- [ ] CSV before/after có số liệu.
-- [ ] N+1 before/after có query count.
-- [ ] Index before/after có EXPLAIN.
-- [ ] Pagination before/after có time.
-- [ ] Batch có benchmark.
+- [ ] CSV trước/sau tối ưu có số liệu.
+- [ ] N+1 trước/sau tối ưu có số lượng truy vấn.
+- [ ] Chỉ mục trước/sau tối ưu có EXPLAIN.
+- [ ] Phân trang trước/sau tối ưu có số liệu thời gian.
+- [ ] Có đánh giá hiệu năng xử lý theo lô.
 - [ ] Lưu kết quả vào `docs/benchmark`.
 
 ---

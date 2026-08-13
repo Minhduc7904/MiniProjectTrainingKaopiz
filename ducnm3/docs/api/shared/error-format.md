@@ -1,5 +1,5 @@
-# Shared Error Format
+# Định dạng lỗi dùng chung
 
-The canonical success, error, cursor-pagination, and offset-pagination envelopes are defined in [response-format.md](response-format.md).
+Các cấu trúc bao chuẩn cho trường hợp thành công, lỗi, phân trang theo con trỏ và phân trang theo độ lệch được định nghĩa trong [response-format.md](response-format.md).
 
-Use its `error` and `meta.traceId` fields for every JSON error response. Validation field errors belong in `error.details`; do not add endpoint-specific top-level response fields.
+Sử dụng các trường `error` và `meta.traceId` của định dạng này cho mọi phản hồi lỗi JSON. Lỗi kiểm tra hợp lệ của trường phải nằm trong `error.details`; không thêm trường cấp cao nhất dành riêng cho từng điểm cuối vào phản hồi.

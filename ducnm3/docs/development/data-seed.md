@@ -1,59 +1,59 @@
-# Development Data Seed Strategy
+# Chiến lược seed dữ liệu phát triển
 
-Large development datasets are created by
-`backend/Tools/Lms.DataSeeder`, not by HTTP endpoints or SQL migrations.
-`scripts/seed/run-development-seed.sh` is the guarded user entrypoint and the
-Docker Compose `seed` profile keeps the tool opt-in.
+Các tập dữ liệu phát triển lớn được tạo bằng
+`backend/Tools/Lms.DataSeeder`, không phải qua endpoint HTTP hoặc migration SQL.
+`scripts/seed/run-development-seed.sh` là điểm vào có chốt bảo vệ dành cho
+người dùng, còn profile `seed` của Docker Compose bảo đảm công cụ chỉ chạy khi
+được chủ động yêu cầu.
 
-## Ownership
+## Quyền sở hữu
 
-- Seeder writes Students through the Student database connection.
-- Seeder writes Courses, Lessons and Enrollments through the Course database
-  connection.
-- `enrollments.student_id` remains a logical cross-database reference; no
-  cross-database foreign key is introduced.
-- Business services do not reference the seeder project.
+- Seeder ghi Student qua kết nối database Student.
+- Seeder ghi khóa học, bài học và lượt ghi danh qua kết nối database Course.
+- `enrollments.student_id` vẫn là tham chiếu logic xuyên database; không tạo
+  foreign key xuyên database.
+- Các service nghiệp vụ không tham chiếu project seeder.
 
-The console tool is a development adapter outside the service runtime. It reuses
-the physical database contracts because this workload is intended for local
-performance/demo data and inserting hundreds of thousands of rows through APIs
-would distort both runtime and benchmark results.
+Công cụ console là một adapter phát triển nằm ngoài runtime của service. Công
+cụ tái sử dụng các hợp đồng database vật lý vì khối lượng công việc này phục vụ dữ liệu
+hiệu năng/demo cục bộ; việc chèn hàng trăm nghìn bản ghi qua API sẽ làm sai lệch
+cả thời gian chạy lẫn kết quả benchmark.
 
-## Determinism and idempotency
+## Tính xác định và tính idempotent
 
-The generator derives UUIDs and relationship choices from:
+Bộ sinh tạo UUID và lựa chọn quan hệ từ:
 
 ```text
-random-seed + entity type + deterministic indexes
+random-seed + loại thực thể + chỉ mục xác định
 ```
 
-The same options produce the same rows. Multi-row inserts use no-op duplicate
-handling, allowing an interrupted run to continue with `--resume`. A different
-random seed represents a different dataset and must not be mixed into non-empty
-tables.
+Cùng tùy chọn sẽ tạo ra cùng các bản ghi. Thao tác chèn nhiều bản ghi xử lý dữ
+liệu trùng bằng thao tác rỗng (no-op), cho phép tiếp tục lần chạy bị gián đoạn với `--resume`.
+Random seed khác đại diện cho tập dữ liệu khác và không được trộn vào các bảng
+không rỗng.
 
-## Write phases
+## Các giai đoạn ghi dữ liệu
 
-1. Validate environment, exact database names, migration/table availability,
-   current row counts and acquire an advisory lock.
-2. Calculate exact expected Lesson and Enrollment totals.
-3. Seed Students.
-4. Seed Courses.
-5. Seed Lessons after their parent Courses.
-6. Seed Enrollments after Students and Courses.
-7. Validate exact totals, relationship ranges and a cross-database logical
-   Student reference.
+1. Kiểm tra hợp lệ môi trường, tên database chính xác, trạng thái sẵn sàng của
+   migration/bảng và số bản ghi hiện tại, sau đó lấy khóa tư vấn (advisory lock).
+2. Tính chính xác tổng số bài học và lượt ghi danh dự kiến.
+3. Seed Student.
+4. Seed khóa học.
+5. Seed bài học sau khóa học cha.
+6. Seed lượt ghi danh sau học viên và khóa học.
+7. Kiểm tra tổng số chính xác, phạm vi quan hệ và một tham chiếu logic học viên
+   xuyên database.
 
-Each batch is parameterized and transactional. Default batch size is `1,000`;
-the tool generates and releases one batch at a time.
+Mỗi lô được tham số hóa và thực thi trong transaction. Kích thước lô mặc định
+là `1,000`; công cụ tạo và giải phóng từng lô một.
 
-## Default scale
+## Quy mô mặc định
 
-- `100,000` Students.
-- `100,000` Courses.
-- `1-5` Lessons per Course.
-- `1-10` enrollments per Student.
-- No lesson progress.
+- `100,000` Student.
+- `100,000` khóa học.
+- `1-5` bài học cho mỗi khóa học.
+- `1-10` lượt ghi danh cho mỗi học viên.
+- Không có tiến độ bài học.
 
-See [`../guide/DATA_SEED_GUIDE.md`](../guide/DATA_SEED_GUIDE.md) for commands,
-resume/reset behavior and operational troubleshooting.
+Xem các lệnh, hành vi resume/reset và cách khắc phục sự cố vận hành tại
+[`../guide/DATA_SEED_GUIDE.md`](../guide/DATA_SEED_GUIDE.md).

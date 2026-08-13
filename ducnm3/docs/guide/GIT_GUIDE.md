@@ -1,12 +1,12 @@
-# Git Workflow Guide
+# Hướng dẫn quy trình Git
 
-## Branch conventions
+## Quy ước nhánh
 
-- `ducnm3` is the default integration branch.
-- Use a feature branch only for a focused change that will be reviewed through a pull request.
-- Feature branches follow `feature/ducnm3_<short-description>`, for example `feature/ducnm3_health-api-contracts`.
+- `ducnm3` là nhánh tích hợp mặc định.
+- Chỉ dùng nhánh tính năng cho một thay đổi tập trung sẽ được rà soát qua yêu cầu gộp (pull request).
+- Nhánh tính năng tuân theo mẫu `feature/ducnm3_<short-description>`, ví dụ `feature/ducnm3_health-api-contracts`.
 
-## Start a feature
+## Bắt đầu một tính năng
 
 ```bash
 git switch ducnm3
@@ -14,9 +14,9 @@ git pull --ff-only origin ducnm3
 git switch -c feature/ducnm3_<short-description>
 ```
 
-Keep each branch scoped to one purpose. Do not include generated artifacts, credentials, `.env`, or unrelated cleanup.
+Giữ mỗi nhánh trong phạm vi một mục đích. Không đưa vào sản phẩm được sinh, thông tin xác thực, `.env` hoặc phần dọn dẹp không liên quan.
 
-## Daily workflow
+## Quy trình hằng ngày
 
 ```bash
 git status --short
@@ -27,37 +27,37 @@ git add <changed-files>
 git commit -m "add database-backed service health checks"
 ```
 
-Use an imperative commit subject that describes the outcome. Before committing, verify tests or the relevant local runtime workflow.
+Dùng chủ đề commit ở thể mệnh lệnh để mô tả kết quả. Trước khi commit, hãy xác minh các kiểm thử hoặc quy trình chạy cục bộ liên quan.
 
-## Open a pull request
+## Mở yêu cầu gộp (pull request)
 
 ```bash
 git push -u origin feature/ducnm3_<short-description>
 ```
 
-Create the pull request in Bitbucket Server, selecting `ducnm3` as the target branch. The push output includes the direct “Create pull request” URL for the new source branch.
+Tạo yêu cầu gộp (pull request) trong Bitbucket Server và chọn `ducnm3` làm nhánh đích. Kết quả của lệnh push chứa URL tạo yêu cầu gộp trực tiếp cho nhánh nguồn mới.
 
-The PR should state:
+Yêu cầu gộp cần nêu:
 
-- the behavioral or architectural change;
-- important configuration or migration implications;
-- exact verification commands and results;
-- follow-up work that is intentionally excluded.
+- thay đổi về hành vi hoặc kiến trúc;
+- các ảnh hưởng quan trọng đến cấu hình hoặc migration;
+- lệnh xác minh chính xác và kết quả;
+- công việc tiếp theo được chủ ý loại khỏi phạm vi.
 
-## Update a feature branch
+## Cập nhật nhánh tính năng
 
-When `ducnm3` has new commits, update the feature branch with a non-destructive merge:
+Khi `ducnm3` có commit mới, cập nhật nhánh tính năng bằng phép gộp không phá hủy:
 
 ```bash
 git fetch origin
 git merge origin/ducnm3
 ```
 
-Resolve conflicts locally, rebuild/test, then commit the merge result. Do not force-push shared branches.
+Giải quyết xung đột cục bộ, dựng/kiểm thử lại rồi commit kết quả gộp. Không force-push các nhánh dùng chung.
 
-## Finish
+## Hoàn tất
 
-After the pull request is merged, switch back to `ducnm3` and remove the merged local branch:
+Sau khi yêu cầu gộp (pull request) được gộp, chuyển lại về `ducnm3` và xóa nhánh cục bộ đã gộp:
 
 ```bash
 git switch ducnm3

@@ -1,7 +1,7 @@
-# Development Setup Guide
+# Hướng dẫn thiết lập môi trường phát triển
 
-Hướng dẫn này dành cho người mới chạy backend LMS trên máy local. Cách nhanh
-nhất là chạy toàn bộ stack bằng Docker Compose; không cần cài MySQL hoặc MinIO
+Hướng dẫn này dành cho người mới chạy backend LMS trên máy cục bộ. Cách nhanh
+nhất là chạy toàn bộ hệ thống bằng Docker Compose; không cần cài MySQL hoặc MinIO
 trực tiếp trên máy.
 
 ## 1. Cài công cụ cần thiết
@@ -10,9 +10,9 @@ Bắt buộc:
 
 - Git.
 - Docker Engine (Docker Desktop trên Windows/macOS, Docker Engine trên Linux).
-- Docker Compose plugin.
+- Tiện ích Docker Compose.
 
-Khuyến nghị nếu cần build/test/scaffold trực tiếp trên máy:
+Khuyến nghị nếu cần biên dịch/kiểm thử/scaffold trực tiếp trên máy:
 
 - .NET SDK `10.0`.
 
@@ -25,41 +25,42 @@ docker compose version
 dotnet --version
 ```
 
-`dotnet` không bắt buộc để chỉ chạy Docker Compose. Tuy nhiên cần có nó khi
-chạy unit/integration test, migration script hoặc EF Core scaffold ở local.
+`dotnet` không bắt buộc nếu chỉ chạy Docker Compose. Tuy nhiên, cần có công cụ
+này khi chạy kiểm thử đơn vị/tích hợp, script migration hoặc EF Core scaffold
+trên máy cục bộ.
 
-## 2. Clone project
+## 2. Sao chép project
 
 ```bash
 git clone https://bitbucket.kaopiz.com/scm/sbuin/intern_be.git
 cd intern_be/ducnm3
 ```
 
-Mọi lệnh trong guide này được chạy từ thư mục `ducnm3/`, nơi có
+Mọi lệnh trong hướng dẫn này được chạy từ thư mục `ducnm3/`, nơi có
 `docker-compose.yml` và `.env.example`.
 
-## 3. Kiểm tra port trước khi khởi động
+## 3. Kiểm tra cổng trước khi khởi động
 
-Docker Compose cần các port sau chưa được dùng:
+Docker Compose cần các cổng sau chưa được sử dụng:
 
-| Component | Port |
+| Thành phần | Cổng |
 | --- | --- |
 | API Gateway | `5100` |
 | Course / Student / Media / Notification / Scheduler API | `5101` / `5102` / `5103` / `5104` / `5105` |
 | MySQL | `3306` |
 | MinIO API / Console | `9000` / `9001` |
 
-Trên Linux, kiểm tra port ví dụ:
+Ví dụ kiểm tra cổng trên Linux:
 
 ```bash
 ss -ltn
 ```
 
-Tìm các port trong bảng ở output. Nếu có port đang dùng, dừng process/container
-đang chiếm port hoặc đổi mapping port trong `docker-compose.yml` và các local
-connection string liên quan.
+Tìm các cổng trong bảng ở đầu ra. Nếu có cổng đang được sử dụng, dừng
+process/container đang chiếm cổng hoặc đổi ánh xạ cổng trong
+`docker-compose.yml` và các connection string cục bộ liên quan.
 
-## 4. Tạo cấu hình local
+## 4. Tạo cấu hình cục bộ
 
 Tạo `.env` từ template:
 
@@ -67,21 +68,21 @@ Tạo `.env` từ template:
 cp .env.example .env
 ```
 
-Mở `.env` và thay toàn bộ giá trị `replace-with-...` bằng credential local của
+Mở `.env` và thay toàn bộ giá trị `replace-with-...` bằng thông tin xác thực cục bộ của
 bạn. Các giá trị cần nhất quán:
 
 - `*_DB_USER`, `*_DB_PASSWORD` và connection string tương ứng phải cùng user,
   password và database.
-- `MYSQL_ROOT_PASSWORD` chỉ dùng để bootstrap MySQL local.
-- `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` là tài khoản quản trị MinIO local.
+- `MYSQL_ROOT_PASSWORD` chỉ dùng để khởi tạo MySQL cục bộ.
+- `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` là tài khoản quản trị MinIO cục bộ.
 - `MINIO_APP_ACCESS_KEY` / `MINIO_APP_SECRET_KEY` là tài khoản giới hạn quyền
   mà Media Service sử dụng.
 
-Không commit `.env`. File này đã được ignore; chỉ `.env.example` được commit.
+Không commit `.env`. Tệp này đã được bỏ qua; chỉ `.env.example` được commit.
 
 ## 5. Kiểm tra cấu hình Docker Compose
 
-Trước khi khởi động, kiểm tra Docker Compose đã đọc đủ environment variables:
+Trước khi khởi động, kiểm tra Docker Compose đã đọc đủ các biến môi trường:
 
 ```bash
 docker compose config --quiet
@@ -93,25 +94,25 @@ trống.
 
 ## 6. Khởi động toàn bộ hệ thống
 
-Build image và chạy nền:
+Biên dịch image và chạy nền:
 
 ```bash
 docker compose up -d --build
 ```
 
-Trong lần chạy đầu, Docker sẽ pull image .NET, MySQL và MinIO nên mất nhiều
+Trong lần chạy đầu, Docker sẽ tải image .NET, MySQL và MinIO nên mất nhiều
 thời gian hơn các lần sau.
 
 Compose khởi động theo thứ tự dependency:
 
-1. `mysql` healthy.
-2. `mysql-init` tạo năm database và application users.
-3. `minio` healthy.
-4. `minio-init` tạo năm buckets và Media Service application user/policy.
-5. Các API services chạy SQL migration của database sở hữu.
-6. `api-gateway` proxy các API services.
+1. `mysql` đạt trạng thái `healthy`.
+2. `mysql-init` tạo năm database và các người dùng ứng dụng.
+3. `minio` đạt trạng thái `healthy`.
+4. `minio-init` tạo năm bucket cùng user/policy ứng dụng cho Media Service.
+5. Các API service chạy SQL migration của database sở hữu.
+6. `api-gateway` proxy các API service.
 
-**Không scaffold EF Core khi API khởi động.** Scaffold chỉ là thao tác development
+**Không scaffold EF Core khi API khởi động.** Scaffold chỉ là thao tác phát triển
 thủ công sau khi thay đổi SQL schema.
 
 Kiểm tra các container:
@@ -121,9 +122,9 @@ docker compose ps
 ```
 
 `mysql` và `minio` phải có trạng thái `healthy`. `mysql-init` và `minio-init`
-là one-shot container nên trạng thái thành công là `Exited (0)`.
+là container chạy một lần nên trạng thái thành công là `Exited (0)`.
 
-Theo dõi log toàn stack:
+Theo dõi log toàn hệ thống:
 
 ```bash
 docker compose logs --follow
@@ -143,15 +144,15 @@ Mở các URL sau:
 | --- | --- |
 | Gateway Swagger | <http://localhost:5100/swagger> |
 | Gateway health | <http://localhost:5100/health> |
-| Course health qua Gateway | <http://localhost:5100/course/health> |
-| Student health qua Gateway | <http://localhost:5100/student/health> |
-| Media health qua Gateway | <http://localhost:5100/media/health> |
-| Notification health qua Gateway | <http://localhost:5100/notification/health> |
-| Scheduler health qua Gateway | <http://localhost:5100/scheduler/health> |
+| Trạng thái Course qua Gateway | <http://localhost:5100/course/health> |
+| Trạng thái Student qua Gateway | <http://localhost:5100/student/health> |
+| Trạng thái Media qua Gateway | <http://localhost:5100/media/health> |
+| Trạng thái Notification qua Gateway | <http://localhost:5100/notification/health> |
+| Trạng thái Scheduler qua Gateway | <http://localhost:5100/scheduler/health> |
 | MinIO console | <http://localhost:9001> |
 
-Đăng nhập MinIO console bằng `MINIO_ROOT_USER` và `MINIO_ROOT_PASSWORD` trong
-`.env`. Sau khi provisioning thành công, có năm buckets:
+Đăng nhập console MinIO bằng `MINIO_ROOT_USER` và `MINIO_ROOT_PASSWORD` trong
+`.env`. Sau khi khởi tạo thành công, có năm bucket:
 
 ```text
 images
@@ -161,7 +162,7 @@ audios
 other
 ```
 
-Ví dụ kiểm tra Media health bằng command:
+Ví dụ kiểm tra trạng thái Media bằng lệnh:
 
 ```bash
 curl --fail-with-body http://localhost:5100/media/health
@@ -169,63 +170,63 @@ curl --fail-with-body http://localhost:5100/media/health
 
 Kết quả thành công có `database.status` và `storage.status` đều là `healthy`.
 
-## 8. Dừng, chạy lại và reset dữ liệu
+## 8. Dừng, chạy lại và đặt lại dữ liệu
 
-Dừng containers nhưng giữ toàn bộ MySQL/MinIO data:
+Dừng các container nhưng giữ toàn bộ dữ liệu MySQL/MinIO:
 
 ```bash
 docker compose down
 ```
 
-Chạy lại stack đã build:
+Chạy lại hệ thống đã biên dịch:
 
 ```bash
 docker compose up -d
 ```
 
-Build lại sau khi sửa code:
+Biên dịch lại sau khi sửa mã nguồn:
 
 ```bash
 docker compose up -d --build
 ```
 
-Reset đúng năm MySQL development database nhưng giữ nguyên MinIO:
+Đặt lại đúng năm database MySQL phát triển nhưng giữ nguyên MinIO:
 
 ```bash
 scripts/database/reset-development-databases.sh --confirm
 docker compose up -d --build
 ```
 
-Script chỉ chạy với `ASPNETCORE_ENVIRONMENT=Development`, tên database local
-chuẩn và confirmation rõ ràng. Xóa cả MySQL lẫn object storage chỉ khi muốn
-reset toàn bộ môi trường:
+Tập lệnh chỉ chạy với `ASPNETCORE_ENVIRONMENT=Development`, tên database cục bộ
+chuẩn và xác nhận rõ ràng. Chỉ xóa cả MySQL lẫn lưu trữ đối tượng khi muốn đặt lại
+toàn bộ môi trường:
 
 ```bash
 docker compose down -v
 docker compose up -d --build
 ```
 
-`down -v` xóa `mysql-data` và `minio-data`, không thể khôi phục dữ liệu local
+`down -v` xóa `mysql-data` và `minio-data`, không thể khôi phục dữ liệu cục bộ
 đã xóa.
 
-## 9. Seed development data theo yêu cầu
+## 9. Seed dữ liệu phát triển theo yêu cầu
 
-Seed mặc định 100k Students, 100k Courses, 1-5 Lessons/Course và 1-10
-Courses/Student:
+Mặc định seed 100k học viên, 100k khóa học, 1-5 bài học/khóa học và 1-10
+khóa học/học viên:
 
 ```bash
 scripts/seed/run-development-seed.sh --confirm
 ```
 
-Seeder là one-shot Compose profile, không tự chạy cùng application stack và
-không nằm trong migration. UI terminal hiển thị progress, tốc độ và ETA. Nếu
-run bị gián đoạn, dùng cùng options/random seed kèm `--resume`; để xóa toàn bộ
-seed data, chạy guarded database reset ở mục 8.
+Seeder là profile Compose chạy một lần, không tự chạy cùng hệ thống ứng dụng và
+không nằm trong migration. Giao diện terminal hiển thị tiến độ, tốc độ và ETA.
+Nếu lần chạy bị gián đoạn, dùng cùng option/random seed kèm `--resume`; để xóa
+toàn bộ dữ liệu seed, chạy thao tác đặt lại database có chốt bảo vệ ở mục 8.
 
-Xem dry run, dataset nhỏ, safety checks và troubleshooting tại
+Xem chế độ chạy thử, tập dữ liệu nhỏ, kiểm tra an toàn và cách khắc phục sự cố tại
 [`../guide/DATA_SEED_GUIDE.md`](../guide/DATA_SEED_GUIDE.md).
 
-## 10. Chạy build và test trên máy local
+## 10. Biên dịch và kiểm thử trên máy cục bộ
 
 Cần .NET SDK `10.0`:
 
@@ -234,23 +235,23 @@ dotnet build backend/Lms.sln -m:1
 dotnet test backend/Lms.sln -m:1
 ```
 
-Media integration tests tự tạo một MinIO Testcontainer cô lập; Docker phải đang
+Kiểm thử tích hợp Media tự tạo một MinIO Testcontainer cô lập; Docker phải đang
 chạy:
 
 ```bash
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 ```
 
-Xem chi tiết từng test case tại [`../tests/README.md`](../tests/README.md).
+Xem chi tiết từng trường hợp kiểm thử tại [`../tests/README.md`](../tests/README.md).
 
 ## 11. Khi thêm hoặc đổi SQL migration
 
-Migration SQL là source of truth. Sau khi tạo migration mới trong service sở
-hữu, có hai cách apply:
+Migration SQL là nguồn chuẩn. Sau khi tạo migration mới trong service sở hữu,
+có hai cách áp dụng:
 
-- Chạy `docker compose up -d --build`: service tự apply pending migration khi
-  start.
-- Hoặc chạy thủ công từ host:
+- Chạy `docker compose up -d --build`: service tự áp dụng migration đang chờ
+  khi khởi động.
+- Hoặc chạy thủ công từ máy cục bộ:
 
   ```bash
   set -a
@@ -270,30 +271,30 @@ dotnet build backend/Lms.sln -m:1
 ```
 
 Thay `media` bằng `course`, `student`, `notification`, hoặc `scheduler` khi cần. Không sửa
-một migration đã được apply; tạo migration mới để sửa schema. Xem thêm
+một migration đã được áp dụng; tạo migration mới để sửa schema. Xem thêm
 [`../guide/MIGRATION_GUIDE.md`](../guide/MIGRATION_GUIDE.md).
 
 ## 12. Các giới hạn hiện tại
 
-Foundation đã chạy được, nhưng các HTTP use case nghiệp vụ chưa hoàn thành:
+Nền tảng đã chạy được, nhưng các trường hợp sử dụng HTTP nghiệp vụ chưa hoàn thành:
 
-- Chưa có CRUD Course/Lesson/enrollment/progress.
-- Chưa có HTTP endpoint upload/download media hoặc presigned URL.
-- Chưa có notification delivery worker, batch/retry/idempotency workflow.
-- Scheduler Worker mới là skeleton; chưa parse CRON, claim run, execute handler
+- Chưa có CRUD khóa học/bài học/ghi danh/tiến độ.
+- Chưa có HTTP endpoint tải lên/tải xuống media hoặc URL ký trước.
+- Chưa có worker gửi thông báo hoặc quy trình xử lý theo lô/thử lại/tính idempotent.
+- Scheduler Worker mới là khung cơ bản; chưa phân tích CRON, claim lần chạy, thực thi handler
   hoặc gọi Media/Notification Service.
-- Chưa có frontend hoặc end-to-end test.
+- Chưa có frontend hoặc kiểm thử đầu cuối.
 
-Do đó Swagger hiện chủ yếu phục vụ health/info endpoints và các API sẽ được bổ
+Do đó Swagger hiện chủ yếu phục vụ các endpoint trạng thái/thông tin và các API sẽ được bổ
 sung ở các giai đoạn tiếp theo.
 
-## 13. Troubleshooting nhanh
+## 13. Khắc phục sự cố nhanh
 
 | Triệu chứng | Cách kiểm tra / xử lý |
 | --- | --- |
-| `port is already allocated` | Dừng process/container đang chiếm port hoặc đổi port mapping. |
-| `must be set` khi Compose chạy | Kiểm tra `.env`, đặc biệt MySQL và `MINIO_*` credentials. |
-| API không start sau migration | Chạy `docker compose logs <service>`; sửa migration mới, không sửa migration đã apply. |
-| `mysql-init` hoặc `minio-init` fail | Xem log one-shot container: `docker compose logs mysql-init` hoặc `docker compose logs minio-init`. |
-| Media `/health` trả `STORAGE_UNAVAILABLE` | Kiểm tra `docker compose ps`, `docker compose logs minio minio-init`, bucket config và `MINIO_APP_*` credentials. |
-| Muốn làm sạch toàn bộ environment local | Chỉ khi chấp nhận mất data: `docker compose down -v`. |
+| `port is already allocated` | Dừng process/container đang chiếm cổng hoặc đổi ánh xạ cổng. |
+| `must be set` khi Compose chạy | Kiểm tra `.env`, đặc biệt là credential MySQL và `MINIO_*`. |
+| API không khởi động sau migration | Chạy `docker compose logs <service>`; sửa migration mới, không sửa migration đã áp dụng. |
+| `mysql-init` hoặc `minio-init` thất bại | Xem log container chạy một lần: `docker compose logs mysql-init` hoặc `docker compose logs minio-init`. |
+| Media `/health` trả `STORAGE_UNAVAILABLE` | Kiểm tra `docker compose ps`, `docker compose logs minio minio-init`, cấu hình bucket và credential `MINIO_APP_*`. |
+| Muốn làm sạch toàn bộ môi trường cục bộ | Chỉ thực hiện khi chấp nhận mất dữ liệu: `docker compose down -v`. |

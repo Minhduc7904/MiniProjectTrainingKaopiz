@@ -1,17 +1,17 @@
-# List My Inbox
+# Liệt kê hộp thư của tôi
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `GET /api/notifications/me?status=UNREAD&cursor=opaque-token&limit=20`
 
-Success data payload `200 OK`:
+Dữ liệu phản hồi thành công `200 OK`:
 
 ```json
 {"items":[{"id":"notification-uuid","title":"Course update","bodyMarkdown":"New material is available.","status":"UNREAD","createdAt":"2026-08-12T06:00:00Z"}],"nextCursor":"opaque-token"}
 ```
 
-- Validate: `status` optional `UNREAD|READ`; limit 1–100; cursor opaque.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`.
-- Side effects: none; recipient is always derived from identity.
+- Kiểm tra hợp lệ: `status` không bắt buộc, nhận `UNREAD|READ`; `limit` trong khoảng 1–100; `cursor` là giá trị không trong suốt.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`.
+- Tác động phụ: không có; người nhận luôn được xác định từ danh tính.

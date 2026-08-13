@@ -1,9 +1,9 @@
-# Notification Service API
+# API của Notification Service
 
-- [Send Single Notification](endpoints/post-notifications.md)
-- [Create Bulk Notification Batch](endpoints/post-notification-batches.md)
-- [Get Notification Batch](endpoints/get-notification-batch-by-id.md)
-- [Get Failed Batch Items](endpoints/get-notification-batch-failed-items.md)
-- [List My Inbox](endpoints/get-my-notifications.md)
-- [Mark Notification Read](endpoints/patch-notification-read.md)
-- [Mark All Notifications Read](endpoints/post-notifications-read-all.md)
+- [Gửi một thông báo](endpoints/post-notifications.md)
+- [Tạo lô thông báo hàng loạt](endpoints/post-notification-batches.md)
+- [Lấy lô thông báo](endpoints/get-notification-batch-by-id.md)
+- [Lấy các mục thất bại trong lô](endpoints/get-notification-batch-failed-items.md)
+- [Liệt kê hộp thư của tôi](endpoints/get-my-notifications.md)
+- [Đánh dấu thông báo đã đọc](endpoints/patch-notification-read.md)
+- [Đánh dấu tất cả thông báo đã đọc](endpoints/post-notifications-read-all.md)

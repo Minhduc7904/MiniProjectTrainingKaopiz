@@ -1,10 +1,10 @@
 # 52. Điều quan trọng nhất khi triển khai
 
-Luôn giữ hai implementation cho các bài performance:
+Luôn giữ hai cách triển khai cho các bài toán hiệu năng:
 
 ```text
-Naive
-Optimized
+Cách đơn giản
+Đã tối ưu
 ```
 
 Ví dụ:
@@ -17,17 +17,16 @@ export-naive
 export-stream
 ```
 
-Không nhất thiết để cả hai trong production code lâu dài.
+Không nhất thiết giữ cả hai lâu dài trong mã nguồn dùng ở môi trường sản xuất.
 
-Nhưng với project học tập/demo, việc giữ cả hai giúp chứng minh:
+Nhưng với dự án học tập/demo, việc giữ cả hai giúp chứng minh rõ hơn rất nhiều:
 
 ```text
-Problem
-→ Analysis
-→ Optimization
-→ Result
+Vấn đề
+→ Phân tích
+→ Tối ưu
+→ Kết quả
 ```
 
-rõ hơn rất nhiều.
 
 ---

@@ -1,11 +1,11 @@
-# Media Service Integration Tests
+# Kiểm thử tích hợp Media Service
 
-## Scope
+## Phạm vi
 
-Project: `backend/Services/Media/MediaService.IntegrationTests`
-Source: `Storage/MinioStorageServiceTests.cs`
-Dependency: một MinIO Testcontainer cô lập; Docker Engine phải chạy. Test không
-dùng MinIO trong Docker Compose của developer.
+Dự án: `backend/Services/Media/MediaService.IntegrationTests`
+Mã nguồn: `Storage/MinioStorageServiceTests.cs`
+Thành phần phụ thuộc: một Testcontainer MinIO cô lập; Docker Engine phải chạy.
+Kiểm thử không dùng MinIO trong Docker Compose của lập trình viên.
 
 Chạy:
 
@@ -13,24 +13,24 @@ Chạy:
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 ```
 
-## Test fixture lifecycle
+## Vòng đời bộ kiểm thử
 
-`StartMinioAsync` khởi động image MinIO cố định, xây `IMinioClient` từ endpoint
+`StartMinioAsync` khởi động image MinIO cố định, tạo `IMinioClient` từ điểm cuối
 container, tạo năm bucket `images`, `videos`, `documents`, `audios`, `other`,
-sau đó khởi tạo `MinioStorageService`. `StopMinioAsync` dispose client và
-container sau test fixture.
+sau đó khởi tạo `MinioStorageService`. `StopMinioAsync` giải phóng máy khách và
+container sau bộ kiểm thử.
 
-## Test cases
+## Ca kiểm thử
 
-| Test | Dữ liệu / thao tác | Pass khi |
+| Kiểm thử | Dữ liệu / thao tác | Đạt khi |
 | --- | --- | --- |
-| `StorageLifecycleWorksForEachMediaCategory` — IMAGE | Upload bytes `integration-Image` với `image/png`, extension `png`; kiểm tra exists, metadata, download, delete. | Upload vào `images`; key kết thúc `.png`; size đúng; exists `true`; metadata MIME/size đúng; bytes download giống bytes upload; sau delete exists `false`. |
-| `StorageLifecycleWorksForEachMediaCategory` — VIDEO | Cùng vòng đời với `video/mp4`, extension `mp4`. | Bucket `videos`, metadata và dữ liệu download/delete đúng như contract. |
-| `StorageLifecycleWorksForEachMediaCategory` — DOCUMENT | Cùng vòng đời với `application/pdf`, extension `pdf`. | Bucket `documents`, metadata và dữ liệu download/delete đúng như contract. |
-| `StorageLifecycleWorksForEachMediaCategory` — AUDIO | Cùng vòng đời với `audio/mpeg`, extension `mp3`. | Bucket `audios`, metadata và dữ liệu download/delete đúng như contract. |
-| `StorageLifecycleWorksForEachMediaCategory` — OTHER | Cùng vòng đời với `application/octet-stream`, extension `bin`. | Bucket `other`, metadata và dữ liệu download/delete đúng như contract. |
-| `HealthProbeIsHealthyWhenAllBucketsExist` | Gọi `IStorageHealthProbe.CheckAsync` sau khi fixture tạo đủ năm bucket. | `IsHealthy = true`. |
+| `StorageLifecycleWorksForEachMediaCategory` — IMAGE | Tải lên các byte `integration-Image` với `image/png`, phần mở rộng `png`; kiểm tra tồn tại, siêu dữ liệu, tải xuống và xóa. | Tải lên `images`; khóa kết thúc bằng `.png`; kích thước đúng; trạng thái tồn tại là `true`; MIME/kích thước trong siêu dữ liệu đúng; các byte tải xuống giống byte tải lên; sau khi xóa, trạng thái tồn tại là `false`. |
+| `StorageLifecycleWorksForEachMediaCategory` — VIDEO | Cùng vòng đời với `video/mp4`, phần mở rộng `mp4`. | Bucket `videos`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
+| `StorageLifecycleWorksForEachMediaCategory` — DOCUMENT | Cùng vòng đời với `application/pdf`, phần mở rộng `pdf`. | Bucket `documents`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
+| `StorageLifecycleWorksForEachMediaCategory` — AUDIO | Cùng vòng đời với `audio/mpeg`, phần mở rộng `mp3`. | Bucket `audios`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
+| `StorageLifecycleWorksForEachMediaCategory` — OTHER | Cùng vòng đời với `application/octet-stream`, phần mở rộng `bin`. | Bucket `other`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
+| `HealthProbeIsHealthyWhenAllBucketsExist` | Gọi `IStorageHealthProbe.CheckAsync` sau khi bộ kiểm thử tạo đủ năm bucket. | `IsHealthy = true`. |
 
-Các test lifecycle bắt buộc object key do storage service sinh ra, không cho test
-tự chọn bucket hay object key. Điều này bảo vệ mapping category → bucket và
-contract stream của adapter.
+Các kiểm thử vòng đời bắt buộc dùng khóa đối tượng do dịch vụ lưu trữ sinh ra,
+không cho kiểm thử tự chọn bucket hay khóa đối tượng. Điều này bảo vệ ánh xạ loại
+→ bucket và hợp đồng luồng của adapter.

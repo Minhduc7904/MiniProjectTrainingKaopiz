@@ -1,21 +1,21 @@
 # `GET /health`
 
-## Purpose
+## Mục đích
 
-Checks that Media Service can reach its owned database and that MinIO contains
-all five configured media buckets.
+Kiểm tra Media Service có thể kết nối đến cơ sở dữ liệu do mình sở hữu và MinIO có
+đủ cả năm vùng lưu trữ phương tiện đã cấu hình.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: not required.
-- Roles/scopes: none.
-- Ownership rule: not applicable.
+- Xác thực: không bắt buộc.
+- Vai trò/phạm vi: không có.
+- Quy tắc sở hữu: không áp dụng.
 
-## Request
+## Yêu cầu
 
-No path parameter, query parameter, or request body. Pagination does not apply.
+Không có tham số đường dẫn, tham số truy vấn hoặc nội dung yêu cầu. Không áp dụng phân trang.
 
-## Success response
+## Phản hồi thành công
 
 ```http
 200 OK
@@ -39,14 +39,14 @@ No path parameter, query parameter, or request body. Pagination does not apply.
 }
 ```
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `200`: the database and MinIO are available.
-- `503 DATABASE_UNAVAILABLE`: only the Media database probe failed.
-- `503 STORAGE_UNAVAILABLE`: only the MinIO probe failed or a required bucket is missing.
-- `503 DEPENDENCY_UNAVAILABLE`: both database and MinIO probes failed.
+- `200`: cơ sở dữ liệu và MinIO đều khả dụng.
+- `503 DATABASE_UNAVAILABLE`: chỉ bước kiểm tra cơ sở dữ liệu Media thất bại.
+- `503 STORAGE_UNAVAILABLE`: chỉ bước kiểm tra MinIO thất bại hoặc thiếu một vùng lưu trữ bắt buộc.
+- `503 DEPENDENCY_UNAVAILABLE`: cả hai bước kiểm tra cơ sở dữ liệu và MinIO đều thất bại.
 
-All `503` responses use the shared error envelope:
+Tất cả phản hồi `503` sử dụng cấu trúc bao lỗi dùng chung:
 
 ```json
 {
@@ -61,9 +61,9 @@ All `503` responses use the shared error envelope:
 }
 ```
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-The endpoint runs the database and storage probes concurrently. The database
-probe executes `SELECT 1`. The storage probe checks MinIO connectivity and the
-existence of `images`, `videos`, `documents`, `audios`, and `other` with a short
-timeout. Neither probe writes data or uploads a test object.
+Điểm cuối chạy đồng thời các bước kiểm tra cơ sở dữ liệu và kho lưu trữ. Bước kiểm tra
+cơ sở dữ liệu thực thi `SELECT 1`. Bước kiểm tra kho lưu trữ kiểm tra khả năng kết nối MinIO và
+sự tồn tại của `images`, `videos`, `documents`, `audios` và `other` với khoảng thời gian chờ ngắn.
+Cả hai bước kiểm tra đều không ghi dữ liệu hoặc tải đối tượng thử nghiệm lên.

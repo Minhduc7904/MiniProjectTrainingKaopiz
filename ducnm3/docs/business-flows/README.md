@@ -1,6 +1,6 @@
-# Business Flows
+# Các luồng nghiệp vụ
 
-Mỗi file mô tả một nghiệp vụ độc lập: actor, điều kiện đầu vào, luồng chính, trường hợp lỗi, và dữ liệu thay đổi.
+Mỗi file mô tả một nghiệp vụ độc lập: tác nhân, điều kiện đầu vào, luồng chính, trường hợp lỗi và dữ liệu thay đổi.
 
 ```text
 business-flows/
@@ -17,7 +17,7 @@ business-flows/
     └── media-cleanup.md
 ```
 
-- `course-learning/`: quản lý Course/Lesson, ghi danh và tiến độ học.
-- `media/`: upload media, tạo usage, và nhúng media vào Markdown.
-- `notifications/`: gửi đơn, gửi hàng loạt, inbox, và Markdown có media.
-- `scheduler/`: flow chạy nền generic dự kiến; hiện chỉ có foundation, chưa execution.
+- `course-learning/`: quản lý Khóa học/Bài học, ghi danh và tiến độ học.
+- `media/`: tải media lên, tạo lượt sử dụng và nhúng media vào Markdown.
+- `notifications/`: gửi đơn lẻ, gửi hàng loạt, hộp thư đến và Markdown có media.
+- `scheduler/`: luồng chạy nền dùng chung dự kiến; hiện chỉ có phần nền tảng, chưa có phần thực thi.

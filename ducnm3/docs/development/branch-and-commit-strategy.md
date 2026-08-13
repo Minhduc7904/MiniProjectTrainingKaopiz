@@ -1,4 +1,4 @@
-# 49. Branch Strategy 5 ngày
+# 49. Chiến lược nhánh trong 5 ngày
 
 Không cần Git Flow phức tạp.
 
@@ -7,7 +7,7 @@ main
 develop
 ```
 
-Feature branch ngắn:
+Nhánh tính năng ngắn:
 
 ```text
 feature/course

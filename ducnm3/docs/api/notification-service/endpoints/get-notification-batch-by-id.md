@@ -1,21 +1,21 @@
 # `GET /api/notification-batches/{batchId}`
 
-## Purpose
+## Mục đích
 
-Returns Notification Service delivery counters and status for one bulk batch.
+Trả về các bộ đếm gửi và trạng thái của Notification Service cho một lô hàng loạt.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: required.
-- Roles/scopes: notification administrators.
-- Ownership rule: access follows the owning organization's notification policy.
+- Xác thực: bắt buộc.
+- Vai trò/phạm vi: quản trị viên thông báo.
+- Quy tắc sở hữu: quyền truy cập tuân theo chính sách thông báo của tổ chức sở hữu.
 
-## Request
+## Yêu cầu
 
-- `batchId`: required UUID path parameter.
-- No query parameters or request body.
+- `batchId`: tham số đường dẫn UUID bắt buộc.
+- Không có tham số truy vấn hoặc nội dung yêu cầu.
 
-## Success response
+## Phản hồi thành công
 
 ```http
 200 OK
@@ -37,15 +37,15 @@ Returns Notification Service delivery counters and status for one bulk batch.
 }
 ```
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `200`: batch found.
-- `400 VALIDATION_FAILED`: `batchId` is not a UUID.
-- `401`: authentication is missing or invalid.
-- `403`: caller cannot inspect the batch.
-- `404 NOTIFICATION_BATCH_NOT_FOUND`: batch does not exist.
-- `500 UNEXPECTED_ERROR`: safe unexpected failure response.
+- `200`: đã tìm thấy lô.
+- `400 VALIDATION_FAILED`: `batchId` không phải UUID.
+- `401`: thiếu thông tin xác thực hoặc thông tin xác thực không hợp lệ.
+- `403`: bên gọi không có quyền xem lô.
+- `404 NOTIFICATION_BATCH_NOT_FOUND`: lô không tồn tại.
+- `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-Reads `notification_batches` only and does not mutate state. Counts describe Notification business delivery, not generic Scheduler run history.
+Chỉ đọc `notification_batches` và không thay đổi trạng thái. Các bộ đếm mô tả việc gửi theo nghiệp vụ Notification, không phải lịch sử chạy Scheduler chung.

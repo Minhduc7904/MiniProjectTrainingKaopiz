@@ -1,11 +1,11 @@
-# Media Service Component Tests
+# Kiểm thử thành phần Media Service
 
-## Scope
+## Phạm vi
 
-Project: `backend/Services/Media/MediaService.UnitTests`
-Source: `Endpoints/MediaHealthEndpointTests.cs`
-Dependency: ASP.NET Core `TestServer`; database và storage probes đều là fake
-in-memory.
+Dự án: `backend/Services/Media/MediaService.UnitTests`
+Mã nguồn: `Endpoints/MediaHealthEndpointTests.cs`
+Thành phần phụ thuộc: ASP.NET Core `TestServer`; các trình kiểm tra cơ sở dữ liệu và lưu
+trữ đều là đối tượng giả trong bộ nhớ.
 
 Chạy:
 
@@ -13,17 +13,17 @@ Chạy:
 dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
 ```
 
-## Test cases
+## Ca kiểm thử
 
-`HealthEndpointReportsEachDependencyCombination` chạy bốn data-driven cases:
+`HealthEndpointReportsEachDependencyCombination` chạy bốn ca dựa trên dữ liệu:
 
-| Database probe | Storage probe | Expected HTTP | Pass khi response |
+| Trình kiểm tra cơ sở dữ liệu | Trình kiểm tra lưu trữ | HTTP dự kiến | Đạt khi phản hồi |
 | --- | --- | --- | --- |
 | healthy | healthy | `200` | Có `data.status = healthy`, `data.database.status = healthy`, và `data.storage.status = healthy`. |
-| unhealthy | healthy | `503` | Shared error envelope có `error.code = DATABASE_UNAVAILABLE`. |
-| healthy | unhealthy | `503` | Shared error envelope có `error.code = STORAGE_UNAVAILABLE`. |
-| unhealthy | unhealthy | `503` | Shared error envelope có `error.code = DEPENDENCY_UNAVAILABLE`. |
+| unhealthy | healthy | `503` | Vỏ lỗi dùng chung có `error.code = DATABASE_UNAVAILABLE`. |
+| healthy | unhealthy | `503` | Vỏ lỗi dùng chung có `error.code = STORAGE_UNAVAILABLE`. |
+| unhealthy | unhealthy | `503` | Vỏ lỗi dùng chung có `error.code = DEPENDENCY_UNAVAILABLE`. |
 
-Test xác nhận endpoint chạy với hai dependency result đã biết và chọn đúng API
-contract. Nó không mở MySQL/MinIO thật; vòng đời storage thật thuộc integration
-test.
+Kiểm thử xác nhận điểm cuối chạy với hai kết quả thành phần phụ thuộc đã biết và
+chọn đúng hợp đồng API. Kiểm thử không mở MySQL/MinIO thật; vòng đời lưu trữ thật
+thuộc kiểm thử tích hợp.

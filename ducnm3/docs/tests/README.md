@@ -1,7 +1,7 @@
-# Test Documentation
+# Tài liệu kiểm thử
 
-Tài liệu này mô tả các test đang được triển khai, theo cùng cách tổ chức với
-API documentation:
+Tài liệu này mô tả các kiểm thử đang được triển khai, theo cùng cách tổ chức với
+tài liệu API:
 
 ```text
 docs/tests/
@@ -21,22 +21,22 @@ docs/tests/
     └── unit.md
 ```
 
-Mỗi tài liệu chỉ liệt kê test hiện có trong source code, mục đích, dữ liệu hoặc
-dependency được dùng, và điều kiện pass. Không suy diễn rằng loại test chưa có
+Mỗi tài liệu chỉ liệt kê kiểm thử hiện có trong mã nguồn, mục đích, dữ liệu hoặc
+thành phần phụ thuộc được dùng và điều kiện đạt. Không suy diễn rằng loại kiểm thử chưa có
 đã được triển khai.
 
-## Chạy test
+## Chạy kiểm thử
 
 ```bash
 dotnet test backend/Lms.sln -m:1
 ```
 
-Chạy một project cụ thể theo đường dẫn được ghi trong tài liệu của service. Test
-integration dùng Testcontainers cần Docker Engine đang chạy. Xem
+Chạy một dự án cụ thể theo đường dẫn được ghi trong tài liệu của dịch vụ. Kiểm
+thử tích hợp dùng Testcontainers cần Docker Engine đang chạy. Xem
 [`../development/testing.md`](../development/testing.md) để biết quy ước chung
-và cách thêm test mới.
+và cách thêm kiểm thử mới.
 
-Data Seeder catalogue:
+Danh mục Data Seeder:
 
 - [`data-seeder/unit.md`](data-seeder/unit.md)
 - [`data-seeder/integration.md`](data-seeder/integration.md)

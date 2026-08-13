@@ -1,42 +1,42 @@
-# Data Seeder Integration Tests
+# Kiểm thử tích hợp Data Seeder
 
-## Project
+## Dự án
 
 `backend/Tools/Lms.DataSeeder.IntegrationTests/Lms.DataSeeder.IntegrationTests.csproj`
 
-Docker Engine is required. The test starts two isolated MySQL `8.4`
-Testcontainers, one for `lms_student_db` and one for `lms_course_db`. It applies
-the real Student/Course `V001` SQL migrations through `SqlMigrationRunner`.
-No developer database or Docker Compose volume is read or changed.
+Cần có Docker Engine. Kiểm thử khởi động hai Testcontainer MySQL `8.4` cô lập,
+một cho `lms_student_db` và một cho `lms_course_db`. Kiểm thử áp dụng migration
+SQL `V001` thực của Student/Course qua `SqlMigrationRunner`. Không có cơ sở dữ
+liệu của lập trình viên hoặc volume Docker Compose nào bị đọc hay thay đổi.
 
 ## `RunAsyncSeedsRelationshipsAndResumeIsIdempotent`
 
-Setup:
+Thiết lập:
 
-- Student database has only migrated `students`.
-- Course database has only migrated `courses`, `lessons`, `enrollments` and
-  `lesson_progresses`.
-- Dataset has 30 Students, 20 Courses, `1-5` Lessons/Course and `1-10`
-  Courses/Student.
+- Cơ sở dữ liệu Student chỉ có bảng `students` đã được migration.
+- Cơ sở dữ liệu Course chỉ có các bảng `courses`, `lessons`, `enrollments` và
+  `lesson_progresses` đã được migration.
+- Tập dữ liệu có 30 học viên, 20 khóa học, `1-5` bài học/khóa học và `1-10`
+  khóa học/học viên.
 
-Assertions:
+Các xác nhận:
 
-1. First run inserts exactly 30 Students and 20 Courses.
-2. Lesson and Enrollment row counts equal the deterministic plan.
-3. No duplicate `(course_id, student_id)` group exists.
-4. Running the same dataset with `Resume = true` inserts zero new rows and reports
-   all planned rows as already present.
-5. Row counts remain unchanged after resume.
-6. Running again in fresh mode is rejected because target tables are not empty.
+1. Lần chạy đầu chèn chính xác 30 học viên và 20 khóa học.
+2. Số bản ghi bài học và ghi danh bằng kế hoạch xác định.
+3. Không tồn tại nhóm `(course_id, student_id)` trùng lặp.
+4. Chạy cùng tập dữ liệu với `Resume = true` không chèn bản ghi mới và báo cáo
+   mọi bản ghi theo kế hoạch đã tồn tại.
+5. Số bản ghi không đổi sau khi tiếp tục.
+6. Việc chạy lại ở chế độ mới bị từ chối vì các bảng đích không rỗng.
 
-The runner's own final validation, exercised by the test, also verifies exact
-counts, Lesson/Course range, Course/Student range and one logical Student
-reference across the two databases.
+Bước kiểm tra cuối của trình chạy, được kiểm thử thực thi, cũng xác minh số lượng
+chính xác, khoảng bài học/khóa học, khoảng khóa học/học viên và một tham chiếu học
+viên logic xuyên hai cơ sở dữ liệu.
 
-Pass condition: the NUnit test completes without assertion, migration, MySQL
-constraint or validation failure, and both containers are disposed.
+Điều kiện đạt: kiểm thử NUnit hoàn tất mà không có lỗi xác nhận, migration, ràng
+buộc MySQL hoặc kiểm tra dữ liệu, đồng thời cả hai container đều được giải phóng.
 
-Run:
+Chạy:
 
 ```bash
 dotnet test backend/Tools/Lms.DataSeeder.IntegrationTests/Lms.DataSeeder.IntegrationTests.csproj

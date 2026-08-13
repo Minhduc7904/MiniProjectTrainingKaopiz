@@ -1,20 +1,20 @@
-# Development Data Seed Guide
+# Hướng dẫn tạo dữ liệu phát triển
 
-`Lms.DataSeeder` tạo dataset lớn trực tiếp trong database development hiện tại.
-Đây là console tool chạy thủ công, không phải migration, API endpoint hay service
+`Lms.DataSeeder` tạo tập dữ liệu lớn trực tiếp trong cơ sở dữ liệu phát triển hiện tại.
+Đây là công cụ dòng lệnh chạy thủ công, không phải migration, điểm cuối API hay dịch vụ
 chạy nền.
 
-## Dataset mặc định
+## Tập dữ liệu mặc định
 
-- `100,000` Students trong `lms_student_db.students`.
-- `100,000` Courses trong `lms_course_db.courses`.
-- Mỗi Course có ngẫu nhiên `1-5` Lessons.
-- Mỗi Student ghi danh ngẫu nhiên vào `1-10` Courses.
-- Không tạo `lesson_progresses`, media, notification hoặc scheduler data.
+- `100,000` học viên trong `lms_student_db.students`.
+- `100,000` khóa học trong `lms_course_db.courses`.
+- Mỗi khóa học có ngẫu nhiên `1-5` bài học.
+- Mỗi học viên ghi danh ngẫu nhiên vào `1-10` khóa học.
+- Không tạo `lesson_progresses`, dữ liệu đa phương tiện, thông báo hoặc dữ liệu lập lịch.
 
-Random seed mặc định là `20260813`. ID, lesson count và course assignment được
-sinh xác định từ random seed và index nên cùng cấu hình luôn tạo cùng dataset.
-Email seed dùng domain không gửi mail `example.test`.
+Hạt giống ngẫu nhiên mặc định là `20260813`. ID, số lượng bài học và việc gán khóa
+học được sinh xác định từ hạt giống ngẫu nhiên và chỉ mục nên cùng cấu hình luôn
+tạo ra cùng một tập dữ liệu. Email được tạo dùng tên miền không gửi thư `example.test`.
 
 ## Chạy bằng Docker
 
@@ -24,26 +24,26 @@ Từ thư mục `ducnm3/`:
 scripts/seed/run-development-seed.sh --confirm
 ```
 
-Script sẽ:
+Tập lệnh sẽ:
 
-1. kiểm tra `.env`, `ASPNETCORE_ENVIRONMENT=Development` và đúng tên database;
-2. khởi động MySQL, Course Service và Student Service để apply migration;
+1. kiểm tra `.env`, `ASPNETCORE_ENVIRONMENT=Development` và đúng tên cơ sở dữ liệu;
+2. khởi động MySQL, Course Service và Student Service để áp dụng migration;
 3. đợi các bảng đích sẵn sàng;
-4. build container `data-seeder` thuộc Compose profile `seed`;
-5. chạy seed, validate kết quả rồi xóa one-shot container.
+4. dựng container `data-seeder` thuộc cấu hình Compose `seed`;
+5. tạo dữ liệu, kiểm tra kết quả rồi xóa container chạy một lần.
 
 `data-seeder` không chạy trong `docker compose up` thông thường vì có
 `profiles: ["seed"]`.
 
-## Dry run và dataset nhỏ
+## Chạy thử và tập dữ liệu nhỏ
 
-Kiểm tra schema, connection và số row dự kiến mà không ghi dữ liệu:
+Kiểm tra schema, kết nối và số bản ghi dự kiến mà không ghi dữ liệu:
 
 ```bash
 scripts/seed/run-development-seed.sh --dry-run
 ```
 
-Dataset nhỏ để phát triển hoặc kiểm tra:
+Tập dữ liệu nhỏ để phát triển hoặc kiểm tra:
 
 ```bash
 scripts/seed/run-development-seed.sh \
@@ -60,36 +60,36 @@ scripts/seed/run-development-seed.sh \
 
 Giới hạn:
 
-- Students/Courses: `1-100,000`.
-- Lessons/Course: `1-5`.
-- Courses/Student: `1-10` và không lớn hơn tổng Courses.
-- Batch size: `1-2,000`.
+- Học viên/Khóa học: `1-100,000`.
+- Bài học/Khóa học: `1-5`.
+- Khóa học/Học viên: `1-10` và không lớn hơn tổng số khóa học.
+- Kích thước lô: `1-2,000`.
 
-## Terminal progress UI
+## Giao diện tiến trình trên terminal
 
-Trong khi chạy, UI hiển thị từng phase `Students`, `Courses`, `Lessons`,
+Trong khi chạy, giao diện hiển thị từng giai đoạn `Students`, `Courses`, `Lessons`,
 `Enrollments`, `Validation` với:
 
-- số row đã xử lý và phần trăm;
-- số row insert/đã có;
-- tốc độ row/giây và ETA;
-- tổng row và thời gian sau khi hoàn tất.
+- số bản ghi đã xử lý và phần trăm;
+- số bản ghi đã chèn/đã có;
+- tốc độ bản ghi/giây và thời gian hoàn thành dự kiến;
+- tổng số bản ghi và thời gian sau khi hoàn tất.
 
-Mỗi batch dùng một parameterized multi-row insert và một transaction. Tool không
-giữ toàn bộ dataset trong RAM.
+Mỗi lô dùng một lệnh chèn nhiều bản ghi có tham số và một giao dịch. Công cụ không
+giữ toàn bộ tập dữ liệu trong RAM.
 
-## Safety và resume
+## An toàn và tiếp tục
 
 Các điều kiện bắt buộc trước khi ghi:
 
-- environment phải chính xác là `Development`;
-- connection string phải trỏ tới `lms_student_db` và `lms_course_db`;
-- phải có flag `--confirm`;
+- môi trường phải chính xác là `Development`;
+- chuỗi kết nối phải trỏ tới `lms_student_db` và `lms_course_db`;
+- phải có cờ `--confirm`;
 - migration `001` và các bảng đích phải tồn tại;
-- chỉ một seed process được chạy nhờ MySQL advisory lock;
+- chỉ một tiến trình tạo dữ liệu được chạy nhờ khóa tư vấn của MySQL;
 - mặc định các bảng `students`, `courses`, `lessons`, `enrollments` phải rỗng.
 
-Nếu process bị hủy hoặc lỗi giữa chừng, chạy lại đúng options và random seed với
+Nếu tiến trình bị hủy hoặc lỗi giữa chừng, chạy lại đúng tùy chọn và hạt giống ngẫu nhiên với
 `--resume`:
 
 ```bash
@@ -99,25 +99,25 @@ scripts/seed/run-development-seed.sh \
   --random-seed 20260813
 ```
 
-Insert là idempotent theo deterministic UUID. `--resume` chỉ dành cho chính
-dataset bị gián đoạn; không dùng nó để trộn dữ liệu thủ công hoặc random seed
-khác. Final validation yêu cầu row count khớp chính xác kế hoạch.
+Thao tác chèn có tính lũy đẳng theo UUID xác định. `--resume` chỉ dành cho chính
+tập dữ liệu bị gián đoạn; không dùng nó để trộn dữ liệu thủ công hoặc hạt giống
+ngẫu nhiên khác. Bước kiểm tra cuối yêu cầu số bản ghi khớp chính xác kế hoạch.
 
-## Reset toàn bộ seed data
+## Đặt lại toàn bộ dữ liệu được tạo
 
-Seed data nằm trong database thật của Course và Student Service, vì vậy reset
-development database hiện có xóa toàn bộ seed data:
+Dữ liệu được tạo nằm trong cơ sở dữ liệu thật của Course và Student Service, vì
+vậy việc đặt lại cơ sở dữ liệu phát triển hiện có sẽ xóa toàn bộ dữ liệu này:
 
 ```bash
 scripts/database/reset-development-databases.sh --confirm
 docker compose up -d --build
 ```
 
-Lệnh reset drop/recreate cả năm MySQL database và migration history, sau đó API
-apply lại `V001`. MinIO không bị thay đổi. Không cần và không có migration rollback
-riêng cho seed.
+Lệnh đặt lại sẽ xóa/tạo lại cả năm cơ sở dữ liệu MySQL và lịch sử migration, sau
+đó API áp dụng lại `V001`. MinIO không bị thay đổi. Không cần và không có
+migration hoàn tác riêng cho dữ liệu được tạo.
 
-## Chạy tool trực tiếp trên host
+## Chạy công cụ trực tiếp trên máy chủ
 
 Cần .NET SDK 10 và MySQL/schema đã chạy:
 
@@ -133,14 +133,14 @@ dotnet run --project backend/Tools/Lms.DataSeeder/Lms.DataSeeder.csproj -- \
   --confirm
 ```
 
-Xem mọi option:
+Xem mọi tùy chọn:
 
 ```bash
 dotnet run --project backend/Tools/Lms.DataSeeder/Lms.DataSeeder.csproj -- --help
 ```
 
-Không log connection string hoặc password; bảng cấu hình chỉ hiển thị
-server/port/database.
+Không ghi nhật ký chuỗi kết nối hoặc mật khẩu; bảng cấu hình chỉ hiển thị
+máy chủ/cổng/cơ sở dữ liệu.
 
 ## Kiểm tra bằng SQL
 
@@ -165,17 +165,16 @@ FROM (
 ) AS enrollment_distribution;
 ```
 
-Với cấu hình mặc định, hai range phải lần lượt là `1-5` và `1-10`.
+Với cấu hình mặc định, hai khoảng phải lần lượt là `1-5` và `1-10`.
 
-## Troubleshooting
+## Khắc phục sự cố
 
-- `target tables are not empty`: reset database, hoặc chỉ dùng `--resume` khi
-  tiếp tục đúng dataset bị gián đoạn.
+- `target tables are not empty`: đặt lại cơ sở dữ liệu, hoặc chỉ dùng `--resume`
+  khi tiếp tục đúng tập dữ liệu bị gián đoạn.
 - `does not contain migration version 001`: khởi động lại Course/Student Service
-  để apply migration.
-- `Another development data seed process is already running`: đợi process hiện
-  tại kết thúc; lock tự được MySQL giải phóng nếu connection đóng.
-- `final row counts do not match`: dữ liệu hiện tại không thuộc đúng deterministic
-  dataset; reset rồi seed lại.
-- Hủy bằng `Ctrl+C`: batch đang chạy rollback; các batch đã commit được giữ để
-  resume.
+  để áp dụng migration.
+- `Another development data seed process is already running`: đợi tiến trình
+  hiện tại kết thúc; khóa tự được MySQL giải phóng nếu kết nối đóng.
+- `final row counts do not match`: dữ liệu hiện tại không thuộc đúng tập dữ liệu
+  xác định; đặt lại rồi tạo dữ liệu lại.
+- Hủy bằng `Ctrl+C`: lô đang chạy sẽ hoàn tác; các lô đã commit được giữ để tiếp tục.

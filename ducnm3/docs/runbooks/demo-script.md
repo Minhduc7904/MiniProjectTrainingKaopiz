@@ -1,40 +1,40 @@
-# 44. Demo Script 30 phút
+# 44. Kịch bản trình diễn 30 phút
 
-## 0–3 phút — Problem
+## 0–3 phút — Vấn đề
 
 Nói:
 
 ```text
-Mini LMS này không tập trung vào số lượng feature.
-Mục tiêu là nghiên cứu những vấn đề backend xuất hiện khi dữ liệu tăng:
-batch, memory, SQL query, index và pagination.
+Mini LMS này không tập trung vào số lượng tính năng.
+Mục tiêu là nghiên cứu những vấn đề phía máy chủ xuất hiện khi dữ liệu tăng:
+xử lý theo lô, bộ nhớ, truy vấn SQL, chỉ mục và phân trang.
 ```
 
 ---
 
-## 3–6 phút — Architecture
+## 3–6 phút — Kiến trúc
 
-Show:
+Trình bày:
 
 ```text
 Gateway
-3 Microservices
-3 DB
+3 vi dịch vụ
+3 cơ sở dữ liệu
 MinIO
-Docker Network
+Mạng Docker
 ```
 
 Giải thích:
 
-- Service boundary.
-- DB ownership.
-- Clean Architecture.
+- Ranh giới dịch vụ.
+- Quyền sở hữu cơ sở dữ liệu.
+- Kiến trúc sạch.
 
 ---
 
 ## 6–9 phút — Docker + MinIO
 
-Show:
+Trình bày:
 
 ```bash
 docker compose ps
@@ -43,22 +43,22 @@ docker compose ps
 Sau đó:
 
 ```text
-Upload thumbnail
-→ MinIO Console
-→ Object xuất hiện
+Tải ảnh thu nhỏ lên
+→ Bảng điều khiển MinIO
+→ Đối tượng xuất hiện
 ```
 
 ---
 
-## 9–14 phút — Batch
+## 9–14 phút — Xử lý theo lô
 
-Create job cho:
+Tạo tác vụ cho:
 
 ```text
-10k users
+10 nghìn người dùng
 ```
 
-Show:
+Trình bày:
 
 ```text
 202 Accepted
@@ -67,48 +67,48 @@ Show:
 Sau đó:
 
 ```text
-Worker logs
-Batch number
-Retry
-Failed item
+Nhật ký tiến trình xử lý nền
+Số lô
+Thử lại
+Mục thất bại
 ```
 
 ---
 
 ## 14–18 phút — CSV
 
-Show:
+Trình bày:
 
 ```text
-100k records
+100 nghìn bản ghi
 ```
 
-Compare:
+So sánh:
 
 ```text
-Load All
-vs
-Streaming
+Nạp toàn bộ
+so với
+Truyền luồng
 ```
 
-Show:
+Trình bày:
 
 ```text
-time
-memory
+thời gian
+bộ nhớ
 ```
 
 ---
 
 ## 18–21 phút — N+1
 
-Call:
+Gọi:
 
 ```text
 /details-naive
 ```
 
-Show SQL query count.
+Trình bày số lượng truy vấn SQL.
 
 Sau đó:
 
@@ -116,59 +116,59 @@ Sau đó:
 /details-optimized
 ```
 
-Show query count giảm.
+Trình bày số lượng truy vấn đã giảm.
 
 ---
 
-## 21–25 phút — Index
+## 21–25 phút — Chỉ mục
 
-Run:
+Chạy:
 
 ```sql
 EXPLAIN ANALYZE ...
 ```
 
-Before index.
+Trước khi thêm chỉ mục.
 
-Sau đó show After index.
+Sau đó trình bày kết quả sau khi thêm chỉ mục.
 
-Highlight:
+Nhấn mạnh:
 
 ```text
-Table Scan
-→ Index Range Scan
+Quét toàn bộ bảng
+→ Quét phạm vi chỉ mục
 ```
 
 ---
 
-## 25–27 phút — Pagination
+## 25–27 phút — Phân trang
 
-Show:
+Trình bày:
 
 ```text
 OFFSET 500k
 ```
 
-vs:
+so với:
 
 ```text
-cursor
+con trỏ
 ```
 
 ---
 
-## 27–30 phút — Conclusion
+## 27–30 phút — Kết luận
 
-Show bảng:
+Trình bày bảng:
 
-| Problem | Before | After |
+| Vấn đề | Trước | Sau |
 |---|---:|---:|
-| N+1 queries | đo thật | đo thật |
-| CSV memory | đo thật | đo thật |
-| Search latency | đo thật | đo thật |
-| Pagination | đo thật | đo thật |
-| Batch memory | đo thật | đo thật |
+| Truy vấn N+1 | đo thật | đo thật |
+| Bộ nhớ khi xử lý CSV | đo thật | đo thật |
+| Độ trễ tìm kiếm | đo thật | đo thật |
+| Phân trang | đo thật | đo thật |
+| Bộ nhớ khi xử lý theo lô | đo thật | đo thật |
 
-Kết luận bằng trade-off.
+Kết luận bằng sự đánh đổi.
 
 ---

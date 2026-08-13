@@ -1,19 +1,19 @@
-# Database First and SQL Migration Guide
+# Hướng dẫn Database First và migration SQL
 
-## Architecture and source of truth
+## Kiến trúc và nguồn dữ liệu chuẩn
 
-The project uses MySQL with Database First:
+Dự án sử dụng MySQL theo hướng Database First:
 
 ```text
-versioned SQL migration
-    -> MySQL schema
-    -> EF Core scaffold
-    -> generated DbContext and persistence models
+migration SQL có phiên bản
+    -> schema MySQL
+    -> sinh mã EF Core
+    -> DbContext và các mô hình lưu trữ được sinh
 ```
 
-SQL migrations are the only source of truth for schema. Do not use `dotnet ef migrations add`, `dotnet ef database update`, or runtime EF `Database.Migrate()` to manage schema.
+Migration SQL là nguồn dữ liệu chuẩn duy nhất của schema. Không dùng `dotnet ef migrations add`, `dotnet ef database update` hoặc `Database.Migrate()` của EF khi chạy để quản lý schema.
 
-Each service owns one database and one migration folder:
+Mỗi dịch vụ sở hữu một cơ sở dữ liệu và một thư mục migration:
 
 ```text
 Course Service       lms_course_db        Services/Course/CourseService.Infrastructure/Database/Migrations/
@@ -23,21 +23,21 @@ Notification Service lms_notification_db  Services/Notification/NotificationServ
 Scheduler Service    lms_scheduler_db     Services/Scheduler/SchedulerService.Infrastructure/Database/Migrations/
 ```
 
-There are no foreign keys across service databases. Store external IDs such as `student_id` as scalar values and validate them through service contracts when needed.
+Không có khóa ngoại xuyên cơ sở dữ liệu dịch vụ. Lưu các ID bên ngoài như `student_id` dưới dạng giá trị vô hướng và kiểm tra chúng qua hợp đồng dịch vụ khi cần.
 
-## Credentials and environment variables
+## Thông tin xác thực và biến môi trường
 
-`.env` is local-only and ignored by Git. Start from `.env.example`:
+`.env` chỉ dùng cục bộ và được Git bỏ qua. Bắt đầu từ `.env.example`:
 
 ```bash
 cp .env.example .env
 ```
 
-Set real local passwords in `.env`. Never place passwords, root credentials, or connection strings in source code or `appsettings.json`.
+Đặt mật khẩu cục bộ thực trong `.env`. Tuyệt đối không đặt mật khẩu, thông tin xác thực root hoặc chuỗi kết nối trong mã nguồn hay `appsettings.json`.
 
-Quote connection-string values in `.env` because `User ID` contains a space and the file is also loaded by shell-based automation.
+Đặt giá trị chuỗi kết nối trong `.env` giữa dấu nháy vì `User ID` chứa khoảng trắng và tệp này cũng được quy trình tự động hóa dựa trên shell nạp.
 
-Each API receives only its own `ConnectionStrings__Database` environment variable. Docker Compose forwards the matching runtime connection string from `.env`. Manual automation uses:
+Mỗi API chỉ nhận biến môi trường `ConnectionStrings__Database` của chính nó. Docker Compose chuyển tiếp chuỗi kết nối khi chạy tương ứng từ `.env`. Quy trình tự động hóa thủ công dùng:
 
 - `COURSE_DB_LOCAL_CONNECTION_STRING`
 - `STUDENT_DB_LOCAL_CONNECTION_STRING`
@@ -45,11 +45,11 @@ Each API receives only its own `ConnectionStrings__Database` environment variabl
 - `NOTIFICATION_DB_LOCAL_CONNECTION_STRING`
 - `SCHEDULER_DB_LOCAL_CONNECTION_STRING`
 
-The local variants use `Server=localhost` for host-side migration and scaffold commands. The Docker runtime variants use `Server=mysql`.
+Các biến thể cục bộ dùng `Server=localhost` cho lệnh migration và sinh mã chạy trên máy chủ. Các biến thể khi chạy trong Docker dùng `Server=mysql`.
 
-## Migration history and startup behavior
+## Lịch sử migration và hành vi khởi động
 
-Before applying service migrations, the application creates this technical table in its own database:
+Trước khi áp dụng migration của dịch vụ, ứng dụng tạo bảng kỹ thuật sau trong cơ sở dữ liệu của mình:
 
 ```text
 schema_migrations
@@ -59,27 +59,27 @@ schema_migrations
 └── checksum
 ```
 
-At startup, every API:
+Khi khởi động, mỗi API:
 
-1. Waits for MySQL and the one-shot `mysql-init` container.
-2. Acquires a MySQL migration lock for its own database.
-3. Creates `schema_migrations` if it does not exist.
-4. Reads SQL files in version order.
-5. Verifies checksums of previously applied migrations.
-6. Applies each pending migration, records its history row, and logs the version.
-7. Fails startup when a migration, checksum validation, or history write fails.
+1. Đợi MySQL và container chạy một lần `mysql-init`.
+2. Lấy khóa migration MySQL cho cơ sở dữ liệu của mình.
+3. Tạo `schema_migrations` nếu bảng chưa tồn tại.
+4. Đọc các tệp SQL theo thứ tự phiên bản.
+5. Xác minh checksum của các migration đã áp dụng trước đó.
+6. Áp dụng từng migration đang chờ, ghi bản ghi lịch sử và ghi nhật ký phiên bản.
+7. Dừng khởi động khi migration, kiểm tra checksum hoặc ghi lịch sử thất bại.
 
-Errors are never silently ignored. MySQL DDL can implicitly commit, so a failed DDL migration may need a corrective forward migration or manual development reset.
+Lỗi không bao giờ bị bỏ qua âm thầm. DDL của MySQL có thể commit ngầm, vì vậy một migration DDL thất bại có thể cần migration sửa lỗi tiếp theo hoặc thao tác đặt lại môi trường phát triển thủ công.
 
-## Migration naming convention
+## Quy ước đặt tên migration
 
-Use:
+Dùng:
 
 ```text
 V<zero-padded-version>__<lowercase-description>.sql
 ```
 
-Examples:
+Ví dụ:
 
 ```text
 V001__create_learning_tables.sql
@@ -87,22 +87,22 @@ V002__add_course_status_index.sql
 V003__add_description_markdown.sql
 ```
 
-Rules:
+Quy tắc:
 
-- Versions are unique and increase within one service.
-- Never edit an applied migration. Its checksum is validated at startup.
-- Use lower-case letters, numbers, hyphens, and underscores after `__`.
-- One migration should make one coherent schema change.
+- Phiên bản là duy nhất và tăng dần trong một dịch vụ.
+- Không bao giờ sửa migration đã áp dụng. Checksum của migration được kiểm tra khi khởi động.
+- Dùng chữ thường, chữ số, dấu gạch ngang và dấu gạch dưới sau `__`.
+- Một migration chỉ nên thực hiện một thay đổi schema nhất quán.
 
-## Create and apply a migration
+## Tạo và áp dụng migration
 
-Create the SQL file in the owning service migration folder, for example:
+Tạo tệp SQL trong thư mục migration của dịch vụ sở hữu, ví dụ:
 
 ```bash
 touch backend/Services/Course/CourseService.Infrastructure/Database/Migrations/V002__add_course_slug.sql
 ```
 
-Write schema SQL there. Then run the service migration locally:
+Viết SQL định nghĩa schema tại đó. Sau đó chạy migration của dịch vụ ở môi trường cục bộ:
 
 ```bash
 set -a
@@ -111,13 +111,13 @@ set +a
 sh scripts/database/tools/migrate.sh course
 ```
 
-The same migration runs automatically before the API starts in Docker.
+Migration này tự động chạy trước khi API khởi động trong Docker.
 
-## Add schema changes
+## Thêm thay đổi schema
 
-### Add a table
+### Thêm bảng
 
-Create a new migration:
+Tạo migration mới:
 
 ```sql
 CREATE TABLE courses (
@@ -128,62 +128,62 @@ CREATE TABLE courses (
 ) ENGINE=InnoDB;
 ```
 
-### Add a column
+### Thêm cột
 
-Create a later migration; do not edit the table-creation migration after it is applied:
+Tạo migration tiếp theo; không sửa migration tạo bảng sau khi migration đó đã được áp dụng:
 
 ```sql
 ALTER TABLE courses
     ADD COLUMN description_markdown TEXT NULL;
 ```
 
-### Add an index
+### Thêm chỉ mục
 
-Use a dedicated migration and a descriptive name:
+Dùng một migration riêng và tên có tính mô tả:
 
 ```sql
 CREATE INDEX ix_courses_created_at ON courses (created_at);
 ```
 
-## Rollback and failed migrations
+## Hoàn tác và migration thất bại
 
-Production uses forward-only migrations. Prefer a new corrective migration over rollback.
+Môi trường sản xuất chỉ dùng migration tiến. Ưu tiên migration sửa lỗi mới thay vì hoàn tác.
 
-For a failed migration:
+Đối với migration thất bại:
 
-1. Stop and inspect the logged migration version and MySQL error.
-2. Check whether MySQL applied any DDL before the failure.
-3. In shared or production environments, create a new forward migration that repairs the schema.
-4. In a disposable local development database, reset the database and rerun migrations if appropriate.
+1. Dừng lại và kiểm tra phiên bản migration cùng lỗi MySQL trong nhật ký.
+2. Kiểm tra xem MySQL đã áp dụng DDL nào trước khi xảy ra lỗi hay chưa.
+3. Trong môi trường dùng chung hoặc sản xuất, tạo migration tiến mới để sửa schema.
+4. Trong cơ sở dữ liệu phát triển cục bộ có thể xóa bỏ, đặt lại cơ sở dữ liệu và chạy lại migration nếu phù hợp.
 
-Do not delete or alter a row in `schema_migrations` merely to rerun a migration unless the actual schema has been reset to match.
+Không xóa hoặc sửa bản ghi trong `schema_migrations` chỉ để chạy lại migration, trừ khi schema thực tế đã được đặt lại cho khớp.
 
-## Reset all development databases
+## Đặt lại toàn bộ cơ sở dữ liệu phát triển
 
-The current clean baseline contains exactly one `V001` row per service
-database. When changing this baseline in a disposable development environment,
-do not delete only `schema_migrations` rows: the retained tables would no
-longer match history.
+Đường cơ sở sạch hiện tại chứa chính xác một bản ghi `V001` trong mỗi cơ sở dữ
+liệu dịch vụ. Khi thay đổi đường cơ sở này trong môi trường phát triển có thể xóa
+bỏ, không chỉ xóa các bản ghi `schema_migrations`: những bảng được giữ lại sẽ
+không còn khớp với lịch sử.
 
-Use the guarded reset:
+Dùng thao tác đặt lại có cơ chế bảo vệ:
 
 ```bash
 scripts/database/reset-development-databases.sh --confirm
 docker compose up -d --build
 ```
 
-The script refuses to run without `--confirm`, outside
-`ASPNETCORE_ENVIRONMENT=Development`, or when database names differ from the
-five expected local names. It stops APIs, drops/recreates only the five MySQL
-databases and users through `mysql-init`, and preserves the MinIO volume. Each
-API then creates `schema_migrations` and applies its clean `V001`.
+Tập lệnh từ chối chạy nếu thiếu `--confirm`, nếu không ở
+`ASPNETCORE_ENVIRONMENT=Development`, hoặc nếu tên cơ sở dữ liệu khác năm tên cục
+bộ dự kiến. Tập lệnh dừng các API, chỉ xóa/tạo lại năm cơ sở dữ liệu MySQL và người
+dùng qua `mysql-init`, đồng thời giữ nguyên volume MinIO. Sau đó, mỗi API tạo
+`schema_migrations` và áp dụng `V001` sạch của mình.
 
-Use `docker compose down -v` only when intentionally deleting both MySQL and
-MinIO development data.
+Chỉ dùng `docker compose down -v` khi chủ ý xóa cả dữ liệu phát triển MySQL và
+MinIO.
 
-## EF Core Database First scaffold
+## Sinh mã EF Core theo hướng Database First
 
-Run scaffold only after SQL migrations succeed. Scaffold is a development action, never a production startup action.
+Chỉ sinh mã sau khi migration SQL thành công. Sinh mã là thao tác phát triển, tuyệt đối không phải thao tác khởi động môi trường sản xuất.
 
 ```bash
 set -a
@@ -192,9 +192,9 @@ set +a
 sh scripts/database/tools/scaffold.sh course
 ```
 
-Replace `course` with `student`, `media`, `notification`, or `scheduler`.
+Thay `course` bằng `student`, `media`, `notification` hoặc `scheduler`.
 
-The command uses:
+Lệnh sử dụng:
 
 ```text
 dotnet ef dbcontext scaffold
@@ -204,10 +204,10 @@ Pomelo.EntityFrameworkCore.MySql
 --force
 ```
 
-Automation chỉ chọn bảng nghiệp vụ của service; không scaffold technical table `schema_migrations`.
-`--no-build` cho phép scaffold lại ngay cả khi generated source hiện tại chưa khớp schema; luôn chạy `dotnet build` ngay sau scaffold.
+Quy trình tự động hóa chỉ chọn bảng nghiệp vụ của dịch vụ; không sinh mã cho bảng kỹ thuật `schema_migrations`.
+`--no-build` cho phép sinh lại mã ngay cả khi mã nguồn được sinh hiện tại chưa khớp schema; luôn chạy `dotnet build` ngay sau khi sinh mã.
 
-Generated code belongs only in the matching service Infrastructure project:
+Mã được sinh chỉ thuộc về dự án Infrastructure của dịch vụ tương ứng:
 
 ```text
 Infrastructure/
@@ -216,44 +216,44 @@ Infrastructure/
     └── Scaffolded/
 ```
 
-Never scaffold another service database. For example, Student Service never scaffolds `lms_course_db`.
+Không bao giờ sinh mã từ cơ sở dữ liệu của dịch vụ khác. Ví dụ, Student Service không bao giờ sinh mã từ `lms_course_db`.
 
-## Re-scaffold safely
+## Sinh lại mã an toàn
 
-Scaffolded `DbContext` and entities are generated code:
+`DbContext` và các thực thể được sinh tự động:
 
-- Do not put business logic in generated files.
-- Use partial classes for generated model extensions.
-- Use mappers to convert persistence models to Domain entities.
-- Keep use cases and interfaces in Application.
-- Rerun scaffold with `--force` after every approved schema migration.
+- Không đặt logic nghiệp vụ trong các tệp được sinh.
+- Dùng lớp từng phần để mở rộng mô hình được sinh.
+- Dùng bộ ánh xạ để chuyển mô hình lưu trữ thành thực thể Domain.
+- Giữ các ca sử dụng và giao diện trong Application.
+- Sinh lại mã với `--force` sau mỗi migration schema đã được phê duyệt.
 
-Review generated diffs after each scaffold to ensure only the owning service changed.
+Rà soát phần khác biệt được sinh sau mỗi lần sinh mã để bảo đảm chỉ dịch vụ sở hữu thay đổi.
 
-## Docker workflow
+## Quy trình Docker
 
 ```bash
 docker compose up -d --build
 ```
 
-Startup dependency:
+Thứ tự phụ thuộc khi khởi động:
 
 ```text
-mysql healthy
-    -> mysql-init creates databases and users
-    -> service applies its SQL migrations
-    -> service starts
+mysql khỏe mạnh
+    -> mysql-init tạo cơ sở dữ liệu và người dùng
+    -> dịch vụ áp dụng migration SQL
+    -> dịch vụ khởi động
 ```
 
-In production, use the same ordering but inject real credentials through the deployment secret store. Do not run scaffold in production.
+Trong môi trường sản xuất, dùng cùng thứ tự nhưng truyền thông tin xác thực thực qua kho bí mật của hệ thống triển khai. Không sinh mã trong môi trường sản xuất.
 
-## Daily developer workflow
+## Quy trình phát triển hằng ngày
 
-1. Update `.env` locally from `.env.example`.
-2. Start MySQL and services with Docker Compose.
-3. Add a versioned SQL migration for schema changes.
-4. Apply and inspect the migration.
-5. Scaffold only the owning service database.
-6. Implement persistence mapping in Infrastructure and business behavior in Domain/Application.
-7. Run build and tests.
-8. Commit SQL migrations, generated scaffold files when applicable, `.env.example`, and guide updates; never commit `.env`.
+1. Cập nhật `.env` cục bộ từ `.env.example`.
+2. Khởi động MySQL và các dịch vụ bằng Docker Compose.
+3. Thêm migration SQL có phiên bản cho các thay đổi schema.
+4. Áp dụng và kiểm tra migration.
+5. Chỉ sinh mã từ cơ sở dữ liệu của dịch vụ sở hữu.
+6. Triển khai ánh xạ lưu trữ trong Infrastructure và hành vi nghiệp vụ trong Domain/Application.
+7. Dựng mã và chạy kiểm thử.
+8. Commit migration SQL, các tệp được sinh khi áp dụng, `.env.example` và bản cập nhật hướng dẫn; tuyệt đối không commit `.env`.

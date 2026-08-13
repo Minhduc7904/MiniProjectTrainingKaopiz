@@ -1,52 +1,52 @@
-# Development Database Reset Runbook
+# Sổ tay đặt lại cơ sở dữ liệu phát triển
 
-Use this runbook only for disposable local development databases when the clean
-`V001` baseline changes and old `schema_migrations` checksums must not remain.
+Chỉ dùng sổ tay này cho cơ sở dữ liệu phát triển cục bộ có thể xóa bỏ khi đường
+cơ sở `V001` sạch thay đổi và không được giữ lại checksum cũ trong `schema_migrations`.
 
-## Preconditions
+## Điều kiện tiên quyết
 
-- `.env` exists and contains `ASPNETCORE_ENVIRONMENT=Development`.
-- The five database names are exactly `lms_course_db`, `lms_student_db`,
-  `lms_media_db`, `lms_notification_db`, and `lms_scheduler_db`.
-- No local MySQL data needs to be preserved.
-- MinIO data must remain intact.
+- `.env` tồn tại và chứa `ASPNETCORE_ENVIRONMENT=Development`.
+- Năm tên cơ sở dữ liệu chính xác là `lms_course_db`, `lms_student_db`,
+  `lms_media_db`, `lms_notification_db` và `lms_scheduler_db`.
+- Không có dữ liệu MySQL cục bộ nào cần được giữ lại.
+- Dữ liệu MinIO phải được giữ nguyên.
 
-## Procedure
+## Quy trình
 
 ```bash
 scripts/database/reset-development-databases.sh --confirm
 docker compose up -d --build
 ```
 
-The guarded script stops API containers, starts/health-checks MySQL, drops only
-the five expected databases, force-recreates `mysql-init`, and leaves
-`minio-data` untouched. API startup then applies each service's clean `V001`.
+Tập lệnh có cơ chế bảo vệ dừng các container API, khởi động/kiểm tra sức khỏe MySQL,
+chỉ xóa năm cơ sở dữ liệu dự kiến, buộc tạo lại `mysql-init` và giữ nguyên
+`minio-data`. Khi khởi động, API sẽ áp dụng `V001` sạch của từng dịch vụ.
 
-This reset also removes every row created by `Lms.DataSeeder`, because seed data
-is written to `lms_student_db` and `lms_course_db` rather than a separate
-database or migration. No extra seed cleanup command is required. To recreate
-the default dataset after services apply migrations:
+Thao tác đặt lại này cũng xóa mọi bản ghi do `Lms.DataSeeder` tạo, vì dữ liệu
+được ghi vào `lms_student_db` và `lms_course_db` thay vì một cơ sở dữ liệu hoặc
+migration riêng. Không cần lệnh dọn dữ liệu bổ sung. Để tạo lại tập dữ liệu mặc
+định sau khi các dịch vụ áp dụng migration:
 
 ```bash
 scripts/seed/run-development-seed.sh --confirm
 ```
 
-## Verification
+## Xác minh
 
-Each database must contain exactly one `schema_migrations` row with version
-`001`. Notification must contain `notification_batches`,
-`notification_batch_items`, and `notifications`; Scheduler must contain only
-`background_jobs` and `background_job_runs` as business tables.
-`students`, `courses`, `lessons`, and `enrollments` must be empty before a new
-seed run.
+Mỗi cơ sở dữ liệu phải chứa chính xác một bản ghi `schema_migrations` có phiên
+bản `001`. Notification phải chứa `notification_batches`,
+`notification_batch_items` và `notifications`; Scheduler chỉ được chứa
+`background_jobs` và `background_job_runs` dưới dạng bảng nghiệp vụ.
+`students`, `courses`, `lessons` và `enrollments` phải rỗng trước lần tạo dữ liệu mới.
 
-## Failure and recovery
+## Lỗi và khôi phục
 
-- Missing `--confirm`, non-Development environment, or unexpected database
-  names must stop before any drop.
-- If reset fails after a drop, rerun the same confirmed script after fixing
-  MySQL/Compose. Do not insert/delete migration history rows manually.
-- If a V001 DDL statement fails, fix it before shared use, rerun the full local
-  reset, and apply all migrations again. MySQL DDL may auto-commit.
-- There is no rollback restoring deleted MySQL data. Restore from a backup if
-  the precondition that data is disposable was wrong.
+- Việc thiếu `--confirm`, môi trường không phải Development hoặc tên cơ sở dữ
+  liệu ngoài dự kiến phải làm quy trình dừng trước khi xóa bất kỳ dữ liệu nào.
+- Nếu thao tác đặt lại thất bại sau khi xóa cơ sở dữ liệu, hãy sửa MySQL/Compose
+  rồi chạy lại cùng tập lệnh đã xác nhận. Không tự chèn/xóa bản ghi lịch sử migration.
+- Nếu một câu lệnh DDL trong V001 thất bại, hãy sửa trước khi dùng chung, chạy
+  lại toàn bộ thao tác đặt lại cục bộ và áp dụng lại tất cả migration. DDL của
+  MySQL có thể tự động commit.
+- Không có thao tác hoàn tác để khôi phục dữ liệu MySQL đã xóa. Hãy khôi phục từ
+  bản sao lưu nếu giả định dữ liệu có thể xóa bỏ là sai.

@@ -1,18 +1,18 @@
-# Export Courses
+# Xuất khóa học
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `GET /api/courses/export?status=PUBLISHED`
 
-Success data payload `200 OK` with `Content-Type: text/csv`:
+Dữ liệu phản hồi thành công `200 OK` với `Content-Type: text/csv`:
 
 ```csv
 id,name,status
 course-uuid,Backend Fundamentals,PUBLISHED
 ```
 
-- Validate: optional `status` is valid.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 FORBIDDEN`.
-- Stream output; do not load the full export into memory.
+- Kiểm tra hợp lệ: `status` không bắt buộc và phải hợp lệ.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 FORBIDDEN`.
+- Truyền đầu ra theo luồng; không nạp toàn bộ dữ liệu xuất vào bộ nhớ.

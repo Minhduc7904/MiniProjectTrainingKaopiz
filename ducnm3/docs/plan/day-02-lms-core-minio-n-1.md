@@ -1,25 +1,26 @@
-# DAY 2 — LMS Core + MinIO + N+1
+# NGÀY 2 — LMS cốt lõi + MinIO + N+1
 
-## Goal
+## Mục tiêu
 
-Có LMS core đủ để demo query optimization.
+Có phần cốt lõi của LMS đủ để demo tối ưu truy vấn.
 
-### Task
+### Nhiệm vụ
 
-#### Course
+#### Khóa học
 
-- Create Course.
-- List Course.
-- Create Lesson.
-- Enrollment.
-- Progress.
+- Tạo khóa học.
+- Liệt kê khóa học.
+- Tạo bài học.
+- Ghi danh.
+- Tiến độ học tập.
 
 #### MinIO
 
 - Media Service tạo `media_objects` và `media_usages` để lưu metadata, loại media, và vị trí sử dụng.
-- Upload thumbnail/tài liệu qua Media Service; Course Service không gọi MinIO.
-- Course Service lưu Markdown và gọi Media Service để liên kết thumbnail, embed, hoặc attachment.
-- Download/presigned URL qua Media Service.
+- Tải thumbnail/tài liệu lên qua Media Service; Course Service không gọi MinIO.
+- Course Service lưu Markdown và gọi Media Service để liên kết thumbnail, nội
+  dung nhúng hoặc tệp đính kèm.
+- Tải xuống/lấy URL ký trước qua Media Service.
 
 #### N+1
 
@@ -30,37 +31,37 @@ GET /courses/details-naive
 GET /courses/details-optimized
 ```
 
-Naive:
+Cách đơn giản:
 
 ```text
 N+1
 ```
 
-Optimized:
+Đã tối ưu:
 
 ```text
-Projection / Join
+Phép chiếu / Phép nối
 ```
 
-Bật SQL logging.
+Bật ghi log SQL.
 
-### Seed
+### Dữ liệu seed
 
 ```text
-100 courses
-20 lesson/course
-progress records
+100 khóa học
+20 bài học/khóa học
+các bản ghi tiến độ
 ```
 
-### Definition of Done Day 2
+### Tiêu chí hoàn thành Ngày 2
 
-- [ ] CRUD Course chạy.
-- [ ] Lesson chạy.
-- [ ] Progress chạy.
-- [ ] Upload/download MinIO chạy.
-- [ ] Course hoặc Lesson dùng được nhiều loại media qua Media Service.
-- [ ] Có endpoint N+1.
-- [ ] Có endpoint optimized.
-- [ ] Có log SQL để so query count.
+- [ ] CRUD khóa học hoạt động.
+- [ ] Bài học hoạt động.
+- [ ] Tiến độ học tập hoạt động.
+- [ ] Tải lên/tải xuống MinIO hoạt động.
+- [ ] Khóa học hoặc bài học dùng được nhiều loại media qua Media Service.
+- [ ] Có điểm cuối N+1.
+- [ ] Có điểm cuối đã tối ưu.
+- [ ] Có log SQL để so sánh số lượng truy vấn.
 
 ---

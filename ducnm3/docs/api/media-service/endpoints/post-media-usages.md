@@ -1,23 +1,23 @@
-# Create Media Usage
+# Tạo thông tin sử dụng phương tiện
 
-## Response standard
+## Tiêu chuẩn phản hồi
 
-JSON success responses use the shared envelope in [`../shared/response-format.md`](../../shared/response-format.md). The concrete JSON below is the value of `data`; add `meta` for `traceId` and pagination. CSV and binary streaming endpoints are exceptions.
+Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
 
 `POST /api/media/usages`
 
-Request:
+Yêu cầu:
 
 ```json
 {"mediaId":"media-uuid","ownerService":"COURSE","ownerType":"COURSE_THUMBNAIL","ownerId":"course-uuid","usageType":"THUMBNAIL"}
 ```
 
-Success data payload `201 Created`:
+Dữ liệu phản hồi thành công `201 Created`:
 
 ```json
 {"id":"usage-uuid","mediaId":"media-uuid","ownerService":"COURSE","ownerType":"COURSE_THUMBNAIL","ownerId":"course-uuid","usageType":"THUMBNAIL"}
 ```
 
-- Validate: all IDs are UUID; owner enum combination is allowed; media is active.
-- Status: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 OWNER_ACCESS_DENIED`, `404 MEDIA_NOT_FOUND`, `409 MEDIA_USAGE_CONFLICT`.
-- For `COURSE_THUMBNAIL`, replaces the previous active thumbnail atomically.
+- Kiểm tra hợp lệ: tất cả ID đều là UUID; tổ hợp giá trị liệt kê về chủ sở hữu được phép; phương tiện đang hoạt động.
+- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 OWNER_ACCESS_DENIED`, `404 MEDIA_NOT_FOUND`, `409 MEDIA_USAGE_CONFLICT`.
+- Với `COURSE_THUMBNAIL`, thay thế thumbnail đang hoạt động trước đó theo cơ chế nguyên tử.

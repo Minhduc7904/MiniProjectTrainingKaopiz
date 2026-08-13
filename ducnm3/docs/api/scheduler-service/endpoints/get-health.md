@@ -1,20 +1,20 @@
 # `GET /health`
 
-## Purpose
+## Mục đích
 
-Checks that Scheduler Service is running and its owned Scheduler database accepts a lightweight query.
+Kiểm tra Scheduler Service đang chạy và cơ sở dữ liệu Scheduler do dịch vụ sở hữu chấp nhận một truy vấn nhẹ.
 
-## Authentication and authorization
+## Xác thực và phân quyền
 
-- Authentication: not required.
-- Roles/scopes: none.
-- Ownership rule: not applicable.
+- Xác thực: không bắt buộc.
+- Vai trò/phạm vi: không có.
+- Quy tắc sở hữu: không áp dụng.
 
-## Request
+## Yêu cầu
 
-No path parameter, query parameter, request body, or pagination.
+Không có tham số đường dẫn, tham số truy vấn, nội dung yêu cầu hoặc phân trang.
 
-## Success response
+## Phản hồi thành công
 
 ```http
 200 OK
@@ -35,11 +35,11 @@ No path parameter, query parameter, request body, or pagination.
 }
 ```
 
-## Status codes
+## Mã trạng thái HTTP
 
-- `200`: Scheduler Service and `lms_scheduler_db` are available.
-- `503 DATABASE_UNAVAILABLE`: API is running but cannot query its database.
+- `200`: Scheduler Service và `lms_scheduler_db` đều khả dụng.
+- `503 DATABASE_UNAVAILABLE`: API đang chạy nhưng không thể truy vấn cơ sở dữ liệu.
 
-## Business conditions and side effects
+## Điều kiện nghiệp vụ và tác động phụ
 
-Executes `SELECT 1` against `lms_scheduler_db` only. It does not create, claim, parse, or execute jobs and does not call another service.
+Chỉ thực thi `SELECT 1` trên `lms_scheduler_db`. Điểm cuối không tạo, nhận, phân tích hoặc thực thi tác vụ và không gọi dịch vụ khác.

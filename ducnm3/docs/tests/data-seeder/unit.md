@@ -1,53 +1,50 @@
-# Data Seeder Unit Tests
+# Kiểm thử đơn vị Data Seeder
 
-## Project
+## Dự án
 
 `backend/Tools/Lms.DataSeeder.UnitTests/Lms.DataSeeder.UnitTests.csproj`
 
-## Deterministic generator
+## Bộ sinh xác định
 
-Source: `DeterministicSeedDataTests.cs`.
+Mã nguồn: `DeterministicSeedDataTests.cs`.
 
 ### `SameSeedAndIndexProduceSameRows`
 
-- Setup: two generators with identical options and random seed.
-- Input: the same Student, Course, Lesson and enrollment indexes.
-- Pass: complete generated rows and course assignments are equal.
+- Thiết lập: hai bộ sinh có tùy chọn và hạt giống ngẫu nhiên giống nhau.
+- Đầu vào: cùng chỉ mục học viên, khóa học, bài học và ghi danh.
+- Đạt: toàn bộ bản ghi được sinh và các phép gán khóa học giống nhau.
 
 ### `DifferentRandomSeedsProduceDifferentIdsAndAssignments`
 
-- Setup: two generators with different random seeds.
-- Input: identical entity indexes.
-- Pass: Student/Course IDs and course assignments differ, proving seed isolation.
+- Thiết lập: hai bộ sinh có hạt giống ngẫu nhiên khác nhau.
+- Đầu vào: chỉ mục thực thể giống nhau.
+- Đạt: ID học viên/khóa học và các phép gán khóa học khác nhau, chứng minh các hạt giống được cô lập.
 
 ### `GeneratedRelationshipsStayWithinConfiguredRangesAndRemainUnique`
 
-- Setup: generate 20 Courses and assignments for 50 Students.
-- Input: Lesson range `1-5`, enrollment range `1-10`.
-- Pass: every count is inside its range; one Student never receives a duplicate
-  Course index; every Course index exists.
+- Thiết lập: sinh 20 khóa học và phép gán cho 50 học viên.
+- Đầu vào: khoảng bài học `1-5`, khoảng ghi danh `1-10`.
+- Đạt: mọi số lượng đều nằm trong khoảng; một học viên không bao giờ nhận chỉ mục
+  khóa học trùng lặp; mọi chỉ mục khóa học đều tồn tại.
 
 ### `CalculatePlanMatchesGeneratedRelationshipCounts`
 
-- Setup: calculate the plan and independently enumerate generated relationships.
-- Pass: Student/Course fixed totals and Lesson/Enrollment computed totals match.
+- Thiết lập: tính kế hoạch và liệt kê độc lập các quan hệ được sinh.
+- Đạt: tổng cố định của học viên/khóa học và tổng tính toán của bài học/ghi danh khớp nhau.
 
-## Safety option validation
+## Kiểm tra tùy chọn an toàn
 
-Source: `SeedOptionsTests.cs`.
+Mã nguồn: `SeedOptionsTests.cs`.
 
-- `ValidateAcceptsConfirmedDevelopmentConfiguration`: valid Development options
-  do not throw.
-- `ValidateRejectsEnvironmentOtherThanDevelopment`: Production is rejected.
-- `ValidateRejectsWriteWithoutConfirmation`: a write without `--confirm` is
-  rejected.
-- `ValidateAllowsDryRunWithoutConfirmation`: read-only dry run is allowed.
-- `ValidateRejectsUnexpectedDatabaseName`: a connection not targeting
-  `lms_course_db` is rejected.
-- `ValidateRejectsInvalidCourseAssignmentRange`: zero or an inverted/out-of-range
-  assignment range is rejected.
+- `ValidateAcceptsConfirmedDevelopmentConfiguration`: tùy chọn Development hợp lệ không gây ngoại lệ.
+- `ValidateRejectsEnvironmentOtherThanDevelopment`: Production bị từ chối.
+- `ValidateRejectsWriteWithoutConfirmation`: thao tác ghi không có `--confirm` bị từ chối.
+- `ValidateAllowsDryRunWithoutConfirmation`: cho phép chạy thử chỉ đọc.
+- `ValidateRejectsUnexpectedDatabaseName`: kết nối không trỏ đến `lms_course_db` bị từ chối.
+- `ValidateRejectsInvalidCourseAssignmentRange`: khoảng gán bằng không, đảo ngược
+  hoặc nằm ngoài giới hạn bị từ chối.
 
-Run:
+Chạy:
 
 ```bash
 dotnet test backend/Tools/Lms.DataSeeder.UnitTests/Lms.DataSeeder.UnitTests.csproj
