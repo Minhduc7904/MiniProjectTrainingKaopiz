@@ -1,3 +1,5 @@
 .env
 **/bin/
 **/obj/
+!backend/Services/Scheduler/SchedulerService.Api/appsettings.json
+!backend/Services/Scheduler/SchedulerService.Api/appsettings.Development.json

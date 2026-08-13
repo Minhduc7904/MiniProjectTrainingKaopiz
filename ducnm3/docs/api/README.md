@@ -18,7 +18,10 @@ api/
 ├── media-service/
 │   ├── README.md
 │   └── endpoints/
-└── notification-service/
+├── notification-service/
+│   ├── README.md
+│   └── endpoints/
+└── scheduler-service/
     ├── README.md
     └── endpoints/
 ```

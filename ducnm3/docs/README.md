@@ -23,7 +23,7 @@ This directory contains the LMS microservices plan, organized by subject. Treat 
 
 ## API and data
 
-- `api/`: API contracts grouped by Course, Student, Media, and Notification Service.
+- `api/`: API contracts grouped by Course, Student, Media, Notification, and Scheduler Service.
 - `api/error-handling-observability.md`: error contract, logging, and observability.
 - `database/lms-data-model.md`: LMS, multi-media, notification-job, and student-inbox entities.
 

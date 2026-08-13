@@ -2,7 +2,7 @@
 
 | Requirement | Project demonstration |
 |---|---|
-| Docker | Gateway, 4 services, MySQL, and MinIO |
+| Docker | Gateway, 4 business services, Scheduler Service, MySQL, and MinIO |
 | MinIO | Media Service uploads and streams media |
 | Batch job | Broadcast to 3k/10k/100k Students |
 | Retry | Fake sender failure with one retry |

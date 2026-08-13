@@ -20,11 +20,19 @@ LMS Mini
 │   ├── MySQL metadata + media usage
 │   └── MinIO
 │
-└── Notification Service
+├── Notification Service
+│   ├── Clean Architecture
+│   └── MySQL notification batches/inbox
+│
+└── Scheduler Service
     ├── Clean Architecture
-    ├── Background Worker
-    └── MySQL
+    ├── Worker skeleton
+    └── MySQL job definitions/run history
 ```
+
+Scheduler execution và cross-service calls chưa được triển khai; Worker hiện
+không chạy background loop. Scheduler không thay thế dữ liệu batch nghiệp vụ
+của Notification Service.
 
 Điểm khác biệt của project:
 

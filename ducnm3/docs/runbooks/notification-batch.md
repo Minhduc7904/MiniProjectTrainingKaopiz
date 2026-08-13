@@ -1,4 +1,4 @@
-# 18. Batch Job — Naive Version
+# 18. Notification Batch — Naive Version
 
 Version đầu tiên cố tình implement không tối ưu:
 
@@ -24,15 +24,18 @@ Vấn đề cần ghi nhận:
 Đây là **Before** trong demo.
 
 ---
-# 19. Batch Job — Optimized Version
+# 19. Notification Batch — Optimized Version
+
+Các bước worker dưới đây là mục tiêu của phase execution, chưa được triển khai
+trong Scheduler foundation.
 
 Flow:
 
 ```text
-POST /notification-jobs
+POST /notification-batches
         │
         ▼
-Create Job
+Create Notification Batch
         │
         ▼
 202 Accepted
@@ -48,7 +51,7 @@ Load 500 records
 Create in-app notification
         │
         ▼
-Update Job Items
+Update Batch Items
         │
         ▼
 Next Batch
@@ -152,8 +155,8 @@ có thể nhận notification lần 2
 Fix:
 
 ```text
-UNIQUE(job_id, student_id)
-UNIQUE(notification_job_id, recipient_student_id)
+UNIQUE(batch_id, student_id)
+UNIQUE(notification_batch_id, recipient_student_id)
 ```
 
 và chỉ process:
@@ -170,6 +173,9 @@ status = SUCCESS
 
 thì skip.
 
-Khi retry, worker phải tái sử dụng hoặc kiểm tra notification đã tạo cho `job_id + student_id` trước khi insert, để học viên không thấy hai inbox item giống nhau.
+Khi retry, handler phải tái sử dụng hoặc kiểm tra notification đã tạo cho
+`batch_id + student_id` trước khi insert, để học viên không thấy hai inbox item
+giống nhau. Scheduler run dùng idempotency key riêng và không thay thế
+constraint nghiệp vụ này.
 
 ---

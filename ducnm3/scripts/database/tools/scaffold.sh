@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-service="${1:?Usage: scaffold.sh <course|student|media|notification>}"
+service="${1:?Usage: scaffold.sh <course|student|media|notification|scheduler>}"
 project_root="$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)"
 backend_root="$project_root/backend"
 
@@ -40,7 +40,16 @@ case "$service" in
     context_name="NotificationDbContext"
     namespace="NotificationService.Infrastructure.Persistence.Scaffolded"
     context_namespace="NotificationService.Infrastructure.Persistence"
-    table_args="--table notification_jobs --table notification_job_items --table notifications"
+    table_args="--table notification_batches --table notification_batch_items --table notifications"
+    ;;
+  scheduler)
+    connection_string="${SCHEDULER_DB_LOCAL_CONNECTION_STRING:?SCHEDULER_DB_LOCAL_CONNECTION_STRING must be set}"
+    infrastructure_project="Services/Scheduler/SchedulerService.Infrastructure/SchedulerService.Infrastructure.csproj"
+    startup_project="Services/Scheduler/SchedulerService.Api/SchedulerService.Api.csproj"
+    context_name="SchedulerDbContext"
+    namespace="SchedulerService.Infrastructure.Persistence.Scaffolded"
+    context_namespace="SchedulerService.Infrastructure.Persistence"
+    table_args="--table background_jobs --table background_job_runs"
     ;;
   *)
     echo "Unknown service: $service" >&2

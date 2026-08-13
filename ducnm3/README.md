@@ -6,11 +6,12 @@
 - `docs/`: architecture, API, database, development, operations, and detailed test documentation.
 - `rules/`: implementation and review requirements.
 - `skills/`: repeatable workflows for common engineering tasks.
-- `backend/`: microservices, workers, shared backend building blocks, and backend tests.
+- `backend/`: four business services, Scheduler API/Worker foundation, Gateway, shared building blocks, and backend tests.
 - `frontend/`: web client and its UI tests.
 - `tests/`: automated tests.
 - `scripts/`: development and CI helper scripts, including database bootstrap/migrate/scaffold and MinIO provisioning.
 
 ## Getting started
 
-The application stack has not been selected yet. Choose the stack before adding runtime commands, dependencies, or deployment configuration. See `docs/development/setup.md` for the project setup checklist.
+The backend uses ASP.NET Core, MySQL, MinIO, YARP, NSwag, and Docker Compose.
+See `docs/development/setup.md` for the local setup workflow.

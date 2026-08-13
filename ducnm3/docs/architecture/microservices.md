@@ -1,32 +1,24 @@
 # 4. Kiến trúc Microservices đề xuất
 
-Sử dụng **4 business services**. Media Service là boundary bắt buộc vì nó sở hữu MinIO, metadata, media usage và quyền truy cập file.
+Hệ thống có **4 business services** và **1 platform service** là Scheduler. Media Service sở hữu MinIO; Scheduler sở hữu metadata lịch chạy generic nhưng không sở hữu dữ liệu nghiệp vụ của service khác.
 
-```text
-                    ┌───────────────────┐
-                    │       Client      │
-                    │ React / Swagger   │
-                    └─────────┬─────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │    API Gateway    │
-                    │  YARP / Optional  │
-                    └──────┬─────┬──────┘
-                           │     │
-          ┌────────────────┼─────┼────────────────┐
-          │                │     │                │
- ┌────────▼────────┐ ┌─────▼──────┐ ┌─────▼──────┐ ┌──────────────▼─────────────┐
- │ Course Service  │ │Student Svc  │ │Media Svc   │ │ Notification Service        │
- │ Course/Lesson   │ │Students     │ │API + MinIO │ │ API + Background Worker     │
- └────────┬────────┘ └─────┬──────┘ └─────┬──────┘ └──────────────┬─────────────┘
-          │                │              │                         │
- ┌────────▼────────┐ ┌─────▼──────┐ ┌─────▼──────┐          ┌───────▼────────┐
- │ Course MySQL    │ │Student MySQL│ │Media MySQL │          │Notification DB │
- └─────────────────┘ └────────────┘ └─────┬──────┘          └────────────────┘
-                                           │
-                                    ┌──────▼──────┐
-                                    │    MinIO    │
-                                    └─────────────┘
+```mermaid
+flowchart LR
+    Client --> Gateway[API Gateway]
+    Gateway --> Course[Course Service]
+    Gateway --> Student[Student Service]
+    Gateway --> Media[Media Service]
+    Gateway --> Notification[Notification Service]
+    Gateway --> Scheduler[Scheduler Service API]
+    Course --> CourseDb[(Course DB)]
+    Student --> StudentDb[(Student DB)]
+    Media --> MediaDb[(Media DB)]
+    Media --> MinIO[(MinIO)]
+    Notification --> NotificationDb[(Notification DB)]
+    Scheduler --> SchedulerDb[(Scheduler DB)]
+    SchedulerWorker[Scheduler Worker skeleton] -. future .-> SchedulerDb
+    SchedulerWorker -. future internal HTTP .-> Notification
+    SchedulerWorker -. future internal HTTP .-> Media
 ```
 
 ---
@@ -108,7 +100,7 @@ Chịu trách nhiệm:
 - Broadcast notification
 - Gửi notification đơn lẻ
 - In-app inbox và read status của student
-- Background batch processing
+- Notification batch data and recipient-level delivery state
 - Retry
 - Idempotency
 - Failure tracking
@@ -117,13 +109,31 @@ Chịu trách nhiệm:
 ### Tables
 
 ```text
-notification_jobs
-notification_job_items
+notification_batches
+notification_batch_items
 notifications
 ```
 
 ---
-# 6. Vì sao chỉ tách 4 Service?
+
+## 5.5. Scheduler Service
+
+Scheduler là platform boundary cho định nghĩa job generic và lịch sử từng run:
+
+- Lịch `MANUAL` hoặc `CRON`.
+- Trạng thái cấu hình, timeout, retry và concurrency metadata.
+- Run history, idempotency key, correlation và error/output metadata.
+- API health và Worker skeleton trong phase hiện tại.
+
+```text
+background_jobs
+background_job_runs
+```
+
+Scheduler không query `lms_media_db` hoặc `lms_notification_db`. CRON parsing, claim lock, handler execution và internal HTTP calls là follow-up.
+
+---
+# 6. Vì sao là 4 business services và 1 platform service?
 
 Trong 5 ngày:
 
@@ -148,6 +158,7 @@ Course Service
 Student Service
 Media Service
 Notification Service
+Scheduler Service (platform)
 ```
 
 Đủ để:
@@ -173,6 +184,7 @@ lms_course_db
 lms_student_db
 lms_media_db
 lms_notification_db
+lms_scheduler_db
 ```
 
 Không nên:
@@ -193,6 +205,6 @@ Course Service
 
 Tương tự, Course Service và Notification Service chỉ gọi HTTP tới Media Service để upload, lấy URL, hoặc đăng ký `media_usages`; tuyệt đối không gọi MinIO hay query `lms_media_db` trực tiếp.
 
-Để vẫn hoàn thành trong 5 ngày, chỉ implement các HTTP contract cần thiết cho media usage và batch recipient lookup; không mở rộng sang event bus hoặc đồng bộ dữ liệu phức tạp.
+Trong Scheduler foundation chưa có cross-service contract. Phase execution sau mới gọi internal HTTP endpoint của service sở hữu nghiệp vụ; không mở rộng sang event bus hoặc query chéo database.
 
 ---

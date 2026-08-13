@@ -43,6 +43,7 @@ public static class ServiceNames
     public const string Student = "student-service";
     public const string Media = "media-service";
     public const string Notification = "notification-service";
+    public const string Scheduler = "scheduler-service";
     public const string Gateway = "lms-api-gateway";
 }
 
@@ -52,6 +53,7 @@ public static class GatewayRoutePrefixes
     public const string Student = "/student";
     public const string Media = "/media";
     public const string Notification = "/notification";
+    public const string Scheduler = "/scheduler";
 }
 
 public static class ConfigurationSectionNames

@@ -335,7 +335,7 @@ Tối thiểu benchmark:
 GET /courses
 GET /courses/details
 GET /courses/export
-POST /notification-jobs
+POST /notification-batches
 ```
 
 Tool có thể dùng:

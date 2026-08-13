@@ -36,5 +36,5 @@ Admin; Media Service; Notification Service; Student.
 ## Dữ liệu thay đổi
 
 - Media Service database: `media_usages`.
-- Notification Service database: `notifications` hoặc `notification_jobs`.
+- Notification Service database: `notifications` hoặc `notification_batches`.
 - MinIO không bị gọi bởi Notification Service.

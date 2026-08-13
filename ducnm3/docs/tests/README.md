@@ -10,10 +10,12 @@ docs/tests/
 │   └── component.md
 ├── api-gateway/
 │   └── component.md
-└── <service>/
+├── <service>/
     ├── unit.md
     ├── component.md
     └── integration.md
+└── scheduler-service/
+    └── unit.md
 ```
 
 Mỗi tài liệu chỉ liệt kê test hiện có trong source code, mục đích, dữ liệu hoặc

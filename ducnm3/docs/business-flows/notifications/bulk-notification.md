@@ -2,11 +2,11 @@
 
 ## Mục đích
 
-Admin gửi cùng một notification cho nhiều Student mà không giữ HTTP request mở trong thời gian worker xử lý.
+Admin tạo một batch nội dung và recipient snapshot trong Notification Service. Việc Scheduler gọi handler và delivery worker xử lý recipient là phase sau, chưa được triển khai trong foundation hiện tại.
 
 ## Actor
 
-Admin; Notification Service API; Notification Worker; Student Service.
+Admin; Notification Service API; Student Service. Scheduler Service và Scheduler Worker chỉ là actor tương lai.
 
 ## Điều kiện đầu vào
 
@@ -16,30 +16,37 @@ Admin; Notification Service API; Notification Worker; Student Service.
 
 ## Luồng chính
 
-1. Admin gửi `POST /api/notification-jobs` với nội dung và target scope.
-2. Notification Service tạo `notification_jobs` trạng thái `PENDING`.
-3. API snapshot recipient list từ Student Service hoặc enrollment, tạo `notification_job_items`.
-4. API trả `202 Accepted` cùng `jobId`.
-5. Background worker lấy các item `PENDING` hoặc `RETRY` theo chunk `batch_size`.
-6. Với mỗi Student, worker tạo một `notifications` item có `source_type = BULK`.
-7. Worker lưu `notification_id`, cập nhật job item `SUCCESS`, và tăng counters của job.
-8. Khi không còn item, worker cập nhật job thành `COMPLETED` hoặc `PARTIAL_FAILED`.
+1. Admin gửi `POST /api/notification-batches` với nội dung và target scope.
+2. Notification Service tạo `notification_batches` trạng thái `PENDING`.
+3. API snapshot recipient list và tạo `notification_batch_items`.
+4. API trả `202 Accepted` cùng `batchId`.
+5. Foundation dừng tại đây; chưa tự tạo `background_jobs` hoặc `background_job_runs`.
+
+Luồng dự kiến ở phase execution:
+
+1. Scheduler tạo run của job type `NOTIFICATION_BATCH_DISPATCH` với payload nhỏ chỉ chứa `batchId`.
+2. Scheduler Worker claim run và gọi internal contract của Notification Service.
+3. Notification handler lấy item `PENDING` hoặc `RETRY` theo `batch_size`.
+4. Handler tạo `notifications`, cập nhật item/counters và kết thúc batch.
+5. Scheduler chỉ lưu run status/output tổng quát, không sao chép content hoặc recipient list.
 
 ## Retry và idempotency
 
-1. Nếu một item thất bại, worker tăng `retry_count` và chuyển sang `RETRY`.
-2. Sau số retry tối đa, worker lưu `error_message` và chuyển item sang `FAILED`.
-3. `UNIQUE(job_id, student_id)` ngăn tạo nhiều job item cho một Student.
-4. `UNIQUE(notification_job_id, recipient_student_id)` ngăn worker tạo notification trùng khi restart hoặc retry.
+1. Nếu một item thất bại, Notification handler tương lai tăng `retry_count` và chuyển sang `RETRY`.
+2. Sau số retry tối đa, handler lưu `error_message` và chuyển item sang `FAILED`.
+3. `UNIQUE(batch_id, student_id)` ngăn snapshot trùng Student.
+4. `UNIQUE(notification_batch_id, recipient_student_id)` ngăn tạo inbox item trùng.
+5. `UNIQUE(background_job_id, idempotency_key)` là idempotency của Scheduler run, không thay thế hai constraint nghiệp vụ trên.
 
 ## Trường hợp lỗi
 
 - `400`: target scope hoặc Markdown không hợp lệ.
 - `404`: Course hoặc Student list không tồn tại.
-- `409`: job không còn có thể chạy lại theo trạng thái hiện tại.
+- `409`: batch xung đột trạng thái hoặc request tương đương đang active.
 - `202`: request hợp lệ; việc xử lý chưa hoàn tất, không phải lỗi.
 
 ## Dữ liệu thay đổi
 
-- Notification Service database: `notification_jobs`, `notification_job_items`, `notifications`.
+- Notification Service database: `notification_batches`, `notification_batch_items`, `notifications`.
+- Scheduler Service database tương lai chỉ thay đổi `background_job_runs`.
 - Student Service chỉ được đọc để lấy recipient.

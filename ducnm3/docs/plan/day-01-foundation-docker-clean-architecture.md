@@ -3,7 +3,7 @@
 ## Kết quả cuối ngày
 
 Day 1 đã hoàn thành toàn bộ foundation hiện có của LMS. Hệ thống đã có solution
-ASP.NET Core, bốn microservice theo Clean Architecture, API Gateway, database
+ASP.NET Core, bốn business service và một Scheduler platform service theo Clean Architecture, API Gateway, database
 first với SQL migrations, Docker Compose cho MySQL và MinIO, shared API
 contracts, health checks, storage adapter, và test nền tảng.
 
@@ -14,7 +14,7 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
 ## 1. Solution và kiến trúc đã hoàn thành
 
 - [x] Tạo solution `backend/Lms.sln`.
-- [x] Tạo bốn service: Course, Student, Media và Notification.
+- [x] Tạo Course, Student, Media, Notification và Scheduler Service.
 - [x] Mỗi service có bốn layer:
 
   ```text
@@ -28,7 +28,8 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
   không phụ thuộc ASP.NET Core/MySQL; Infrastructure triển khai port của
   Application; API là composition root.
 - [x] Tạo API Gateway `Lms.ApiGateway` bằng YARP.
-- [x] Tạo `NotificationWorker` skeleton và shared building blocks:
+- [x] Tạo `SchedulerService.Worker` skeleton thay cho Notification-specific worker; phase này chưa poll, claim, parse CRON hoặc gọi service khác.
+- [x] Tạo shared building blocks:
 
   ```text
   BuildingBlocks.Shared
@@ -55,6 +56,7 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
   Student Service       lms_student_db
   Media Service         lms_media_db
   Notification Service  lms_notification_db
+  Scheduler Service     lms_scheduler_db
   ```
 
 - [x] Toàn bộ credential và connection string lấy từ environment variables;
@@ -63,7 +65,7 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
   quản lý schema.
 - [x] Có migration runner dùng `schema_migrations`, version ordering, checksum,
   MySQL lock, log migration, và fail-fast khi migration lỗi.
-- [x] Có `mysql-init` bootstrap bốn database cùng application user tương ứng
+- [x] Có `mysql-init` bootstrap năm database cùng application user tương ứng
   sau khi MySQL healthy.
 - [x] Mỗi service có migration folder riêng và không tạo foreign key xuyên
   service database.
@@ -74,8 +76,12 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
   | Course | `courses`, `lessons`, `enrollments`, `lesson_progresses` |
   | Student | `students` |
   | Media | `media_objects`, `media_usages` |
-  | Notification | `notification_jobs`, `notification_job_items`, `notifications` |
+  | Notification | `notification_batches`, `notification_batch_items`, `notifications` |
+  | Scheduler | `background_jobs`, `background_job_runs` |
 
+- [x] Reset migration history sạch: mỗi database có một migration `V001`, có
+  guarded reset script giữ nguyên MinIO, và Notification/Scheduler đã được
+  scaffold lại.
 - [x] Có scripts chạy migration/scaffold local và
   [`MIGRATION_GUIDE.md`](../guide/MIGRATION_GUIDE.md) mô tả workflow Database
   First an toàn.
@@ -84,7 +90,7 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
 
 - [x] Có Dockerfile dùng chung để build từng ASP.NET Core service.
 - [x] `docker-compose.yml` khởi động MySQL, `mysql-init`, MinIO, `minio-init`,
-  bốn API service và API Gateway.
+  năm API service và API Gateway.
 - [x] MySQL dùng persistent volume `mysql-data`, healthcheck, và timezone UTC.
 - [x] MinIO dùng persistent volume `minio-data`, API port `9000`, console port
   `9001`, và healthcheck `/minio/health/live`.
@@ -99,17 +105,18 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
   | Student Service | `5102` |
   | Media Service | `5103` |
   | Notification Service | `5104` |
+  | Scheduler Service | `5105` |
   | MySQL | `3306` |
   | MinIO API / Console | `9000` / `9001` |
 
 ## 4. OpenAPI, Gateway và shared API behavior đã hoàn thành
 
 - [x] Mỗi API service có NSwag OpenAPI document và Swagger UI riêng.
-- [x] Gateway proxy request đến Course, Student, Media, Notification bằng YARP.
+- [x] Gateway proxy request đến Course, Student, Media, Notification và Scheduler bằng YARP.
 - [x] Gateway cung cấp Swagger UI tại `/swagger` với document selector cho từng
   service, không gộp endpoint của nhiều service vào một document.
 - [x] Gateway proxy OpenAPI documents theo các route `/course`, `/student`,
-  `/media`, `/notification`.
+  `/media`, `/notification`, `/scheduler`.
 - [x] Chuẩn hoá API success/error envelope, `traceId`, correlation ID, shared
   error codes, header names, paths và health status constants.
 - [x] Có global exception middleware; lỗi downstream Gateway trả
@@ -118,7 +125,7 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
 ## 5. Service health checks đã hoàn thành
 
 - [x] Tất cả service có `GET /health` dùng response format chung.
-- [x] Course, Student và Notification thực hiện `SELECT 1` trên database sở hữu
+- [x] Course, Student, Notification và Scheduler thực hiện `SELECT 1` trên database sở hữu
   và trả `503 DATABASE_UNAVAILABLE` khi database lỗi.
 - [x] Media health chạy database probe và storage probe song song:
 
@@ -165,7 +172,7 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
 - [x] Dùng NUnit cho backend tests.
 - [x] Shared Presentation tests bao phủ correlation ID, exception envelope,
   shared database health endpoint, và Gateway Swagger failure mapping.
-- [x] Mỗi service có unit test project cho database health probe cancellation.
+- [x] Mỗi service, gồm Scheduler, có unit test project cho database health probe cancellation.
 - [x] Media unit/component tests bao phủ MinIO options, bucket mapping, UTC key,
   MIME/category/size validation và bốn tổ hợp health dependencies.
 - [x] Media integration test dùng MinIO Testcontainer cô lập để kiểm tra:
@@ -191,11 +198,11 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
 
 - [x] `docker compose config` hợp lệ.
 - [x] `docker compose up -d --build` đã khởi động full stack.
-- [x] MySQL healthy, bootstrap bốn database/user và SQL migrations chạy thành
+- [x] MySQL healthy, bootstrap năm database/user và SQL migrations chạy thành
   công.
 - [x] MinIO healthy, console truy cập tại `http://localhost:9001`, provisioning
   đủ năm Media bucket.
-- [x] Course, Student, Media, Notification APIs và Gateway được build/run bằng
+- [x] Course, Student, Media, Notification, Scheduler APIs và Gateway được build/run bằng
   Docker.
 - [x] Swagger service riêng và Gateway Swagger document selector hoạt động.
 - [x] Media `/health` xác nhận đồng thời MySQL và MinIO; storage outage trả
@@ -209,5 +216,6 @@ thuộc các ngày tiếp theo; chúng chưa được xem là hoàn thành trong
 - [ ] HTTP API upload/download hoặc presigned URL cho media.
 - [ ] Use case ghi metadata `media_objects`/`media_usages`.
 - [ ] Notification delivery workflow, batch/retry/idempotency nghiệp vụ.
+- [ ] Scheduler execution loop, CRON parser, run claiming và internal service calls.
 - [ ] N+1 benchmark, seed data, performance test, cross-service integration,
   end-to-end test và frontend.
