@@ -95,10 +95,59 @@ public sealed class EfMediaRepository(
                 (long)item.SizeBytes,
                 item.Status,
                 item.CreatedAt,
-                item.DeletedAt))
+                item.DeletedAt,
+                item.SourceMediaId,
+                item.DerivationType))
             .SingleOrDefaultAsync(cancellationToken);
 
     public async Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken) =>
+        await ReplaceExclusiveUsageAsync(usage, cancellationToken);
+
+    public async Task<MediaUsageRecord> ReplaceMediaThumbnailAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken)
+    {
+        var canManageOwner = await dbContext.MediaObjects
+            .AsNoTracking()
+            .AnyAsync(
+                item =>
+                    item.Id == usage.OwnerId &&
+                    item.SourceMediaId == null &&
+                    item.Status == MediaObjectStatuses.Ready &&
+                    item.DeletedAt == null &&
+                    item.UploadedBy == usage.CreatedBy.Id &&
+                    item.UploadedByType == usage.CreatedBy.Type,
+                cancellationToken);
+        if (!canManageOwner)
+        {
+            throw MediaErrors.OwnerNotFound();
+        }
+
+        var validThumbnail = await dbContext.MediaObjects
+            .AsNoTracking()
+            .AnyAsync(
+                item =>
+                    item.Id == usage.MediaId &&
+                    item.Status == MediaObjectStatuses.Ready &&
+                    item.DeletedAt == null &&
+                    item.DerivationType == MediaDerivationTypes.Thumbnail &&
+                    item.ContentType == "image/webp" &&
+                    item.SourceMedia != null &&
+                    item.SourceMedia.UploadedBy == usage.CreatedBy.Id &&
+                    item.SourceMedia.UploadedByType == usage.CreatedBy.Type,
+                cancellationToken);
+        if (!validThumbnail)
+        {
+            throw MediaErrors.InvalidMedia(
+                "mediaId must be a READY WebP thumbnail owned by the actor.");
+        }
+
+        return await ReplaceExclusiveUsageAsync(usage, cancellationToken);
+    }
+
+    private async Task<MediaUsageRecord> ReplaceExclusiveUsageAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)
     {
@@ -108,9 +157,9 @@ public sealed class EfMediaRepository(
         var now = timeProvider.GetUtcNow().UtcDateTime;
         var activeUsages = await dbContext.MediaUsages
             .Where(item =>
-                item.OwnerService == MediaOwnerServices.Student &&
-                item.OwnerType == MediaOwnerTypes.StudentAvatar &&
-                item.UsageType == MediaUsageTypes.Avatar &&
+                item.OwnerService == usage.OwnerService &&
+                item.OwnerType == usage.OwnerType &&
+                item.UsageType == usage.UsageType &&
                 item.OwnerId == usage.OwnerId &&
                 item.DeletedAt == null)
             .ToListAsync(cancellationToken);

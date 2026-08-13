@@ -9,6 +9,10 @@ public static class ApiRoutes
         public const string Upload = "/api/media";
         public const string Usages = "/api/media/usages";
         public const string ContentTemplate = "/api/media/{mediaId}/content";
+        public const string ThumbnailStatusTemplate =
+            "/api/media/{mediaId}/thumbnail";
+        public const string ThumbnailRetryTemplate =
+            "/api/media/{mediaId}/thumbnail/retry";
 
         public static string ContentServicePath(Guid mediaId) =>
             BuildServicePath(FormatGuidRoute(ContentTemplate, "mediaId", mediaId));
@@ -17,6 +21,24 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(ContentTemplate, "mediaId", mediaId));
+
+        public static string ThumbnailStatusServicePath(Guid mediaId) =>
+            BuildServicePath(
+                FormatGuidRoute(ThumbnailStatusTemplate, "mediaId", mediaId));
+
+        public static string ThumbnailStatusPublicPath(Guid mediaId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Media,
+                FormatGuidRoute(ThumbnailStatusTemplate, "mediaId", mediaId));
+
+        public static string ThumbnailRetryServicePath(Guid mediaId) =>
+            BuildServicePath(
+                FormatGuidRoute(ThumbnailRetryTemplate, "mediaId", mediaId));
+
+        public static string ThumbnailRetryPublicPath(Guid mediaId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Media,
+                FormatGuidRoute(ThumbnailRetryTemplate, "mediaId", mediaId));
     }
 
     public static class Students

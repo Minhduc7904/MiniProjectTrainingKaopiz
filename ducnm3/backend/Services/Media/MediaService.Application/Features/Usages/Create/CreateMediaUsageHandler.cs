@@ -21,11 +21,14 @@ public sealed class CreateMediaUsageHandler(
         var ownerType = command.OwnerType?.Trim().ToUpperInvariant();
         var usageType = command.UsageType?.Trim().ToUpperInvariant();
         ValidateCommand(command, ownerService, ownerType, usageType);
+        var isStudentAvatar =
+            ownerService == MediaOwnerServices.Student;
         var actor = await actorValidationService.ValidateAsync(
             command.CreatedBy,
             cancellationToken);
 
-        if (actor.Type != ActorTypes.Student || actor.Id != command.OwnerId)
+        if (isStudentAvatar &&
+            (actor.Type != ActorTypes.Student || actor.Id != command.OwnerId))
         {
             var owner = await studentLookup.GetByIdAsync(
                 command.OwnerId,
@@ -50,17 +53,36 @@ public sealed class CreateMediaUsageHandler(
             throw MediaErrors.MediaNotReady();
         }
 
-        var usage = await mediaRepository.ReplaceStudentAvatarAsync(
-            new CreateMediaUsageRecord(
-                Guid.NewGuid(),
-                command.MediaId,
-                ownerService!,
-                ownerType!,
-                command.OwnerId,
-                usageType!,
-                command.DisplayOrder,
-                actor),
-            cancellationToken);
+        if (!isStudentAvatar &&
+            (!string.Equals(
+                 media.DerivationType,
+                 MediaDerivationTypes.Thumbnail,
+                 StringComparison.Ordinal) ||
+             !string.Equals(
+                 media.ContentType,
+                 "image/webp",
+                 StringComparison.OrdinalIgnoreCase)))
+        {
+            throw MediaErrors.InvalidMedia(
+                "mediaId must reference a READY WebP thumbnail.");
+        }
+
+        var record = new CreateMediaUsageRecord(
+            Guid.NewGuid(),
+            command.MediaId,
+            ownerService!,
+            ownerType!,
+            command.OwnerId,
+            usageType!,
+            command.DisplayOrder,
+            actor);
+        var usage = isStudentAvatar
+            ? await mediaRepository.ReplaceStudentAvatarAsync(
+                record,
+                cancellationToken)
+            : await mediaRepository.ReplaceMediaThumbnailAsync(
+                record,
+                cancellationToken);
 
         return new CreateMediaUsageResult(
             usage.Id,
@@ -85,21 +107,19 @@ public sealed class CreateMediaUsageHandler(
                 "mediaId and ownerId must be valid UUIDs.");
         }
 
-        if (!string.Equals(
-                ownerService,
-                MediaOwnerServices.Student,
-                StringComparison.OrdinalIgnoreCase) ||
-            !string.Equals(
-                ownerType,
-                MediaOwnerTypes.StudentAvatar,
-                StringComparison.OrdinalIgnoreCase) ||
-            !string.Equals(
-                usageType,
-                MediaUsageTypes.Avatar,
-                StringComparison.OrdinalIgnoreCase))
+        var isStudentAvatar =
+            ownerService == MediaOwnerServices.Student &&
+            ownerType == MediaOwnerTypes.StudentAvatar &&
+            usageType == MediaUsageTypes.Avatar;
+        var isMediaThumbnail =
+            ownerService == MediaOwnerServices.Media &&
+            ownerType == MediaOwnerTypes.MediaThumbnail &&
+            usageType == MediaUsageTypes.Thumbnail;
+        if (!isStudentAvatar && !isMediaThumbnail)
         {
             throw MediaErrors.InvalidMedia(
-                "Only STUDENT/STUDENT_AVATAR/AVATAR usage is supported.");
+                "Supported usages are STUDENT/STUDENT_AVATAR/AVATAR and " +
+                "MEDIA/MEDIA_THUMBNAIL/THUMBNAIL.");
         }
     }
 }

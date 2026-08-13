@@ -6,4 +6,8 @@ public sealed record UploadMediaResponse(
     string ContentType,
     long SizeBytes,
     string Status,
-    string ContentUrl);
+    string ContentUrl,
+    string ThumbnailStatus,
+    Guid? ThumbnailMediaId,
+    Guid? ThumbnailJobId,
+    string? ThumbnailStatusUrl);

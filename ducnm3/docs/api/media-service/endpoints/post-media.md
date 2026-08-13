@@ -63,7 +63,11 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
     "contentType": "image/png",
     "sizeBytes": 24576,
     "status": "READY",
-    "contentUrl": "/media/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/content"
+    "contentUrl": "/media/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/content",
+    "thumbnailStatus": "QUEUED",
+    "thumbnailMediaId": "7b920767-6924-42b1-889f-5e59d3e8f69f",
+    "thumbnailJobId": "98431cd6-9bab-480f-bbb8-659a36a6be8e",
+    "thumbnailStatusUrl": "/media/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/thumbnail"
   },
   "meta": {
     "traceId": "01J..."
@@ -71,7 +75,10 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
 }
 ```
 
-`Location` và `data.contentUrl` là public Gateway path có tiền tố `/media`.
+`Location`, `data.contentUrl` và `data.thumbnailStatusUrl` là public Gateway
+path có tiền tố `/media`. `201` xác nhận media gốc đã `READY`; thumbnail vẫn có
+thể đang `QUEUED`. Với `AUDIO`, `OTHER` và document không phải PDF,
+`thumbnailStatus=NOT_REQUIRED` và ba field thumbnail còn lại là `null`.
 
 ## Mã trạng thái HTTP
 
@@ -97,11 +104,18 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
 1. Media Service xác minh actor, cấp phát bucket/object key nội bộ và ghi
    `media_objects` với trạng thái `PENDING` trước khi gọi MinIO.
 2. MinIO nhận stream và tính checksum SHA-256 trong lúc upload.
-3. Khi thành công, database được cập nhật `READY`, `checksum_sha256` và
-   `completed_at`; chỉ lúc đó API mới trả `201`.
+3. Khi thành công, media gốc được cập nhật `READY`. Với ảnh, video và PDF,
+   transaction đồng thời tạo media WebP `PENDING`, derivation job `QUEUED` và
+   MassTransit Outbox message; chỉ lúc đó API mới trả `201`.
 4. Khi upload bị hủy/lỗi, thiếu checksum hoặc bước hoàn tất database lỗi, service
    cố gắng xóa object để compensation và đánh dấu bản ghi `FAILED`.
-5. Compensation là best effort. Việc xử lý các bản ghi `PENDING` bị bỏ lại do
+5. Worker xử lý thumbnail bất đồng bộ: ảnh được decode trực tiếp, video được
+   capture bằng FFmpeg, PDF render trang đầu bằng Poppler; mọi raster đều được
+   fit trong 640×640 và encode WebP. Khi thành công worker chuyển thumbnail/job
+   sang `READY` và tạo `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL` usage.
+6. Worker retry theo policy RabbitMQ. Khi hết retry, thumbnail/job ở `FAILED`,
+   media gốc vẫn `READY`; client có thể gọi endpoint retry thủ công.
+7. Compensation là best effort. Việc xử lý các bản ghi `PENDING` bị bỏ lại do
    process dừng đột ngột được hoãn cho tác vụ cleanup của Scheduler; endpoint
    hiện tại không tự quét các bản ghi stale.
 

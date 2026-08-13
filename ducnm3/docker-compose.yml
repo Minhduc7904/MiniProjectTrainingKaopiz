@@ -202,6 +202,47 @@ services:
     ports:
       - "5103:8080"
 
+  media-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Media/MediaService.Worker/MediaService.Worker.csproj
+    command: MediaService.Worker.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      <<: [*messaging-environment, *http-query-environment]
+      DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Database: ${MEDIA_DB_CONNECTION_STRING:?MEDIA_DB_CONNECTION_STRING must be set}
+      Storage__Minio__Endpoint: minio:9000
+      Storage__Minio__AccessKey: ${MINIO_APP_ACCESS_KEY:?MINIO_APP_ACCESS_KEY must be set}
+      Storage__Minio__SecretKey: ${MINIO_APP_SECRET_KEY:?MINIO_APP_SECRET_KEY must be set}
+      Storage__Minio__UseSsl: ${MINIO_USE_SSL:-false}
+      Storage__Minio__ImageBucket: ${MINIO_IMAGE_BUCKET:-images}
+      Storage__Minio__VideoBucket: ${MINIO_VIDEO_BUCKET:-videos}
+      Storage__Minio__DocumentBucket: ${MINIO_DOCUMENT_BUCKET:-documents}
+      Storage__Minio__AudioBucket: ${MINIO_AUDIO_BUCKET:-audios}
+      Storage__Minio__OtherBucket: ${MINIO_OTHER_BUCKET:-other}
+      Storage__Minio__HealthTimeoutSeconds: ${MINIO_HEALTH_TIMEOUT_SECONDS:-3}
+      MediaThumbnail__MaxWidth: ${MEDIA_THUMBNAIL_MAX_WIDTH:-640}
+      MediaThumbnail__MaxHeight: ${MEDIA_THUMBNAIL_MAX_HEIGHT:-640}
+      MediaThumbnail__WebpQuality: ${MEDIA_THUMBNAIL_WEBP_QUALITY:-80}
+      MediaThumbnail__VideoCapturePercent: ${MEDIA_THUMBNAIL_VIDEO_CAPTURE_PERCENT:-0.10}
+      MediaThumbnail__VideoCaptureMinSeconds: ${MEDIA_THUMBNAIL_VIDEO_CAPTURE_MIN_SECONDS:-1}
+      MediaThumbnail__VideoCaptureMaxSeconds: ${MEDIA_THUMBNAIL_VIDEO_CAPTURE_MAX_SECONDS:-30}
+      MediaThumbnail__ProcessTimeoutSeconds: ${MEDIA_THUMBNAIL_PROCESS_TIMEOUT_SECONDS:-120}
+      ServiceEndpoints__student-service: http://student-service:8080/
+    restart: unless-stopped
+    stop_grace_period: 30s
+    mem_limit: 1g
+    cpus: 1.0
+
   notification-service:
     build:
       context: ./backend

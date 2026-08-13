@@ -40,6 +40,18 @@ public static class MediaErrors
             "The media usage conflicts with an active usage.",
             409);
 
+    public static MediaApplicationException ThumbnailNotFound() =>
+        new(
+            MediaErrorCodes.ThumbnailNotFound,
+            "A thumbnail operation was not found for this media.",
+            404);
+
+    public static MediaApplicationException ThumbnailRetryConflict() =>
+        new(
+            MediaErrorCodes.ThumbnailRetryConflict,
+            "Only a failed thumbnail operation can be retried.",
+            409);
+
     public static MediaApplicationException InvalidActorType(string message) =>
         new(MediaErrorCodes.InvalidActorType, message, 400);
 

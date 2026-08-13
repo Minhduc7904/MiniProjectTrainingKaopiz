@@ -1,6 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Application.Features.Media.Upload;
+using MediaService.Application.Features.Derivations;
 using MediaService.Application.Features.Usages.Create;
 
 namespace MediaService.Api.Mappers;
@@ -14,7 +15,27 @@ public static class MediaResponseMapper
             result.ContentType,
             result.SizeBytes,
             result.Status,
-            ApiRoutes.Media.ContentPublicPath(result.Id));
+            ApiRoutes.Media.ContentPublicPath(result.Id),
+            result.ThumbnailStatus,
+            result.ThumbnailMediaId,
+            result.ThumbnailJobId,
+            result.ThumbnailJobId.HasValue
+                ? ApiRoutes.Media.ThumbnailStatusPublicPath(result.Id)
+                : null);
+
+    public static MediaThumbnailStatusResponse ToResponse(
+        MediaThumbnailStatusResult result) =>
+        new(
+            result.SourceMediaId,
+            result.JobId,
+            result.Status,
+            result.ThumbnailMediaId,
+            result.ActiveThumbnailMediaId,
+            result.ActiveThumbnailMediaId is { } mediaId
+                ? ApiRoutes.Media.ContentPublicPath(mediaId)
+                : null,
+            result.LastError,
+            result.UpdatedAtUtc);
 
     public static CreateMediaUsageResponse ToResponse(
         CreateMediaUsageResult result) =>

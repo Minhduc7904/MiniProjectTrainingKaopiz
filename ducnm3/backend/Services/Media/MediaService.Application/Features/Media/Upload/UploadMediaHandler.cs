@@ -1,6 +1,7 @@
 using MediaService.Application.Abstractions.Persistence;
 using MediaService.Application.Abstractions.Storage;
 using MediaService.Application.Actors;
+using MediaService.Application.Features.Derivations;
 using MediaService.Domain.Media;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,7 @@ public sealed partial class UploadMediaHandler(
     IStorageLocationAllocator locationAllocator,
     IStorage storage,
     IMediaRepository mediaRepository,
+    IMediaUploadFinalizer uploadFinalizer,
     MediaUploadOptions uploadOptions,
     TimeProvider timeProvider,
     ILogger<UploadMediaHandler> logger)
@@ -39,6 +41,20 @@ public sealed partial class UploadMediaHandler(
         }
 
         var mediaId = Guid.NewGuid();
+        ThumbnailReservation? thumbnail = null;
+        if (MediaThumbnailPolicy.RequiresThumbnail(
+                normalizedMediaType,
+                normalizedContentType))
+        {
+            var thumbnailMediaId = Guid.NewGuid();
+            thumbnail = new ThumbnailReservation(
+                Guid.NewGuid(),
+                thumbnailMediaId,
+                locationAllocator.Allocate(StorageMediaCategory.Image, ".webp"),
+                $"{Path.GetFileNameWithoutExtension(command.OriginalFileName)}.thumbnail.webp",
+                actor);
+        }
+
         await mediaRepository.AddPendingAsync(
             new PendingMediaRecord(
                 mediaId,
@@ -93,11 +109,25 @@ public sealed partial class UploadMediaHandler(
 
         try
         {
-            await mediaRepository.MarkReadyAsync(
-                mediaId,
-                uploadedObject.ChecksumSha256,
-                timeProvider.GetUtcNow().UtcDateTime,
+            var finalization = await uploadFinalizer.FinalizeAsync(
+                new MediaUploadFinalizationRequest(
+                    mediaId,
+                    normalizedMediaType,
+                    normalizedContentType,
+                    uploadedObject.ChecksumSha256,
+                    timeProvider.GetUtcNow().UtcDateTime,
+                    thumbnail),
                 cancellationToken);
+
+            return new UploadMediaResult(
+                mediaId,
+                normalizedMediaType,
+                uploadedObject.ContentType,
+                uploadedObject.Size,
+                MediaObjectStatuses.Ready,
+                finalization.ThumbnailStatus,
+                finalization.ThumbnailMediaId,
+                finalization.ThumbnailJobId);
         }
         catch (Exception)
         {
@@ -108,13 +138,6 @@ public sealed partial class UploadMediaHandler(
                 CancellationToken.None);
             throw;
         }
-
-        return new UploadMediaResult(
-            mediaId,
-            normalizedMediaType,
-            uploadedObject.ContentType,
-            uploadedObject.Size,
-            MediaObjectStatuses.Ready);
     }
 
     private StorageMediaCategory ValidateAndGetCategory(UploadMediaCommand command)

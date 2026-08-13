@@ -13,7 +13,7 @@ trả media `READY` cùng content URL công khai.
 - API Gateway.
 - Media Service.
 - Student Service.
-- MySQL Media và MinIO.
+- MySQL Media, MinIO, RabbitMQ và Media Worker.
 
 ## Điều kiện trước
 
@@ -27,9 +27,15 @@ trả media `READY` cùng content URL công khai.
 2. Media Service validate request và tra cứu actor qua Student Service.
 3. Application cấp phát storage location và ghi `media_objects=PENDING`.
 4. MinIO adapter stream object và tính SHA-256.
-5. Repository cập nhật metadata, checksum và trạng thái `READY`.
-6. API trả `201`, `Location` và Gateway `contentUrl`; bucket/object key không
+5. Repository cập nhật media gốc `READY`. Với ảnh, video và PDF, cùng
+   transaction tạo thumbnail media `PENDING`, derivation job `QUEUED` và
+   Outbox command.
+6. API trả `201`, `Location`, Gateway `contentUrl` và trạng thái thumbnail;
+   bucket/object key không
    xuất hiện trong response.
+7. Outbox chuyển command tới RabbitMQ; Media Worker download file gốc, tạo
+   raster, fit 640×640, encode WebP và upload vào bucket `images`.
+8. Worker chuyển thumbnail/job sang `READY` và tạo thumbnail usage nếu chưa có.
 
 ## Luồng lỗi
 
@@ -37,11 +43,14 @@ trả media `READY` cùng content URL công khai.
 - Payload vượt giới hạn: `413 PAYLOAD_TOO_LARGE`.
 - Student Service hoặc MinIO lỗi: `503`.
 - Upload lỗi được compensation best effort bằng xóa object và chuyển `FAILED`.
+- Lỗi thumbnail không làm media gốc thất bại. RabbitMQ retry; khi hết retry job
+  ở `FAILED` và có thể được enqueue lại bằng API retry.
 
 ## Dữ liệu và side effects
 
-- Tạo một hàng `media_objects`.
+- Tạo một media gốc; với type hỗ trợ còn tạo media dẫn xuất và derivation job.
 - Tạo object MinIO trong bucket theo media category.
+- Tạo Outbox/Inbox state để delivery và consumer idempotent.
 - Không thay đổi database Student.
 - Upload không idempotent; mỗi lần thành công tạo media mới.
 

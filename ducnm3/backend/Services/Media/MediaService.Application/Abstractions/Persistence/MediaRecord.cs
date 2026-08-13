@@ -11,4 +11,6 @@ public sealed record MediaRecord(
     long SizeBytes,
     string Status,
     DateTime CreatedAtUtc,
-    DateTime? DeletedAtUtc);
+    DateTime? DeletedAtUtc,
+    Guid? SourceMediaId = null,
+    string? DerivationType = null);

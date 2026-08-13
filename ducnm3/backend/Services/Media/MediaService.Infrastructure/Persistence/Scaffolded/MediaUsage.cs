@@ -71,6 +71,11 @@ public partial class MediaUsage
     public Guid? ActiveStudentAvatarOwnerId { get; set; }
 
     /// <summary>
+    /// Media gốc có thumbnail active; đảm bảo tối đa một thumbnail
+    /// </summary>
+    public Guid? ActiveMediaThumbnailOwnerId { get; set; }
+
+    /// <summary>
     /// Chỉ áp dụng unique reference cho usage active
     /// </summary>
     public sbyte? ActiveReferenceGuard { get; set; }

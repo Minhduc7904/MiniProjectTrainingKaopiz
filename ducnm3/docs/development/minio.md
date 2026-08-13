@@ -64,6 +64,10 @@ MEDIA_UPLOAD_DOCUMENT_MAX_BYTES=52428800
 MEDIA_UPLOAD_AUDIO_MAX_BYTES=104857600
 MEDIA_UPLOAD_OTHER_MAX_BYTES=26214400
 MEDIA_UPLOAD_REQUEST_MAX_BYTES=550502400
+MEDIA_THUMBNAIL_MAX_WIDTH=640
+MEDIA_THUMBNAIL_MAX_HEIGHT=640
+MEDIA_THUMBNAIL_WEBP_QUALITY=80
+MEDIA_THUMBNAIL_PROCESS_TIMEOUT_SECONDS=120
 ```
 
 Docker Compose ánh xạ các giá trị này sang cấu hình `Storage__Minio__*` cho
@@ -106,7 +110,9 @@ Media Service dùng trình tự database-first:
 1. Xác minh actor `STUDENT` qua Student Service.
 2. Tạo `media_objects` ở trạng thái `PENDING`.
 3. Stream object vào bucket tương ứng và tính checksum SHA-256 trong lúc đọc.
-4. Lưu checksum, `completed_at` và chuyển trạng thái sang `READY`.
+4. Lưu checksum, `completed_at` và chuyển media gốc sang `READY`.
+5. Với ảnh, video và PDF, cùng transaction cấp media WebP `PENDING`, tạo job
+   `QUEUED` và Outbox command. API trả ngay; Media Worker tạo thumbnail sau.
 
 Nếu upload bị hủy/lỗi, checksum không được tạo hoặc bước hoàn tất database lỗi,
 service cố gắng xóa object rồi đánh dấu bản ghi `FAILED`. Cả hai bước
@@ -115,6 +121,10 @@ compensation là best effort. Bản ghi `PENDING` stale do process dừng đột
 
 Không dùng MinIO console để sửa/xóa object của một media active vì database là
 nguồn trạng thái của workflow, còn bucket/object key là chi tiết nội bộ.
+
+Media Worker cần `ffmpeg`, `ffprobe` và `pdftoppm`; Docker image tự cài
+`ffmpeg`/`poppler-utils` khi build `MediaService.Worker`. Chạy worker cùng
+dependencies bằng `docker compose up -d media-worker`.
 
 ## Kiểm tra trạng thái
 

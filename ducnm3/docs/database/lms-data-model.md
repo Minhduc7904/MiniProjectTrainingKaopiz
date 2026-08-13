@@ -93,6 +93,8 @@ Lưu siêu dữ liệu cho đối tượng trong MinIO; không lưu dữ liệu 
 
 ```text
 id                    // UUID định danh media
+source_media_id       // Media gốc của object dẫn xuất; null với upload gốc
+derivation_type       // THUMBNAIL với object dẫn xuất; null với upload gốc
 bucket                // Tên vùng chứa MinIO chứa đối tượng
 object_key            // Khóa đối tượng duy nhất trong vùng chứa; không trả trực tiếp cho ứng dụng khách
 media_type            // IMAGE | VIDEO | DOCUMENT | AUDIO | OTHER
@@ -117,6 +119,7 @@ UNIQUE(bucket, object_key)
 INDEX(uploaded_by, created_at DESC)
 INDEX(status, created_at)
 CHECK(status IN ('PENDING', 'READY', 'FAILED'))
+INDEX(source_media_id, derivation_type)
 ```
 
 Luồng upload là database-first: service ghi hàng `PENDING` trước khi stream
@@ -126,6 +129,30 @@ database lỗi, service cố gắng xóa object và chuyển hàng sang `FAILED`
 Compensation là best effort; quét các hàng `PENDING` stale sau sự cố process được
 hoãn cho Scheduler và chưa được triển khai.
 
+### media_derivation_jobs
+
+Theo dõi operation bất đồng bộ tạo thumbnail, tách biệt với `media_objects`
+chứa metadata file WebP:
+
+```text
+id                    // UUID job
+source_media_id       // Media gốc READY
+derivative_media_id   // Media WebP PENDING/READY/FAILED được cấp trước
+derivation_type       // THUMBNAIL
+status                // QUEUED | PROCESSING | READY | FAILED
+attempt_count         // Số lần worker bắt đầu xử lý
+last_error            // Lỗi an toàn cuối cùng
+started_at/completed_at/created_at/updated_at
+```
+
+Mỗi `(source_media_id, derivation_type)` và mỗi `derivative_media_id` là duy
+nhất. Job cho phép query trạng thái, retry idempotent và không phụ thuộc khả năng
+quan sát queue RabbitMQ.
+
+Ba bảng MassTransit `OutboxMessage`, `OutboxState`, `InboxState` bảo đảm command
+được ghi cùng transaction upload/retry và consumer không áp dụng thành công một
+message nhiều lần.
+
 ### media_usages
 
 Bảng này liên kết một media với vị trí sử dụng mà không để Course Service hoặc Notification Service sở hữu siêu dữ liệu media.
@@ -133,8 +160,8 @@ Bảng này liên kết một media với vị trí sử dụng mà không để
 ```text
 id                    // UUID định danh liên kết sử dụng
 media_id              // UUID media_objects.id trong cơ sở dữ liệu Media Service
-owner_service         // COURSE | NOTIFICATION | STUDENT; dịch vụ sở hữu tài nguyên
-owner_type            // COURSE_THUMBNAIL | COURSE_DESCRIPTION | LESSON_CONTENT | NOTIFICATION_BODY | STUDENT_AVATAR
+owner_service         // COURSE | NOTIFICATION | STUDENT | MEDIA
+owner_type            // ... | STUDENT_AVATAR | MEDIA_THUMBNAIL
 owner_id              // UUID tài nguyên ở owner_service; tham chiếu logic
 usage_type            // THUMBNAIL | EMBED | ATTACHMENT | AVATAR
 display_order         // Thứ tự hiển thị media trong cùng một đối tượng sở hữu
@@ -143,6 +170,7 @@ created_by_type       // Actor type đã được Application validate; hiện l
 created_at            // Thời điểm tạo liên kết, UTC
 deleted_at            // Thời điểm xóa mềm; có thể null khi lượt sử dụng còn hiệu lực
 active_reference_guard // Generated 1 khi active, null khi đã soft-delete
+active_media_thumbnail_owner_id // Generated owner_id của thumbnail media active
 ```
 
 Chỉ mục và ràng buộc:
@@ -160,12 +188,13 @@ Quy tắc `THUMBNAIL`:
 - `COURSE_THUMBNAIL` là nguồn dữ liệu chuẩn duy nhất cho ảnh đại diện; bảng `courses` không lưu `thumbnail_media_id`.
 - Media Service chỉ cho phép tối đa một `media_usages` đang hoạt động có `owner_type = COURSE_THUMBNAIL` cho mỗi `owner_id`.
 - Khi thay ảnh đại diện, Media Service xóa mềm lượt sử dụng cũ và tạo lượt sử dụng mới trong cùng một giao dịch.
+- Với `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`, `owner_id` là media gốc và `media_id`
+  là WebP dẫn xuất `READY`. Generated unique guard bảo đảm tối đa một thumbnail
+  active; thay thumbnail soft-delete usage cũ trong transaction.
 
 Quy tắc `AVATAR` hiện đã triển khai:
 
-- Command tạo usage hiện chỉ chấp nhận
-  `owner_service = STUDENT`, `owner_type = STUDENT_AVATAR` và
-  `usage_type = AVATAR`.
+- Command tạo usage chấp nhận avatar tuple và media-thumbnail tuple.
 - Chỉ media `READY`, chưa bị xóa mềm mới được dùng.
 - Media Service xóa mềm avatar active cũ và tạo usage mới trong transaction
   `SERIALIZABLE`.
