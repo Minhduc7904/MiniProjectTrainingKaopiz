@@ -2,11 +2,11 @@
 
 ## Kết quả thực tế
 
-Ngày 2 gồm 5 task, được tách theo lịch sử thay đổi trên nhánh `ducnm3` ngày
-13/08/2026: ba pull request đã merge và hai commit được push trực tiếp. Phạm vi
-đã hoàn thành tập trung vào dữ liệu development, giao tiếp giữa service và Media
-API; CRUD Course/Lesson và benchmark N+1 vẫn chưa xuất hiện trong lịch sử ngày
-này.
+Ngày 2 gồm 8 task, được tách theo lịch sử thay đổi trên nhánh `ducnm3` ngày
+13/08/2026: năm pull request đã merge và ba commit được push trực tiếp. Phạm vi
+đã hoàn thành tập trung vào dữ liệu development, giao tiếp giữa service, Student
+API và Media API; CRUD Course/Lesson và benchmark N+1 vẫn chưa xuất hiện trong
+lịch sử ngày này.
 
 ## Ước lượng thời gian
 
@@ -15,11 +15,14 @@ không phải thời gian thực tế của pull request hoặc commit.
 
 | Task | Nguồn | Ước lượng |
 | --- | --- | --- |
-| Deterministic development data seeder | PR #143 | 1 giờ 30 phút |
-| Việt hóa tài liệu project | commit `69af2aa2` | 1 giờ |
-| Nền tảng HTTP và RabbitMQ | PR #144 | 1 giờ 30 phút |
-| Media upload/content và Student avatar usage | PR #145 | 2 giờ 30 phút |
-| Workflow agent, API artifact và Postman | commit `518e9618` | 1 giờ 30 phút |
+| Deterministic development data seeder | PR #143 | 1 giờ |
+| Việt hóa tài liệu project | commit `69af2aa2` | 30 phút |
+| Nền tảng HTTP và RabbitMQ | PR #144 | 1 giờ |
+| Media upload/content và Student avatar usage | PR #145 | 1 giờ 30 phút |
+| Workflow agent, API artifact và Postman | commit `518e9618` | 30 phút |
+| Student list có phân trang | PR #147 | 1 giờ |
+| Cập nhật delivery plan | commit `1c14b25c` | 30 phút |
+| Asynchronous media thumbnail pipeline | PR #148 | 2 giờ |
 | **Tổng** |  | **8 giờ** |
 
 ## Task đã hoàn thành
@@ -30,14 +33,14 @@ không phải thời gian thực tế của pull request hoặc commit.
   dữ liệu development có thể lặp lại.
 - [x] Bổ sung unit/integration test, tài liệu data-seed, hướng dẫn Docker và
   runbook reset database.
-- Ước lượng: 1 giờ 30 phút.
+- Ước lượng: 1 giờ.
 - Nguồn: [PR #143 — add deterministic development data seeder](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/143/overview).
 
 ### 2. Việt hóa tài liệu project
 
 - [x] Chuẩn hóa tài liệu hiện có sang tiếng Việt, đồng thời giữ các thuật ngữ kỹ
   thuật phổ biến để bảo toàn ngữ cảnh triển khai.
-- Ước lượng: 1 giờ.
+- Ước lượng: 30 phút.
 - Nguồn: [commit `69af2aa2` — localize project documentation in Vietnamese](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/commits/69af2aa2d5536af42453795bf95c67d4574c79cc).
 
 ### 3. Xây nền tảng HTTP và RabbitMQ cho giao tiếp service
@@ -48,7 +51,7 @@ không phải thời gian thực tế của pull request hoặc commit.
   consumer registration, message contract và messaging health probe.
 - [x] Bổ sung Docker Compose, tài liệu và unit/integration test cho communication
   foundation.
-- Ước lượng: 1 giờ 30 phút.
+- Ước lượng: 1 giờ.
 - Nguồn: [PR #144 — add HTTP and RabbitMQ communication foundation](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/144/overview).
 
 ### 4. Hoàn thiện Media upload/content và liên kết avatar Student
@@ -58,7 +61,7 @@ không phải thời gian thực tế của pull request hoặc commit.
 - [x] Thêm kiểm tra Student qua HTTP client để liên kết avatar, migration cho
   media upload lifecycle và test unit/component/integration cho luồng này.
 - [x] Bổ sung `GET /students/{id}` để Media Service xác thực Student owner.
-- Ước lượng: 2 giờ 30 phút.
+- Ước lượng: 1 giờ 30 phút.
 - Nguồn: [PR #145 — add Media upload and Student avatar usage APIs](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/145/overview).
 
 ### 5. Chuẩn hóa workflow agent, API artifact và Postman collection
@@ -67,8 +70,34 @@ không phải thời gian thực tế của pull request hoặc commit.
   database migration.
 - [x] Chuẩn hóa API endpoint template, tách business flow theo endpoint và thêm
   Postman collection/hướng dẫn sử dụng.
-- Ước lượng: 1 giờ 30 phút.
+- Ước lượng: 30 phút.
 - Nguồn: [commit `518e9618` — add agent workflow skills and API artifacts](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/commits/518e9618f0c161e1cda4d3565e9acd0fa97884c3).
+
+### 6. Thêm Student list API có phân trang
+
+- [x] Cài đặt `GET /students` có phân trang, sorting, validation query và
+  response envelope dùng chung.
+- [x] Bổ sung repository query, unit/component/integration test, API document,
+  business flow và Postman request.
+- Ước lượng: 1 giờ.
+- Nguồn: [PR #147 — add paginated Student list API](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/147/overview).
+
+### 7. Cập nhật delivery plan theo lịch sử triển khai
+
+- [x] Tách các hạng mục Day 1 và Day 2 theo pull request/commit để có nguồn
+  truy vết cho từng task.
+- Ước lượng: 30 phút.
+- Nguồn: [commit `1c14b25c` — update day-one and day-two delivery plans](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/commits/1c14b25c647c1a6c469d48c0c94fbae7b9f9c085).
+
+### 8. Xây asynchronous media thumbnail pipeline
+
+- [x] Thêm Media Worker, RabbitMQ consumer và outbox flow để tạo thumbnail bất
+  đồng bộ sau khi upload media.
+- [x] Thêm migration/persistence cho derivation job, thumbnail generator,
+  endpoint xem trạng thái và retry thumbnail, Docker Compose, test và Postman
+  request.
+- Ước lượng: 2 giờ.
+- Nguồn: [PR #148 — add asynchronous media thumbnail pipeline](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/148/overview).
 
 ## Tiêu chí hoàn thành Ngày 2
 
@@ -76,6 +105,8 @@ không phải thời gian thực tế của pull request hoặc commit.
 - [x] Media Service hỗ trợ upload, streaming content, lưu metadata và liên kết
   usage cho avatar Student.
 - [x] Có foundation HTTP/RabbitMQ cho giao tiếp giữa service.
+- [x] Student Service có list API phân trang; Media Service có thumbnail pipeline
+  bất đồng bộ và API theo dõi/retry.
 - [x] Workflow tài liệu, test, migration và Postman đã được chuẩn hóa.
 
 ## Công việc chưa hoàn thành trong lịch sử Ngày 2
