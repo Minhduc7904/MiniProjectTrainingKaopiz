@@ -55,6 +55,17 @@ usage, còn `ownerService/ownerType/ownerId` cho biết tài nguyên sở hữu 
 5. Generated column cùng unique index bảo đảm tối đa một
    `STUDENT/STUDENT_AVATAR/AVATAR` active cho mỗi Học viên khi request chạy đồng
    thời.
+6. Unique reference chỉ áp dụng cho hàng chưa soft-delete, nên Học viên có thể
+   đổi avatar A → B → A mà vẫn giữ đầy đủ history.
+
+## Luồng đọc content
+
+1. Client dùng `contentUrl` từ upload response và gọi
+   `GET /media/api/media/{mediaId}/content`.
+2. Media Service kiểm tra UUID, media tồn tại, chưa soft-delete và đang `READY`.
+3. Application trả download capability không public bucket/object key.
+4. API stream MinIO trực tiếp vào response với MIME, length, filename an toàn và
+   `Cache-Control: no-store`.
 
 ## Compensation và cleanup
 

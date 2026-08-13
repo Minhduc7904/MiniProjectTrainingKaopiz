@@ -1,9 +1,15 @@
 using System.Security.Cryptography;
+using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.DatabaseMigration;
+using MediaService.Application;
+using MediaService.Application.Abstractions.Clients;
+using MediaService.Application.Abstractions.Storage;
 using MediaService.Application.Actors;
-using MediaService.Application.Upload;
-using MediaService.Application.Usages;
-using MediaService.Domain;
+using MediaService.Application.Features.Media.Upload;
+using MediaService.Application.Features.Usages.Create;
+using MediaService.Domain.Actors;
+using MediaService.Domain.Media;
+using MediaService.Domain.Usages;
 using MediaService.Infrastructure.Persistence;
 using MediaService.Infrastructure.Storage.Minio;
 using Microsoft.EntityFrameworkCore;
@@ -140,6 +146,13 @@ public sealed class MediaUploadUsageFlowTests
         await usageHandler.HandleAsync(
             CreateUsageCommand(secondMedia.Id, ownerId, actorId),
             CancellationToken.None);
+        await usageHandler.HandleAsync(
+            CreateUsageCommand(firstMedia.Id, ownerId, actorId),
+            CancellationToken.None);
+        var conflict = Assert.ThrowsAsync<MediaApplicationException>(
+            () => usageHandler.HandleAsync(
+                CreateUsageCommand(firstMedia.Id, ownerId, actorId),
+                CancellationToken.None));
         dbContext.ChangeTracker.Clear();
 
         var usages = await dbContext.MediaUsages
@@ -149,10 +162,13 @@ public sealed class MediaUploadUsageFlowTests
             .ToListAsync();
         Assert.Multiple(() =>
         {
-            Assert.That(usages, Has.Count.EqualTo(2));
+            Assert.That(usages, Has.Count.EqualTo(3));
             Assert.That(usages.Count(item => item.DeletedAt is null), Is.EqualTo(1));
-            Assert.That(usages.Single(item => item.DeletedAt is null).MediaId, Is.EqualTo(secondMedia.Id));
+            Assert.That(usages.Single(item => item.DeletedAt is null).MediaId, Is.EqualTo(firstMedia.Id));
             Assert.That(usages.All(item => item.CreatedByType == ActorTypes.Student), Is.True);
+            Assert.That(
+                conflict!.ErrorCode,
+                Is.EqualTo(MediaErrorCodes.MediaUsageConflict));
         });
     }
 
@@ -197,10 +213,10 @@ public sealed class MediaUploadUsageFlowTests
 
     private sealed class ExistingStudentLookup : IStudentLookup
     {
-        public Task<StudentLookupResult?> GetByIdAsync(
+        public Task<StudentQueryResponse?> GetByIdAsync(
             Guid studentId,
             CancellationToken cancellationToken) =>
-            Task.FromResult<StudentLookupResult?>(
+            Task.FromResult<StudentQueryResponse?>(
                 new(
                     studentId,
                     "student@example.com",

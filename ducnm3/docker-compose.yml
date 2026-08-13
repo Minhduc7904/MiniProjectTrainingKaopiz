@@ -177,7 +177,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: *messaging-environment
+      <<: [*messaging-environment, *http-query-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}

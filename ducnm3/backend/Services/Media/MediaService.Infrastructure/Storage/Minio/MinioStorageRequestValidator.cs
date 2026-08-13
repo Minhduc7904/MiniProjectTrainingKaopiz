@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
-using MediaService.Application.Storage;
+using MediaService.Application;
+using MediaService.Application.Abstractions.Storage;
+using MediaService.Application.Features.Media;
 
 namespace MediaService.Infrastructure.Storage.Minio;
 
@@ -25,7 +27,16 @@ public static partial class MinioStorageRequestValidator
         }
 
         ValidateLocation(request.Location, []);
-        var contentType = NormalizeContentType(request.ContentType);
+        string contentType;
+        try
+        {
+            contentType = MediaContentTypeRules.Normalize(request.ContentType);
+        }
+        catch (MediaApplicationException exception)
+        {
+            throw new StorageValidationException(exception.SafeMessage);
+        }
+
         return new ValidatedStorageUpload(contentType);
     }
 
@@ -50,22 +61,6 @@ public static partial class MinioStorageRequestValidator
         }
     }
 
-    private static string NormalizeContentType(string contentType)
-    {
-        if (string.IsNullOrWhiteSpace(contentType))
-        {
-            throw new StorageValidationException("Content type is required.");
-        }
-
-        var normalized = contentType.Split(';', 2)[0].Trim().ToLowerInvariant();
-        if (!ContentTypePattern().IsMatch(normalized))
-        {
-            throw new StorageValidationException("Content type is invalid.");
-        }
-
-        return normalized;
-    }
-
     public static string NormalizeExtension(string extension)
     {
         if (string.IsNullOrWhiteSpace(extension))
@@ -83,11 +78,6 @@ public static partial class MinioStorageRequestValidator
         return normalized;
     }
 
-    [GeneratedRegex("^[a-z0-9][a-z0-9!#$&^_.+-]*/[a-z0-9][a-z0-9!#$&^_.+-]*$", RegexOptions.CultureInvariant)]
-    private static partial Regex ContentTypePattern();
-
     [GeneratedRegex("^[a-z0-9]{1,16}$", RegexOptions.CultureInvariant)]
     private static partial Regex ExtensionPattern();
 }
-
-public sealed record ValidatedStorageUpload(string ContentType);

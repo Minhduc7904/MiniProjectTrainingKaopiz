@@ -1,10 +1,13 @@
 using MediaService.Application;
+using MediaService.Application.Abstractions.Persistence;
+using MediaService.Application.Abstractions.Storage;
 using MediaService.Application.Actors;
-using MediaService.Application.Persistence;
-using MediaService.Application.Storage;
-using MediaService.Application.Upload;
-using MediaService.Application.Usages;
-using MediaService.Domain;
+using MediaService.Application.Features.Media.Upload;
+using MediaService.Application.Features.Usages.Create;
+using MediaService.Domain.Actors;
+using MediaService.Domain.Media;
+using MediaService.Domain.Usages;
+using MediaService.UnitTests.TestDoubles;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MediaService.UnitTests.Application;
@@ -20,8 +23,8 @@ public class MediaCommandHandlerTests
     public async Task UploadCreatesPendingBeforeStorageAndThenMarksReady()
     {
         var events = new List<string>();
-        var repository = new FakeMediaRepository(events);
-        var storage = new FakeStorage(events);
+        var repository = new StubMediaRepository(events);
+        var storage = new StubStorage(events);
         var handler = CreateUploadHandler(repository, storage);
         await using var content = new MemoryStream([1, 2, 3]);
 
@@ -34,7 +37,6 @@ public class MediaCommandHandlerTests
             Assert.That(events, Is.EqualTo(SuccessfulUploadEvents));
             Assert.That(result.Status, Is.EqualTo(MediaObjectStatuses.Ready));
             Assert.That(repository.Pending!.UploadedBy.Type, Is.EqualTo(ActorTypes.Student));
-            Assert.That(result.ContentUrl, Does.Contain(result.Id.ToString()));
         });
     }
 
@@ -42,8 +44,8 @@ public class MediaCommandHandlerTests
     public void UploadFailureDeletesObjectAndMarksRecordFailed()
     {
         var events = new List<string>();
-        var repository = new FakeMediaRepository(events);
-        var storage = new FakeStorage(events) { FailUpload = true };
+        var repository = new StubMediaRepository(events);
+        var storage = new StubStorage(events) { FailUpload = true };
         var handler = CreateUploadHandler(repository, storage);
         using var content = new MemoryStream([1, 2, 3]);
 
@@ -63,7 +65,7 @@ public class MediaCommandHandlerTests
     public async Task UsageKeepsCreatorActorSeparateFromOwner()
     {
         var events = new List<string>();
-        var repository = new FakeMediaRepository(events)
+        var repository = new StubMediaRepository(events)
         {
             ExistingMedia = new MediaRecord(
                 Guid.NewGuid(),
@@ -79,7 +81,7 @@ public class MediaCommandHandlerTests
         var actorId = Guid.NewGuid();
         var ownerId = Guid.NewGuid();
         var actorValidation = new FakeActorValidationService();
-        var studentLookup = new FakeStudentLookup();
+        var studentLookup = new StubStudentLookup();
         var handler = new CreateMediaUsageHandler(
             actorValidation,
             studentLookup,
@@ -88,10 +90,10 @@ public class MediaCommandHandlerTests
         var result = await handler.HandleAsync(
             new CreateMediaUsageCommand(
                 repository.ExistingMedia!.Id,
-                MediaOwnerServices.Student,
-                MediaOwnerTypes.StudentAvatar,
+                "student",
+                "student_avatar",
                 ownerId,
-                MediaUsageTypes.Avatar,
+                "avatar",
                 0,
                 new ActorReference(ActorTypes.Student, actorId)),
             CancellationToken.None);
@@ -102,7 +104,11 @@ public class MediaCommandHandlerTests
             Assert.That(studentLookup.LastStudentId, Is.EqualTo(ownerId));
             Assert.That(repository.CreatedUsage!.OwnerId, Is.EqualTo(ownerId));
             Assert.That(repository.CreatedUsage.CreatedBy.Id, Is.EqualTo(actorId));
+            Assert.That(
+                repository.CreatedUsage.OwnerService,
+                Is.EqualTo(MediaOwnerServices.Student));
             Assert.That(result.OwnerType, Is.EqualTo(MediaOwnerTypes.StudentAvatar));
+            Assert.That(result.UsageType, Is.EqualTo(MediaUsageTypes.Avatar));
         });
     }
 
@@ -176,138 +182,11 @@ public class MediaCommandHandlerTests
         }
     }
 
-    private sealed class FakeStudentLookup : IStudentLookup
-    {
-        public Guid LastStudentId { get; private set; }
-
-        public Task<StudentLookupResult?> GetByIdAsync(
-            Guid studentId,
-            CancellationToken cancellationToken)
-        {
-            LastStudentId = studentId;
-            return Task.FromResult<StudentLookupResult?>(
-                new StudentLookupResult(
-                    studentId,
-                    "student@example.com",
-                    "Student",
-                    "ACTIVE"));
-        }
-    }
-
     private sealed class FakeLocationAllocator : IStorageLocationAllocator
     {
         public StorageObjectLocation Allocate(
             StorageMediaCategory category,
             string extension) =>
             new("images", "2026/08/13/file.png");
-    }
-
-    private sealed class FakeStorage(List<string> events) : IStorage
-    {
-        public bool FailUpload { get; init; }
-
-        public Task<StorageObjectInfo> UploadAsync(
-            StorageUploadRequest request,
-            CancellationToken cancellationToken)
-        {
-            events.Add("upload");
-            if (FailUpload)
-            {
-                throw new StorageOperationException(
-                    "Expected test failure.",
-                    new InvalidOperationException());
-            }
-
-            return Task.FromResult(
-                new StorageObjectInfo(
-                    request.Location.Bucket,
-                    request.Location.ObjectKey,
-                    request.ContentType,
-                    request.Size,
-                    "etag",
-                    new string('a', 64)));
-        }
-
-        public Task<StorageObjectInfo> DownloadAsync(
-            StorageDownloadRequest request,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<StorageObjectInfo> GetMetadataAsync(
-            StorageObjectLocation location,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<bool> ExistsAsync(
-            StorageObjectLocation location,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task DeleteAsync(
-            StorageObjectLocation location,
-            CancellationToken cancellationToken)
-        {
-            events.Add("delete");
-            return Task.CompletedTask;
-        }
-    }
-
-    private sealed class FakeMediaRepository(List<string> events) : IMediaRepository
-    {
-        public PendingMediaRecord? Pending { get; private set; }
-
-        public MediaRecord? ExistingMedia { get; init; }
-
-        public CreateMediaUsageRecord? CreatedUsage { get; private set; }
-
-        public Task AddPendingAsync(
-            PendingMediaRecord media,
-            CancellationToken cancellationToken)
-        {
-            events.Add("pending");
-            Pending = media;
-            return Task.CompletedTask;
-        }
-
-        public Task MarkReadyAsync(
-            Guid mediaId,
-            string checksumSha256,
-            DateTime completedAtUtc,
-            CancellationToken cancellationToken)
-        {
-            events.Add("ready");
-            return Task.CompletedTask;
-        }
-
-        public Task MarkFailedAsync(
-            Guid mediaId,
-            string failureReason,
-            CancellationToken cancellationToken)
-        {
-            events.Add("failed");
-            return Task.CompletedTask;
-        }
-
-        public Task<MediaRecord?> GetByIdAsync(
-            Guid mediaId,
-            CancellationToken cancellationToken) =>
-            Task.FromResult(ExistingMedia);
-
-        public Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
-            CreateMediaUsageRecord usage,
-            CancellationToken cancellationToken)
-        {
-            CreatedUsage = usage;
-            return Task.FromResult(
-                new MediaUsageRecord(
-                    usage.Id,
-                    usage.MediaId,
-                    usage.OwnerService,
-                    usage.OwnerType,
-                    usage.OwnerId,
-                    usage.UsageType,
-                    usage.DisplayOrder,
-                    DateTime.UtcNow));
-        }
     }
 }

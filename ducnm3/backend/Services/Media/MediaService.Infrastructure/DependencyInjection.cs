@@ -1,13 +1,11 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Http;
-using MediaService.Application.Actors;
-using MediaService.Application.Persistence;
-using MediaService.Application.Storage;
-using MediaService.Application.Upload;
-using MediaService.Application.Usages;
+using MediaService.Application.Abstractions.Clients;
+using MediaService.Application.Abstractions.Persistence;
+using MediaService.Application.Abstractions.Storage;
+using MediaService.Infrastructure.Clients.Student;
 using MediaService.Infrastructure.Health;
-using MediaService.Infrastructure.Http;
 using MediaService.Infrastructure.Persistence;
 using MediaService.Infrastructure.Storage.Minio;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +24,6 @@ public static class DependencyInjection
         IConfiguration configuration,
         string connectionString)
     {
-        var uploadOptions = configuration
-            .GetSection(MediaUploadOptions.SectionName)
-            .Get<MediaUploadOptions>() ?? new MediaUploadOptions();
-        uploadOptions.Validate();
-        services.AddSingleton(uploadOptions);
-
         services.AddDbContext<MediaDbContext>(options =>
             options.UseMySql(
                 connectionString,
@@ -43,7 +35,6 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(MinioStorageOptions.SectionName))
             .ValidateOnStart();
 
-        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<MinioObjectKeyGenerator>();
         services.AddSingleton<IStorageLocationAllocator, MinioStorageLocationAllocator>();
         services.AddSingleton<IMinioClient>(serviceProvider =>
@@ -62,10 +53,6 @@ public static class DependencyInjection
         services.AddSingleton<IStorageHealthProbe>(serviceProvider =>
             serviceProvider.GetRequiredService<MinioStorageService>());
         services.AddScoped<IMediaRepository, EfMediaRepository>();
-        services.AddScoped<IActorValidator, StudentActorValidator>();
-        services.AddScoped<IActorValidationService, ActorValidationService>();
-        services.AddScoped<UploadMediaHandler>();
-        services.AddScoped<CreateMediaUsageHandler>();
         services.AddServiceQueryClient<IStudentLookup, StudentLookupClient>(
             configuration,
             ServiceNames.Student);

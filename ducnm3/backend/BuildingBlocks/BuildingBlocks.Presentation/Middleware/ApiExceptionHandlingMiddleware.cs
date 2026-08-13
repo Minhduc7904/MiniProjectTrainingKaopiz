@@ -25,6 +25,17 @@ public sealed partial class ApiExceptionHandlingMiddleware(
                 exception.SafeMessage,
                 exception.Details);
         }
+        catch (BadHttpRequestException exception) when (
+            !context.Response.HasStarted &&
+            exception.StatusCode == StatusCodes.Status413PayloadTooLarge)
+        {
+            ApiLog.InvalidRequest(logger, exception, context.TraceIdentifier);
+            await WriteErrorAsync(
+                context,
+                StatusCodes.Status413PayloadTooLarge,
+                ApiErrorCodes.PayloadTooLarge,
+                ApiErrorMessages.PayloadTooLarge);
+        }
         catch (BadHttpRequestException exception) when (!context.Response.HasStarted)
         {
             ApiLog.InvalidRequest(logger, exception, context.TraceIdentifier);

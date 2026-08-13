@@ -63,4 +63,35 @@ public class ApiMiddlewareTests
                 Is.EqualTo("trace-id"));
         });
     }
+
+    [Test]
+    public async Task ExceptionMiddlewarePreservesPayloadTooLargeStatus()
+    {
+        var context = new DefaultHttpContext
+        {
+            TraceIdentifier = "payload-trace"
+        };
+        await using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+        var middleware = new ApiExceptionHandlingMiddleware(
+            _ => throw new BadHttpRequestException(
+                "Request body too large.",
+                StatusCodes.Status413PayloadTooLarge),
+            NullLogger<ApiExceptionHandlingMiddleware>.Instance,
+            Options.Create(new JsonOptions()));
+
+        await middleware.InvokeAsync(context);
+
+        responseBody.Position = 0;
+        using var document = await JsonDocument.ParseAsync(responseBody);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                context.Response.StatusCode,
+                Is.EqualTo(StatusCodes.Status413PayloadTooLarge));
+            Assert.That(
+                document.RootElement.GetProperty("error").GetProperty("code").GetString(),
+                Is.EqualTo(ApiErrorCodes.PayloadTooLarge));
+        });
+    }
 }

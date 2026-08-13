@@ -1,4 +1,4 @@
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -217,7 +217,7 @@ public sealed partial class MinioStorageService(
     private static partial class StorageLog
     {
         [LoggerMessage(
-            EventId = 2101,
+            EventId = 2201,
             Level = LogLevel.Warning,
             Message = "Media storage health probe failed.")]
         public static partial void DependencyUnavailable(ILogger logger, Exception? exception);

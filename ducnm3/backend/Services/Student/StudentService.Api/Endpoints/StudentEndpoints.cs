@@ -1,6 +1,7 @@
 using BuildingBlocks.Contracts.Api;
+using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.Presentation.Api;
-using StudentService.Application.Students;
+using StudentService.Application.Features.Students.GetById;
 
 namespace StudentService.Api.Endpoints;
 
@@ -10,7 +11,7 @@ public static class StudentEndpoints
         this IEndpointRouteBuilder endpoints) =>
         endpoints
             .MapGet(
-                "/api/students/{studentId}",
+                ApiRoutes.Students.GetByIdTemplate,
                 async (
                     string studentId,
                     HttpContext context,
@@ -20,8 +21,8 @@ public static class StudentEndpoints
                     if (!Guid.TryParse(studentId, out var parsedStudentId))
                     {
                         throw new StudentApplicationException(
-                            "VALIDATION_ERROR",
-                            "studentId must be a valid UUID.",
+                            ApiErrorCodes.ValidationFailed,
+                            ApiErrorMessages.ValidationFailed,
                             400);
                     }
 
@@ -35,7 +36,7 @@ public static class StudentEndpoints
                 })
             .WithName("get-student-by-id")
             .WithTags(ServiceNames.Student)
-            .Produces<ApiResponse<StudentDetails>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<StudentQueryResponse>>(StatusCodes.Status200OK)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
 }

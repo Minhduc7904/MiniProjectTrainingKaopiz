@@ -1,4 +1,4 @@
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 
 namespace MediaService.Infrastructure.Storage.Minio;
 

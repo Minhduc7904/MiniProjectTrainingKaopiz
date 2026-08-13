@@ -1,4 +1,5 @@
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
+using MediaService.Application.Features.Media;
 using MediaService.Infrastructure.Storage.Minio;
 
 namespace MediaService.UnitTests.Storage;
@@ -26,7 +27,7 @@ public class MinioStorageRequestValidatorTests
     public void ValidateUploadRejectsMismatchedCategory()
     {
         Assert.That(
-            StorageMediaTypeRules.Matches(
+            MediaContentTypeRules.Matches(
                 StorageMediaCategory.Video,
                 "image/png"),
             Is.False);

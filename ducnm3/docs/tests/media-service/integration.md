@@ -37,7 +37,7 @@ stub trong bộ nhớ để test không phụ thuộc Student Service qua mạng
 | `StorageLifecycleWorksForEachMediaCategory` — AUDIO | Cùng vòng đời với `audio/mpeg`, phần mở rộng `mp3`. | Bucket `audios`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
 | `StorageLifecycleWorksForEachMediaCategory` — OTHER | Cùng vòng đời với `application/octet-stream`, phần mở rộng `bin`. | Bucket `other`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
 | `HealthProbeIsHealthyWhenAllBucketsExist` | Gọi `IStorageHealthProbe.CheckAsync` sau khi bộ kiểm thử tạo đủ năm bucket. | `IsHealthy = true`. |
-| `UploadPersistsReadyChecksumAndUsageReplacesStudentAvatar` | Upload ảnh thứ nhất bằng handler thật; đọc hàng MySQL và kiểm tra object MinIO; tạo avatar rồi upload ảnh thứ hai và thay avatar. | Media là `READY`; `checksum_sha256` bằng SHA-256 của byte nguồn; `uploaded_by_type=STUDENT`; object tồn tại; có hai usage nhưng chỉ một active trỏ tới media thứ hai; mọi `created_by_type=STUDENT`. |
+| `UploadPersistsReadyChecksumAndUsageReplacesStudentAvatar` | Upload ảnh A và B bằng handler thật; gán avatar A → B → A trên MySQL đã áp dụng V003, rồi gửi lại A khi A đang active. | Media là `READY`; checksum đúng; có ba usage history nhưng chỉ một active trỏ lại A; soft-deleted reference được tái sử dụng; duplicate active trả `MEDIA_USAGE_CONFLICT`. |
 
 Các kiểm thử vòng đời dùng `MinioStorageLocationAllocator` để reserve
 bucket/object key trước khi gọi storage adapter. Điều này bảo vệ ánh xạ loại →

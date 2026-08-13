@@ -4,6 +4,7 @@ using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using Microsoft.Extensions.Logging;
 using StudentService.Api.Endpoints;
+using StudentService.Application;
 using StudentService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +28,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Student Service.");
 }
 
-builder.Services.AddStudentInfrastructure(connectionString);
+builder.Services
+    .AddStudentApplication()
+    .AddStudentInfrastructure(connectionString);
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(

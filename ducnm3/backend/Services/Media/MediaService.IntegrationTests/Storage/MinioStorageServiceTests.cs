@@ -1,5 +1,5 @@
 using System.Text;
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 using MediaService.Infrastructure.Storage.Minio;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;

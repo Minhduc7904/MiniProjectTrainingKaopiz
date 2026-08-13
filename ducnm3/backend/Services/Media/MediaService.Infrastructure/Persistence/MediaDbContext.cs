@@ -133,7 +133,7 @@ public partial class MediaDbContext : DbContext
 
             entity.HasIndex(e => e.ActiveStudentAvatarOwnerId, "uq_media_usages_active_student_avatar").IsUnique();
 
-            entity.HasIndex(e => new { e.MediaId, e.OwnerService, e.OwnerType, e.OwnerId, e.UsageType }, "uq_media_usages_reference").IsUnique();
+            entity.HasIndex(e => new { e.MediaId, e.OwnerService, e.OwnerType, e.OwnerId, e.UsageType, e.ActiveReferenceGuard }, "uq_media_usages_active_reference").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasComment("UUID định danh liên kết usage")
@@ -146,6 +146,10 @@ public partial class MediaDbContext : DbContext
                 .HasColumnName("active_course_thumbnail_owner_id")
                 .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
+            entity.Property(e => e.ActiveReferenceGuard)
+                .HasComputedColumnSql("case when (`deleted_at` is null) then 1 else NULL end", true)
+                .HasComment("Chỉ áp dụng unique reference cho usage active")
+                .HasColumnName("active_reference_guard");
             entity.Property(e => e.ActiveStudentAvatarOwnerId)
                 .HasComputedColumnSql("case when ((`owner_service` = _utf8mb4'STUDENT') and (`owner_type` = _utf8mb4'STUDENT_AVATAR') and (`usage_type` = _utf8mb4'AVATAR') and (`deleted_at` is null)) then `owner_id` else NULL end", true)
                 .HasComment("Student có avatar active; đảm bảo tối đa một avatar")

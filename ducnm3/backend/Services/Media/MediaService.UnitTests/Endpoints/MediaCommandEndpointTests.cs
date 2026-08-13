@@ -1,24 +1,28 @@
 using System.Net;
 using System.Net.Http.Json;
+using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Extensions;
-using MediaService.Api.Endpoints;
+using MediaService.Api.Contracts.Requests;
+using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
-using MediaService.Application.Actors;
-using MediaService.Application.Persistence;
-using MediaService.Application.Storage;
-using MediaService.Application.Upload;
-using MediaService.Application.Usages;
-using MediaService.Domain;
+using MediaService.Application.Abstractions.Clients;
+using MediaService.Application.Abstractions.Persistence;
+using MediaService.Application.Abstractions.Storage;
+using MediaService.Domain.Actors;
+using MediaService.Domain.Media;
+using MediaService.Domain.Usages;
+using MediaService.UnitTests.TestDoubles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MediaService.UnitTests.Endpoints;
 
 public sealed class MediaCommandEndpointTests
 {
-    private readonly ComponentRepository repository = new();
+    private static readonly byte[] ContentBytes = [1, 2, 3];
+    private readonly StubMediaRepository repository = new();
+    private readonly StubStorage storage = new();
     private WebApplication app = null!;
     private HttpClient client = null!;
 
@@ -28,21 +32,16 @@ public sealed class MediaCommandEndpointTests
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<IMediaRepository>(repository);
-        builder.Services.AddSingleton<IStorage, ComponentStorage>();
+        builder.Services.AddSingleton<IStorage>(storage);
         builder.Services.AddSingleton<IStorageLocationAllocator, ComponentAllocator>();
-        builder.Services.AddSingleton<IStudentLookup, ExistingStudentLookup>();
-        builder.Services.AddSingleton<IActorValidator, StudentActorValidator>();
-        builder.Services.AddSingleton<IActorValidationService, ActorValidationService>();
-        builder.Services.AddSingleton(new MediaUploadOptions());
-        builder.Services.AddSingleton(TimeProvider.System);
-        builder.Services.AddSingleton(NullLogger<UploadMediaHandler>.Instance);
-        builder.Services.AddSingleton<UploadMediaHandler>();
-        builder.Services.AddSingleton<CreateMediaUsageHandler>();
+        builder.Services.AddSingleton<IStudentLookup, StubStudentLookup>();
+        builder.Services.AddMediaApplication(builder.Configuration);
 
         app = builder.Build();
         app.UseSharedApiMiddleware();
         app.MapUploadMedia();
         app.MapCreateMediaUsage();
+        app.MapGetMediaContent();
         await app.StartAsync();
         client = app.GetTestClient();
     }
@@ -54,7 +53,7 @@ public sealed class MediaCommandEndpointTests
         using var multipart = CreateMultipart(actorId, ActorTypes.Student);
 
         using var uploadResponse = await client.PostAsync(
-            "/api/media",
+            ApiRoutes.Media.Upload,
             multipart);
         var uploadBody = await uploadResponse.Content.ReadAsStringAsync();
 
@@ -62,14 +61,17 @@ public sealed class MediaCommandEndpointTests
         {
             Assert.That(uploadResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             Assert.That(uploadBody, Does.Contain("\"status\":\"READY\""));
+            Assert.That(
+                uploadBody,
+                Does.Contain("\"contentUrl\":\"/media/api/media/"));
             Assert.That(uploadBody, Does.Not.Contain("objectKey"));
             Assert.That(uploadBody, Does.Not.Contain("\"bucket\""));
         });
 
-        var mediaId = repository.LastPending!.Id;
+        var mediaId = repository.Pending!.Id;
         var ownerId = Guid.NewGuid();
         using var usageResponse = await client.PostAsJsonAsync(
-            "/api/media/usages",
+            ApiRoutes.Media.Usages,
             new CreateMediaUsageRequest(
                 mediaId.ToString(),
                 MediaOwnerServices.Student,
@@ -85,8 +87,8 @@ public sealed class MediaCommandEndpointTests
         {
             Assert.That(usageResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             Assert.That(usageBody, Does.Contain("\"ownerType\":\"STUDENT_AVATAR\""));
-            Assert.That(repository.LastUsage!.OwnerId, Is.EqualTo(ownerId));
-            Assert.That(repository.LastUsage.CreatedBy.Id, Is.EqualTo(actorId));
+            Assert.That(repository.CreatedUsage!.OwnerId, Is.EqualTo(ownerId));
+            Assert.That(repository.CreatedUsage.CreatedBy.Id, Is.EqualTo(actorId));
         });
     }
 
@@ -95,7 +97,9 @@ public sealed class MediaCommandEndpointTests
     {
         using var multipart = CreateMultipart(Guid.NewGuid(), "ADMIN");
 
-        using var response = await client.PostAsync("/api/media", multipart);
+        using var response = await client.PostAsync(
+            ApiRoutes.Media.Upload,
+            multipart);
         var body = await response.Content.ReadAsStringAsync();
 
         Assert.Multiple(() =>
@@ -103,6 +107,29 @@ public sealed class MediaCommandEndpointTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(body, Does.Contain(MediaErrorCodes.InvalidActorType));
             Assert.That(body, Does.Not.Contain("stack"));
+        });
+    }
+
+    [Test]
+    public async Task UploadedMediaContentStreamsWithSafeHeaders()
+    {
+        var actorId = Guid.NewGuid();
+        using var multipart = CreateMultipart(actorId, ActorTypes.Student);
+        using var uploadResponse = await client.PostAsync(
+            ApiRoutes.Media.Upload,
+            multipart);
+        Assert.That(uploadResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+
+        using var contentResponse = await client.GetAsync(
+            ApiRoutes.Media.ContentServicePath(repository.Pending!.Id));
+        var bytes = await contentResponse.Content.ReadAsByteArrayAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(contentResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(contentResponse.Content.Headers.ContentType?.MediaType, Is.EqualTo("image/png"));
+            Assert.That(contentResponse.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(bytes, Is.EqualTo(ContentBytes));
         });
     }
 
@@ -118,7 +145,7 @@ public sealed class MediaCommandEndpointTests
         string actorType)
     {
         var multipart = new MultipartFormDataContent();
-        var file = new ByteArrayContent([1, 2, 3]);
+        var file = new ByteArrayContent(ContentBytes);
         file.Headers.ContentType =
             new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
         multipart.Add(file, "file", "avatar.png");
@@ -134,114 +161,5 @@ public sealed class MediaCommandEndpointTests
             StorageMediaCategory category,
             string extension) =>
             new("images", "2026/08/13/component.png");
-    }
-
-    private sealed class ComponentStorage : IStorage
-    {
-        public Task<StorageObjectInfo> UploadAsync(
-            StorageUploadRequest request,
-            CancellationToken cancellationToken) =>
-            Task.FromResult(
-                new StorageObjectInfo(
-                    request.Location.Bucket,
-                    request.Location.ObjectKey,
-                    request.ContentType,
-                    request.Size,
-                    "etag",
-                    new string('a', 64)));
-
-        public Task<StorageObjectInfo> DownloadAsync(
-            StorageDownloadRequest request,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<StorageObjectInfo> GetMetadataAsync(
-            StorageObjectLocation location,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<bool> ExistsAsync(
-            StorageObjectLocation location,
-            CancellationToken cancellationToken) =>
-            Task.FromResult(false);
-
-        public Task DeleteAsync(
-            StorageObjectLocation location,
-            CancellationToken cancellationToken) =>
-            Task.CompletedTask;
-    }
-
-    private sealed class ExistingStudentLookup : IStudentLookup
-    {
-        public Task<StudentLookupResult?> GetByIdAsync(
-            Guid studentId,
-            CancellationToken cancellationToken) =>
-            Task.FromResult<StudentLookupResult?>(
-                new(studentId, "student@example.com", "Student", "ACTIVE"));
-    }
-
-    private sealed class ComponentRepository : IMediaRepository
-    {
-        private MediaRecord? media;
-
-        public PendingMediaRecord? LastPending { get; private set; }
-
-        public CreateMediaUsageRecord? LastUsage { get; private set; }
-
-        public Task AddPendingAsync(
-            PendingMediaRecord pending,
-            CancellationToken cancellationToken)
-        {
-            LastPending = pending;
-            media = new MediaRecord(
-                pending.Id,
-                pending.Location,
-                pending.MediaType,
-                pending.ContentType,
-                pending.OriginalFileName,
-                pending.SizeBytes,
-                MediaObjectStatuses.Pending,
-                DateTime.UtcNow,
-                null);
-            return Task.CompletedTask;
-        }
-
-        public Task MarkReadyAsync(
-            Guid mediaId,
-            string checksumSha256,
-            DateTime completedAtUtc,
-            CancellationToken cancellationToken)
-        {
-            media = media! with { Status = MediaObjectStatuses.Ready };
-            return Task.CompletedTask;
-        }
-
-        public Task MarkFailedAsync(
-            Guid mediaId,
-            string failureReason,
-            CancellationToken cancellationToken) =>
-            Task.CompletedTask;
-
-        public Task<MediaRecord?> GetByIdAsync(
-            Guid mediaId,
-            CancellationToken cancellationToken) =>
-            Task.FromResult(media?.Id == mediaId ? media : null);
-
-        public Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
-            CreateMediaUsageRecord usage,
-            CancellationToken cancellationToken)
-        {
-            LastUsage = usage;
-            return Task.FromResult(
-                new MediaUsageRecord(
-                    usage.Id,
-                    usage.MediaId,
-                    usage.OwnerService,
-                    usage.OwnerType,
-                    usage.OwnerId,
-                    usage.UsageType,
-                    usage.DisplayOrder,
-                    DateTime.UtcNow));
-        }
     }
 }

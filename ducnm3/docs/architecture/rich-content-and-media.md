@@ -56,6 +56,12 @@ Giá trị được lưu là mã nguồn Markdown. Bộ hiển thị phải lo�
 Request upload hiện không idempotent. Mỗi lần gửi thành công tạo một `mediaId`
 và object riêng. Bucket, object key và `failure_reason` chỉ là dữ liệu nội bộ.
 
+`GET /api/media/{mediaId}/content` dùng Application capability chỉ public
+metadata và thao tác `CopyToAsync`; bucket/object key vẫn nằm trong adapter
+boundary. API stream thẳng MinIO vào response, không buffer toàn file. Phiên bản
+hiện tại dùng `Cache-Control: no-store`, chưa có auth, range request hoặc
+presigned URL.
+
 ## Request identity tạm thời
 
 Hệ thống chưa có authentication middleware cho hai command Media. Vì vậy:
@@ -74,7 +80,9 @@ Actor fields mô tả người thực hiện thao tác và được lưu riêng.
 
 - `AVATAR`: phiên bản hiện tại hỗ trợ
   `STUDENT/STUDENT_AVATAR/AVATAR`. Khi thay avatar, usage active cũ được xóa mềm
-  và usage mới được tạo trong transaction `SERIALIZABLE`.
+  và usage mới được tạo trong transaction `SERIALIZABLE`. Generated
+  `active_reference_guard` chỉ áp dụng unique reference cho usage active, nên
+  chuỗi thay avatar A → B → A hợp lệ nhưng duplicate active vẫn bị chặn.
 - `THUMBNAIL`: mỗi Khóa học chỉ có đúng một lượt sử dụng `COURSE_THUMBNAIL` đang hoạt động; đây là nguồn dữ liệu chuẩn cho hình ảnh hiển thị.
 - `EMBED`: media được hiển thị nội tuyến trong Markdown.
 - `ATTACHMENT`: media có thể tải xuống, được liên kết với đối tượng sở hữu nhưng không hiển thị nội tuyến.

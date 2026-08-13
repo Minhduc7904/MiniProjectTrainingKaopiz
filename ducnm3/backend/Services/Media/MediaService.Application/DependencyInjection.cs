@@ -1,0 +1,34 @@
+using MediaService.Application.Actors;
+using MediaService.Application.Features.Media.GetContent;
+using MediaService.Application.Features.Media.Upload;
+using MediaService.Application.Features.Usages.Create;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace MediaService.Application;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddMediaApplication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        var uploadOptions = configuration
+            .GetSection(MediaUploadOptions.SectionName)
+            .Get<MediaUploadOptions>() ?? new MediaUploadOptions();
+        uploadOptions.Validate();
+
+        services.AddSingleton(uploadOptions);
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<IActorValidator, StudentActorValidator>();
+        services.AddScoped<IActorValidationService, ActorValidationService>();
+        services.AddScoped<UploadMediaHandler>();
+        services.AddScoped<GetMediaContentHandler>();
+        services.AddScoped<CreateMediaUsageHandler>();
+
+        return services;
+    }
+}

@@ -142,14 +142,18 @@ created_by            // UUID actor tạo liên kết; logical reference
 created_by_type       // Actor type đã được Application validate; hiện là STUDENT
 created_at            // Thời điểm tạo liên kết, UTC
 deleted_at            // Thời điểm xóa mềm; có thể null khi lượt sử dụng còn hiệu lực
+active_reference_guard // Generated 1 khi active, null khi đã soft-delete
 ```
 
 Chỉ mục và ràng buộc:
 
 ```sql
-UNIQUE(media_id, owner_service, owner_type, owner_id, usage_type)
+UNIQUE(media_id, owner_service, owner_type, owner_id, usage_type, active_reference_guard)
 INDEX(owner_service, owner_type, owner_id, display_order)
 ```
+
+`active_reference_guard` cho phép cùng media được dùng lại sau khi usage cũ đã
+soft-delete, nhưng vẫn chặn hai reference giống hệt nhau cùng active.
 
 Quy tắc `THUMBNAIL`:
 

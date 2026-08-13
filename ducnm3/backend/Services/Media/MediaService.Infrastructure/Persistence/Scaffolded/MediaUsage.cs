@@ -70,5 +70,10 @@ public partial class MediaUsage
     /// </summary>
     public Guid? ActiveStudentAvatarOwnerId { get; set; }
 
+    /// <summary>
+    /// Chỉ áp dụng unique reference cho usage active
+    /// </summary>
+    public sbyte? ActiveReferenceGuard { get; set; }
+
     public virtual MediaObject Media { get; set; } = null!;
 }

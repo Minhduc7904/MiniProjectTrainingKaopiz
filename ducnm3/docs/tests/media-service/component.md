@@ -33,7 +33,9 @@ thuộc kiểm thử tích hợp.
 | --- | --- | --- |
 | `MultipartUploadAndUsageReturnStandardCreatedResponses` | Gửi multipart có `file`, `mediaType`, `uploadedByType`, `uploadedBy`, sau đó gửi JSON usage với actor khác `ownerId`. | Cả hai endpoint trả `201` trong response envelope chuẩn; upload trả `READY` nhưng không lộ bucket/object key; usage lưu riêng actor và owner. |
 | `UnknownActorTypeReturnsSafeValidationError` | Gửi multipart với `uploadedByType=ADMIN` khi chưa đăng ký Admin validator. | Trả `400 INVALID_ACTOR_TYPE` và response không lộ stack trace. |
+| `UploadedMediaContentStreamsWithSafeHeaders` | Upload media rồi gọi content route từ `contentUrl`. | Trả đúng bytes, MIME, `Content-Length`, `Cache-Control: no-store`; response không lộ bucket/object key. |
 
-Các dependency trong component test đều là fake trong memory. Checksum, MySQL,
+Các dependency trong component test dùng shared test doubles tại `TestDoubles/`.
+Checksum, MySQL,
 MinIO và transaction thay active avatar được bao phủ trong
 [`integration.md`](integration.md).

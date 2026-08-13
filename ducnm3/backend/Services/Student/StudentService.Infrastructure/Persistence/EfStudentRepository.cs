@@ -1,18 +1,19 @@
+using BuildingBlocks.Contracts.Students;
 using Microsoft.EntityFrameworkCore;
-using StudentService.Application.Students;
+using StudentService.Application.Features.Students.GetById;
 
 namespace StudentService.Infrastructure.Persistence;
 
 public sealed class EfStudentRepository(StudentDbContext dbContext)
     : IStudentRepository
 {
-    public Task<StudentDetails?> GetByIdAsync(
+    public Task<StudentQueryResponse?> GetByIdAsync(
         Guid studentId,
         CancellationToken cancellationToken) =>
         dbContext.Students
             .AsNoTracking()
             .Where(student => student.Id == studentId)
-            .Select(student => new StudentDetails(
+            .Select(student => new StudentQueryResponse(
                 student.Id,
                 student.Email,
                 student.DisplayName,

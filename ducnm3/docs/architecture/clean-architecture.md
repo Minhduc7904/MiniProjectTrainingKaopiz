@@ -296,65 +296,61 @@ CourseService.Api/
 
 ```text
 MediaService.Domain/
-│
-├── Entities/
-│   ├── MediaObject.cs
-│   └── MediaUsage.cs
-│
-└── Enums/
-    ├── MediaType.cs
-    ├── MediaOwnerService.cs
-    ├── MediaOwnerType.cs
-    └── MediaUsageType.cs
+├── Actors/
+│   ├── ActorReference.cs
+│   └── ActorTypes.cs
+├── Media/
+│   ├── MediaObjectStatuses.cs
+│   └── MediaTypes.cs
+└── Usages/
+    ├── MediaOwnerServices.cs
+    ├── MediaOwnerTypes.cs
+    └── MediaUsageTypes.cs
 ```
 
 ```text
 MediaService.Application/
-│
-├── Media/
-│   ├── Commands/
-│   │   ├── UploadMedia/
-│   │   ├── DeleteMedia/
-│   │   └── CreateMediaUsage/
-│   ├── Queries/
-│   │   ├── GetMediaMetadata/
-│   │   ├── GetMediaContent/
-│   │   └── GetMediaUsages/
-│
 ├── Abstractions/
-│   ├── Storage/
-│   │   └── IObjectStorage.cs
-│   └── Persistence/
-│       └── IMediaRepository.cs
-│
-└── Validators/
+│   ├── Clients/
+│   ├── Persistence/
+│   └── Storage/
+├── Actors/
+├── Features/
+│   ├── Media/
+│   │   ├── GetContent/
+│   │   └── Upload/
+│   └── Usages/Create/
+├── DependencyInjection.cs
+├── MediaApplicationException.cs
+├── MediaErrorCodes.cs
+└── MediaErrors.cs
 ```
 
 ```text
 MediaService.Infrastructure/
-│
+├── Clients/Student/
+├── Database/Migrations/
 ├── Persistence/
 │   ├── MediaDbContext.cs
-│   ├── Repositories/
-│   └── Migrations/
-│
-└── Storage/
-    └── MinioObjectStorage.cs
+│   ├── EfMediaRepository.cs
+│   └── Scaffolded/
+└── Storage/Minio/
 ```
 
 ```text
 MediaService.Api/
-│
-├── Controllers/
-│   ├── MediaController.cs
-│   └── MediaUsagesController.cs
-│
-├── Middleware/
-│   ├── ExceptionHandlingMiddleware.cs
-│   └── CorrelationIdMiddleware.cs
-│
+├── Contracts/
+│   ├── Requests/
+│   └── Responses/
+├── Endpoints/Media/
+├── Mappers/
 └── Program.cs
 ```
+
+Mỗi public type trong feature Media/Student nằm ở file riêng. Application đăng
+ký handler, validator và options qua `AddMediaApplication()`; Infrastructure chỉ
+đăng ký EF, MinIO, HTTP client và health probe. Shared route/Student response
+contract nằm trong `BuildingBlocks.Contracts`.
 
 ---
 # 13. Cấu trúc Notification Service

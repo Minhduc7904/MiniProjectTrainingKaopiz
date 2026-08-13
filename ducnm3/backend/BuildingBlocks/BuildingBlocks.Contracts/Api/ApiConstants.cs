@@ -8,6 +8,7 @@ public static class ApiErrorCodes
     public const string ServiceUnavailable = "SERVICE_UNAVAILABLE";
     public const string UnexpectedError = "UNEXPECTED_ERROR";
     public const string ValidationFailed = "VALIDATION_FAILED";
+    public const string PayloadTooLarge = "PAYLOAD_TOO_LARGE";
 }
 
 public static class ApiErrorMessages
@@ -18,6 +19,7 @@ public static class ApiErrorMessages
     public const string ServiceUnavailable = "Service is temporarily unavailable.";
     public const string UnexpectedError = "An unexpected error occurred.";
     public const string ValidationFailed = "One or more validation errors occurred.";
+    public const string PayloadTooLarge = "The request payload exceeds the allowed size.";
 }
 
 public static class ApiHeaderNames

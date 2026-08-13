@@ -1,8 +1,9 @@
 using System.Data;
 using MediaService.Application;
-using MediaService.Application.Persistence;
-using MediaService.Application.Storage;
-using MediaService.Domain;
+using MediaService.Application.Abstractions.Persistence;
+using MediaService.Application.Abstractions.Storage;
+using MediaService.Domain.Media;
+using MediaService.Domain.Usages;
 using MediaService.Infrastructure.Persistence.Scaffolded;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
@@ -114,6 +115,15 @@ public sealed class EfMediaRepository(
                 item.DeletedAt == null)
             .ToListAsync(cancellationToken);
 
+        if (activeUsages.Any(item =>
+                item.MediaId == usage.MediaId &&
+                item.OwnerService == usage.OwnerService &&
+                item.OwnerType == usage.OwnerType &&
+                item.UsageType == usage.UsageType))
+        {
+            throw MediaErrors.MediaUsageConflict();
+        }
+
         foreach (var activeUsage in activeUsages)
         {
             activeUsage.DeletedAt = now;
@@ -142,10 +152,7 @@ public sealed class EfMediaRepository(
         catch (DbUpdateException exception) when (
             exception.InnerException is MySqlException { Number: 1062 })
         {
-            throw new MediaApplicationException(
-                MediaErrorCodes.MediaUsageConflict,
-                "The media usage conflicts with an active usage.",
-                409);
+            throw MediaErrors.MediaUsageConflict();
         }
 
         return new MediaUsageRecord(

@@ -138,6 +138,13 @@ prefetch và concurrency nằm một lần trong `.env` qua nhóm biến
 Mở management UI bằng credential `RABBITMQ_USER`/`RABBITMQ_PASSWORD` để xem
 exchange, queue và các queue `_error`.
 
+## HTTP query giữa Media và Student
+
+`media-service` nhận cả messaging environment và `HTTP_QUERY_*` environment
+anchor. Typed client dùng `ServiceEndpoints__student-service`; timeout/retry
+được quản lý tập trung bởi `BuildingBlocks.Http`, không cấu hình riêng trong
+`StudentLookupClient`.
+
 Xóa các container nhưng giữ nguyên dữ liệu:
 
 ```bash

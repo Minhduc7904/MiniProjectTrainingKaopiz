@@ -53,8 +53,8 @@ Danh mục Media Service:
 
 - [`media-service/unit.md`](media-service/unit.md): storage validation, trình tự
   `PENDING -> READY`, compensation sang `FAILED`, actor/owner.
-- [`media-service/component.md`](media-service/component.md): health endpoint;
-  command upload/usage chưa có component test.
+- [`media-service/component.md`](media-service/component.md): health endpoint và
+  component tests cho command upload/usage.
 - [`media-service/integration.md`](media-service/integration.md): MinIO storage,
   checksum SHA-256, migration/MySQL và active avatar uniqueness.
 

@@ -59,7 +59,7 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
     "contentType": "image/png",
     "sizeBytes": 24576,
     "status": "READY",
-    "contentUrl": "/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/content"
+    "contentUrl": "/media/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/content"
   },
   "meta": {
     "traceId": "01J..."
@@ -67,9 +67,7 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
 }
 ```
 
-`Location` và `data.contentUrl` hiện là đường dẫn theo Media Service. Bên gọi qua
-Gateway dùng tiền tố `/media`, ví dụ
-`/media/api/media/{mediaId}/content`.
+`Location` và `data.contentUrl` là public Gateway path có tiền tố `/media`.
 
 ## Mã trạng thái HTTP
 
@@ -78,7 +76,8 @@ Gateway dùng tiền tố `/media`, ví dụ
   phần mở rộng, `mediaType` không hỗ trợ hoặc UUID không hợp lệ.
 - `400 INVALID_ACTOR_TYPE`: actor type thiếu hoặc chưa được hỗ trợ.
 - `404 ACTOR_NOT_FOUND`: `uploadedBy` không tồn tại trong Student Service.
-- `413 MEDIA_TOO_LARGE`: file vượt giới hạn của `mediaType`.
+- `413 PAYLOAD_TOO_LARGE`: file hoặc toàn bộ multipart request vượt giới hạn
+  được cấu hình.
 - `415 UNSUPPORTED_MEDIA_TYPE`: MIME của file không khớp `mediaType`.
 - `503 STUDENT_SERVICE_UNAVAILABLE`: không thể xác minh actor với Student Service.
 - `503 MEDIA_UPLOAD_FAILED`: MinIO không nhận được object hoặc không tạo được

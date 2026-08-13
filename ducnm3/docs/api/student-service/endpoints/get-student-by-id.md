@@ -52,7 +52,7 @@ Phản hồi dùng [response envelope chuẩn](../../shared/response-format.md).
 ## Mã trạng thái HTTP
 
 - `200`: Học viên tồn tại.
-- `400 VALIDATION_ERROR`: `studentId` không phải UUID hợp lệ hoặc là UUID rỗng.
+- `400 VALIDATION_FAILED`: `studentId` không phải UUID hợp lệ hoặc là UUID rỗng.
 - `404 STUDENT_NOT_FOUND`: không có Học viên tương ứng.
 - `503 SERVICE_UNAVAILABLE`: Gateway không kết nối được Student Service.
 - `500 UNEXPECTED_ERROR`: lỗi database hoặc lỗi nội bộ không dự kiến.

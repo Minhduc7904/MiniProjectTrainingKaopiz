@@ -3,7 +3,9 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Endpoints;
-using MediaService.Application.Upload;
+using MediaService.Api.Endpoints.Media;
+using MediaService.Application;
+using MediaService.Application.Features.Media.Upload;
 using MediaService.Infrastructure;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -35,7 +37,11 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Media Service.");
 }
 
-builder.Services.AddMediaInfrastructure(builder.Configuration, connectionString);
+if (!migrationsRunOnly)
+{
+    builder.Services.AddMediaApplication(builder.Configuration);
+    builder.Services.AddMediaInfrastructure(builder.Configuration, connectionString);
+}
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(
@@ -67,5 +73,6 @@ app.MapServiceInfoEndpoint(ServiceNames.Media);
 app.MapMediaHealthEndpoint();
 app.MapUploadMedia();
 app.MapCreateMediaUsage();
+app.MapGetMediaContent();
 
 app.Run();

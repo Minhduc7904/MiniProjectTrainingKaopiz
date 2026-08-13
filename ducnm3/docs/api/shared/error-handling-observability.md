@@ -14,6 +14,9 @@ NotFoundException
 ConflictException
     → 409
 
+Request body hoặc multipart vượt giới hạn
+    → 413 PAYLOAD_TOO_LARGE
+
 Ngoại lệ chưa được xử lý
     → 500
 

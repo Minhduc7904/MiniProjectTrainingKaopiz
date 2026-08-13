@@ -3,7 +3,7 @@ using System.Text.Json;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using MediaService.Api.Endpoints;
-using MediaService.Application.Storage;
+using MediaService.Application.Abstractions.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
