@@ -12,9 +12,33 @@
 
 1. Read the relevant file in `rules/`.
 2. Read the applicable design or behavior documentation in `docs/`.
-3. If the task matches a repeatable workflow, read and follow `skills/<skill-name>/SKILL.md`.
-4. Inspect the existing implementation before editing it.
-5. Add or update tests and documentation when behavior, API, database, or architecture changes.
+3. Select the mandatory workflow skill from the matrix below.
+4. Read its `SKILL.md`, `reference.md`, and `template.md` before editing code.
+5. If multiple workflows apply, read every matching skill before editing code.
+6. Inspect the existing implementation before editing it.
+7. Add or update tests and documentation when behavior, API, database, or architecture changes.
+
+Do not start coding, migration, tests, API docs, business-flow docs, or Postman
+changes until the mandatory skill files have been read.
+
+## Mandatory skill routing
+
+- GET resource detail: `skills/api-get-detail-endpoint/`.
+- GET collection/list/search: `skills/api-get-list-endpoint/`.
+- POST endpoint: `skills/api-post-endpoint/`.
+- PUT endpoint: `skills/api-put-endpoint/`.
+- PATCH endpoint: `skills/api-patch-endpoint/`.
+- DELETE endpoint: `skills/api-delete-endpoint/`.
+- Unit tests: `skills/test-unit/`.
+- Component tests with `TestServer`: `skills/test-component/`.
+- Integration tests with real dependencies/Testcontainers:
+  `skills/test-integration/`.
+- SQL schema migration or EF scaffold: `skills/database-migration/`.
+- Release/deployment workflow: `skills/release/`.
+
+An endpoint implementation normally requires one HTTP-method skill plus the
+applicable test skills. A schema-changing endpoint also requires the database
+migration skill.
 
 ## Documentation map
 

@@ -7,6 +7,10 @@ lưu dữ liệu nhị phân trong MinIO. Đường dẫn công khai qua Gateway
 `POST /media/api/media`; đường dẫn trực tiếp tại Media Service là
 `POST /api/media`.
 
+Business flow:
+[`post-media.md`](../../../business-flows/media/post-media.md).
+Postman: `MediaService/POST Upload media`.
+
 ## Xác thực và phân quyền
 
 - Xác thực: chưa bắt buộc trong phiên bản hiện tại.

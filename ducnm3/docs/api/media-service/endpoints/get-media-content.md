@@ -5,6 +5,10 @@
 Stream trực tiếp object đã upload từ MinIO qua Media Service và API Gateway,
 không trả `bucket` hoặc `objectKey` cho client.
 
+Business flow:
+[`get-media-content.md`](../../../business-flows/media/get-media-content.md).
+Postman: `MediaService/GET Media content`.
+
 ## Contract
 
 - Owner service: Media Service.
