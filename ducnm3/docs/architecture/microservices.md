@@ -16,9 +16,14 @@ flowchart LR
     Media --> MinIO[(MinIO)]
     Notification --> NotificationDb[(CSDL Thông báo)]
     Scheduler --> SchedulerDb[(CSDL Scheduler)]
-    SchedulerWorker[Khung Scheduler Worker] -. tương lai .-> SchedulerDb
-    SchedulerWorker -. HTTP nội bộ trong tương lai .-> Notification
-    SchedulerWorker -. HTTP nội bộ trong tương lai .-> Media
+    Course --> RabbitMQ[(RabbitMQ)]
+    Student --> RabbitMQ
+    Media --> RabbitMQ
+    Notification --> RabbitMQ
+    Scheduler --> RabbitMQ
+    SchedulerWorker[Scheduler Worker] --> RabbitMQ
+    SchedulerWorker -. QUERY HTTP trong tương lai .-> Notification
+    SchedulerWorker -. QUERY HTTP trong tương lai .-> Media
 ```
 
 ---
@@ -130,7 +135,9 @@ background_jobs
 background_job_runs
 ```
 
-Scheduler không truy vấn `lms_media_db` hoặc `lms_notification_db`. Việc phân tích CRON, khóa nhận xử lý, thực thi bộ xử lý và gọi HTTP nội bộ sẽ được triển khai sau.
+Scheduler không truy vấn `lms_media_db` hoặc `lms_notification_db`. Worker đã
+được host cùng MassTransit nhưng việc phân tích CRON, khóa nhận xử lý, job
+handler và message contract nghiệp vụ sẽ được triển khai sau.
 
 ---
 # 6. Vì sao là 4 dịch vụ nghiệp vụ và 1 dịch vụ nền tảng?
@@ -205,6 +212,10 @@ Course Service
 
 Tương tự, Course Service và Notification Service chỉ gọi HTTP tới Media Service để tải lên, lấy URL hoặc đăng ký `media_usages`; tuyệt đối không gọi MinIO hay truy vấn `lms_media_db` trực tiếp.
 
-Phần nền tảng Scheduler chưa có hợp đồng liên dịch vụ. Giai đoạn thực thi sau mới gọi điểm cuối HTTP nội bộ của dịch vụ sở hữu nghiệp vụ; không mở rộng sang bus sự kiện hoặc truy vấn chéo cơ sở dữ liệu.
+Foundation giao tiếp liên service dùng HTTP cho QUERY cần response ngay,
+RabbitMQ `Send` cho COMMAND và RabbitMQ `Publish` cho EVENT. Scheduler chưa có
+message contract nghiệp vụ; contract sẽ chỉ được thêm cùng use case thật. Không
+truy vấn chéo database. Xem
+[`service-communication.md`](service-communication.md).
 
 ---

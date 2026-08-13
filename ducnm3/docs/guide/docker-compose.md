@@ -33,6 +33,8 @@ docker compose down
 - Scheduler Service: `http://localhost:5105`
 - MinIO API: `http://localhost:9000`
 - Bảng điều khiển MinIO: `http://localhost:9001`
+- RabbitMQ AMQP: `localhost:5672`
+- RabbitMQ management UI: `http://localhost:15672`
 
 Gateway định tuyến các yêu cầu bên ngoài theo tiền tố dịch vụ:
 
@@ -84,6 +86,10 @@ MINIO_VIDEO_BUCKET=videos
 MINIO_DOCUMENT_BUCKET=documents
 MINIO_AUDIO_BUCKET=audios
 MINIO_OTHER_BUCKET=other
+RABBITMQ_USER=lms_app
+RABBITMQ_PASSWORD=replace-with-a-long-rabbitmq-secret
+RABBITMQ_VHOST=/
+MESSAGING_RETRY_COUNT=3
 ```
 
 Git bỏ qua `.env`. Tuyệt đối không đặt thông tin xác thực môi trường sản xuất trong `.env.example`;
@@ -102,13 +108,24 @@ Chỉ chạy các thành phần phụ thuộc về lưu trữ:
 docker compose up -d minio minio-init
 ```
 
+## RabbitMQ và centralized retry
+
+`rabbitmq` lưu broker data trong volume `rabbitmq-data`. Các API và
+`scheduler-worker` chỉ start sau khi broker healthcheck pass. Cấu hình retry,
+prefetch và concurrency nằm một lần trong `.env` qua nhóm biến
+`MESSAGING_RETRY_*`, `MESSAGING_PREFETCH_COUNT` và
+`MESSAGING_CONCURRENCY_LIMIT`; consumer không có retry riêng.
+
+Mở management UI bằng credential `RABBITMQ_USER`/`RABBITMQ_PASSWORD` để xem
+exchange, queue và các queue `_error`.
+
 Xóa các container nhưng giữ nguyên dữ liệu:
 
 ```bash
 docker compose down
 ```
 
-Xóa các container cùng cả hai volume phát triển MySQL/MinIO:
+Xóa các container cùng các volume phát triển MySQL/MinIO/RabbitMQ:
 
 ```bash
 docker compose down -v

@@ -2,7 +2,7 @@
 
 ## Mục đích
 
-Kiểm tra Scheduler Service đang chạy và cơ sở dữ liệu Scheduler do dịch vụ sở hữu chấp nhận một truy vấn nhẹ.
+Kiểm tra Scheduler Service kết nối được database sở hữu và RabbitMQ.
 
 ## Xác thực và phân quyền
 
@@ -27,6 +27,9 @@ Không có tham số đường dẫn, tham số truy vấn, nội dung yêu cầ
     "status": "healthy",
     "database": {
       "status": "healthy"
+    },
+    "messaging": {
+      "status": "healthy"
     }
   },
   "meta": {
@@ -37,9 +40,11 @@ Không có tham số đường dẫn, tham số truy vấn, nội dung yêu cầ
 
 ## Mã trạng thái HTTP
 
-- `200`: Scheduler Service và `lms_scheduler_db` đều khả dụng.
+- `200`: Scheduler Service, `lms_scheduler_db` và RabbitMQ đều khả dụng.
 - `503 DATABASE_UNAVAILABLE`: API đang chạy nhưng không thể truy vấn cơ sở dữ liệu.
+- `503 DEPENDENCY_UNAVAILABLE`: MassTransit bus chưa kết nối RabbitMQ.
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Chỉ thực thi `SELECT 1` trên `lms_scheduler_db`. Điểm cuối không tạo, nhận, phân tích hoặc thực thi tác vụ và không gọi dịch vụ khác.
+Endpoint thực thi `SELECT 1` và đọc MassTransit health report. Endpoint không
+tạo, claim, phân tích hoặc thực thi job.

@@ -16,16 +16,20 @@ public sealed record ApiErrorDetail(string Field, string Message);
 public sealed record ServiceHealthResponse(
     string Service,
     string Status,
-    DatabaseHealthResponse Database);
+    DatabaseHealthResponse Database,
+    MessagingHealthResponse? Messaging = null);
 
 public sealed record DatabaseHealthResponse(string Status);
 
 public sealed record StorageHealthResponse(string Status);
 
+public sealed record MessagingHealthResponse(string Status);
+
 public sealed record MediaServiceHealthResponse(
     string Service,
     string Status,
     DatabaseHealthResponse Database,
-    StorageHealthResponse Storage);
+    StorageHealthResponse Storage,
+    MessagingHealthResponse? Messaging = null);
 
 public sealed record ServiceInfoResponse(string Service, string Status);

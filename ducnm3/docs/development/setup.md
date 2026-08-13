@@ -77,6 +77,9 @@ bạn. Các giá trị cần nhất quán:
 - `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` là tài khoản quản trị MinIO cục bộ.
 - `MINIO_APP_ACCESS_KEY` / `MINIO_APP_SECRET_KEY` là tài khoản giới hạn quyền
   mà Media Service sử dụng.
+- `RABBITMQ_USER` / `RABBITMQ_PASSWORD` là credential của application và
+  management UI cục bộ. Nhóm `MESSAGING_RETRY_*` là retry policy dùng chung cho
+  mọi consumer.
 
 Không commit `.env`. Tệp này đã được bỏ qua; chỉ `.env.example` được commit.
 
@@ -100,7 +103,7 @@ Biên dịch image và chạy nền:
 docker compose up -d --build
 ```
 
-Trong lần chạy đầu, Docker sẽ tải image .NET, MySQL và MinIO nên mất nhiều
+Trong lần chạy đầu, Docker sẽ tải image .NET, MySQL, MinIO và RabbitMQ nên mất nhiều
 thời gian hơn các lần sau.
 
 Compose khởi động theo thứ tự dependency:
@@ -109,8 +112,11 @@ Compose khởi động theo thứ tự dependency:
 2. `mysql-init` tạo năm database và các người dùng ứng dụng.
 3. `minio` đạt trạng thái `healthy`.
 4. `minio-init` tạo năm bucket cùng user/policy ứng dụng cho Media Service.
-5. Các API service chạy SQL migration của database sở hữu.
-6. `api-gateway` proxy các API service.
+5. `rabbitmq` đạt trạng thái `healthy`.
+6. Các API service chạy SQL migration, kết nối broker và chỉ báo ready khi cả
+   database/RabbitMQ đều healthy.
+7. `scheduler-worker` khởi động MassTransit host.
+8. `api-gateway` proxy các API service.
 
 **Không scaffold EF Core khi API khởi động.** Scaffold chỉ là thao tác phát triển
 thủ công sau khi thay đổi SQL schema.
@@ -121,7 +127,7 @@ Kiểm tra các container:
 docker compose ps
 ```
 
-`mysql` và `minio` phải có trạng thái `healthy`. `mysql-init` và `minio-init`
+`mysql`, `minio` và `rabbitmq` phải có trạng thái `healthy`. `mysql-init` và `minio-init`
 là container chạy một lần nên trạng thái thành công là `Exited (0)`.
 
 Theo dõi log toàn hệ thống:
@@ -150,6 +156,7 @@ Mở các URL sau:
 | Trạng thái Notification qua Gateway | <http://localhost:5100/notification/health> |
 | Trạng thái Scheduler qua Gateway | <http://localhost:5100/scheduler/health> |
 | MinIO console | <http://localhost:9001> |
+| RabbitMQ management UI | <http://localhost:15672> |
 
 Đăng nhập console MinIO bằng `MINIO_ROOT_USER` và `MINIO_ROOT_PASSWORD` trong
 `.env`. Sau khi khởi tạo thành công, có năm bucket:
@@ -293,8 +300,9 @@ sung ở các giai đoạn tiếp theo.
 | Triệu chứng | Cách kiểm tra / xử lý |
 | --- | --- |
 | `port is already allocated` | Dừng process/container đang chiếm cổng hoặc đổi ánh xạ cổng. |
-| `must be set` khi Compose chạy | Kiểm tra `.env`, đặc biệt là credential MySQL và `MINIO_*`. |
+| `must be set` khi Compose chạy | Kiểm tra `.env`, đặc biệt là credential MySQL, `MINIO_*` và `RABBITMQ_*`. |
 | API không khởi động sau migration | Chạy `docker compose logs <service>`; sửa migration mới, không sửa migration đã áp dụng. |
 | `mysql-init` hoặc `minio-init` thất bại | Xem log container chạy một lần: `docker compose logs mysql-init` hoặc `docker compose logs minio-init`. |
 | Media `/health` trả `STORAGE_UNAVAILABLE` | Kiểm tra `docker compose ps`, `docker compose logs minio minio-init`, cấu hình bucket và credential `MINIO_APP_*`. |
+| API `/health` trả `DEPENDENCY_UNAVAILABLE` | Kiểm tra `docker compose ps rabbitmq`, `docker compose logs rabbitmq` và credential `RABBITMQ_*`. |
 | Muốn làm sạch toàn bộ môi trường cục bộ | Chỉ thực hiện khi chấp nhận mất dữ liệu: `docker compose down -v`. |

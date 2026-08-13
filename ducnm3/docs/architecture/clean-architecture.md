@@ -34,22 +34,34 @@ Domain
 
 # Cơ chế kiểm tra trạng thái và xử lý lỗi dùng chung cho API
 
-`BuildingBlocks.Contracts` quản lý các DTO phản hồi không phụ thuộc khung phần mềm, giao diện thăm dò trạng thái, mã lỗi, tên tiêu đề HTTP và hằng số trạng thái. `BuildingBlocks.Presentation` quản lý phần mềm trung gian ASP.NET Core, ánh xạ phản hồi và các ánh xạ điểm cuối có thể tái sử dụng.
+`BuildingBlocks.Contracts` quản lý DTO response, health probe interface, error
+code, HTTP header name và status constant. `BuildingBlocks.Presentation` quản lý
+ASP.NET Core middleware, response mapping và endpoint mapping dùng chung.
+`BuildingBlocks.Messaging.Abstractions` chứa interface COMMAND/EVENT không phụ
+thuộc MassTransit; `BuildingBlocks.Messaging` và `BuildingBlocks.Http` là các
+adapter Infrastructure cho RabbitMQ và typed QUERY client.
 
-Tầng Infrastructure của mỗi dịch vụ triển khai `IDatabaseHealthProbe` bằng chuỗi kết nối MySQL riêng và truy vấn `SELECT 1`. API ánh xạ `GET /health`; nếu API vẫn truy cập được nhưng cơ sở dữ liệu không khả dụng thì trả về `503 DATABASE_UNAVAILABLE`. API Gateway ánh xạ các dịch vụ hạ nguồn không thể kết nối thành `503 SERVICE_UNAVAILABLE`.
+Tầng Infrastructure của mỗi service triển khai `IDatabaseHealthProbe` bằng
+connection string MySQL riêng và truy vấn `SELECT 1`. `GET /health` kiểm tra cả
+database và MassTransit bus; Media Service kiểm tra thêm MinIO. Database lỗi trả
+`503 DATABASE_UNAVAILABLE`, broker hoặc nhiều dependency lỗi trả
+`503 DEPENDENCY_UNAVAILABLE`.
 
 Domain và Application không phụ thuộc vào ASP.NET Core, MySQL hoặc dự án trình bày.
 
 Scheduler tuân theo bốn tầng tương tự và bổ sung `SchedulerService.Worker` làm
-tiến trình nền độc lập trong tương lai. Worker hiện tại được chủ đích chỉ xây dựng
-ở dạng khung: chưa thăm dò, nhận xử lý, phân tích CRON, thực thi bộ xử lý hay gọi
-Media Service hoặc Notification Service. Siêu dữ liệu lập lịch dùng chung nằm trong
-`lms_scheduler_db`; trạng thái người nhận và nội dung thông báo nằm trong
-`lms_notification_db`.
+tiến trình nền độc lập. Worker đã host MassTransit và kết nối RabbitMQ, nhưng
+chưa có consumer, polling, claiming, phân tích CRON hoặc job handler nghiệp vụ.
+Siêu dữ liệu lập lịch nằm trong `lms_scheduler_db`; trạng thái người nhận và nội
+dung notification nằm trong `lms_notification_db`.
 
 ## Tổ chức kiểm thử
 
 - Hành vi API dùng chung nằm trong `BuildingBlocks.Presentation.Tests`, được phân chia theo `Middleware/`, `Endpoints/` và `Gateway/`.
+- Naming, options, HTTP retry và correlation nằm trong
+  `BuildingBlocks.Communication.UnitTests`; topology, COMMAND/EVENT fan-out,
+  centralized retry và `_error` queue nằm trong
+  `BuildingBlocks.Messaging.IntegrationTests`.
 - Mỗi dịch vụ sở hữu dự án `*Service.UnitTests` đặt cạnh các dự án API, Application, Domain và Infrastructure tương ứng.
 - Các kiểm thử tích hợp trong tương lai dùng dự án `*Service.IntegrationTests` đặt cạnh dịch vụ tương ứng và một container MySQL thật, biệt lập.
 - Kiểm thử liên dịch vụ và kiểm thử đầu cuối nằm trong thư mục gốc `tests/`, không thuộc riêng dịch vụ nào.
@@ -78,6 +90,11 @@ lms-mini/
 │   │   ├── BuildingBlocks.Contracts/
 │   │   ├── BuildingBlocks.Shared/
 │   │   ├── BuildingBlocks.DatabaseMigration/
+│   │   ├── BuildingBlocks.Http/
+│   │   ├── BuildingBlocks.Messaging.Abstractions/
+│   │   ├── BuildingBlocks.Messaging/
+│   │   ├── BuildingBlocks.Communication.UnitTests/
+│   │   ├── BuildingBlocks.Messaging.IntegrationTests/
 │   │   ├── BuildingBlocks.Presentation/
 │   │   └── BuildingBlocks.Presentation.Tests/
 │   │

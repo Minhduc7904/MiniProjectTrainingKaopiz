@@ -11,6 +11,8 @@ backend/
 │   ├── Middleware/
 │   ├── Endpoints/
 │   └── Gateway/
+├── BuildingBlocks/BuildingBlocks.Communication.UnitTests/
+├── BuildingBlocks/BuildingBlocks.Messaging.IntegrationTests/
 ├── Services/<Service>/
     ├── <Service>Service.UnitTests/
     └── <Service>Service.IntegrationTests/
@@ -49,6 +51,8 @@ dotnet test backend/Services/Notification/NotificationService.UnitTests/Notifica
 dotnet test backend/Services/Scheduler/SchedulerService.UnitTests/SchedulerService.UnitTests.csproj
 dotnet test backend/Tools/Lms.DataSeeder.UnitTests/Lms.DataSeeder.UnitTests.csproj
 dotnet test backend/Tools/Lms.DataSeeder.IntegrationTests/Lms.DataSeeder.IntegrationTests.csproj
+dotnet test backend/BuildingBlocks/BuildingBlocks.Communication.UnitTests/BuildingBlocks.Communication.UnitTests.csproj
+dotnet test backend/BuildingBlocks/BuildingBlocks.Messaging.IntegrationTests/BuildingBlocks.Messaging.IntegrationTests.csproj
 ```
 
 ## Các loại kiểm thử
@@ -88,7 +92,19 @@ của lập trình viên. Docker phải đang chạy để thực thi dự án n
 trạng thái sẵn sàng của database được bao phủ bởi kiểm thử component presentation
 dùng chung vì Scheduler sử dụng ánh xạ `MapDatabaseHealthEndpoint` chung.
 Chưa có kiểm thử thực thi job: trong giai đoạn này, Worker chủ đích chưa có vòng
-lặp polling, claiming, phân tích CRON hoặc xử lý handler.
+lặp polling, claiming, phân tích CRON hoặc xử lý handler. Worker đã host
+MassTransit; topology và broker behavior được kiểm tra trong communication
+integration tests dùng chung.
+
+## Kiểm thử communication foundation
+
+`BuildingBlocks.Communication.UnitTests` kiểm tra queue naming, options
+validation, centralized retry binding, HTTP correlation và việc chỉ retry QUERY
+HTTP an toàn.
+
+`BuildingBlocks.Messaging.IntegrationTests` dùng RabbitMQ Testcontainer để kiểm
+tra COMMAND routing, EVENT fan-out, retry count, `_error` queue, correlation
+propagation và readiness của MassTransit bus. Docker phải đang chạy.
 
 ## Kiểm thử Data Seeder
 

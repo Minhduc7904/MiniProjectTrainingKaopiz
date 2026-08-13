@@ -2,7 +2,7 @@
 
 ## Mục đích
 
-Kiểm tra Student Service đang chạy và cơ sở dữ liệu Student do dịch vụ sở hữu chấp nhận một truy vấn nhẹ.
+Kiểm tra Student Service kết nối được database sở hữu và RabbitMQ.
 
 ## Xác thực và phân quyền
 
@@ -27,6 +27,9 @@ Không có tham số đường dẫn, tham số truy vấn hoặc nội dung yê
     "status": "healthy",
     "database": {
       "status": "healthy"
+    },
+    "messaging": {
+      "status": "healthy"
     }
   },
   "meta": {
@@ -37,9 +40,11 @@ Không có tham số đường dẫn, tham số truy vấn hoặc nội dung yê
 
 ## Mã trạng thái HTTP
 
-- `200`: Student Service và `lms_student_db` đều khả dụng.
+- `200`: Student Service, `lms_student_db` và RabbitMQ đều khả dụng.
 - `503 DATABASE_UNAVAILABLE`: Student Service đang chạy nhưng không thể truy vấn cơ sở dữ liệu của mình.
+- `503 DEPENDENCY_UNAVAILABLE`: MassTransit bus chưa kết nối RabbitMQ.
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Điểm cuối chỉ thực thi `SELECT 1` trên cơ sở dữ liệu riêng của Student Service. Điểm cuối không ghi dữ liệu hoặc gọi dịch vụ khác.
+Endpoint thực thi `SELECT 1` và đọc MassTransit health report. Endpoint không
+ghi database hoặc publish message.

@@ -26,6 +26,9 @@ Kho lưu trữ phương tiện không khả dụng
 Cơ sở dữ liệu và kho lưu trữ phương tiện không khả dụng
     → 503 DEPENDENCY_UNAVAILABLE
 
+RabbitMQ/MassTransit bus không khả dụng
+    → 503 DEPENDENCY_UNAVAILABLE
+
 Dịch vụ hạ nguồn không khả dụng tại API Gateway
     → 503 SERVICE_UNAVAILABLE
 ```

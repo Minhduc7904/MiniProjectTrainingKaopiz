@@ -13,7 +13,8 @@
 
 ## Getting started
 
-The backend uses ASP.NET Core, MySQL, MinIO, YARP, NSwag, and Docker Compose.
+The backend uses ASP.NET Core, MySQL, MinIO, RabbitMQ with MassTransit, YARP,
+NSwag, and Docker Compose.
 See `docs/development/setup.md` for the local setup workflow.
 
 To create the deterministic 100k Student/Course development dataset, see

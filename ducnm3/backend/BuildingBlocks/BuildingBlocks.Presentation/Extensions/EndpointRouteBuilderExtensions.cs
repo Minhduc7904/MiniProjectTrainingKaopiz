@@ -31,15 +31,27 @@ public static class EndpointRouteBuilderExtensions
                 async (
                     HttpContext context,
                     IDatabaseHealthProbe databaseHealthProbe,
+                    IMessagingHealthProbe messagingHealthProbe,
                     CancellationToken cancellationToken) =>
                 {
-                    var database = await databaseHealthProbe.CheckAsync(cancellationToken);
-                    if (!database.IsHealthy)
+                    var databaseTask = databaseHealthProbe.CheckAsync(cancellationToken);
+                    var messagingTask = messagingHealthProbe.CheckAsync(cancellationToken);
+                    await Task.WhenAll(databaseTask, messagingTask);
+
+                    if (!databaseTask.Result.IsHealthy || !messagingTask.Result.IsHealthy)
                     {
+                        var databaseUnavailable = !databaseTask.Result.IsHealthy;
+                        var messagingUnavailable = !messagingTask.Result.IsHealthy;
+                        var onlyDatabaseUnavailable =
+                            databaseUnavailable && !messagingUnavailable;
                         return Results.Json(
                             ApiResponseFactory.Error(
-                                ApiErrorCodes.DatabaseUnavailable,
-                                ApiErrorMessages.DatabaseUnavailable,
+                                onlyDatabaseUnavailable
+                                    ? ApiErrorCodes.DatabaseUnavailable
+                                    : ApiErrorCodes.DependencyUnavailable,
+                                onlyDatabaseUnavailable
+                                    ? ApiErrorMessages.DatabaseUnavailable
+                                    : ApiErrorMessages.DependencyUnavailable,
                                 context.TraceIdentifier),
                             statusCode: StatusCodes.Status503ServiceUnavailable);
                     }
@@ -49,7 +61,8 @@ public static class EndpointRouteBuilderExtensions
                             new ServiceHealthResponse(
                                 serviceName,
                                 HealthStatusValues.Healthy,
-                                new DatabaseHealthResponse(HealthStatusValues.Healthy)),
+                                new DatabaseHealthResponse(HealthStatusValues.Healthy),
+                                new MessagingHealthResponse(HealthStatusValues.Healthy)),
                             context.TraceIdentifier));
                 })
             .WithName($"{serviceName}-health")

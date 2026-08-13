@@ -41,11 +41,35 @@ public class DatabaseHealthEndpointTests
         }
     }
 
-    private static async Task<WebApplication> CreateApplicationAsync(bool databaseHealthy)
+    [TestCase(true, false)]
+    [TestCase(false, false)]
+    public async Task HealthEndpointReturnsDependencyUnavailableWhenMessagingIsDown(
+        bool databaseHealthy,
+        bool messagingHealthy)
+    {
+        await using var app = await CreateApplicationAsync(
+            databaseHealthy,
+            messagingHealthy);
+        using var client = app.GetTestClient();
+
+        var response = await client.GetAsync(ApiPaths.Health);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.ServiceUnavailable));
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStreamAsync());
+        Assert.That(
+            document.RootElement.GetProperty("error").GetProperty("code").GetString(),
+            Is.EqualTo(ApiErrorCodes.DependencyUnavailable));
+    }
+
+    private static async Task<WebApplication> CreateApplicationAsync(
+        bool databaseHealthy,
+        bool messagingHealthy = true)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<IDatabaseHealthProbe>(new StubDatabaseHealthProbe(databaseHealthy));
+        builder.Services.AddSingleton<IMessagingHealthProbe>(
+            new StubMessagingHealthProbe(messagingHealthy));
 
         var app = builder.Build();
         app.MapDatabaseHealthEndpoint("test-service");
@@ -57,5 +81,11 @@ public class DatabaseHealthEndpointTests
     {
         public Task<DatabaseHealthProbeResult> CheckAsync(CancellationToken cancellationToken) =>
             Task.FromResult(new DatabaseHealthProbeResult(isHealthy));
+    }
+
+    private sealed class StubMessagingHealthProbe(bool isHealthy) : IMessagingHealthProbe
+    {
+        public Task<MessagingHealthProbeResult> CheckAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(new MessagingHealthProbeResult(isHealthy));
     }
 }

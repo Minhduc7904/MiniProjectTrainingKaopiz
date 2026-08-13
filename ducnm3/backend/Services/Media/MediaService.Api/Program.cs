@@ -1,11 +1,17 @@
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
+using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Endpoints;
 using MediaService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
+var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
+if (!migrationsRunOnly)
+{
+    builder.Services.AddLmsMessaging(builder.Configuration, ServiceNames.Media);
+}
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(document =>
 {
@@ -35,7 +41,7 @@ await SqlMigrationRunner.ApplyAsync(
         Path.Combine(app.Environment.ContentRootPath, "Database", "Migrations")),
     message => logMigration(app.Logger, message, null));
 
-if (builder.Configuration.GetValue<bool>("Migrations:RunOnly"))
+if (migrationsRunOnly)
 {
     return;
 }

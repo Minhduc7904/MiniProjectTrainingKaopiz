@@ -1,12 +1,18 @@
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
+using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using CourseService.Infrastructure.Health;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
+var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
+if (!migrationsRunOnly)
+{
+    builder.Services.AddLmsMessaging(builder.Configuration, ServiceNames.Course);
+}
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(document =>
 {
@@ -39,7 +45,7 @@ await SqlMigrationRunner.ApplyAsync(
         Path.Combine(app.Environment.ContentRootPath, "Database", "Migrations")),
     message => logMigration(app.Logger, message, null));
 
-if (builder.Configuration.GetValue<bool>("Migrations:RunOnly"))
+if (migrationsRunOnly)
 {
     return;
 }

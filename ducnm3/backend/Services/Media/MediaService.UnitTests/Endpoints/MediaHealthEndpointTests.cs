@@ -13,17 +13,22 @@ namespace MediaService.UnitTests.Endpoints;
 
 public class MediaHealthEndpointTests
 {
-    [TestCase(true, true, HttpStatusCode.OK, null)]
-    [TestCase(false, true, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.DatabaseUnavailable)]
-    [TestCase(true, false, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.StorageUnavailable)]
-    [TestCase(false, false, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.DependencyUnavailable)]
+    [TestCase(true, true, true, HttpStatusCode.OK, null)]
+    [TestCase(false, true, true, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.DatabaseUnavailable)]
+    [TestCase(true, false, true, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.StorageUnavailable)]
+    [TestCase(true, true, false, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.DependencyUnavailable)]
+    [TestCase(false, false, true, HttpStatusCode.ServiceUnavailable, ApiErrorCodes.DependencyUnavailable)]
     public async Task HealthEndpointReportsEachDependencyCombination(
         bool databaseHealthy,
         bool storageHealthy,
+        bool messagingHealthy,
         HttpStatusCode expectedStatusCode,
         string? expectedErrorCode)
     {
-        await using var app = await CreateApplicationAsync(databaseHealthy, storageHealthy);
+        await using var app = await CreateApplicationAsync(
+            databaseHealthy,
+            storageHealthy,
+            messagingHealthy);
         using var client = app.GetTestClient();
 
         var response = await client.GetAsync(ApiPaths.Health);
@@ -54,7 +59,8 @@ public class MediaHealthEndpointTests
 
     private static async Task<WebApplication> CreateApplicationAsync(
         bool databaseHealthy,
-        bool storageHealthy)
+        bool storageHealthy,
+        bool messagingHealthy)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -62,6 +68,8 @@ public class MediaHealthEndpointTests
             new StubDatabaseHealthProbe(databaseHealthy));
         builder.Services.AddSingleton<IStorageHealthProbe>(
             new StubStorageHealthProbe(storageHealthy));
+        builder.Services.AddSingleton<IMessagingHealthProbe>(
+            new StubMessagingHealthProbe(messagingHealthy));
 
         var app = builder.Build();
         app.MapMediaHealthEndpoint();
@@ -79,5 +87,11 @@ public class MediaHealthEndpointTests
     {
         public Task<StorageHealthProbeResult> CheckAsync(CancellationToken cancellationToken) =>
             Task.FromResult(new StorageHealthProbeResult(isHealthy));
+    }
+
+    private sealed class StubMessagingHealthProbe(bool isHealthy) : IMessagingHealthProbe
+    {
+        public Task<MessagingHealthProbeResult> CheckAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(new MessagingHealthProbeResult(isHealthy));
     }
 }
