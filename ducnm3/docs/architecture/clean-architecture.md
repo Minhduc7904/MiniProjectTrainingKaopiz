@@ -115,7 +115,9 @@ lms-mini/
 │   │   │   ├── StudentService.Application/
 │   │   │   ├── StudentService.Domain/
 │   │   │   ├── StudentService.Infrastructure/
-│   │   │   └── StudentService.UnitTests/
+│   │   │   ├── StudentService.UnitTests/
+│   │   │   ├── StudentService.ComponentTests/
+│   │   │   └── StudentService.IntegrationTests/
 │   │   │
 │   │   ├── Media/
 │   │   │   ├── MediaService.Api/

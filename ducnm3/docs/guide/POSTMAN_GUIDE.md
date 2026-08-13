@@ -35,6 +35,7 @@ jq empty postman/MiniProjectKaopiz.postman_collection.json
 
 ## Endpoint đã backfill
 
+- `GET /student/api/students`.
 - `GET /student/api/students/{studentId}`.
 - `POST /media/api/media`.
 - `POST /media/api/media/usages`.

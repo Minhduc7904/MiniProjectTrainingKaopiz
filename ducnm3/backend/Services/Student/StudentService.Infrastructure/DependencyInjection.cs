@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StudentService.Application.Features.Students.GetById;
+using StudentService.Application.Features.Students.GetList;
 using StudentService.Infrastructure.Health;
 using StudentService.Infrastructure.Persistence;
 
@@ -18,7 +19,11 @@ public static class DependencyInjection
             options.UseMySql(
                 connectionString,
                 new MySqlServerVersion(new Version(8, 4, 0))));
-        services.AddScoped<IStudentRepository, EfStudentRepository>();
+        services.AddScoped<EfStudentRepository>();
+        services.AddScoped<IStudentRepository>(serviceProvider =>
+            serviceProvider.GetRequiredService<EfStudentRepository>());
+        services.AddScoped<IStudentListRepository>(serviceProvider =>
+            serviceProvider.GetRequiredService<EfStudentRepository>());
         services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
             new StudentDatabaseHealthProbe(
                 connectionString,

@@ -21,7 +21,14 @@ public static class ApiRoutes
 
     public static class Students
     {
+        public const string List = "/api/students";
         public const string GetByIdTemplate = "/api/students/{studentId}";
+
+        public static string ListServicePath() =>
+            BuildServicePath(List);
+
+        public static string ListPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Student, List);
 
         public static string GetByIdServicePath(Guid studentId) =>
             BuildServicePath(

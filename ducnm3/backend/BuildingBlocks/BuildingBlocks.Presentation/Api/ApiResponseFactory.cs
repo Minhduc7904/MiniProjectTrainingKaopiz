@@ -7,6 +7,12 @@ public static class ApiResponseFactory
     public static ApiResponse<TData> Success<TData>(TData data, string traceId) =>
         new(data, new ResponseMeta(traceId));
 
+    public static ApiResponse<TData> Success<TData>(
+        TData data,
+        string traceId,
+        PaginationMeta pagination) =>
+        new(data, new ResponseMeta(traceId, pagination));
+
     public static ApiErrorResponse Error(
         string code,
         string message,
