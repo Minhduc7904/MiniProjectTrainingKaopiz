@@ -183,6 +183,23 @@ services:
     ports:
       - "5105:8080"
 
+  data-seeder:
+    profiles: ["seed"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Tools/Lms.DataSeeder/Lms.DataSeeder.csproj
+    command: Lms.DataSeeder.dll --help
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      STUDENT_DB_CONNECTION_STRING: ${STUDENT_DB_CONNECTION_STRING:?STUDENT_DB_CONNECTION_STRING must be set}
+      COURSE_DB_CONNECTION_STRING: ${COURSE_DB_CONNECTION_STRING:?COURSE_DB_CONNECTION_STRING must be set}
+    restart: "no"
+
   api-gateway:
     build:
       context: ./backend

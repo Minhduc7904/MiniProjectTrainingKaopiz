@@ -1,0 +1,66 @@
+namespace Lms.DataSeeder;
+
+public interface ISeedProgress
+{
+    void PhaseStarted(SeedPhase phase, long totalRows);
+
+    void PhaseAdvanced(
+        SeedPhase phase,
+        long processedRows,
+        long totalRows,
+        long insertedRows,
+        long skippedRows);
+
+    void PhaseCompleted(
+        SeedPhase phase,
+        long totalRows,
+        long insertedRows,
+        long skippedRows,
+        TimeSpan elapsed);
+}
+
+public enum SeedPhase
+{
+    Students,
+    Courses,
+    Lessons,
+    Enrollments,
+    Validation,
+}
+
+public sealed class NullSeedProgress : ISeedProgress
+{
+    public static NullSeedProgress Instance { get; } = new();
+
+    private NullSeedProgress()
+    {
+    }
+
+    public void PhaseStarted(SeedPhase phase, long totalRows)
+    {
+    }
+
+    public void PhaseAdvanced(
+        SeedPhase phase,
+        long processedRows,
+        long totalRows,
+        long insertedRows,
+        long skippedRows)
+    {
+    }
+
+    public void PhaseCompleted(
+        SeedPhase phase,
+        long totalRows,
+        long insertedRows,
+        long skippedRows,
+        TimeSpan elapsed)
+    {
+    }
+}
+
+public sealed record SeedRunSummary(
+    SeedPlan Plan,
+    long InsertedRows,
+    long SkippedRows,
+    TimeSpan Elapsed);

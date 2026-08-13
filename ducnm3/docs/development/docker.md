@@ -29,6 +29,10 @@ minio
 `SchedulerService.Worker` hiện là skeleton và chưa được chạy thành container
 cho tới khi có polling/claim/execution loop.
 
+`data-seeder` là one-shot development tool trong profile `seed`; nó không chạy
+khi dùng `docker compose up` bình thường. Chỉ gọi qua
+`scripts/seed/run-development-seed.sh --confirm`.
+
 ---
 # 38. Docker Network
 

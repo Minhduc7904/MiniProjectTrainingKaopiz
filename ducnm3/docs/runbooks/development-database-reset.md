@@ -22,12 +22,23 @@ The guarded script stops API containers, starts/health-checks MySQL, drops only
 the five expected databases, force-recreates `mysql-init`, and leaves
 `minio-data` untouched. API startup then applies each service's clean `V001`.
 
+This reset also removes every row created by `Lms.DataSeeder`, because seed data
+is written to `lms_student_db` and `lms_course_db` rather than a separate
+database or migration. No extra seed cleanup command is required. To recreate
+the default dataset after services apply migrations:
+
+```bash
+scripts/seed/run-development-seed.sh --confirm
+```
+
 ## Verification
 
 Each database must contain exactly one `schema_migrations` row with version
 `001`. Notification must contain `notification_batches`,
 `notification_batch_items`, and `notifications`; Scheduler must contain only
 `background_jobs` and `background_job_runs` as business tables.
+`students`, `courses`, `lessons`, and `enrollments` must be empty before a new
+seed run.
 
 ## Failure and recovery
 

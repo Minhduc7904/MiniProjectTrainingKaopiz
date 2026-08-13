@@ -10,6 +10,9 @@ docs/tests/
 │   └── component.md
 ├── api-gateway/
 │   └── component.md
+├── data-seeder/
+│   ├── unit.md
+│   └── integration.md
 ├── <service>/
     ├── unit.md
     ├── component.md
@@ -32,3 +35,8 @@ Chạy một project cụ thể theo đường dẫn được ghi trong tài li�
 integration dùng Testcontainers cần Docker Engine đang chạy. Xem
 [`../development/testing.md`](../development/testing.md) để biết quy ước chung
 và cách thêm test mới.
+
+Data Seeder catalogue:
+
+- [`data-seeder/unit.md`](data-seeder/unit.md)
+- [`data-seeder/integration.md`](data-seeder/integration.md)

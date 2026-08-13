@@ -10,9 +10,12 @@ backend/
 │   ├── Middleware/
 │   ├── Endpoints/
 │   └── Gateway/
-└── Services/<Service>/
+├── Services/<Service>/
     ├── <Service>Service.UnitTests/
     └── <Service>Service.IntegrationTests/
+└── Tools/
+    ├── Lms.DataSeeder.UnitTests/
+    └── Lms.DataSeeder.IntegrationTests/
 ```
 
 Do not create empty test projects. Add a service test project with the first behavior owned by that service.
@@ -41,6 +44,8 @@ dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 dotnet test backend/Services/Notification/NotificationService.UnitTests/NotificationService.UnitTests.csproj
 dotnet test backend/Services/Scheduler/SchedulerService.UnitTests/SchedulerService.UnitTests.csproj
+dotnet test backend/Tools/Lms.DataSeeder.UnitTests/Lms.DataSeeder.UnitTests.csproj
+dotnet test backend/Tools/Lms.DataSeeder.IntegrationTests/Lms.DataSeeder.IntegrationTests.csproj
 ```
 
 ## Test types
@@ -82,3 +87,13 @@ availability response mapping is covered by the shared presentation component
 tests because Scheduler uses the common `MapDatabaseHealthEndpoint` mapping.
 No job execution tests exist yet: the Worker intentionally has no polling,
 claiming, CRON parsing, or handler loop in this phase.
+
+## Data Seeder tests
+
+`Lms.DataSeeder.UnitTests` covers deterministic UUID/data generation,
+relationship ranges, exact plan calculation and Development safety guards.
+
+`Lms.DataSeeder.IntegrationTests` starts isolated Student and Course MySQL 8.4
+containers, applies the real V001 migrations and verifies seed counts,
+relationship uniqueness, resume idempotency and non-empty database rejection.
+The test never uses local Compose databases.
