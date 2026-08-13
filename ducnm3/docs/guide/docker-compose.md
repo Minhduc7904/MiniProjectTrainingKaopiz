@@ -114,6 +114,18 @@ Remove containers and both MySQL/MinIO development volumes:
 docker compose down -v
 ```
 
+## Opt-in data seeder profile
+
+`data-seeder` uses Compose profile `seed`, so regular `docker compose up` never
+creates development data. Run it only through the guarded wrapper:
+
+```bash
+scripts/seed/run-development-seed.sh --confirm
+```
+
+The wrapper prepares migrated Student/Course schemas and runs the one-shot
+console container. See [`DATA_SEED_GUIDE.md`](DATA_SEED_GUIDE.md).
+
 ## Troubleshooting
 
 Check container status:

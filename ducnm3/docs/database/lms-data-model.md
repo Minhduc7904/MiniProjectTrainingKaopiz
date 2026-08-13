@@ -67,6 +67,23 @@ UNIQUE(email)
 INDEX(status, created_at DESC)
 ```
 
+## Development seed dataset
+
+`Lms.DataSeeder` can populate the existing Student and Course databases only
+when explicitly run by a developer. Default data:
+
+- 100k `students`;
+- 100k `courses`;
+- 1-5 `lessons` per Course;
+- 1-10 `enrollments` per Student;
+- no `lesson_progresses`.
+
+Seed rows use deterministic UUIDs derived from a configurable random seed.
+`enrollments.student_id` uses those Student UUIDs as logical references, while
+the existing no-cross-database-FK rule remains unchanged. Seed data is not
+schema state and is never recorded in `schema_migrations`; the guarded
+development database reset removes it with all other rows.
+
 ## Media Service database
 
 ### media_objects

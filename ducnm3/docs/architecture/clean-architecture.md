@@ -54,6 +54,18 @@ or Notification Service. Generic scheduling metadata remains in
 - Future integration tests use `*Service.IntegrationTests` beside their service and a real isolated MySQL container.
 - Cross-service and end-to-end tests belong in the root `tests/` directory, not in an individual service.
 
+## Development data tooling boundary
+
+`backend/Tools/Lms.DataSeeder` is an opt-in development console tool, not a
+sixth microservice and not part of a business service dependency graph. It
+writes large deterministic datasets through separate Student/Course connection
+strings for local performance and demo preparation. APIs, Domain and
+Application projects do not reference it.
+
+Its unit and integration test projects remain beside the tool. The integration
+tests apply real service-owned SQL migrations to isolated MySQL containers;
+production/runtime services still own schema and business behavior.
+
 # 10. Folder Structure tổng thể
 
 ```text
@@ -108,6 +120,11 @@ lms-mini/
 │   │       ├── SchedulerService.Infrastructure/
 │   │       ├── SchedulerService.Worker/
 │   │       └── SchedulerService.UnitTests/
+│   │
+│   └── Tools/
+│       ├── Lms.DataSeeder/
+│       ├── Lms.DataSeeder.UnitTests/
+│       └── Lms.DataSeeder.IntegrationTests/
 │
 ├── frontend/
 │   └── lms-web/
@@ -137,9 +154,7 @@ lms-mini/
 │   ├── storage/
 │   │   └── minio/
 │   ├── seed/
-│   │   ├── seed-10k.sql
-│   │   ├── seed-100k.sql
-│   │   └── seed-1m.sql
+│   │   └── run-development-seed.sh
 │   │
 │   └── benchmark/
 │       ├── n1.md

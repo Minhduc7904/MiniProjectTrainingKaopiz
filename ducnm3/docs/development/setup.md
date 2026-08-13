@@ -208,7 +208,24 @@ docker compose up -d --build
 `down -v` xóa `mysql-data` và `minio-data`, không thể khôi phục dữ liệu local
 đã xóa.
 
-## 9. Chạy build và test trên máy local
+## 9. Seed development data theo yêu cầu
+
+Seed mặc định 100k Students, 100k Courses, 1-5 Lessons/Course và 1-10
+Courses/Student:
+
+```bash
+scripts/seed/run-development-seed.sh --confirm
+```
+
+Seeder là one-shot Compose profile, không tự chạy cùng application stack và
+không nằm trong migration. UI terminal hiển thị progress, tốc độ và ETA. Nếu
+run bị gián đoạn, dùng cùng options/random seed kèm `--resume`; để xóa toàn bộ
+seed data, chạy guarded database reset ở mục 8.
+
+Xem dry run, dataset nhỏ, safety checks và troubleshooting tại
+[`../guide/DATA_SEED_GUIDE.md`](../guide/DATA_SEED_GUIDE.md).
+
+## 10. Chạy build và test trên máy local
 
 Cần .NET SDK `10.0`:
 
@@ -226,7 +243,7 @@ dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.In
 
 Xem chi tiết từng test case tại [`../tests/README.md`](../tests/README.md).
 
-## 10. Khi thêm hoặc đổi SQL migration
+## 11. Khi thêm hoặc đổi SQL migration
 
 Migration SQL là source of truth. Sau khi tạo migration mới trong service sở
 hữu, có hai cách apply:
@@ -256,7 +273,7 @@ Thay `media` bằng `course`, `student`, `notification`, hoặc `scheduler` khi 
 một migration đã được apply; tạo migration mới để sửa schema. Xem thêm
 [`../guide/MIGRATION_GUIDE.md`](../guide/MIGRATION_GUIDE.md).
 
-## 11. Các giới hạn hiện tại
+## 12. Các giới hạn hiện tại
 
 Foundation đã chạy được, nhưng các HTTP use case nghiệp vụ chưa hoàn thành:
 
@@ -270,7 +287,7 @@ Foundation đã chạy được, nhưng các HTTP use case nghiệp vụ chưa h
 Do đó Swagger hiện chủ yếu phục vụ health/info endpoints và các API sẽ được bổ
 sung ở các giai đoạn tiếp theo.
 
-## 12. Troubleshooting nhanh
+## 13. Troubleshooting nhanh
 
 | Triệu chứng | Cách kiểm tra / xử lý |
 | --- | --- |
