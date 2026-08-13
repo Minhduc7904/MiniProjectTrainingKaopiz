@@ -16,6 +16,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
     <PackageReference Include="SSH.NET" Version="2026.0.0" />
     <PackageReference Include="Testcontainers.Minio" Version="4.13.0" />
+    <PackageReference Include="Testcontainers.MySql" Version="4.13.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaService.Infrastructure\MediaService.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.DatabaseMigration\BuildingBlocks.DatabaseMigration.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\MediaService.Infrastructure\Database\Migrations\*.sql" Link="Database\Migrations\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

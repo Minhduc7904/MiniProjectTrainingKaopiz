@@ -4,6 +4,7 @@
     <ProjectReference Include="..\MediaService.Application\MediaService.Application.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.DatabaseMigration\BuildingBlocks.DatabaseMigration.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Contracts\BuildingBlocks.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Http\BuildingBlocks.Http.csproj" />
   </ItemGroup>
 
   <ItemGroup>

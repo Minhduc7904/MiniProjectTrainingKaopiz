@@ -5,55 +5,38 @@ namespace MediaService.UnitTests.Storage;
 
 public class MinioStorageRequestValidatorTests
 {
-    [TestCase(StorageMediaCategory.Image, "image/png")]
-    [TestCase(StorageMediaCategory.Video, "video/mp4")]
-    [TestCase(StorageMediaCategory.Document, "application/pdf")]
-    [TestCase(StorageMediaCategory.Audio, "audio/mpeg")]
-    [TestCase(StorageMediaCategory.Other, "application/octet-stream")]
-    public void ValidateUploadAcceptsMatchingCategoryAndContentType(
-        StorageMediaCategory category,
-        string contentType)
+    [TestCase("image/png")]
+    [TestCase("video/mp4")]
+    [TestCase("application/pdf")]
+    public void ValidateUploadAcceptsReadableContent(string contentType)
     {
         using var content = new MemoryStream([1, 2, 3]);
-        var request = new StorageUploadRequest(category, contentType, ".BIN", content, content.Length);
+        var request = new StorageUploadRequest(
+            new StorageObjectLocation("images", "2026/08/13/file.png"),
+            contentType,
+            content,
+            content.Length);
 
         var result = MinioStorageRequestValidator.ValidateUpload(request);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.ContentType, Is.EqualTo(contentType));
-            Assert.That(result.Extension, Is.EqualTo("bin"));
-        });
+        Assert.That(result.ContentType, Is.EqualTo(contentType));
     }
 
     [Test]
     public void ValidateUploadRejectsMismatchedCategory()
     {
-        using var content = new MemoryStream([1]);
-        var request = new StorageUploadRequest(
-            StorageMediaCategory.Video,
-            "image/png",
-            "png",
-            content,
-            content.Length);
-
-        Assert.Throws<StorageValidationException>(
-            () => MinioStorageRequestValidator.ValidateUpload(request));
+        Assert.That(
+            StorageMediaTypeRules.Matches(
+                StorageMediaCategory.Video,
+                "image/png"),
+            Is.False);
     }
 
     [Test]
     public void ValidateUploadRejectsUnsafeExtension()
     {
-        using var content = new MemoryStream([1]);
-        var request = new StorageUploadRequest(
-            StorageMediaCategory.Image,
-            "image/png",
-            "../png",
-            content,
-            content.Length);
-
         Assert.Throws<StorageValidationException>(
-            () => MinioStorageRequestValidator.ValidateUpload(request));
+            () => MinioStorageRequestValidator.NormalizeExtension("../png"));
     }
 
     [Test]
@@ -61,9 +44,8 @@ public class MinioStorageRequestValidatorTests
     {
         using var content = new MemoryStream([1, 2]);
         var request = new StorageUploadRequest(
-            StorageMediaCategory.Image,
+            new StorageObjectLocation("images", "2026/08/13/file.png"),
             "image/png",
-            "png",
             content,
             1);
 

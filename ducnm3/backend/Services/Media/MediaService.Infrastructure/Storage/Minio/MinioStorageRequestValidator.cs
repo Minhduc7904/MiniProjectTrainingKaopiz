@@ -9,11 +9,6 @@ public static partial class MinioStorageRequestValidator
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        if (!Enum.IsDefined(request.Category))
-        {
-            throw new StorageValidationException($"Unsupported media category '{request.Category}'.");
-        }
-
         if (!request.Content.CanRead)
         {
             throw new StorageValidationException("The upload stream must be readable.");
@@ -29,15 +24,9 @@ public static partial class MinioStorageRequestValidator
             throw new StorageValidationException("The declared upload size does not match the remaining stream length.");
         }
 
+        ValidateLocation(request.Location, []);
         var contentType = NormalizeContentType(request.ContentType);
-        if (!StorageMediaTypeRules.Matches(request.Category, contentType))
-        {
-            throw new StorageValidationException(
-                $"Content type '{contentType}' does not match category '{request.Category}'.");
-        }
-
-        var extension = NormalizeExtension(request.Extension);
-        return new ValidatedStorageUpload(contentType, extension);
+        return new ValidatedStorageUpload(contentType);
     }
 
     public static void ValidateLocation(
@@ -46,7 +35,8 @@ public static partial class MinioStorageRequestValidator
     {
         ArgumentNullException.ThrowIfNull(location);
 
-        if (!allowedBuckets.Contains(location.Bucket, StringComparer.Ordinal))
+        if (allowedBuckets.Count > 0 &&
+            !allowedBuckets.Contains(location.Bucket, StringComparer.Ordinal))
         {
             throw new StorageValidationException("The storage bucket is not configured for Media Service.");
         }
@@ -76,7 +66,7 @@ public static partial class MinioStorageRequestValidator
         return normalized;
     }
 
-    private static string NormalizeExtension(string extension)
+    public static string NormalizeExtension(string extension)
     {
         if (string.IsNullOrWhiteSpace(extension))
         {
@@ -100,4 +90,4 @@ public static partial class MinioStorageRequestValidator
     private static partial Regex ExtensionPattern();
 }
 
-public sealed record ValidatedStorageUpload(string ContentType, string Extension);
+public sealed record ValidatedStorageUpload(string ContentType);

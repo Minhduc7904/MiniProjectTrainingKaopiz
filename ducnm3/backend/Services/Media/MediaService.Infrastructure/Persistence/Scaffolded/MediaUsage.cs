@@ -46,6 +46,11 @@ public partial class MediaUsage
     public Guid CreatedBy { get; set; }
 
     /// <summary>
+    /// Actor type tạo usage; được Application validate
+    /// </summary>
+    public string CreatedByType { get; set; } = null!;
+
+    /// <summary>
     /// Thời điểm tạo liên kết, UTC
     /// </summary>
     public DateTime CreatedAt { get; set; }
@@ -59,6 +64,11 @@ public partial class MediaUsage
     /// Owner Course có thumbnail còn hiệu lực; dùng để đảm bảo tối đa một thumbnail
     /// </summary>
     public Guid? ActiveCourseThumbnailOwnerId { get; set; }
+
+    /// <summary>
+    /// Student có avatar active; đảm bảo tối đa một avatar
+    /// </summary>
+    public Guid? ActiveStudentAvatarOwnerId { get; set; }
 
     public virtual MediaObject Media { get; set; } = null!;
 }

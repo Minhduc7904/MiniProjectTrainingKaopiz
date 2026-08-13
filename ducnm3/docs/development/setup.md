@@ -77,6 +77,9 @@ bạn. Các giá trị cần nhất quán:
 - `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` là tài khoản quản trị MinIO cục bộ.
 - `MINIO_APP_ACCESS_KEY` / `MINIO_APP_SECRET_KEY` là tài khoản giới hạn quyền
   mà Media Service sử dụng.
+- `MEDIA_UPLOAD_*_MAX_BYTES` đặt giới hạn từng loại media;
+  `MEDIA_UPLOAD_REQUEST_MAX_BYTES` phải đủ chứa giới hạn video và multipart
+  overhead.
 - `RABBITMQ_USER` / `RABBITMQ_PASSWORD` là credential của application và
   management UI cục bộ. Nhóm `MESSAGING_RETRY_*` là retry policy dùng chung cho
   mọi consumer.
@@ -176,6 +179,36 @@ curl --fail-with-body http://localhost:5100/media/health
 ```
 
 Kết quả thành công có `database.status` và `storage.status` đều là `healthy`.
+
+Để thử upload qua Gateway, dùng một UUID Học viên đã tồn tại:
+
+```bash
+curl -X POST http://localhost:5100/media/api/media \
+  -F "file=@avatar.png;type=image/png" \
+  -F "mediaType=IMAGE" \
+  -F "uploadedByType=STUDENT" \
+  -F "uploadedBy=<student-uuid>"
+```
+
+Sau khi lấy `data.id`, đăng ký avatar:
+
+```bash
+curl -X POST http://localhost:5100/media/api/media/usages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "mediaId": "<media-uuid>",
+    "ownerService": "STUDENT",
+    "ownerType": "STUDENT_AVATAR",
+    "ownerId": "<student-uuid>",
+    "usageType": "AVATAR",
+    "displayOrder": 0,
+    "createdByType": "STUDENT",
+    "createdBy": "<student-uuid>"
+  }'
+```
+
+Các actor field hiện là request identity tạm thời chưa được authentication bảo
+vệ và sẽ chuyển sang lấy từ JWT. Không dùng chúng như cơ chế phân quyền production.
 
 ## 8. Dừng, chạy lại và đặt lại dữ liệu
 
@@ -283,17 +316,19 @@ một migration đã được áp dụng; tạo migration mới để sửa sche
 
 ## 12. Các giới hạn hiện tại
 
-Nền tảng đã chạy được, nhưng các trường hợp sử dụng HTTP nghiệp vụ chưa hoàn thành:
+Nền tảng đã chạy được và Media Service đã có HTTP command upload/tạo avatar
+usage, nhưng vẫn còn các giới hạn:
 
+- Actor của hai command Media do request cung cấp tạm thời; chưa có JWT.
+- Usage hiện chỉ hỗ trợ avatar Học viên; usage Khóa học/Thông báo và các endpoint
+  đọc/xóa media khác chưa thuộc phần triển khai này.
+- Compensation đồng bộ đã có, nhưng cleanup hàng `PENDING` stale được hoãn cho
+  Scheduler và chưa có job thực thi.
 - Chưa có CRUD khóa học/bài học/ghi danh/tiến độ.
-- Chưa có HTTP endpoint tải lên/tải xuống media hoặc URL ký trước.
 - Chưa có worker gửi thông báo hoặc quy trình xử lý theo lô/thử lại/tính idempotent.
 - Scheduler Worker mới là khung cơ bản; chưa phân tích CRON, claim lần chạy, thực thi handler
   hoặc gọi Media/Notification Service.
 - Chưa có frontend hoặc kiểm thử đầu cuối.
-
-Do đó Swagger hiện chủ yếu phục vụ các endpoint trạng thái/thông tin và các API sẽ được bổ
-sung ở các giai đoạn tiếp theo.
 
 ## 13. Khắc phục sự cố nhanh
 

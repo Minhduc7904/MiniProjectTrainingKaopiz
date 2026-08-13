@@ -1,9 +1,8 @@
 namespace MediaService.Application.Storage;
 
 public sealed record StorageUploadRequest(
-    StorageMediaCategory Category,
+    StorageObjectLocation Location,
     string ContentType,
-    string Extension,
     Stream Content,
     long Size);
 
@@ -16,7 +15,8 @@ public sealed record StorageObjectInfo(
     string ObjectKey,
     string ContentType,
     long Size,
-    string? ETag);
+    string? ETag,
+    string? ChecksumSha256 = null);
 
 public sealed record StorageDownloadRequest(
     StorageObjectLocation Location,

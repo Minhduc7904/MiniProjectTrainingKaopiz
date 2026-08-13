@@ -5,6 +5,11 @@ using NSwag.AspNetCore;
 using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
+var proxyMaxRequestBodySize = builder.Configuration.GetValue<long>(
+    "Proxy:MaxRequestBodySize",
+    525L * 1024 * 1024);
+builder.WebHost.ConfigureKestrel(options =>
+    options.Limits.MaxRequestBodySize = proxyMaxRequestBodySize);
 builder.Services.AddHealthChecks();
 builder.Services
     .AddReverseProxy()

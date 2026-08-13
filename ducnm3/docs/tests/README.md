@@ -48,3 +48,22 @@ Danh mục communication foundation:
 
 - [`communication/unit.md`](communication/unit.md)
 - [`communication/integration.md`](communication/integration.md)
+
+Danh mục Media Service:
+
+- [`media-service/unit.md`](media-service/unit.md): storage validation, trình tự
+  `PENDING -> READY`, compensation sang `FAILED`, actor/owner.
+- [`media-service/component.md`](media-service/component.md): health endpoint;
+  command upload/usage chưa có component test.
+- [`media-service/integration.md`](media-service/integration.md): MinIO storage,
+  checksum SHA-256, migration/MySQL và active avatar uniqueness.
+
+Danh mục Student Service:
+
+- [`student-service/unit.md`](student-service/unit.md): lookup Học viên thành
+  công và `STUDENT_NOT_FOUND`, phục vụ hợp đồng Media → Student.
+
+Coverage hiện tại của Media Upload/Usage tập trung ở unit và integration.
+Gateway public paths, HTTP request binding/response envelope của hai command,
+typed HTTP call tới Student Service và Scheduler cleanup cho `PENDING` stale
+chưa có kiểm thử component/liên service.

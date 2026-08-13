@@ -99,9 +99,14 @@ media_type            // IMAGE | VIDEO | DOCUMENT | AUDIO | OTHER
 content_type          // Loại MIME đã xác thực, ví dụ image/webp hoặc application/pdf
 original_file_name    // Tên tệp do người dùng tải lên, chỉ để hiển thị
 size_bytes            // Kích thước đối tượng theo byte
-checksum_sha256       // Mã băm kiểm tra toàn vẹn và hỗ trợ phát hiện tệp trùng
-uploaded_by           // UUID người dùng/quản trị viên tải media lên
-created_at            // Thời điểm tải lên hoàn tất, UTC
+checksum_sha256       // Mã băm SHA-256; null khi upload chưa READY
+uploaded_by           // UUID actor tải media lên; logical reference
+uploaded_by_type      // Actor type đã được Application validate; hiện là STUDENT
+status                // PENDING | READY | FAILED
+failure_reason        // Lỗi nội bộ an toàn khi FAILED; không trả cho client
+completed_at          // Thời điểm chuyển READY, UTC; null nếu chưa hoàn tất
+created_at            // Thời điểm tạo media record, UTC
+updated_at            // Thời điểm media record cập nhật gần nhất, UTC
 deleted_at            // Thời điểm xóa mềm; có thể null khi media còn hoạt động
 ```
 
@@ -110,7 +115,16 @@ Chỉ mục và ràng buộc:
 ```sql
 UNIQUE(bucket, object_key)
 INDEX(uploaded_by, created_at DESC)
+INDEX(status, created_at)
+CHECK(status IN ('PENDING', 'READY', 'FAILED'))
 ```
+
+Luồng upload là database-first: service ghi hàng `PENDING` trước khi stream
+object vào MinIO. Adapter tính checksum SHA-256 trong lúc upload; khi thành công,
+service lưu checksum và chuyển `READY`. Nếu upload, checksum hoặc bước hoàn tất
+database lỗi, service cố gắng xóa object và chuyển hàng sang `FAILED`.
+Compensation là best effort; quét các hàng `PENDING` stale sau sự cố process được
+hoãn cho Scheduler và chưa được triển khai.
 
 ### media_usages
 
@@ -119,12 +133,13 @@ Bảng này liên kết một media với vị trí sử dụng mà không để
 ```text
 id                    // UUID định danh liên kết sử dụng
 media_id              // UUID media_objects.id trong cơ sở dữ liệu Media Service
-owner_service         // COURSE | NOTIFICATION; dịch vụ sở hữu nội dung tham chiếu
-owner_type            // COURSE_THUMBNAIL | COURSE_DESCRIPTION | LESSON_CONTENT | NOTIFICATION_BODY
-owner_id              // UUID Khóa học, Bài học hoặc Thông báo tại owner_service; tham chiếu logic
-usage_type            // THUMBNAIL | EMBED | ATTACHMENT
+owner_service         // COURSE | NOTIFICATION | STUDENT; dịch vụ sở hữu tài nguyên
+owner_type            // COURSE_THUMBNAIL | COURSE_DESCRIPTION | LESSON_CONTENT | NOTIFICATION_BODY | STUDENT_AVATAR
+owner_id              // UUID tài nguyên ở owner_service; tham chiếu logic
+usage_type            // THUMBNAIL | EMBED | ATTACHMENT | AVATAR
 display_order         // Thứ tự hiển thị media trong cùng một đối tượng sở hữu
-created_by            // UUID người dùng/quản trị viên tạo liên kết
+created_by            // UUID actor tạo liên kết; logical reference
+created_by_type       // Actor type đã được Application validate; hiện là STUDENT
 created_at            // Thời điểm tạo liên kết, UTC
 deleted_at            // Thời điểm xóa mềm; có thể null khi lượt sử dụng còn hiệu lực
 ```
@@ -141,6 +156,21 @@ Quy tắc `THUMBNAIL`:
 - `COURSE_THUMBNAIL` là nguồn dữ liệu chuẩn duy nhất cho ảnh đại diện; bảng `courses` không lưu `thumbnail_media_id`.
 - Media Service chỉ cho phép tối đa một `media_usages` đang hoạt động có `owner_type = COURSE_THUMBNAIL` cho mỗi `owner_id`.
 - Khi thay ảnh đại diện, Media Service xóa mềm lượt sử dụng cũ và tạo lượt sử dụng mới trong cùng một giao dịch.
+
+Quy tắc `AVATAR` hiện đã triển khai:
+
+- Command tạo usage hiện chỉ chấp nhận
+  `owner_service = STUDENT`, `owner_type = STUDENT_AVATAR` và
+  `usage_type = AVATAR`.
+- Chỉ media `READY`, chưa bị xóa mềm mới được dùng.
+- Media Service xóa mềm avatar active cũ và tạo usage mới trong transaction
+  `SERIALIZABLE`.
+- Generated column `active_student_avatar_owner_id` chỉ nhận `owner_id` cho
+  usage `STUDENT/STUDENT_AVATAR/AVATAR` chưa bị xóa. Unique index trên cột này
+  bảo đảm tối đa một avatar active cho mỗi Học viên.
+- `created_by_type/created_by` là actor thực hiện request, tách biệt với
+  `owner_service/owner_type/owner_id`. Actor fields hiện do request chưa xác thực
+  cung cấp tạm thời và sẽ được ánh xạ từ JWT claim sau này.
 
 ## Cơ sở dữ liệu Notification Service
 
@@ -259,7 +289,10 @@ created_at            // Thời điểm tạo lượt chạy, UTC
 
 ## Thay đổi lược đồ vật lý
 
-`V001` sạch của từng dịch vụ tạo các bảng ở trên bằng MySQL InnoDB, dùng `CHAR(36)` cho UUID và `DATETIME(6)` theo UTC. Khóa ngoại chỉ tồn tại giữa các bảng trong cùng cơ sở dữ liệu dịch vụ:
+`V001` sạch của từng dịch vụ tạo schema nền bằng MySQL InnoDB, dùng `CHAR(36)`
+cho UUID và `DATETIME(6)` theo UTC. Media Service dùng `V002` để bổ sung vòng
+đời upload, actor type và uniqueness avatar Học viên. Khóa ngoại chỉ tồn tại
+giữa các bảng trong cùng database service:
 
 - Course Service: `lessons.course_id`, `enrollments.course_id`, `lesson_progresses.lesson_id`.
 - Media Service: `media_usages.media_id`.
@@ -269,3 +302,7 @@ created_at            // Thời điểm tạo lượt chạy, UTC
 `student_id`, `course_id`, `uploaded_by`, `created_by`, `recipient_student_id` và các ID đối tượng sở hữu từ dịch vụ khác chỉ là tham chiếu logic, không có khóa ngoại xuyên cơ sở dữ liệu.
 
 Để đảm bảo chỉ một ảnh đại diện Khóa học còn hiệu lực, `media_usages` có cột sinh kỹ thuật `active_course_thumbnail_owner_id`. Giá trị này chỉ có khi `owner_type = COURSE_THUMBNAIL` và `deleted_at IS NULL`; chỉ mục duy nhất trên cột này chặn ảnh đại diện đang hoạt động thứ hai cho cùng Khóa học.
+
+Tương tự, `active_student_avatar_owner_id` chỉ có giá trị với usage
+`STUDENT/STUDENT_AVATAR/AVATAR` active; unique index
+`uq_media_usages_active_student_avatar` chặn avatar Học viên active thứ hai.

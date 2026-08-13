@@ -3,9 +3,18 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Endpoints;
+using MediaService.Application.Upload;
 using MediaService.Infrastructure;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+var mediaRequestMaxBytes = builder.Configuration.GetValue<long>(
+    $"{MediaUploadOptions.SectionName}:RequestMaxBytes",
+    525L * 1024 * 1024);
+builder.WebHost.ConfigureKestrel(options =>
+    options.Limits.MaxRequestBodySize = mediaRequestMaxBytes);
+builder.Services.Configure<FormOptions>(options =>
+    options.MultipartBodyLengthLimit = mediaRequestMaxBytes);
 builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
@@ -56,5 +65,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Media);
 app.MapMediaHealthEndpoint();
+app.MapUploadMedia();
+app.MapCreateMediaUsage();
 
 app.Run();
