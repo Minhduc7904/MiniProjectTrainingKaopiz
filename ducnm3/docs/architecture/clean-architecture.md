@@ -40,6 +40,13 @@ Each service Infrastructure implements `IDatabaseHealthProbe` with its own MySQL
 
 Domain and Application do not depend on ASP.NET Core, MySQL, or the presentation project.
 
+Scheduler follows the same four layers and adds `SchedulerService.Worker` as a
+separate future background host. The current Worker is intentionally only a
+skeleton: it does not poll, claim, parse CRON, execute handlers, or call Media
+or Notification Service. Generic scheduling metadata remains in
+`lms_scheduler_db`; Notification recipient/content state remains in
+`lms_notification_db`.
+
 ## Test organization
 
 - Shared API behavior lives in `BuildingBlocks.Presentation.Tests`, separated by `Middleware/`, `Endpoints/`, and `Gateway/`.
@@ -87,15 +94,20 @@ lms-mini/
 │   │   │   ├── MediaService.Infrastructure/
 │   │   │   └── MediaService.UnitTests/
 │   │   │
-│   │   └── Notification/
-│   │       ├── NotificationService.Api/
-│   │       ├── NotificationService.Application/
-│   │       ├── NotificationService.Domain/
-│   │       ├── NotificationService.Infrastructure/
-│   │       └── NotificationService.UnitTests/
-│   │
-│   └── Workers/
-│       └── NotificationWorker/
+│   │   ├── Notification/
+│   │   │   ├── NotificationService.Api/
+│   │   │   ├── NotificationService.Application/
+│   │   │   ├── NotificationService.Domain/
+│   │   │   ├── NotificationService.Infrastructure/
+│   │   │   └── NotificationService.UnitTests/
+│   │   │
+│   │   └── Scheduler/
+│   │       ├── SchedulerService.Api/
+│   │       ├── SchedulerService.Application/
+│   │       ├── SchedulerService.Domain/
+│   │       ├── SchedulerService.Infrastructure/
+│   │       ├── SchedulerService.Worker/
+│   │       └── SchedulerService.UnitTests/
 │
 ├── frontend/
 │   └── lms-web/

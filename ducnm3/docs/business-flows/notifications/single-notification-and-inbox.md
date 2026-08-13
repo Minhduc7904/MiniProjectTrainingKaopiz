@@ -22,7 +22,7 @@ Admin; Student; Notification Service.
    - `recipient_student_id` là Student nhận.
    - `source_type` là `SINGLE`.
    - `status` là `UNREAD`.
-   - `notification_job_id` là `null`.
+   - `notification_batch_id` là `null`.
 4. API trả inbox item đã tạo.
 
 ## Luồng đọc inbox
@@ -42,4 +42,4 @@ Admin; Student; Notification Service.
 ## Dữ liệu thay đổi
 
 - Notification Service database: một record `notifications`.
-- Không tạo `notification_jobs` hoặc `notification_job_items`.
+- Không tạo `notification_batches`, `notification_batch_items` hoặc Scheduler run.

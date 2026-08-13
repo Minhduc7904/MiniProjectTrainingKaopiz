@@ -30,6 +30,7 @@ docker compose down
 - Student Service: `http://localhost:5102`
 - Media Service: `http://localhost:5103`
 - Notification Service: `http://localhost:5104`
+- Scheduler Service: `http://localhost:5105`
 - MinIO API: `http://localhost:9000`
 - MinIO console: `http://localhost:9001`
 
@@ -39,6 +40,7 @@ Gateway routes external requests by service prefix:
 - `/student/{path}` → Student Service
 - `/media/{path}` → Media Service
 - `/notification/{path}` → Notification Service
+- `/scheduler/{path}` → Scheduler Service
 
 For example, Course health is available through `http://localhost:5100/course/health`.
 
@@ -50,6 +52,7 @@ For example, Course health is available through `http://localhost:5100/course/he
 - Student Service
 - Media Service
 - Notification Service
+- Scheduler Service
 
 The Gateway proxies each document through the same origin:
 
@@ -57,6 +60,7 @@ The Gateway proxies each document through the same origin:
 - `/student/swagger/v1/swagger.json`
 - `/media/swagger/v1/swagger.json`
 - `/notification/swagger/v1/swagger.json`
+- `/scheduler/swagger/v1/swagger.json`
 
 No browser-to-service CORS configuration is needed because the UI and documents are served through the Gateway.
 
@@ -68,6 +72,9 @@ No browser-to-service CORS configuration is needed because the UI and documents 
 ASPNETCORE_ENVIRONMENT=Development
 ASPNETCORE_URLS=http://+:8080
 Swagger__Enabled=true
+SCHEDULER_DB_NAME=lms_scheduler_db
+SCHEDULER_DB_USER=scheduler_app
+SCHEDULER_DB_PASSWORD=replace-with-a-local-secret
 MINIO_ROOT_USER=minio-root-user
 MINIO_ROOT_PASSWORD=replace-with-a-long-root-secret
 MINIO_APP_ACCESS_KEY=media-storage-app

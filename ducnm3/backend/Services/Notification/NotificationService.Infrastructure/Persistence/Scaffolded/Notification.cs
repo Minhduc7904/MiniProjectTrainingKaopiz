@@ -31,9 +31,9 @@ public partial class Notification
     public string SourceType { get; set; } = null!;
 
     /// <summary>
-    /// UUID notification_jobs.id; null với gửi đơn
+    /// UUID notification_batches.id; null với gửi đơn
     /// </summary>
-    public Guid? NotificationJobId { get; set; }
+    public Guid? NotificationBatchId { get; set; }
 
     /// <summary>
     /// UUID admin hoặc system tạo notification; logical reference
@@ -55,7 +55,7 @@ public partial class Notification
     /// </summary>
     public DateTime CreatedAt { get; set; }
 
-    public virtual NotificationJob? NotificationJob { get; set; }
+    public virtual NotificationBatch? NotificationBatch { get; set; }
 
-    public virtual ICollection<NotificationJobItem> NotificationJobItems { get; set; } = new List<NotificationJobItem>();
+    public virtual ICollection<NotificationBatchItem> NotificationBatchItems { get; set; } = new List<NotificationBatchItem>();
 }

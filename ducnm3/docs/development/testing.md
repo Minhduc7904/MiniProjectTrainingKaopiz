@@ -40,6 +40,7 @@ dotnet test backend/Services/Student/StudentService.UnitTests/StudentService.Uni
 dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 dotnet test backend/Services/Notification/NotificationService.UnitTests/NotificationService.UnitTests.csproj
+dotnet test backend/Services/Scheduler/SchedulerService.UnitTests/SchedulerService.UnitTests.csproj
 ```
 
 ## Test types
@@ -72,3 +73,12 @@ creates all five buckets and verifies upload, existence, download, metadata,
 delete, category mapping, and storage health without depending on the
 developer's Docker Compose stack. Docker must be running to execute this
 project.
+
+## Scheduler Service tests
+
+`SchedulerService.UnitTests` currently verifies that
+`SchedulerDatabaseHealthProbe` propagates request cancellation. Database
+availability response mapping is covered by the shared presentation component
+tests because Scheduler uses the common `MapDatabaseHealthEndpoint` mapping.
+No job execution tests exist yet: the Worker intentionally has no polling,
+claiming, CRON parsing, or handler loop in this phase.

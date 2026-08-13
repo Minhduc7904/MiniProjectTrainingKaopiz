@@ -55,7 +55,7 @@ perf: add cursor pagination
 
 feat: add global error handling
 
-test: add notification job tests
+test: add notification batch tests
 
 docs: add benchmark results and demo script
 ```

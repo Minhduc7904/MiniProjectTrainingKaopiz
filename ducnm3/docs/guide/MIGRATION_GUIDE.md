@@ -20,6 +20,7 @@ Course Service       lms_course_db        Services/Course/CourseService.Infrastr
 Student Service      lms_student_db       Services/Student/StudentService.Infrastructure/Database/Migrations/
 Media Service        lms_media_db         Services/Media/MediaService.Infrastructure/Database/Migrations/
 Notification Service lms_notification_db  Services/Notification/NotificationService.Infrastructure/Database/Migrations/
+Scheduler Service    lms_scheduler_db     Services/Scheduler/SchedulerService.Infrastructure/Database/Migrations/
 ```
 
 There are no foreign keys across service databases. Store external IDs such as `student_id` as scalar values and validate them through service contracts when needed.
@@ -42,6 +43,7 @@ Each API receives only its own `ConnectionStrings__Database` environment variabl
 - `STUDENT_DB_LOCAL_CONNECTION_STRING`
 - `MEDIA_DB_LOCAL_CONNECTION_STRING`
 - `NOTIFICATION_DB_LOCAL_CONNECTION_STRING`
+- `SCHEDULER_DB_LOCAL_CONNECTION_STRING`
 
 The local variants use `Server=localhost` for host-side migration and scaffold commands. The Docker runtime variants use `Server=mysql`.
 
@@ -80,10 +82,9 @@ V<zero-padded-version>__<lowercase-description>.sql
 Examples:
 
 ```text
-V001__initialize.sql
-V002__create_courses.sql
-V003__add_course_status_index.sql
-V004__add_description_markdown.sql
+V001__create_learning_tables.sql
+V002__add_course_status_index.sql
+V003__add_description_markdown.sql
 ```
 
 Rules:
@@ -98,7 +99,7 @@ Rules:
 Create the SQL file in the owning service migration folder, for example:
 
 ```bash
-touch backend/Services/Course/CourseService.Infrastructure/Database/Migrations/V002__create_courses.sql
+touch backend/Services/Course/CourseService.Infrastructure/Database/Migrations/V002__add_course_slug.sql
 ```
 
 Write schema SQL there. Then run the service migration locally:
@@ -157,16 +158,28 @@ For a failed migration:
 
 Do not delete or alter a row in `schema_migrations` merely to rerun a migration unless the actual schema has been reset to match.
 
-## Reset a development database
+## Reset all development databases
 
-This removes all local MySQL data:
+The current clean baseline contains exactly one `V001` row per service
+database. When changing this baseline in a disposable development environment,
+do not delete only `schema_migrations` rows: the retained tables would no
+longer match history.
+
+Use the guarded reset:
 
 ```bash
-docker compose down -v
+scripts/database/reset-development-databases.sh --confirm
 docker compose up -d --build
 ```
 
-Docker Compose recreates the four databases, bootstrap users, migration history, and applies all migrations.
+The script refuses to run without `--confirm`, outside
+`ASPNETCORE_ENVIRONMENT=Development`, or when database names differ from the
+five expected local names. It stops APIs, drops/recreates only the five MySQL
+databases and users through `mysql-init`, and preserves the MinIO volume. Each
+API then creates `schema_migrations` and applies its clean `V001`.
+
+Use `docker compose down -v` only when intentionally deleting both MySQL and
+MinIO development data.
 
 ## EF Core Database First scaffold
 
@@ -179,7 +192,7 @@ set +a
 sh scripts/database/tools/scaffold.sh course
 ```
 
-Replace `course` with `student`, `media`, or `notification`.
+Replace `course` with `student`, `media`, `notification`, or `scheduler`.
 
 The command uses:
 

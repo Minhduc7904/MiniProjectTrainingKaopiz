@@ -34,6 +34,9 @@ services:
       NOTIFICATION_DB_NAME: ${NOTIFICATION_DB_NAME:?NOTIFICATION_DB_NAME must be set}
       NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER:?NOTIFICATION_DB_USER must be set}
       NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?NOTIFICATION_DB_PASSWORD must be set}
+      SCHEDULER_DB_NAME: ${SCHEDULER_DB_NAME:?SCHEDULER_DB_NAME must be set}
+      SCHEDULER_DB_USER: ${SCHEDULER_DB_USER:?SCHEDULER_DB_USER must be set}
+      SCHEDULER_DB_PASSWORD: ${SCHEDULER_DB_PASSWORD:?SCHEDULER_DB_PASSWORD must be set}
     volumes:
       - ./scripts/database/bootstrap/init-databases.sh:/bootstrap/init-databases.sh:ro
     entrypoint: ["/bin/sh", "/bootstrap/init-databases.sh"]
@@ -162,6 +165,24 @@ services:
     ports:
       - "5104:8080"
 
+  scheduler-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Scheduler/SchedulerService.Api/SchedulerService.Api.csproj
+    command: SchedulerService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      ConnectionStrings__Database: ${SCHEDULER_DB_CONNECTION_STRING:?SCHEDULER_DB_CONNECTION_STRING must be set}
+    ports:
+      - "5105:8080"
+
   api-gateway:
     build:
       context: ./backend
@@ -177,6 +198,7 @@ services:
       ServiceEndpoints__student-service: http://student-service:8080/
       ServiceEndpoints__media-service: http://media-service:8080/
       ServiceEndpoints__notification-service: http://notification-service:8080/
+      ServiceEndpoints__scheduler-service: http://scheduler-service:8080/
     ports:
       - "5100:8080"
 

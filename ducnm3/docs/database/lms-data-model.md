@@ -126,68 +126,111 @@ Quy tắc `THUMBNAIL`:
 
 ## Notification Service database
 
-### notification_jobs
+Notification Service giữ nội dung và recipient snapshot của bulk delivery. Đây là dữ liệu nghiệp vụ, không phải metadata lịch chạy generic của Scheduler.
 
-Chỉ dùng cho gửi hàng loạt; một job tạo notification riêng cho từng recipient.
+### notification_batches
 
 ```text
-id                    // UUID định danh batch job
-course_id             // UUID Course liên quan; nullable nếu không gửi theo Course
-title                 // Tiêu đề thông báo
-body_markdown         // Nội dung Markdown; có thể nhúng media qua URL của Media Service
+id                    // UUID định danh yêu cầu gửi hàng loạt
+course_id             // UUID Course liên quan; nullable nếu target không theo Course
+title                 // Tiêu đề notification dùng cho toàn batch
+body_markdown         // Nội dung Markdown dùng cho toàn batch
 target_scope          // COURSE_ENROLLED | STUDENT_IDS | ALL_STUDENTS
-created_by            // UUID admin tạo job
+created_by            // UUID admin tạo batch; logical reference
 status                // PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
-total_count           // Tổng recipient đã snapshot khi tạo job
-processed_count       // Số recipient worker đã xử lý
-success_count         // Số notification tạo thành công
+total_count           // Tổng recipient đã snapshot khi tạo batch
+processed_count       // Số recipient đã được xử lý
+success_count         // Số inbox item tạo thành công
 failed_count          // Số recipient thất bại sau retry
-batch_size            // Số item xử lý trên mỗi chunk
-started_at            // Thời điểm worker bắt đầu; nullable khi job chưa chạy
-completed_at          // Thời điểm job kết thúc; nullable khi chưa hoàn tất
-created_at            // Thời điểm tạo job, UTC
+batch_size            // Số recipient nghiệp vụ xử lý trên mỗi chunk
+started_at            // Thời điểm bắt đầu xử lý, UTC; nullable khi chưa chạy
+completed_at          // Thời điểm kết thúc, UTC; nullable khi chưa hoàn tất
+created_at            // Thời điểm tạo batch, UTC
 ```
 
-### notification_job_items
+Status lifecycle dự kiến: `PENDING -> PROCESSING -> COMPLETED | PARTIAL_FAILED | FAILED`. Foundation hiện chỉ có schema; chưa có handler chuyển trạng thái.
+
+### notification_batch_items
 
 ```text
 id                    // UUID định danh recipient trong batch
-job_id                // UUID notification_jobs.id
-student_id            // UUID Student nhận thông báo; logical reference
+batch_id              // UUID notification_batches.id trong cùng database
+student_id            // UUID Student nhận notification; logical reference
 notification_id       // UUID notifications.id được tạo; nullable khi chưa thành công
 status                // PENDING | PROCESSING | SUCCESS | RETRY | FAILED
-retry_count           // Số lần retry đã thực hiện
-error_message         // Lỗi cuối cùng; nullable khi thành công
-processed_at          // Thời điểm xử lý thành công hoặc thất bại cuối; nullable khi chưa xử lý
+retry_count           // Số lần retry item nghiệp vụ đã thực hiện
+error_message         // Lỗi cuối cùng; nullable khi chưa lỗi hoặc đã thành công
+processed_at          // Thời điểm xử lý cuối, UTC; nullable khi chưa xử lý
 ```
 
-```sql
-UNIQUE(job_id, student_id)
-```
+`UNIQUE(batch_id, student_id)` chống snapshot trùng recipient. Xóa batch cascade các item; xóa inbox item chỉ đặt `notification_id` của item thành null.
 
 ### notifications
 
-Mỗi bản ghi là một item inbox của một Student. Gửi đơn và gửi hàng loạt đều dùng cùng bảng này.
-
 ```text
 id                    // UUID định danh inbox item
-recipient_student_id  // UUID Student sở hữu notification; dùng để kiểm tra ownership
+recipient_student_id  // UUID Student sở hữu notification; logical reference
 title                 // Tiêu đề hiển thị trong inbox
-body_markdown         // Nội dung Markdown; media nhúng dùng URL của Media Service
+body_markdown         // Nội dung Markdown; media nhúng dùng URL Media Service
 source_type           // SINGLE | BULK
-notification_job_id   // UUID notification_jobs.id; nullable với gửi đơn
-created_by            // UUID admin hoặc system tạo notification
+notification_batch_id // UUID notification_batches.id; nullable với SINGLE
+created_by            // UUID admin hoặc system tạo notification; logical reference
 status                // UNREAD | READ
-read_at               // Thời điểm recipient đánh dấu đã đọc; nullable khi UNREAD
+read_at               // Thời điểm đánh dấu đã đọc, UTC; nullable khi UNREAD
 created_at            // Thời điểm notification xuất hiện trong inbox, UTC
 ```
 
-Index và ràng buộc:
+`UNIQUE(notification_batch_id, recipient_student_id)` chống tạo inbox item trùng khi retry. `notification_batch_id` dùng `ON DELETE RESTRICT` để không làm mất audit source của inbox BULK. Read lifecycle là `UNREAD -> READ`; `read_at` phải nhất quán với status.
 
-```sql
-INDEX(recipient_student_id, status, created_at DESC)
-UNIQUE(notification_job_id, recipient_student_id)
+## Scheduler Service database
+
+Scheduler Service chỉ sở hữu định nghĩa job generic và lịch sử run. Nó không lưu notification content, recipient list, media metadata và không có foreign key tới database service khác.
+
+### background_jobs
+
+```text
+id                    // UUID định danh cấu hình background job
+job_key               // Khóa ổn định và duy nhất để đăng ký/tra cứu job
+name                  // Tên hiển thị cho vận hành
+job_type              // Loại handler tương lai, ví dụ NOTIFICATION_BATCH_DISPATCH
+target_service        // Service nghiệp vụ tương lai sẽ được gọi; logical value
+schedule_type         // MANUAL | CRON
+cron_expression       // Biểu thức CRON theo UTC; bắt buộc với CRON, null với MANUAL
+payload_json          // Cấu hình đầu vào nhỏ; không chứa recipient list/domain data lớn
+status                // ACTIVE | PAUSED | DISABLED
+allow_concurrent      // Cho phép nhiều run đồng thời của cùng job
+max_retry_count       // Số retry tối đa cho execution phase tương lai
+timeout_seconds       // Thời gian chạy tối đa; phải lớn hơn 0
+next_run_at           // Thời điểm UTC chạy CRON kế tiếp; nullable khi chưa tính/MANUAL
+created_by            // UUID actor tạo job; nullable với system-defined job
+created_at            // Thời điểm tạo job, UTC
+updated_at            // Thời điểm cập nhật job gần nhất, UTC
 ```
+
+`UNIQUE(job_key)` chặn cấu hình trùng. Index `(status, next_run_at)` phục vụ due-job lookup tương lai. Foundation chưa parse CRON hoặc cập nhật `next_run_at`.
+
+### background_job_runs
+
+```text
+id                    // UUID định danh một lần thực thi
+background_job_id     // UUID background_jobs.id trong cùng Scheduler database
+trigger_type          // MANUAL | CRON | RETRY
+idempotency_key       // Khóa chống tạo trùng run cho cùng job
+payload_snapshot_json // Snapshot payload tại thời điểm tạo run
+attempt_number        // Lần thử hiện tại, bắt đầu từ 1
+status                // QUEUED | RUNNING | SUCCEEDED | FAILED | CANCELLED | TIMED_OUT | SKIPPED
+scheduled_at          // Thời điểm UTC run được lên lịch/manual trigger
+started_at            // Thời điểm worker bắt đầu, UTC; nullable
+finished_at           // Thời điểm worker kết thúc, UTC; nullable
+worker_instance       // Định danh worker xử lý; nullable trước khi claim
+correlation_id        // ID nối log Scheduler với target service
+error_code            // Mã lỗi ổn định cuối cùng; nullable khi chưa lỗi
+error_message         // Thông tin lỗi an toàn; không chứa credential
+output_json           // Kết quả tóm tắt; không thay thế domain database
+created_at            // Thời điểm tạo run, UTC
+```
+
+`UNIQUE(background_job_id, idempotency_key)` bảo đảm idempotency. Index `(status, scheduled_at)` phục vụ claim queue và `(background_job_id, created_at DESC)` phục vụ run history. FK chỉ nội bộ Scheduler và dùng `ON DELETE RESTRICT` để không xóa mất run history; job không dùng nữa được chuyển sang `DISABLED`. Foundation chưa tạo run, claim lock hoặc thực thi handler.
 
 ## Markdown and embedded media contract
 
@@ -198,11 +241,12 @@ UNIQUE(notification_job_id, recipient_student_id)
 
 ## Physical schema migration
 
-`V002` của từng service tạo các bảng ở trên bằng MySQL InnoDB, dùng `CHAR(36)` cho UUID và `DATETIME(6)` theo UTC. Foreign key chỉ tồn tại giữa bảng trong cùng service database:
+`V001` sạch của từng service tạo các bảng ở trên bằng MySQL InnoDB, dùng `CHAR(36)` cho UUID và `DATETIME(6)` theo UTC. Foreign key chỉ tồn tại giữa bảng trong cùng service database:
 
 - Course: `lessons.course_id`, `enrollments.course_id`, `lesson_progresses.lesson_id`.
 - Media: `media_usages.media_id`.
-- Notification: các liên kết giữa Job, Job Item và Notification.
+- Notification: các liên kết giữa Batch, Batch Item và Notification.
+- Scheduler: `background_job_runs.background_job_id`.
 
 `student_id`, `course_id`, `uploaded_by`, `created_by`, `recipient_student_id`, và các owner ID từ service khác chỉ là logical reference, không có cross-database FK.
 

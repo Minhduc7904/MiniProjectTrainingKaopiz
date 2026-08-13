@@ -13,6 +13,7 @@ RegisterServiceHttpClient(builder, ServiceNames.Course);
 RegisterServiceHttpClient(builder, ServiceNames.Student);
 RegisterServiceHttpClient(builder, ServiceNames.Media);
 RegisterServiceHttpClient(builder, ServiceNames.Notification);
+RegisterServiceHttpClient(builder, ServiceNames.Scheduler);
 
 var app = builder.Build();
 
@@ -33,6 +34,10 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
             new SwaggerUiRoute(
                 "Notification Service",
                 $"{GatewayRoutePrefixes.Notification}{ApiPaths.OpenApiDocument}"));
+        settings.SwaggerRoutes.Add(
+            new SwaggerUiRoute(
+                "Scheduler Service",
+                $"{GatewayRoutePrefixes.Scheduler}{ApiPaths.OpenApiDocument}"));
     });
 }
 
@@ -58,6 +63,7 @@ app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Course, ServiceNames.Course);
 app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Student, ServiceNames.Student);
 app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Media, ServiceNames.Media);
 app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Notification, ServiceNames.Notification);
+app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Scheduler, ServiceNames.Scheduler);
 
 app.MapReverseProxy(proxyPipeline =>
 {

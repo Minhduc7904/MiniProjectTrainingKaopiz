@@ -9,12 +9,15 @@ business-flows/
 │   └── enrollment-and-learning-progress.md
 ├── media/
 │   └── media-upload-and-usage.md
-└── notifications/
+├── notifications/
     ├── single-notification-and-inbox.md
     ├── bulk-notification.md
     └── notification-media-content.md
+└── scheduler/
+    └── media-cleanup.md
 ```
 
 - `course-learning/`: quản lý Course/Lesson, ghi danh và tiến độ học.
 - `media/`: upload media, tạo usage, và nhúng media vào Markdown.
 - `notifications/`: gửi đơn, gửi hàng loạt, inbox, và Markdown có media.
+- `scheduler/`: flow chạy nền generic dự kiến; hiện chỉ có foundation, chưa execution.

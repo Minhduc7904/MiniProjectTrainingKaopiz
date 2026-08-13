@@ -30,7 +30,7 @@ performed by `minio-init`, not by the application process.
 |---|---|---|
 | Course | `description_markdown` | Rich description of a Course |
 | Lesson | `content_markdown` | Rich lesson content |
-| Notification Job | `body_markdown` | Template used to create bulk notifications |
+| Notification Batch | `body_markdown` | Template used to create bulk notifications |
 | Notification | `body_markdown` | Rendered inbox content for one Student |
 
 The stored value is Markdown source. Raw HTML, JavaScript, inline event handlers, and unsafe URL schemes must be stripped by the renderer.
@@ -60,6 +60,6 @@ Course does not store `thumbnail_media_id`. To render a thumbnail, it asks Media
 ## Notification delivery
 
 - A single notification writes one `notifications` row for one recipient.
-- A bulk job snapshots recipients and writes `notification_job_items`.
-- The worker creates one `notifications` row per successful item.
-- The worker uses `(notification_job_id, recipient_student_id)` as an idempotency key, preventing a second inbox item after retry or restart.
+- A bulk batch snapshots recipients and writes `notification_batch_items`.
+- The future Notification delivery handler creates one `notifications` row per successful item.
+- The future delivery handler uses `(notification_batch_id, recipient_student_id)` as an idempotency key, preventing a second inbox item after retry or restart.

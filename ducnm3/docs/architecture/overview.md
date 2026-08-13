@@ -2,14 +2,18 @@
 
 ## Status
 
-The application stack and system boundaries have not been selected yet.
+The backend uses ASP.NET Core microservices, YARP Gateway, MySQL and MinIO.
+Course, Student, Media and Notification are business services. Scheduler is a
+platform service with its own API, Worker skeleton and database.
 
-## Required updates
+Each service owns its database. Media alone owns MinIO access. Scheduler stores
+generic `background_jobs` and `background_job_runs`; it does not query another
+service database. Notification retains bulk content, recipient snapshots and
+delivery counters in its own batch tables.
 
-Once implementation starts, document:
+Current Scheduler scope is structure-only: health, schema, scaffolded
+persistence and a non-running Worker skeleton. CRON parsing, run claiming,
+handler execution and cross-service calls remain follow-up work.
 
-1. Main components and their responsibilities.
-2. Request and data flows between components.
-3. External services and ownership boundaries.
-4. Security and reliability assumptions.
-5. Links to architecture decision records in `decisions/`.
+See `microservices.md`, `clean-architecture.md` and
+`../database/lms-data-model.md` for the detailed boundaries.

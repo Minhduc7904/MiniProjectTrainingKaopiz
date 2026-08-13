@@ -2,7 +2,7 @@
 
 ## Infrastructure
 
-- [ ] 4 microservices chạy: Course, Student, Media, Notification.
+- [ ] 4 business services và Scheduler platform service chạy: Course, Student, Media, Notification, Scheduler.
 - [ ] MySQL chạy Docker.
 - [ ] MinIO chạy Docker.
 - [ ] Docker network đúng.

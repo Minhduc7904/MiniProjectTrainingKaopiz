@@ -6,19 +6,12 @@ Services:
 api-gateway
 course-api
 student-api
+media-api
 notification-api
-notification-worker
+scheduler-api
 mysql
 minio
 ```
-
-Có thể gộp:
-
-```text
-notification-api + BackgroundService
-```
-
-nếu muốn giảm container.
 
 Khuyến nghị 5 ngày:
 
@@ -26,10 +19,15 @@ Khuyến nghị 5 ngày:
 api-gateway
 course-service
 student-service
+media-service
 notification-service
+scheduler-service
 mysql
 minio
 ```
+
+`SchedulerService.Worker` hiện là skeleton và chưa được chạy thành container
+cho tới khi có polling/claim/execution loop.
 
 ---
 # 38. Docker Network
@@ -43,7 +41,9 @@ Container gọi nhau bằng service name:
 ```text
 course-service
 student-service
+media-service
 notification-service
+scheduler-service
 mysql
 minio
 ```

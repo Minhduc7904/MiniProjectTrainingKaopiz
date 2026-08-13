@@ -11,6 +11,7 @@ flowchart LR
     Gateway --> StudentService
     Gateway --> MediaService
     Gateway --> NotificationService
+    Gateway --> SchedulerApi
 
     CourseService --> CourseDB[(Course DB)]
     CourseService --> MediaService
@@ -23,6 +24,11 @@ flowchart LR
     NotificationService --> NotificationDB[(Notification DB)]
     NotificationService --> StudentService
     NotificationService --> MediaService
+
+    SchedulerApi --> SchedulerDB[(Scheduler DB)]
+    SchedulerWorker[Scheduler Worker skeleton] -. future .-> SchedulerDB
+    SchedulerWorker -. future HTTP .-> NotificationService
+    SchedulerWorker -. future HTTP .-> MediaService
 ```
 
 ---
@@ -75,11 +81,12 @@ sequenceDiagram
     participant Worker
     participant Student as Student Service
 
-    Admin->>API: POST /notification-jobs
-    API->>DB: Create Job
+    Admin->>API: POST /notification-batches
+    API->>DB: Create Batch + recipient snapshot
     API-->>Admin: 202 Accepted
 
-    Worker->>DB: Get pending job
+    Note over Worker: Future phase; not implemented in foundation
+    Worker->>DB: Get pending batch
     Worker->>Student: Get student batch
     Student-->>Worker: 500 students
 
@@ -88,7 +95,7 @@ sequenceDiagram
         Worker->>DB: Update item status
     end
 
-    Worker->>DB: Complete job
+    Worker->>DB: Complete batch
 ```
 
 ---
@@ -97,9 +104,9 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[Start Job] --> B[Load Batch]
+    A[Start Batch] --> B[Load Recipient Chunk]
     B --> C{Has Records?}
-    C -- No --> H[Complete Job]
+    C -- No --> H[Complete Batch]
     C -- Yes --> D[Send Notification]
     D --> E{Success?}
     E -- Yes --> F[Mark SUCCESS]

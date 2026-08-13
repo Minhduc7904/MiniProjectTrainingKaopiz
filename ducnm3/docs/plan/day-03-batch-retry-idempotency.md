@@ -18,16 +18,16 @@ Generate:
 
 students.
 
-#### Notification Job
+#### Notification Batch
 
 ```http
-POST /notification-jobs
+POST /notification-batches
 ```
 
 Flow:
 
 ```text
-Create Job
+Create Batch
 → Return 202
 → Worker Process
 ```
@@ -70,17 +70,17 @@ error_message
 #### Idempotency
 
 ```text
-UNIQUE(job_id, student_id)
+UNIQUE(batch_id, student_id)
 ```
 
 ### Definition of Done Day 3
 
 - [ ] API return 202.
-- [ ] Job chạy background.
+- [ ] Scheduler run gọi Notification batch handler.
 - [ ] Batch 500.
 - [ ] Retry chạy.
 - [ ] Failed item được lưu.
-- [ ] Job progress xem được.
+- [ ] Batch progress và Scheduler run history xem được ở đúng service.
 - [ ] Restart không tạo duplicate successful item.
 - [ ] Gửi đơn lẻ chạy và student đọc/đánh dấu đã đọc notification của mình.
 - [ ] Batch không tạo notification trùng khi worker retry hoặc restart.
