@@ -1,3 +1,22 @@
+x-messaging-environment: &messaging-environment
+  Messaging__RabbitMq__Host: rabbitmq
+  Messaging__RabbitMq__Port: 5672
+  Messaging__RabbitMq__VirtualHost: ${RABBITMQ_VHOST:-/}
+  Messaging__RabbitMq__Username: ${RABBITMQ_USER:?RABBITMQ_USER must be set}
+  Messaging__RabbitMq__Password: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD must be set}
+  Messaging__Retry__RetryCount: ${MESSAGING_RETRY_COUNT:-3}
+  Messaging__Retry__InitialIntervalSeconds: ${MESSAGING_RETRY_INITIAL_INTERVAL_SECONDS:-1}
+  Messaging__Retry__IntervalIncrementSeconds: ${MESSAGING_RETRY_INTERVAL_INCREMENT_SECONDS:-2}
+  Messaging__Consumer__PrefetchCount: ${MESSAGING_PREFETCH_COUNT:-32}
+  Messaging__Consumer__ConcurrencyLimit: ${MESSAGING_CONCURRENCY_LIMIT:-8}
+  Messaging__Host__StartTimeoutSeconds: ${MESSAGING_HOST_START_TIMEOUT_SECONDS:-30}
+  Messaging__Host__StopTimeoutSeconds: ${MESSAGING_HOST_STOP_TIMEOUT_SECONDS:-30}
+
+x-http-query-environment: &http-query-environment
+  Communication__HttpQuery__TimeoutSeconds: ${HTTP_QUERY_TIMEOUT_SECONDS:-5}
+  Communication__HttpQuery__RetryCount: ${HTTP_QUERY_RETRY_COUNT:-3}
+  Communication__HttpQuery__RetryDelayMilliseconds: ${HTTP_QUERY_RETRY_DELAY_MILLISECONDS:-200}
+
 services:
   mysql:
     image: mysql:8.4
@@ -41,6 +60,24 @@ services:
       - ./scripts/database/bootstrap/init-databases.sh:/bootstrap/init-databases.sh:ro
     entrypoint: ["/bin/sh", "/bootstrap/init-databases.sh"]
     restart: "no"
+
+  rabbitmq:
+    image: rabbitmq:4.1-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?RABBITMQ_USER must be set}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD must be set}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-/}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
 
   minio:
     image: quay.io/minio/minio:latest
@@ -91,11 +128,16 @@ services:
     depends_on:
       mysql-init:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     environment:
+      <<: [*messaging-environment, *http-query-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
       ConnectionStrings__Database: ${COURSE_DB_CONNECTION_STRING:?COURSE_DB_CONNECTION_STRING must be set}
+      ServiceEndpoints__student-service: http://student-service:8080/
+      ServiceEndpoints__media-service: http://media-service:8080/
     ports:
       - "5101:8080"
 
@@ -109,7 +151,10 @@ services:
     depends_on:
       mysql-init:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     environment:
+      <<: *messaging-environment
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -129,7 +174,10 @@ services:
         condition: service_completed_successfully
       minio-init:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     environment:
+      <<: *messaging-environment
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -157,11 +205,16 @@ services:
     depends_on:
       mysql-init:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     environment:
+      <<: [*messaging-environment, *http-query-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
       ConnectionStrings__Database: ${NOTIFICATION_DB_CONNECTION_STRING:?NOTIFICATION_DB_CONNECTION_STRING must be set}
+      ServiceEndpoints__student-service: http://student-service:8080/
+      ServiceEndpoints__media-service: http://media-service:8080/
     ports:
       - "5104:8080"
 
@@ -175,13 +228,32 @@ services:
     depends_on:
       mysql-init:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
     environment:
+      <<: *messaging-environment
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
       ConnectionStrings__Database: ${SCHEDULER_DB_CONNECTION_STRING:?SCHEDULER_DB_CONNECTION_STRING must be set}
     ports:
       - "5105:8080"
+
+  scheduler-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Scheduler/SchedulerService.Worker/SchedulerService.Worker.csproj
+    command: SchedulerService.Worker.dll
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      <<: [*messaging-environment, *http-query-environment]
+      DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ServiceEndpoints__notification-service: http://notification-service:8080/
+      ServiceEndpoints__media-service: http://media-service:8080/
 
   data-seeder:
     profiles: ["seed"]
@@ -222,3 +294,4 @@ services:
 volumes:
   mysql-data:
   minio-data:
+  rabbitmq-data:

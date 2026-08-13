@@ -2,8 +2,7 @@
 
 ## Mục đích
 
-Kiểm tra Media Service có thể kết nối đến cơ sở dữ liệu do mình sở hữu và MinIO có
-đủ cả năm vùng lưu trữ phương tiện đã cấu hình.
+Kiểm tra Media Service có thể kết nối database sở hữu, MinIO và RabbitMQ.
 
 ## Xác thực và phân quyền
 
@@ -31,6 +30,9 @@ Không có tham số đường dẫn, tham số truy vấn hoặc nội dung yê
     },
     "storage": {
       "status": "healthy"
+    },
+    "messaging": {
+      "status": "healthy"
     }
   },
   "meta": {
@@ -41,10 +43,10 @@ Không có tham số đường dẫn, tham số truy vấn hoặc nội dung yê
 
 ## Mã trạng thái HTTP
 
-- `200`: cơ sở dữ liệu và MinIO đều khả dụng.
+- `200`: database, MinIO và RabbitMQ đều khả dụng.
 - `503 DATABASE_UNAVAILABLE`: chỉ bước kiểm tra cơ sở dữ liệu Media thất bại.
 - `503 STORAGE_UNAVAILABLE`: chỉ bước kiểm tra MinIO thất bại hoặc thiếu một vùng lưu trữ bắt buộc.
-- `503 DEPENDENCY_UNAVAILABLE`: cả hai bước kiểm tra cơ sở dữ liệu và MinIO đều thất bại.
+- `503 DEPENDENCY_UNAVAILABLE`: RabbitMQ lỗi hoặc nhiều dependency cùng lỗi.
 
 Tất cả phản hồi `503` sử dụng cấu trúc bao lỗi dùng chung:
 
@@ -63,7 +65,7 @@ Tất cả phản hồi `503` sử dụng cấu trúc bao lỗi dùng chung:
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Điểm cuối chạy đồng thời các bước kiểm tra cơ sở dữ liệu và kho lưu trữ. Bước kiểm tra
+Endpoint chạy đồng thời các bước kiểm tra database, storage và messaging. Bước kiểm tra
 cơ sở dữ liệu thực thi `SELECT 1`. Bước kiểm tra kho lưu trữ kiểm tra khả năng kết nối MinIO và
 sự tồn tại của `images`, `videos`, `documents`, `audios` và `other` với khoảng thời gian chờ ngắn.
-Cả hai bước kiểm tra đều không ghi dữ liệu hoặc tải đối tượng thử nghiệm lên.
+Các bước kiểm tra không ghi database, publish message hoặc upload object thử.

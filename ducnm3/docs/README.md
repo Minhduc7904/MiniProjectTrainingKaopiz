@@ -13,6 +13,10 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 
 - `architecture/microservices.md`: ranh giới dịch vụ, quyền sở hữu cơ sở dữ liệu và trách nhiệm.
 - `architecture/clean-architecture.md`: kiến trúc sạch và cấu trúc thư mục dịch vụ.
+- `architecture/service-communication.md`: QUERY qua HTTP, COMMAND/EVENT qua
+  RabbitMQ, centralized retry và reliability boundary.
+- `architecture/message-contract-template.md`: template ownership, versioning
+  và idempotency khi thêm message contract.
 - `architecture/rich-content-and-media.md`: quyền sở hữu của Media Service, nội dung Markdown và vòng đời sử dụng nội dung đa phương tiện.
 - `architecture/uml.md`: các sơ đồ UML bắt buộc.
 - `architecture/conclusion.md`: bản tổng kết kiến trúc cuối cùng.
@@ -24,7 +28,7 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 ## API và dữ liệu
 
 - `api/`: các hợp đồng API được nhóm theo Course, Student, Media, Notification và Scheduler Service.
-- `api/error-handling-observability.md`: hợp đồng lỗi, ghi nhật ký và khả năng quan sát.
+- `api/shared/error-handling-observability.md`: error contract, logging và observability.
 - `database/lms-data-model.md`: các thực thể LMS, nội dung đa phương tiện, tác vụ thông báo và hộp thư đến của học viên.
 
 ## Phát triển và vận hành

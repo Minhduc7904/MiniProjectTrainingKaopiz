@@ -13,6 +13,9 @@ docs/tests/
 ├── data-seeder/
 │   ├── unit.md
 │   └── integration.md
+├── communication/
+│   ├── unit.md
+│   └── integration.md
 ├── <service>/
     ├── unit.md
     ├── component.md
@@ -40,3 +43,8 @@ Danh mục Data Seeder:
 
 - [`data-seeder/unit.md`](data-seeder/unit.md)
 - [`data-seeder/integration.md`](data-seeder/integration.md)
+
+Danh mục communication foundation:
+
+- [`communication/unit.md`](communication/unit.md)
+- [`communication/integration.md`](communication/integration.md)

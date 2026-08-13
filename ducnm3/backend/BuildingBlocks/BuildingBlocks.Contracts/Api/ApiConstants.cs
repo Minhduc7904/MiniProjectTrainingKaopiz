@@ -25,6 +25,11 @@ public static class ApiHeaderNames
     public const string CorrelationId = "X-Correlation-Id";
 }
 
+public static class MessagingHeaderNames
+{
+    public const string SourceService = "X-Source-Service";
+}
+
 public static class ApiPaths
 {
     public const string Health = "/health";

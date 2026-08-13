@@ -9,8 +9,10 @@ student-api
 media-api
 notification-api
 scheduler-api
+scheduler-worker
 mysql
 minio
+rabbitmq
 ```
 
 Khuyến nghị 5 ngày:
@@ -22,12 +24,14 @@ student-service
 media-service
 notification-service
 scheduler-service
+scheduler-worker
 mysql
 minio
+rabbitmq
 ```
 
-`SchedulerService.Worker` hiện mới là khung cơ bản và chưa được chạy thành container
-cho tới khi có polling/claim/execution loop.
+`scheduler-worker` chạy MassTransit host và kết nối RabbitMQ. Worker chưa có
+polling/claim/execution loop hoặc consumer nghiệp vụ.
 
 `data-seeder` là công cụ phát triển chạy một lần trong profile `seed`; nó không
 chạy khi dùng `docker compose up` bình thường. Chỉ gọi qua
@@ -48,8 +52,10 @@ student-service
 media-service
 notification-service
 scheduler-service
+scheduler-worker
 mysql
 minio
+rabbitmq
 ```
 
 Ví dụ:
@@ -73,6 +79,7 @@ localhost
 ```text
 mysql_data
 minio_data
+rabbitmq_data
 ```
 
 Mục đích:
@@ -105,9 +112,17 @@ MYSQL_PASSWORD=
 MINIO_ROOT_USER=
 MINIO_ROOT_PASSWORD=
 
-JWT_SECRET=
+RABBITMQ_USER=
+RABBITMQ_PASSWORD=
+RABBITMQ_VHOST=/
+MESSAGING_RETRY_COUNT=3
 ```
 
 Không commit `.env` thật.
+
+RabbitMQ AMQP mở ở `localhost:5672`; management UI ở
+`http://localhost:15672`. Các API chỉ ready khi database và RabbitMQ healthy.
+Retry, prefetch và concurrency của toàn bộ consumer được khai báo một lần qua
+các biến `MESSAGING_*`.
 
 ---
