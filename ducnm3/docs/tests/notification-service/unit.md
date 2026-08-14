@@ -30,3 +30,8 @@ có kiểm thử tích hợp MySQL hoặc RabbitMQ trong dự án này.
 | `FakeNotificationSenderTests` | Sinh UUID có hash thỏa từng rule. | Lần một/lần hai thất bại đúng điều kiện `% 20`/`% 100`. |
 | `HandleAsync_FirstBusinessFailureMarksItemForRetryAndRequeues` | Sender giả ném lỗi ở lần gửi đầu. | Item được đánh dấu thất bại nghiệp vụ và command được phát lại. |
 | `NotificationBatchEndpointTests` | TestServer map POST/GET cùng doubles in-memory. | POST trả 202 + Location, GET trả 200, scope lạ trả 400. |
+| `GetFailedItems_BatchExists_ReturnsCursorEnvelope` | TestServer map GET lỗi theo batch có summary in-memory. | Trả `200`, `Cache-Control: no-store`, data `items` rỗng và cursor pagination envelope. |
+
+Lưu ý: `NotificationBatchEndpointTests` là TestServer component coverage cũ nằm
+trong project UnitTests. Endpoint `failed-items` mới cần được chuyển vào project
+ComponentTests khi tách project kiểm thử Notification Service theo quy ước mới.

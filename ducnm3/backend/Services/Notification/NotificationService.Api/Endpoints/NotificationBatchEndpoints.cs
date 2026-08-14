@@ -6,6 +6,7 @@ using NotificationService.Application;
 using NotificationService.Application.Abstractions;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.GetById;
+using NotificationService.Application.Features.Batches.GetFailedItems;
 
 namespace NotificationService.Api.Endpoints;
 
@@ -91,6 +92,48 @@ public static class NotificationBatchEndpoints
             .WithName("get-notification-batch-by-id")
             .WithTags(ServiceNames.Notification)
             .Produces<ApiResponse<NotificationBatchResponse>>(
+                StatusCodes.Status200OK)
+            .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
+            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
+
+        endpoints
+            .MapGet(
+                ApiRoutes.Notifications.BatchFailedItemsTemplate,
+                async (
+                    string batchId,
+                    string? cursor,
+                    int? limit,
+                    HttpContext context,
+                    GetNotificationBatchFailedItemsHandler handler,
+                    CancellationToken cancellationToken) =>
+                {
+                    if (!Guid.TryParse(batchId, out var id) || id == Guid.Empty)
+                    {
+                        throw NotificationErrors.Validation("batchId must be a valid UUID.");
+                    }
+
+                    var page = await handler.HandleAsync(
+                        id,
+                        cursor,
+                        limit ?? 100,
+                        cancellationToken);
+                    context.Response.Headers.CacheControl = "no-store";
+                    return Results.Json(
+                        ApiResponseFactory.Success(
+                            new NotificationBatchFailedItemsResponse(
+                                page.Items.Select(x => new NotificationBatchFailedItemResponse(
+                                    x.StudentId,
+                                    x.RetryCount,
+                                    x.ErrorMessage)).ToArray()),
+                            context.TraceIdentifier,
+                            new CursorPaginationMeta(
+                                limit ?? 100,
+                                GetNotificationBatchFailedItemsHandler.EncodeCursor(page.NextItemId),
+                                page.HasNextPage)));
+                })
+            .WithName("get-notification-batch-failed-items")
+            .WithTags(ServiceNames.Notification)
+            .Produces<ApiResponse<NotificationBatchFailedItemsResponse>>(
                 StatusCodes.Status200OK)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);

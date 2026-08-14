@@ -117,6 +117,38 @@ public sealed class EfNotificationBatchRepository(NotificationDbContext dbContex
     public async Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken) =>
         await dbContext.NotificationBatches.AsNoTracking().Where(x => x.Id == batchId).Select(x => new NotificationBatchSummary(x.Id, x.Status, x.TotalCount, x.ProcessedCount, x.SuccessCount, x.FailedCount, x.BatchSize, x.CreatedAt, x.StartedAt, x.CompletedAt)).SingleOrDefaultAsync(cancellationToken);
 
+    public async Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(
+        Guid batchId,
+        Guid? afterItemId,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        IQueryable<NotificationBatchItem> items = dbContext.NotificationBatchItems
+            .AsNoTracking()
+            .Where(x => x.BatchId == batchId && x.Status == "FAILED");
+
+        if (afterItemId is not null)
+        {
+            items = items.Where(x => x.Id.CompareTo(afterItemId.Value) > 0);
+        }
+
+        var rows = await items
+            .OrderBy(x => x.Id)
+            .Take(limit + 1)
+            .Select(x => new { x.Id, x.StudentId, x.RetryCount, x.ErrorMessage })
+            .ToListAsync(cancellationToken);
+        var hasNextPage = rows.Count > limit;
+        var page = rows.Take(limit).ToArray();
+
+        return new NotificationBatchFailedItemsPage(
+            page.Select(x => new NotificationBatchFailedItem(
+                x.StudentId,
+                x.RetryCount,
+                x.ErrorMessage ?? "Unknown sender error.")).ToArray(),
+            hasNextPage ? page[^1].Id : null,
+            hasNextPage);
+    }
+
     public async Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken)
     {
         var batch = await dbContext.NotificationBatches.SingleOrDefaultAsync(x => x.Id == batchId, cancellationToken);

@@ -267,6 +267,13 @@ internal sealed class StubBatchRepository : INotificationBatchRepository
     public Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult<NotificationBatchSummary?>(null);
 
+    public Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(
+        Guid batchId,
+        Guid? afterItemId,
+        int limit,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationBatchFailedItemsPage([], null, false));
+
     public Task SaveChangesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public Task<NotificationSnapshotWork> PrepareSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>

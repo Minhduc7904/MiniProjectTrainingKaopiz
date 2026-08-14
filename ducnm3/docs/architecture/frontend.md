@@ -194,5 +194,12 @@ Icon: chỉ Lucide qua `Icon`. Mọi chỗ ấn được dùng `cursor-pointer`.
 Đã có khung app, trang `Danh sách học viên` (`GET /student/api/students`) và
 trang `Upload media` (`POST /media/api/media`). POST không tự gọi khi mở
 trang; Reset khôi phục default field và xóa kết quả, không tự upload.
-Khóa học, thông báo, scheduler sẽ thêm theo cùng pattern: `api` + `slice` +
-`hook` + `pages/<domain>/components`.
+Khóa học và scheduler sẽ thêm theo cùng pattern: `api` + `slice` + `hook` +
+`pages/<domain>/components`.
+
+Notification Batch hiện có hai menu độc lập: tạo batch (`POST`) và theo dõi
+batch (`GET`). Trang theo dõi lưu counters, loading/error và trạng thái pause
+trong Redux; hook chỉ polling lại sau 3 giây khi status chưa terminal. Polling
+dừng ở `COMPLETED`, `PARTIAL_FAILED`, `FAILED` hoặc khi quản trị viên pause;
+nút Tiếp tục gọi GET ngay, không thay đổi Worker nền. Khi batch kết thúc có lỗi,
+trang đọc `failed-items` để hiển thị `studentId`, retry và lỗi cuối.

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Presentation.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -67,33 +68,61 @@ public sealed class NotificationBatchEndpointTests
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
+
+    [Test]
+    public async Task GetFailedItems_BatchExists_ReturnsCursorEnvelope()
+    {
+        await using var fixture = await NotificationBatchApiFixture.CreateAsync();
+        var batchId = Guid.NewGuid();
+        var repository = fixture.Repository;
+        repository.SetSummary(batchId);
+
+        using var response = await fixture.Client.GetAsync(
+            ApiRoutes.Notifications.BatchFailedItemsServicePath(batchId));
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(body, Does.Contain("\"items\":[]"));
+            Assert.That(body, Does.Contain("\"type\":\"cursor\""));
+        });
+    }
 }
 
 internal sealed class NotificationBatchApiFixture : IAsyncDisposable
 {
     private readonly WebApplication app;
 
-    private NotificationBatchApiFixture(WebApplication app, HttpClient client)
+    private NotificationBatchApiFixture(
+        WebApplication app,
+        HttpClient client,
+        EndpointBatchRepository repository)
     {
         this.app = app;
         Client = client;
+        Repository = repository;
     }
 
     public HttpClient Client { get; }
+
+    internal EndpointBatchRepository Repository { get; }
 
     public static async Task<NotificationBatchApiFixture> CreateAsync()
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddNotificationApplication();
-        builder.Services.AddSingleton<INotificationBatchRepository, EndpointBatchRepository>();
+        var repository = new EndpointBatchRepository();
+        builder.Services.AddSingleton<INotificationBatchRepository>(repository);
         builder.Services.AddSingleton<ICommandSender, StubCommandSender>();
 
         var app = builder.Build();
         app.UseSharedApiMiddleware();
         app.MapNotificationBatchEndpoints();
         await app.StartAsync();
-        return new NotificationBatchApiFixture(app, app.GetTestClient());
+        return new NotificationBatchApiFixture(app, app.GetTestClient(), repository);
     }
 
     public async ValueTask DisposeAsync()
@@ -126,8 +155,28 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
         return Task.FromResult(summary);
     }
 
+    public void SetSummary(Guid batchId) =>
+        summary = new NotificationBatchSummary(
+            batchId,
+            "PARTIAL_FAILED",
+            1,
+            1,
+            0,
+            1,
+            500,
+            DateTime.UnixEpoch,
+            DateTime.UnixEpoch,
+            DateTime.UnixEpoch);
+
     public Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult(summary?.Id == batchId ? summary : null);
+
+    public Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(
+        Guid batchId,
+        Guid? afterItemId,
+        int limit,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationBatchFailedItemsPage([], null, false));
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
