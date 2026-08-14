@@ -1,0 +1,23 @@
+/* Nguồn màu duy nhất của trang quản trị. Không khai báo hex ở component. */
+@theme {
+  --color-canvas: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef0f3;
+  --color-control: #f3f4f6;
+  --color-line: #e2e5ea;
+  --color-fg: #111318;
+  --color-fg-muted: #5a6170;
+  --color-fg-subtle: #8a909c;
+  --color-accent: #156b63;
+  --color-accent-hover: #115751;
+  --color-accent-soft: color-mix(in oklab, var(--color-accent) 12%, var(--color-surface));
+  --color-on-accent: #ffffff;
+  --color-success: #156b63;
+  --color-danger: #c0392b;
+  --color-danger-soft: color-mix(in oklab, var(--color-danger) 12%, var(--color-surface));
+  --color-warning: #a15c12;
+  --color-warning-soft: color-mix(in oklab, var(--color-warning) 14%, var(--color-surface));
+  --font-display: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --font-sans: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
