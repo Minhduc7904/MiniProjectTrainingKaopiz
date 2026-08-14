@@ -14,6 +14,49 @@ Quản trị viên; API của Notification Service; Student Service. Scheduler S
 - `targetScope` hợp lệ: `COURSE_ENROLLED`, `STUDENT_IDS`, hoặc `ALL_STUDENTS`.
 - Nội dung Markdown và các lượt sử dụng media đã được chuẩn bị.
 
+## UML luồng chạy
+
+### `POST /api/notification-batches`
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant API as Notification Service
+    participant Student as Student Service
+    participant DB as MySQL Notification
+
+    Admin->>API: POST /api/notification-batches
+    API->>API: Authorize + validate scope/Markdown
+    API->>Student: Resolve recipient snapshot
+    Student-->>API: Recipient IDs
+    alt Scope không hợp lệ hoặc recipients lỗi
+        API-->>Admin: 400/404
+    else Hợp lệ
+        API->>DB: INSERT batch PENDING + batch items
+        DB-->>API: batchId
+        API-->>Admin: 202 Accepted
+    end
+```
+
+### Luồng dispatch dự kiến (không có HTTP API hiện tại)
+
+```mermaid
+sequenceDiagram
+    participant Scheduler
+    participant Worker as Scheduler Worker
+    participant Notification as Notification Service
+    participant DB as MySQL Notification
+
+    Scheduler->>Worker: Trigger NOTIFICATION_BATCH_DISPATCH(batchId)
+    Worker->>Notification: Internal dispatch request
+    Notification->>DB: Read PENDING/RETRY batch items
+    loop từng batch item
+        Notification->>DB: Create notification, update item status/counters
+    end
+    Notification-->>Worker: Summary
+    Worker-->>Scheduler: Persist run outcome
+```
+
 ## Luồng chính
 
 1. Quản trị viên gửi `POST /api/notification-batches` với nội dung và phạm vi đối tượng.

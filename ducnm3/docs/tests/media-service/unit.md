@@ -33,6 +33,7 @@ dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests
 | Actor và owner | `UsageKeepsCreatorActorSeparateFromOwner` | Tạo avatar usage với `createdBy` khác `ownerId`. | Actor được xác minh riêng, owner được tra cứu riêng, repository nhận đúng hai ID và `ownerType=STUDENT_AVATAR`. |
 | Mở rộng actor | `ActorValidationDispatchesWithoutChangingHandlers` | Đăng ký validator `STUDENT` và validator giả `ADMIN`, gửi actor viết thường `admin`. | Actor được chuẩn hóa; chỉ validator `ADMIN` được gọi, không cần đổi command handler. |
 | Content handler | READY/missing/PENDING/storage failure | Dùng repository/storage stub để đọc media ở từng trạng thái và copy stream. | READY copy đúng bytes, missing trả `404`, PENDING trả `409`, storage failure trả `503`; result không public storage location. |
+| URL handler | active/missing/non-image usage | `GetMediaUsageUrlHandlerTests` và `GetMediaUsageUrlsHandlerTests` dùng repository/provider giả trong memory. | Một usage trả URL, usage thiếu trả `MEDIA_USAGE_NOT_FOUND`, owner trả URL cho mọi usage và input owner sai trả `INVALID_MEDIA`. |
 | Multipart limit | `MultipartLengthLimitReturnsPayloadTooLarge` | Parse multipart vượt `MultipartBodyLengthLimit`. | Trả `413 PAYLOAD_TOO_LARGE`. |
 | Student client | route/200/404/503 | Gọi client qua stub HTTP handler. | Dùng shared route/contract; deserialize `200`, `404 -> null`, dependency failure -> safe `503`. |
 

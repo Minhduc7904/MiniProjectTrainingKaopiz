@@ -19,6 +19,26 @@ Nêu kết quả nghiệp vụ hoặc vận hành mà actor/hệ thống nhận 
 - Trạng thái dữ liệu bắt buộc.
 - Validation hoặc dependency prerequisite.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Gateway
+    participant API as Owning Service API
+    participant App as Application
+    participant Dependency
+
+    Caller->>Gateway: METHOD /gateway/path
+    Gateway->>API: Forward request
+    API->>App: Validate và xử lý
+    App->>Dependency: Đọc/ghi dữ liệu
+    Dependency-->>App: Kết quả
+    App-->>API: Response model
+    API-->>Gateway: HTTP response
+    Gateway-->>Caller: HTTP response
+```
+
 ## Luồng chính
 
 1. Caller gửi request.

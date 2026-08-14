@@ -18,6 +18,7 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 - `architecture/message-contract-template.md`: template ownership, versioning
   và idempotency khi thêm message contract.
 - `architecture/rich-content-and-media.md`: quyền sở hữu của Media Service, nội dung Markdown và vòng đời sử dụng nội dung đa phương tiện.
+- `architecture/frontend.md`: SPA React, folder, Axios, Redux và rule page/component/hook.
 - `architecture/uml.md`: các sơ đồ UML bắt buộc.
 - `architecture/conclusion.md`: bản tổng kết kiến trúc cuối cùng.
 
@@ -42,7 +43,7 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 
 - `plan/day-01-foundation-docker-clean-architecture.md`
 - `plan/day-02-lms-core-minio-n-1.md`
-- `plan/day-03-batch-retry-idempotency.md`
+- `plan/day-03-frontend-media.md`
 - `plan/day-04-performance-day.md`
 - `plan/day-05-error-handling-test-slide-demo.md`
 

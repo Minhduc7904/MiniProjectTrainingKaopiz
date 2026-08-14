@@ -1,20 +1,72 @@
 # Hướng dẫn quy trình Git
 
+Áp dụng từ **Ngày 3**. Ngày 1–2 đã làm trên `ducnm3` (một số commit trực tiếp,
+một số pull request từ `feature/ducnm3_*`). Từ Ngày 3 không dùng
+`feature/ducnm3_*`.
+
+Quy trình task đầy đủ: [DEV_TASK_GUIDE.md](DEV_TASK_GUIDE.md).
+
 ## Quy ước nhánh
 
-- `ducnm3` là nhánh tích hợp mặc định.
-- Chỉ dùng nhánh tính năng cho một thay đổi tập trung sẽ được rà soát qua yêu cầu gộp (pull request).
-- Nhánh tính năng tuân theo mẫu `feature/ducnm3_<short-description>`, ví dụ `feature/ducnm3_health-api-contracts`.
+- `ducnm3` là nhánh tích hợp. Mọi pull request merge vào `ducnm3`.
+- Mỗi hạng mục = một ticket backlog/Jira = một nhánh
+  `feature/{mã backlog}`, ví dụ `feature/BLD-124_4`.
+- Không đặt tên nhánh theo tiêu đề Jira
+  `【BLD-124_4】 Đối ứng gửi mail khi dừng user tích hợp`.
+- Không dùng `feature/ducnm3_<short-description>`.
 
-## Bắt đầu một tính năng
+## Commit
+
+Message = **nội dung task trên backlog**, không viết kiểu `feat:` hay prefix mã
+nhánh. Ví dụ backlog “Triển khai base FE” thì:
+
+```bash
+git commit -m "Triển khai base FE"
+```
+
+## Cổng push
+
+- Cột Ticket trên `docs/plan/` phải có mã Jira trước khi push **code**.
+- `Chưa tạo` hoặc trống = **cấm push code**, kể cả khi được yêu cầu push. Commit
+  local vẫn được.
+- User tạo ticket Jira; agent không tạo Jira. Khi user gửi mã, điền cột Ticket
+  rồi mới được push code.
+- Chỉ push code khi user yêu cầu rõ **và** cổng ticket đã mở.
+
+## Ngoại lệ tài liệu markdown
+
+Sửa **chỉ** file markdown tài liệu không ảnh hưởng code được commit và **push
+thẳng lên `ducnm3`**: không cần mã ticket, không cần nhánh ticket, không bắt
+buộc pull request.
+
+Phạm vi ngoại lệ:
+
+- `docs/**/*.md`
+- `AGENTS.md`
+- `rules/*.md`
+- `.agents/**/*.md`
+
+Nếu diff còn `backend/`, `frontend/`, `tests/` hoặc `scripts/` (không phải
+markdown tài liệu) thì không dùng ngoại lệ — đi theo nhánh `feature/{mã backlog}`.
 
 ```bash
 git switch ducnm3
 git pull --ff-only origin ducnm3
-git switch -c feature/ducnm3_<short-description>
+git add docs AGENTS.md rules .agents
+git commit -m "Chuẩn hóa quy trình task từ Ngày 3"
+git push origin ducnm3
 ```
 
-Giữ mỗi nhánh trong phạm vi một mục đích. Không đưa vào sản phẩm được sinh, thông tin xác thực, `.env` hoặc phần dọn dẹp không liên quan.
+## Bắt đầu một task
+
+```bash
+git switch ducnm3
+git pull --ff-only origin ducnm3
+git switch -c feature/BLD-124_4
+```
+
+Giữ mỗi nhánh trong phạm vi một ticket. Không đưa vào sản phẩm được sinh, thông
+tin xác thực, `.env` hoặc phần dọn dẹp không liên quan.
 
 ## Quy trình hằng ngày
 
@@ -24,43 +76,66 @@ git diff --check
 dotnet build backend/Lms.sln -m:1
 dotnet test backend/Lms.sln -m:1
 git add <changed-files>
-git commit -m "add database-backed service health checks"
+git commit -m "Triển khai base FE"
 ```
 
-Dùng chủ đề commit ở thể mệnh lệnh để mô tả kết quả. Trước khi commit, hãy xác minh các kiểm thử hoặc quy trình chạy cục bộ liên quan.
+Trước khi commit, xác minh các kiểm thử hoặc quy trình chạy cục bộ liên quan.
 
-## Mở yêu cầu gộp (pull request)
+## Push nhánh task
 
 ```bash
-git push -u origin feature/ducnm3_<short-description>
+git push -u origin feature/BLD-124_4
 ```
 
-Tạo yêu cầu gộp (pull request) trong Bitbucket Server và chọn `ducnm3` làm nhánh đích. Kết quả của lệnh push chứa URL tạo yêu cầu gộp trực tiếp cho nhánh nguồn mới.
+Chỉ chạy khi Ticket trên plan đã có mã và user yêu cầu push.
 
-Yêu cầu gộp cần nêu:
+## Pull request
 
-- thay đổi về hành vi hoặc kiến trúc;
-- các ảnh hưởng quan trọng đến cấu hình hoặc migration;
-- lệnh xác minh chính xác và kết quả;
-- công việc tiếp theo được chủ ý loại khỏi phạm vi.
+Khi user yêu cầu, agent **tạo pull request** vào `ducnm3`. Title = nội dung task
+trên backlog. Body **bắt buộc** đúng mẫu dưới đây, viết **tiếng Việt**; thuật
+ngữ kỹ thuật giữ tiếng Anh (`endpoint`, `payload`, `migration`, `retry`, …).
 
-## Cập nhật nhánh tính năng
+Không bỏ section. Mục **DB** ghi `Không có` nếu không đổi schema/migration.
 
-Khi `ducnm3` có commit mới, cập nhật nhánh tính năng bằng phép gộp không phá hủy:
+```text
+Mô tả:
+Tổng quan:
+<tóm tắt mục đích thay đổi và phạm vi>
+
+Trước chỉnh sửa:
+<hành vi / API / UI / schema hiện tại>
+
+Sau chỉnh sửa:
+<hành vi / API / UI / schema sau khi merge>
+
+Nội dung chỉnh sửa:
+<các thay đổi chính: file, endpoint, luồng>
+
+DB (nếu có):
+<migration, table, column, index, constraint — hoặc "Không có">
+```
+
+Target luôn là `ducnm3`. User có thể nhờ agent review PR, hoặc merge luôn.
+
+## Cập nhật nhánh task
+
+Khi `ducnm3` có commit mới, cập nhật nhánh bằng merge không phá hủy:
 
 ```bash
 git fetch origin
 git merge origin/ducnm3
 ```
 
-Giải quyết xung đột cục bộ, dựng/kiểm thử lại rồi commit kết quả gộp. Không force-push các nhánh dùng chung.
+Giải quyết xung đột cục bộ, dựng/kiểm thử lại rồi commit kết quả gộp. Không
+force-push các nhánh dùng chung.
 
 ## Hoàn tất
 
-Sau khi yêu cầu gộp (pull request) được gộp, chuyển lại về `ducnm3` và xóa nhánh cục bộ đã gộp:
+Sau khi pull request được gộp, chuyển lại về `ducnm3` và xóa nhánh cục bộ đã
+gộp:
 
 ```bash
 git switch ducnm3
 git pull --ff-only origin ducnm3
-git branch -d feature/ducnm3_<short-description>
+git branch -d feature/BLD-124_4
 ```

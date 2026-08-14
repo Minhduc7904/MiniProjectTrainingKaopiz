@@ -1,5 +1,19 @@
 # 8. Ngăn xếp công nghệ đề xuất
 
+## Phía frontend
+
+```text
+Vite
+React
+JavaScript
+Tailwind CSS
+Axios
+Redux Toolkit
+React Router
+```
+
+Chi tiết folder và luồng API: `docs/architecture/frontend.md`.
+
 ## Phía backend
 
 ```text

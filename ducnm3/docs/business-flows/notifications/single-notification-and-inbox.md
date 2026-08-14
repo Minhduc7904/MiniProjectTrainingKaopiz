@@ -14,6 +14,64 @@ Quản trị viên; Học viên; Notification Service.
 - Học viên nhận thông báo tồn tại và có trạng thái `ACTIVE`.
 - `bodyMarkdown` là Markdown hợp lệ và đã có lượt sử dụng media nếu nội dung nhúng media.
 
+## UML luồng chạy
+
+### `POST /api/notifications`
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant API as Notification Service
+    participant Student as Student Service
+    participant DB as MySQL Notification
+
+    Admin->>API: POST /api/notifications
+    API->>API: Authorize + validate title/Markdown
+    API->>Student: Verify recipient ACTIVE
+    Student-->>API: Student exists
+    alt Không hợp lệ/không tồn tại
+        API-->>Admin: 400/403/404
+    else Hợp lệ
+        API->>DB: INSERT notification UNREAD
+        DB-->>API: Created notification
+        API-->>Admin: 201 notification
+    end
+```
+
+### `GET /api/notifications/me`
+
+```mermaid
+sequenceDiagram
+    participant Student
+    participant API as Notification Service
+    participant DB as MySQL Notification
+
+    Student->>API: GET /api/notifications/me
+    API->>API: Resolve authenticated student identity
+    API->>DB: SELECT notifications by recipient_student_id
+    DB-->>API: Inbox items
+    API-->>Student: 200 inbox
+```
+
+### `PATCH /api/notifications/{id}/read`
+
+```mermaid
+sequenceDiagram
+    participant Student
+    participant API as Notification Service
+    participant DB as MySQL Notification
+
+    Student->>API: PATCH /api/notifications/{id}/read
+    API->>DB: Read notification + recipient check
+    DB-->>API: Notification hoặc rỗng
+    alt Không phải người nhận hoặc không tồn tại
+        API-->>Student: 403/404
+    else Được phép
+        API->>DB: UPDATE status=READ, read_at
+        API-->>Student: 200 updated notification
+    end
+```
+
 ## Luồng gửi đơn
 
 1. Quản trị viên gửi `POST /api/notifications` với `studentId`, `title` và `bodyMarkdown`.

@@ -22,6 +22,33 @@ API contract: [`post-media-usages.md`](../../api/media-service/endpoints/post-me
 - Tuple hỗ trợ là `STUDENT/STUDENT_AVATAR/AVATAR` và
   `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant API as Media Service
+    participant Student as Student Service
+    participant DB as MySQL Media
+
+    Client->>Gateway: POST /media/api/media/usages
+    Gateway->>API: Usage request
+    API->>API: Validate actor, owner, tuple và mediaId
+    opt Actor/owner cần xác minh
+        API->>Student: Lookup student
+        Student-->>API: Exists/not found
+    end
+    alt Request không hợp lệ hoặc không tồn tại
+        API-->>Gateway: 400/404
+    else Hợp lệ
+        API->>DB: SERIALIZABLE: soft-delete usage cũ + insert usage mới
+        DB-->>API: Committed usage
+        API-->>Gateway: 201 Created
+    end
+    Gateway-->>Client: HTTP response
+```
+
 ## Luồng chính
 
 1. Client gửi JSON usage qua Gateway.

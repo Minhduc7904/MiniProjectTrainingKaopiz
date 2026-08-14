@@ -1,8 +1,9 @@
 # Các luồng nghiệp vụ
 
 Mỗi endpoint đã triển khai có đúng một flow file: actor, điều kiện đầu vào,
-luồng chính, trường hợp lỗi, dữ liệu thay đổi và test mapping. Flow và API doc
-phải liên kết qua lại.
+luồng chính, trường hợp lỗi, dữ liệu thay đổi, test mapping và **sơ đồ UML
+sequence**. Nếu một file mô tả nhiều API, mỗi API phải có một sơ đồ riêng. Flow
+và API doc phải liên kết qua lại.
 
 ```text
 business-flows/
@@ -33,3 +34,14 @@ business-flows/
 Khi thêm endpoint mới, sao chép
 [`_templates/endpoint-flow.md`](_templates/endpoint-flow.md) và đặt tên file
 `<method>-<resource>.md`.
+
+## Quy ước UML
+
+- Dùng khối `mermaid` với `sequenceDiagram`, đặt ngay sau phần actor/điều kiện
+  trước hoặc ngay trước luồng chính.
+- Sơ đồ phải thể hiện caller, Gateway (nếu đi qua public route), owning service,
+  dependency và response/error đáng chú ý.
+- Nhánh `alt` mô tả validation, not-found, conflict hoặc dependency failure khi
+  các nhánh này quyết định kết quả API.
+- Tác vụ nền không có HTTP endpoint vẫn phải có một sequence diagram thể hiện
+  trigger, worker và các thay đổi trạng thái.

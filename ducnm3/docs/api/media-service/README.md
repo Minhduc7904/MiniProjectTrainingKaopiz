@@ -9,3 +9,5 @@
 - [Tạo thông tin sử dụng phương tiện](endpoints/post-media-usages.md)
 - [Xóa thông tin sử dụng phương tiện](endpoints/delete-media-usage-by-id.md)
 - [Liệt kê thông tin sử dụng phương tiện](endpoints/get-media-usages.md)
+- [Lấy URL của một usage ảnh](endpoints/get-media-usage-url.md)
+- [Lấy URL ảnh của owner](endpoints/get-media-usage-urls.md)

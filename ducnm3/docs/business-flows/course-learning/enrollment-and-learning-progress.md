@@ -13,6 +13,49 @@ Học viên; Course Service; Student Service.
 - Học viên đã được xác thực và có trạng thái `ACTIVE`.
 - Khóa học tồn tại và có trạng thái `PUBLISHED`.
 
+## UML luồng chạy
+
+### Ghi danh Khóa học
+
+```mermaid
+sequenceDiagram
+    participant Student
+    participant Course as Course Service
+    participant StudentSvc as Student Service/JWT
+    participant DB as MySQL Course
+
+    Student->>Course: Enroll course
+    Course->>StudentSvc: Verify ACTIVE student
+    StudentSvc-->>Course: Verified identity/status
+    Course->>DB: Check PUBLISHED course + active enrollment
+    DB-->>Course: Eligibility
+    alt Không đủ điều kiện hoặc đã ghi danh
+        Course-->>Student: 403/404/409
+    else Hợp lệ
+        Course->>DB: INSERT enrollment
+        Course-->>Student: Enrollment created
+    end
+```
+
+### Cập nhật tiến độ Bài học
+
+```mermaid
+sequenceDiagram
+    participant Student
+    participant Course as Course Service
+    participant DB as MySQL Course
+
+    Student->>Course: Submit lesson progress
+    Course->>DB: Verify enrollment + lesson ownership
+    DB-->>Course: Eligible lesson
+    alt Không có quyền hoặc lesson không tồn tại
+        Course-->>Student: 403/404
+    else Hợp lệ
+        Course->>DB: UPSERT lesson_progress; set completed_at at 100%
+        Course-->>Student: Updated progress
+    end
+```
+
 ## Luồng chính
 
 1. Học viên chọn một Khóa học để ghi danh.

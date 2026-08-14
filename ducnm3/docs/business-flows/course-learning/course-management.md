@@ -13,6 +13,47 @@ Quản trị viên.
 - Quản trị viên đã được xác thực và có quyền quản lý Khóa học.
 - `name` hợp lệ; `descriptionMarkdown` là Markdown an toàn.
 
+## UML luồng chạy
+
+### `POST /api/courses`
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant API as Course Service
+    participant DB as MySQL Course
+
+    Admin->>API: POST /api/courses
+    API->>API: Authenticate, authorize, validate
+    alt Không hợp lệ hoặc không có quyền
+        API-->>Admin: 400/403
+    else Hợp lệ
+        API->>DB: INSERT course DRAFT
+        DB-->>API: Created course
+        API-->>Admin: 201 Created
+    end
+```
+
+### `POST /api/courses/{courseId}/lessons`
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant API as Course Service
+    participant DB as MySQL Course
+
+    Admin->>API: POST /api/courses/{courseId}/lessons
+    API->>API: Authenticate, authorize, validate
+    API->>DB: Check course and display_order
+    DB-->>API: Exists/duplicate result
+    alt Course không có hoặc order trùng
+        API-->>Admin: 404/409
+    else Hợp lệ
+        API->>DB: INSERT lesson
+        API-->>Admin: 201 Created
+    end
+```
+
 ## Luồng chính
 
 1. Quản trị viên gửi `POST /api/courses` với tên, mô tả Markdown và trạng thái `DRAFT`.

@@ -21,6 +21,31 @@ Client lấy một page Học viên, có thể lọc theo trạng thái và sắ
 - `page >= 1`, `pageSize` từ `1` đến `100`.
 - `status`, `sortBy`, `sortDirection` thuộc allowlist.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant API as Student Service
+    participant Repo as Student Repository
+    participant DB as MySQL Student
+
+    Client->>Gateway: GET /student/api/students?filters
+    Gateway->>API: Forward query
+    API->>API: Validate, normalize và áp defaults
+    alt Query không hợp lệ
+        API-->>Gateway: 400 VALIDATION_FAILED
+    else Query hợp lệ
+        API->>Repo: Count + lấy page ổn định
+        Repo->>DB: SELECT students
+        DB-->>Repo: Total và rows
+        Repo-->>API: Page result
+        API-->>Gateway: 200 data + meta.pagination
+    end
+    Gateway-->>Client: HTTP response
+```
+
 ## Luồng chính
 
 1. Client gửi GET không body qua Gateway.

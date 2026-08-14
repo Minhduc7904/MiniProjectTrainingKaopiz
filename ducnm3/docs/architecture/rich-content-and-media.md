@@ -62,6 +62,14 @@ boundary. API stream thẳng MinIO vào response, không buffer toàn file. Phi�
 hiện tại dùng `Cache-Control: no-store`, chưa có auth, range request hoặc
 presigned URL.
 
+## Cấp URL theo usage
+
+`IMediaUrlProvider` là abstraction Application để cấp URL ảnh cho một hoặc nhiều
+`media_usages` active. Implementation hiện tại sinh Gateway content URL; khi cần
+presigned URL, thay implementation bằng adapter Infrastructure dùng metadata nội
+bộ của media, không đổi handler, endpoint hoặc contract của service gọi. Các API
+URL luôn nhận usage/owner, không nhận bucket hoặc object key.
+
 ## Request identity tạm thời
 
 Hệ thống chưa có authentication middleware cho hai command Media. Vì vậy:

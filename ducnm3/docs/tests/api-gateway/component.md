@@ -22,3 +22,7 @@ dotnet test backend/BuildingBlocks/BuildingBlocks.Presentation.Tests/BuildingBlo
 Ca này bảo vệ ánh xạ lỗi của proxy tài liệu Swagger. Nó không xác minh tuyến YARP
 tới Course Service đang chạy; việc đó thuộc kiểm thử tích hợp gateway hoặc kiểm
 thử liên dịch vụ khi được bổ sung.
+
+CORS preflight/origin của Gateway được kiểm trong
+[`../shared-presentation/component.md`](../shared-presentation/component.md)
+(`GatewayCorsTests`).

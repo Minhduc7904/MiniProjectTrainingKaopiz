@@ -1,10 +1,10 @@
 # Testing Rules
 
 - Add or update automated tests for every changed behavior.
-- Read `skills/test-unit/` before writing unit tests.
-- Read `skills/test-component/` before writing `TestServer` endpoint or
+- Read `.agents/skills/test-unit/` before writing unit tests.
+- Read `.agents/skills/test-component/` before writing `TestServer` endpoint or
   middleware tests.
-- Read `skills/test-integration/` before writing tests that use MySQL, MinIO,
+- Read `.agents/skills/test-integration/` before writing tests that use MySQL, MinIO,
   RabbitMQ, SQL migrations, Docker, or Testcontainers.
 - Keep tests deterministic and independent of shared external state.
 - Use unit tests for local logic and integration tests for component boundaries.

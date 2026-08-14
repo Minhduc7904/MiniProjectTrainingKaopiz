@@ -21,6 +21,36 @@ trả media `READY` cùng content URL công khai.
 - Actor type được hỗ trợ và actor tồn tại trong Student Service.
 - MIME, extension và kích thước file hợp lệ.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant API as Media Service
+    participant Student as Student Service
+    participant DB as MySQL Media
+    participant Storage as MinIO
+    participant Outbox
+    participant MQ as RabbitMQ
+    participant Worker as Media Worker
+
+    Client->>Gateway: POST /media/api/media (multipart)
+    Gateway->>API: Forward upload
+    API->>Student: Verify uploadedBy actor
+    Student-->>API: Actor exists
+    API->>DB: Insert source media PENDING
+    API->>Storage: Stream upload + SHA-256
+    Storage-->>API: Upload complete
+    API->>DB: Mark source READY; create thumbnail job/outbox if supported
+    API-->>Gateway: 201 source media + thumbnail QUEUED
+    Gateway-->>Client: Created response
+    Outbox->>MQ: Publish GenerateMediaThumbnail
+    MQ->>Worker: Deliver command
+    Worker->>Storage: Download source, create WebP, upload thumbnail
+    Worker->>DB: Mark thumbnail job/media READY
+```
+
 ## Luồng chính
 
 1. Client gửi multipart tới Gateway.

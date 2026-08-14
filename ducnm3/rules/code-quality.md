@@ -1,6 +1,7 @@
 # Code Quality Rules
 
 - Follow the project's formatter and linter after a stack is selected.
+- Frontend follows `rules/frontend.md` and `docs/architecture/frontend.md`.
 - Prefer small, cohesive modules with explicit interfaces.
 - Do not add dependencies without a clear need and documented rationale.
 - Handle expected failures explicitly; do not silently discard errors.

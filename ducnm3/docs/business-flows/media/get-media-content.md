@@ -20,6 +20,33 @@ storage location.
 - Media tồn tại, chưa soft-delete và đang `READY`.
 - Authentication/authorization chưa được triển khai ở phiên bản hiện tại.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant API as Media Service
+    participant DB as MySQL Media
+    participant Storage as MinIO
+
+    Client->>Gateway: GET /media/api/media/{mediaId}/content
+    Gateway->>API: Forward request
+    API->>API: Validate mediaId
+    API->>DB: Đọc metadata media
+    DB-->>API: Media status + object location kín
+    alt Không tồn tại hoặc soft-delete
+        API-->>Gateway: 404
+    else Chưa READY
+        API-->>Gateway: 409
+    else READY
+        API->>Storage: Open read stream
+        Storage-->>API: Stream bytes
+        API-->>Gateway: 200 stream + MIME/length
+    end
+    Gateway-->>Client: HTTP response/stream
+```
+
 ## Luồng chính
 
 1. Client gọi `contentUrl` qua Gateway.

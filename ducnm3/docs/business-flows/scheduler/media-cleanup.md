@@ -18,6 +18,28 @@ Scheduler Service; Scheduler Worker; Media Service.
 - Một job riêng hoặc một pha của cleanup sẽ dùng ngưỡng thời gian để nhận diện
   `media_objects.status = PENDING` stale; Scheduler không tự sửa database Media.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Scheduler
+    participant Worker as Scheduler Worker
+    participant Media as Media Service
+    participant MediaDB as MySQL Media
+    participant Storage as MinIO
+    participant SchedulerDB as MySQL Scheduler
+
+    Scheduler->>SchedulerDB: Create idempotent background_job_run
+    SchedulerDB-->>Scheduler: Run created
+    Scheduler->>Worker: Dispatch MEDIA_UNUSED_CLEANUP
+    Worker->>Media: Internal cleanup request
+    Media->>MediaDB: Find unused and stale PENDING media
+    Media->>Storage: Delete orphaned objects when applicable
+    Media->>MediaDB: Update media state/metadata
+    Media-->>Worker: Safe cleanup summary
+    Worker->>SchedulerDB: Save outcome SUCCEEDED/FAILED
+```
+
 ## Luồng dự kiến
 
 1. Scheduler tính `next_run_at` từ CRON theo UTC.

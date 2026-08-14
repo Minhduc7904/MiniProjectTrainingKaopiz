@@ -15,6 +15,7 @@ Bắt buộc:
 Khuyến nghị nếu cần biên dịch/kiểm thử/scaffold trực tiếp trên máy:
 
 - .NET SDK `10.0`.
+- Node.js LTS (kèm `npm`) để chạy `frontend/lms-web`.
 
 Kiểm tra sau khi cài:
 
@@ -314,7 +315,23 @@ Thay `media` bằng `course`, `student`, `notification`, hoặc `scheduler` khi 
 một migration đã được áp dụng; tạo migration mới để sửa schema. Xem thêm
 [`../guide/MIGRATION_GUIDE.md`](../guide/MIGRATION_GUIDE.md).
 
-## 12. Các giới hạn hiện tại
+## 12. Chạy frontend
+
+```bash
+cd frontend/lms-web
+cp .env.example .env
+npm install
+npm run dev
+```
+
+App lắng nghe cổng `5173` và gọi Gateway tại `VITE_API_BASE_URL`
+(`http://localhost:5100` mặc định). `VITE_API_TIMEOUT_MS` mặc định `5000` để
+khớp timeout HttpClient của Gateway. `VITE_HTTP_LOG=true` in từng request/response
+Axios ra DevTools. Folder, Redux và rule page nằm ở
+`docs/architecture/frontend.md`. Gateway CORS cho origin Vite nằm ở
+`Cors:AllowedOrigins` trong `Lms.ApiGateway/appsettings.json`.
+
+## 13. Các giới hạn hiện tại
 
 Nền tảng đã chạy được và Media Service đã có HTTP command upload/tạo avatar
 usage, nhưng vẫn còn các giới hạn:
@@ -328,9 +345,10 @@ usage, nhưng vẫn còn các giới hạn:
 - Chưa có worker gửi thông báo hoặc quy trình xử lý theo lô/thử lại/tính idempotent.
 - Scheduler Worker mới là khung cơ bản; chưa phân tích CRON, claim lần chạy, thực thi handler
   hoặc gọi Media/Notification Service.
-- Chưa có frontend hoặc kiểm thử đầu cuối.
+- Frontend đã có khung `lms-web` (Vite, Tailwind, Axios, Redux) và trang sổ học viên;
+  chưa có kiểm thử đầu cuối.
 
-## 13. Khắc phục sự cố nhanh
+## 14. Khắc phục sự cố nhanh
 
 | Triệu chứng | Cách kiểm tra / xử lý |
 | --- | --- |

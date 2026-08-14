@@ -149,7 +149,13 @@ lms-mini/
 ├── frontend/
 │   └── lms-web/
 │       ├── src/
-│       ├── tests/
+│       │   ├── app/
+│       │   ├── api/
+│       │   ├── constants/
+│       │   ├── features/
+│       │   ├── hooks/
+│       │   ├── components/
+│       │   └── pages/
 │       └── README.md
 │
 ├── tests/

@@ -2,9 +2,11 @@
 
 ## Phạm vi
 
-Dự án: `backend/Services/Media/MediaService.UnitTests`
-Mã nguồn: `Endpoints/MediaHealthEndpointTests.cs` và
-`Endpoints/MediaCommandEndpointTests.cs`
+Dự án legacy: `backend/Services/Media/MediaService.UnitTests` với
+`Endpoints/MediaHealthEndpointTests.cs` và `Endpoints/MediaCommandEndpointTests.cs`.
+
+Dự án URL usage: `backend/Services/Media/MediaService.ComponentTests`
+với `Endpoints/GetMediaUsageUrlEndpointsComponentTests.cs`.
 Thành phần phụ thuộc: ASP.NET Core `TestServer`; các trình kiểm tra cơ sở dữ liệu và lưu
 trữ đều là đối tượng giả trong bộ nhớ.
 
@@ -12,6 +14,7 @@ Chạy:
 
 ```bash
 dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj
+dotnet test backend/Services/Media/MediaService.ComponentTests/MediaService.ComponentTests.csproj
 ```
 
 ## Ca kiểm thử
@@ -39,3 +42,9 @@ Các dependency trong component test dùng shared test doubles tại `TestDouble
 Checksum, MySQL,
 MinIO và transaction thay active avatar được bao phủ trong
 [`integration.md`](integration.md).
+
+| Kiểm thử | Request | Đạt khi |
+| --- | --- | --- |
+| `GetUsageExistsReturnsOkEnvelope` | `GET /api/media/usages/{usageId}/url` | `200`, JSON envelope và URL do provider giả sinh. |
+| `GetOwnerUsagesReturnsEveryUrlInEnvelope` | `GET /api/media/usages/urls` với owner query | `200` và mảng URL có đúng thứ tự `displayOrder`. |
+| `GetUsageMissingReturnsNotFoundEnvelope` | Usage không tồn tại | `404 MEDIA_USAGE_NOT_FOUND` trong envelope an toàn. |

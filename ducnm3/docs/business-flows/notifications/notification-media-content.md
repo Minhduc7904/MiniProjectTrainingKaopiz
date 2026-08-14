@@ -14,6 +14,34 @@ Quản trị viên; Media Service; Notification Service; Học viên.
 - Media đã được tải lên Media Service thành công.
 - Bộ hiển thị có bộ làm sạch Markdown và chỉ cho phép URL do Media Service cấp.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Media as Media Service
+    participant Notification as Notification Service
+    participant DB as MySQL Notification
+    participant Student
+
+    Admin->>Media: Upload media
+    Media-->>Admin: mediaId + content URL
+    Admin->>Notification: Create notification/batch with Markdown
+    Notification->>Notification: Sanitize Markdown and media URLs
+    alt Markdown hoặc URL không an toàn
+        Notification-->>Admin: 400
+    else Hợp lệ
+        Notification->>Media: POST media usage (EMBED/ATTACHMENT)
+        Media-->>Notification: Usage created/conflict
+        Notification->>DB: Store notification or batch
+        Notification-->>Admin: Success response
+        Student->>Notification: Open inbox
+        Notification-->>Student: Sanitized Markdown
+        Student->>Media: GET media content URL
+        Media-->>Student: Stream media
+    end
+```
+
 ## Luồng chính
 
 1. Quản trị viên tải media lên Media Service và nhận `mediaId` cùng URL nội dung.

@@ -1,63 +1,43 @@
 # 49. Chiến lược nhánh trong 5 ngày
 
-Không cần Git Flow phức tạp.
+Không cần Git Flow phức tạp (`main` / `develop`). Nhánh tích hợp của intern là
+`ducnm3`.
+
+Ngày 1–2: làm trên `ducnm3` (commit trực tiếp hoặc pull request từ
+`feature/ducnm3_*`).
+
+Từ **Ngày 3**: mỗi hạng mục một ticket Jira, nhánh `feature/{mã backlog}`.
 
 ```text
-main
-develop
+ducnm3
+feature/BLD-124_4
+feature/BLD-125_1
 ```
 
-Nhánh tính năng ngắn:
+Chi tiết: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md) và
+[GIT_GUIDE.md](../guide/GIT_GUIDE.md).
 
-```text
-feature/course
-feature/minio
-feature/batch
-feature/performance
-```
-
-Nếu làm một mình và deadline gấp:
-
-```text
-main
-feature/*
-```
-
-là đủ.
+- Base luôn là `ducnm3`.
+- Tên nhánh = `feature/{mã backlog}` (`feature/BLD-124_4`), không dùng tiêu đề
+  Jira đầy đủ.
+- Không dùng `feature/ducnm3_*` từ Ngày 3.
+- Commit message = nội dung task trên backlog.
+- `Chưa tạo` trên cột Ticket = cấm push **code**.
+- Markdown tài liệu (`docs/**/*.md`, `AGENTS.md`, `rules/*.md`,
+  `.agents/**/*.md`) push thẳng `ducnm3`, không cần ticket/PR.
+- Khi user yêu cầu, agent tạo pull request vào `ducnm3` đúng mẫu GIT_GUIDE.
 
 ---
-# 50. Commit gợi ý
+# 50. Commit
+
+Từ Ngày 3, message là nội dung task trên backlog (tiếng Việt):
 
 ```text
-chore: initialize microservice solution
+Triển khai base FE
 
-feat: add course service clean architecture
+Hoàn thiện Media Service
 
-feat: add student service
-
-feat: integrate mysql
-
-feat: add minio object storage
-
-feat: add course lesson progress APIs
-
-feat: add notification background job
-
-feat: add retry and idempotency
-
-perf: optimize course n+1 queries
-
-perf: add streaming csv export
-
-perf: add course search index
-
-perf: add cursor pagination
-
-feat: add global error handling
-
-test: add notification batch tests
-
-docs: add benchmark results and demo script
+CSV naive vs stream
 ```
 
 ---

@@ -19,6 +19,34 @@ service khác truy vấn database Student.
 - `studentId` là UUID khác rỗng.
 - Authentication/authorization chưa được triển khai ở phiên bản hiện tại.
 
+## UML luồng chạy
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Gateway
+    participant API as Student Service
+    participant Repo as Student Repository
+    participant DB as MySQL Student
+
+    Caller->>Gateway: GET /student/api/students/{studentId}
+    Gateway->>API: Forward request
+    API->>API: Parse UUID
+    alt UUID không hợp lệ
+        API-->>Gateway: 400 VALIDATION_FAILED
+    else UUID hợp lệ
+        API->>Repo: FindById(studentId)
+        Repo->>DB: SELECT student
+        DB-->>Repo: Student hoặc rỗng
+        alt Không tìm thấy
+            API-->>Gateway: 404 STUDENT_NOT_FOUND
+        else Tìm thấy
+            API-->>Gateway: 200 StudentQueryResponse
+        end
+    end
+    Gateway-->>Caller: HTTP response
+```
+
 ## Luồng chính
 
 1. Caller gửi GET request.

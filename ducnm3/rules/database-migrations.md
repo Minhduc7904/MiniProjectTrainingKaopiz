@@ -1,6 +1,6 @@
 # Database Migration Rules
 
-- Read `skills/database-migration/SKILL.md`, `reference.md`, and `template.md`
+- Read `.agents/skills/database-migration/SKILL.md`, `reference.md`, and `template.md`
   before changing schema or generated EF models.
 - SQL migration files are the schema source of truth.
 - Never edit a migration recorded in `schema_migrations`; create the next

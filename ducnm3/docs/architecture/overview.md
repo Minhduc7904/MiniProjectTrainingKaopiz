@@ -16,5 +16,5 @@ Phạm vi Scheduler hiện tại chỉ gồm phần cấu trúc: kiểm tra tr�
 khung lưu trữ dữ liệu và khung Worker chưa chạy. Việc phân tích CRON, nhận lượt
 chạy để xử lý, thực thi bộ xử lý và gọi liên dịch vụ sẽ được triển khai sau.
 
-Xem `microservices.md`, `clean-architecture.md` và
+Xem `microservices.md`, `clean-architecture.md`, `frontend.md` và
 `../database/lms-data-model.md` để biết chi tiết các ranh giới.
