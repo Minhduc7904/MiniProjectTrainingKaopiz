@@ -13,7 +13,7 @@ Est là giờ thật. Quy trình:
 | FE: base Workbench và trang GET students | 1 giờ | `ERBUL26-2681` |
 | FE: trang POST media upload | 1 giờ | `ERBUL26-2682` |
 | Batch Job — gửi notification ~3k | 3 giờ | `ERBUL26-2690` |
-| Batch Performance — 3k/10k/100k | 1 giờ | `Chưa tạo` |
+| Batch Performance — 3k/10k/100k | 1 giờ | `ERBUL26-2690` |
 
 ## Task đã có ticket (Media / FE)
 
@@ -82,7 +82,7 @@ POST, Worker dispatch, retry trong code.
   script seed, không tối ưu thêm trong task này).
 - [ ] Đo execution time và memory usage; ghi `docs/benchmark`.
 - Est: 1 giờ.
-- Ticket: `Chưa tạo`.
+- Ticket: `ERBUL26-2690` (gộp theo xác nhận của user).
 - Lý do est: chỉ đo và ghi số, phụ thuộc task 4 đã chạy được. Seed 100k
   nếu chưa có thì dùng tập nhỏ hơn và ghi rõ trong benchmark.
 
