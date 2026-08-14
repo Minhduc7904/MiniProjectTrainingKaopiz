@@ -3,6 +3,7 @@ using BuildingBlocks.Presentation.Api;
 using NotificationService.Api.Contracts.Requests;
 using NotificationService.Api.Contracts.Responses;
 using NotificationService.Application;
+using NotificationService.Application.Abstractions;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.GetById;
 

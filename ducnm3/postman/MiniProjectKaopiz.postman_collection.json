@@ -541,7 +541,7 @@
                   "  pm.response.to.have.status(202);",
                   "  const payload = pm.response.json();",
                   "  pm.expect(payload.data.status).to.eql(\"PENDING\");",
-                  "  pm.expect(payload.data.totalCount).to.be.above(0);",
+                  "  pm.expect(payload.data.totalCount).to.eql(0);",
                   "  pm.expect(pm.response.headers.get(\"Location\")).to.match(/^\\/notification\\/api\\/notification-batches\\//);",
                   "  pm.collectionVariables.set(\"notificationBatchId\", payload.data.id);",
                   "});"
@@ -592,7 +592,7 @@
                   "  pm.response.to.have.status(200);",
                   "  const payload = pm.response.json();",
                   "  pm.expect(payload.data.id).to.eql(pm.collectionVariables.get(\"notificationBatchId\"));",
-                  "  pm.expect(payload.data.status).to.be.oneOf([\"PENDING\", \"PROCESSING\", \"COMPLETED\", \"PARTIAL_FAILED\", \"FAILED\"]);",
+                  "  pm.expect(payload.data.status).to.be.oneOf([\"PENDING\", \"SNAPSHOTTING\", \"SNAPSHOT_READY\", \"PROCESSING\", \"COMPLETED\", \"PARTIAL_FAILED\", \"FAILED\"]);",
                   "});"
                 ]
               }

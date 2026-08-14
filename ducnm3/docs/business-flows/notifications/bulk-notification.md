@@ -12,7 +12,7 @@ Quản trị viên; Notification API; Student Service; MySQL Notification; Rabbi
 
 - `targetScope` là `ALL_STUDENTS`.
 - `createdBy`, `title` và `bodyMarkdown` hợp lệ.
-- Student Service trả về snapshot không rỗng.
+- Notification database và MassTransit outbox sẵn sàng nhận batch command.
 
 ## UML luồng chạy
 
@@ -22,23 +22,16 @@ Quản trị viên; Notification API; Student Service; MySQL Notification; Rabbi
 sequenceDiagram
     participant Admin
     participant API as Notification API
-    participant Student as Student Service
     participant DB as MySQL Notification
     participant Bus as RabbitMQ
 
     Admin->>API: POST batch (ALL_STUDENTS)
     API->>API: Validate body, scope, createdBy
-    API->>Student: GET /api/students?status=ACTIVE&pageSize=100
-    loop hết các trang
-        Student-->>API: student ids + totalPages
-    end
-    alt Scope sai hoặc snapshot rỗng
+    alt Scope sai
         API-->>Admin: 400 VALIDATION_FAILED
-    else Student Service không phản hồi
-        API-->>Admin: 503 STUDENT_SERVICE_UNAVAILABLE
     else Hợp lệ
-        API->>DB: INSERT batch PENDING + batch items
-        API->>Bus: DispatchNotificationBatchV1(batchId)
+        API->>DB: INSERT batch PENDING + SnapshotNotificationBatchV1 outbox
+        DB-->>Bus: SnapshotNotificationBatchV1(batchId)
         API-->>Admin: 202 + Location GET batch
     end
 ```
@@ -61,7 +54,7 @@ sequenceDiagram
     end
 ```
 
-### `DispatchNotificationBatchV1` (Notification Worker)
+### `SnapshotNotificationBatchV1` và `DispatchNotificationBatchV1` (Notification Worker)
 
 ```mermaid
 sequenceDiagram
@@ -70,6 +63,19 @@ sequenceDiagram
     participant DB as MySQL Notification
     participant Sender as FakeNotificationSender
 
+    Bus->>Worker: SnapshotNotificationBatchV1(batchId)
+    Worker->>DB: PENDING -> SNAPSHOTTING
+    loop từng trang Student Service
+        Worker->>Student: GET /api/students?status=ACTIVE&pageSize=100
+        Student-->>Worker: student ids + totalPages
+        Worker->>DB: UPSERT notification_batch_items
+    end
+    alt Snapshot lỗi hoặc rỗng
+        Worker->>DB: batch -> FAILED
+    else Snapshot hoàn tất
+        Worker->>DB: total_count + batch -> SNAPSHOT_READY
+        Worker->>Bus: DispatchNotificationBatchV1(batchId)
+    end
     Bus->>Worker: DispatchNotificationBatchV1(batchId)
     Worker->>DB: Claim tối đa batchSize item PENDING/RETRY
     loop từng item trong chunk
@@ -92,7 +98,7 @@ sequenceDiagram
 
 ## Quy tắc xử lý
 
-1. Snapshot dùng danh sách Student Service trả tại lúc POST; Worker không gọi lại Student Service.
+1. POST chỉ tạo batch; Worker bắt đầu snapshot sau khi command được durable handoff. Snapshot dùng từng trang từ Student Service, không giữ toàn bộ recipient trong memory hoặc HTTP request. Retry/redelivery upsert theo `UNIQUE(batch_id, student_id)` nên không tạo item trùng.
 2. Một chunk có tối đa `batchSize` item, mặc định 500; Worker không tải toàn bộ lô vào bộ nhớ. Consumer xử lý tuần tự một message; item `PROCESSING` còn lại sau khi process bị dừng được claim lại ở lượt dispatch tiếp theo.
 3. Fake sender thất bại lần một khi `hash(studentId) % 20 == 0`, và lần hai khi `hash(studentId) % 100 == 0`.
 4. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
@@ -100,6 +106,6 @@ sequenceDiagram
 
 ## Dữ liệu thay đổi
 
-- Notification DB: `notification_batches`, `notification_batch_items`, `notifications`.
+- Notification DB: `notification_batches`, `notification_batch_items`, `notifications`, MassTransit `InboxState`, `OutboxState`, `OutboxMessage`.
 - Student Service chỉ đọc danh sách học viên.
 - Không có Scheduler Service hoặc `background_jobs` trong flow này.

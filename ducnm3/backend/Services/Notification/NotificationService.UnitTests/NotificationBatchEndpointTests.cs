@@ -37,8 +37,9 @@ public sealed class NotificationBatchEndpointTests
             Assert.That(post.Headers.Location!.ToString(), Does.StartWith("/notification/api/notification-batches/"));
         });
 
+        var batchId = post.Headers.Location!.Segments[^1];
         var get = await fixture.Client.GetAsync(
-            post.Headers.Location!.ToString().Replace("/notification", string.Empty, StringComparison.Ordinal));
+            string.Concat("/api/notification-batches/", batchId));
         var getBody = await get.Content.ReadAsStringAsync();
 
         Assert.Multiple(() =>
@@ -85,8 +86,6 @@ internal sealed class NotificationBatchApiFixture : IAsyncDisposable
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddNotificationApplication();
-        builder.Services.AddSingleton<IStudentRecipientClient>(
-            new StubStudentRecipientClient([Guid.NewGuid()]));
         builder.Services.AddSingleton<INotificationBatchRepository, EndpointBatchRepository>();
         builder.Services.AddSingleton<ICommandSender, StubCommandSender>();
 
@@ -116,7 +115,7 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
         summary = new NotificationBatchSummary(
             record.Id,
             "PENDING",
-            checked((uint)record.StudentIds.Count),
+            0,
             0,
             0,
             0,
@@ -131,6 +130,18 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
         Task.FromResult(summary?.Id == batchId ? summary : null);
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task<NotificationSnapshotWork> PrepareSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationSnapshotWork(false, false));
+
+    public Task AppendSnapshotPageAsync(Guid batchId, IReadOnlyList<Guid> studentIds, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
+
+    public Task<bool> CompleteSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
+        Task.FromResult(false);
+
+    public Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 
     public Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(
         Guid batchId,

@@ -2,7 +2,7 @@
 
 ## Mục đích
 
-Tạo lô gửi thông báo và chụp danh sách học viên đang hoạt động tại thời điểm nhận yêu cầu. API chỉ tạo bản chụp, lưu lô và phát lệnh dispatch; Notification Worker mới gửi inbox theo từng chunk.
+Tạo operation gửi thông báo hàng loạt. API chỉ ghi batch `PENDING` và phát lệnh snapshot qua transactional outbox; Notification Worker chụp danh sách học viên đang hoạt động theo từng trang rồi mới dispatch inbox theo từng chunk. Vì vậy API không giữ request HTTP trong lúc lấy toàn bộ recipient.
 
 ## Xác thực và phân quyền
 
@@ -41,7 +41,7 @@ Location: /notification/api/notification-batches/4c40bcf9-675e-435c-93bd-17cde82
   "data": {
     "id": "4c40bcf9-675e-435c-93bd-17cde82d1670",
     "status": "PENDING",
-    "totalCount": 1250,
+    "totalCount": 0,
     "processedCount": 0,
     "successCount": 0,
     "failedCount": 0,
@@ -58,13 +58,14 @@ Poll `GET /api/notification-batches/{batchId}` qua gateway tại URL trong `Loca
 
 ## Mã trạng thái HTTP
 
-- `202`: lô, snapshot người nhận và lệnh dispatch đã được chấp nhận.
+- `202`: batch và durable snapshot command đã được chấp nhận. `totalCount` là `0` cho tới khi Worker hoàn tất snapshot.
 - `400 VALIDATION_FAILED`: body không hợp lệ, scope khác `ALL_STUDENTS`, có `courseId`, hoặc snapshot rỗng.
-- `503 STUDENT_SERVICE_UNAVAILABLE`: không thể lấy snapshot từ Student Service.
 - `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-API gọi Student Service theo trang (tối đa 100 học viên/trang), tạo `notification_batches` và `notification_batch_items`, rồi phát `DispatchNotificationBatchV1(batchId)`. HTTP request không gọi sender và không tạo `notifications`.
+API tạo một hàng `notification_batches` `PENDING` và ghi `SnapshotNotificationBatchV1(batchId)` vào MassTransit outbox trong cùng transaction. Worker stream `GET /api/students?status=ACTIVE&pageSize=100`, upsert từng trang vào `notification_batch_items` và chuyển batch sang `SNAPSHOT_READY`. Sau đó Worker phát `DispatchNotificationBatchV1(batchId)`. HTTP request không gọi Student Service, sender hoặc tạo `notifications`.
+
+Các trạng thái polling gồm `PENDING`, `SNAPSHOTTING`, `SNAPSHOT_READY`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED` và `FAILED`. Nếu snapshot không lấy được Student Service hoặc không có recipient, Worker kết thúc batch ở `FAILED`; client tạo request mới khi dependency đã khôi phục.
 
 Notification Worker nhận command, mỗi lượt chỉ claim tối đa `batchSize` item `PENDING` hoặc `RETRY`, rồi tạo inbox `source_type=BULK`, `status=UNREAD`. Fake sender thử đúng một lần lại: thất bại lần đầu chuyển `RETRY`; thất bại lần hai chuyển `FAILED` và lưu lỗi. Nếu còn item, Worker tự gửi lại cùng command; không dùng Scheduler hay `background_jobs`.

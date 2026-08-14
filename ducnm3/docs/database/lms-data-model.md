@@ -218,7 +218,7 @@ title                 // Tiêu đề thông báo dùng cho toàn lô
 body_markdown         // Nội dung Markdown dùng cho toàn lô
 target_scope          // COURSE_ENROLLED | STUDENT_IDS | ALL_STUDENTS
 created_by            // UUID quản trị viên tạo lô; tham chiếu logic
-status                // PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
+status                // PENDING | SNAPSHOTTING | SNAPSHOT_READY | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
 total_count           // Tổng số người nhận đã được chụp khi tạo lô
 processed_count       // Số người nhận đã được xử lý
 success_count         // Số mục hộp thư đến được tạo thành công
@@ -244,7 +244,11 @@ error_message         // Lỗi cuối cùng; có thể null khi chưa lỗi ho�
 processed_at          // Thời điểm xử lý cuối, UTC; có thể null khi chưa xử lý
 ```
 
-`UNIQUE(batch_id, student_id)` ngăn chụp trùng người nhận. Khi xóa lô, các mục bị xóa theo; khi xóa mục hộp thư đến, `notification_id` của mục chỉ được đặt thành null.
+`UNIQUE(batch_id, student_id)` ngăn chụp trùng người nhận khi Worker retry/redelivery. Khi xóa lô, các mục bị xóa theo; khi xóa mục hộp thư đến, `notification_id` của mục chỉ được đặt thành null.
+
+### MassTransit outbox/inbox
+
+`InboxState`, `OutboxState` và `OutboxMessage` là bảng hạ tầng do Notification Service sở hữu. Chúng bảo đảm `SnapshotNotificationBatchV1` và các command tiếp theo được ghi bền cùng transaction nghiệp vụ, đồng thời consumer deduplicate delivery at-least-once. Các bảng này không chứa dữ liệu notification hiển thị cho người dùng.
 
 ### notifications
 

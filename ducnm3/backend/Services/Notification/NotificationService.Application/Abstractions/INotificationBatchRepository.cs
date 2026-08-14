@@ -4,6 +4,10 @@ public interface INotificationBatchRepository
 {
     Task<NotificationBatchSummary> CreateAsync(CreateNotificationBatchRecord record, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
+    Task<NotificationSnapshotWork> PrepareSnapshotAsync(Guid batchId, CancellationToken cancellationToken);
+    Task AppendSnapshotPageAsync(Guid batchId, IReadOnlyList<Guid> studentIds, CancellationToken cancellationToken);
+    Task<bool> CompleteSnapshotAsync(Guid batchId, CancellationToken cancellationToken);
+    Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken);
     Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken);
     Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken);
     Task MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken);
@@ -12,7 +16,9 @@ public interface INotificationBatchRepository
 }
 
 public sealed record CreateNotificationBatchRecord(
-    Guid Id, string Title, string BodyMarkdown, Guid CreatedBy, uint BatchSize, IReadOnlyList<Guid> StudentIds, DateTime CreatedAtUtc);
+    Guid Id, string Title, string BodyMarkdown, Guid CreatedBy, uint BatchSize, DateTime CreatedAtUtc);
+
+public sealed record NotificationSnapshotWork(bool ShouldReadRecipients, bool ShouldDispatch);
 
 public sealed record NotificationBatchSummary(
     Guid Id, string Status, uint TotalCount, uint ProcessedCount, uint SuccessCount, uint FailedCount, uint BatchSize, DateTime CreatedAtUtc, DateTime? StartedAtUtc, DateTime? CompletedAtUtc);

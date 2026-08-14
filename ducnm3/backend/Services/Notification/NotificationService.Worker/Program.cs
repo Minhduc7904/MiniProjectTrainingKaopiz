@@ -6,6 +6,8 @@ using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.Persistence;
 using NotificationService.Worker;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Database") ?? throw new InvalidOperationException("ConnectionStrings__Database is required for Notification Service Worker.");
@@ -22,5 +24,9 @@ builder.Services.AddLmsMessagingWithConsumers(
             DispatchNotificationBatchConsumer,
             DispatchNotificationBatchV1,
             DispatchNotificationBatchConsumerDefinition>(ServiceNames.Notification);
+        registration.AddCommandConsumer<
+            SnapshotNotificationBatchConsumer,
+            SnapshotNotificationBatchV1,
+            SnapshotNotificationBatchConsumerDefinition>(ServiceNames.Notification);
     });
 await builder.Build().RunAsync();

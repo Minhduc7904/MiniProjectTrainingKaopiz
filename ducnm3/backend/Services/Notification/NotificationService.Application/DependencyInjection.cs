@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.Dispatch;
 using NotificationService.Application.Features.Batches.GetById;
+using NotificationService.Application.Features.Batches.Snapshot;
 
 namespace NotificationService.Application;
 
@@ -13,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<CreateNotificationBatchHandler>();
         services.AddScoped<GetNotificationBatchByIdHandler>();
         services.AddScoped<DispatchNotificationBatchHandler>();
+        services.AddScoped<SnapshotNotificationBatchHandler>();
         return services;
     }
 }

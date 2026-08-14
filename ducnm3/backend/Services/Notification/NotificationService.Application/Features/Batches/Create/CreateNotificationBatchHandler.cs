@@ -6,7 +6,6 @@ using NotificationService.Application.Contracts.Messaging;
 namespace NotificationService.Application.Features.Batches.Create;
 
 public sealed class CreateNotificationBatchHandler(
-    IStudentRecipientClient studentRecipientClient,
     INotificationBatchRepository repository,
     ICommandSender commandSender,
     TimeProvider timeProvider)
@@ -25,14 +24,8 @@ public sealed class CreateNotificationBatchHandler(
             throw NotificationErrors.Validation("batchSize must be between 1 and 1000.");
         }
 
-        var studentIds = await studentRecipientClient.GetAllActiveStudentIdsAsync(cancellationToken);
-        if (studentIds.Count == 0)
-        {
-            throw NotificationErrors.Validation("Recipient snapshot must not be empty.");
-        }
-
-        var result = await repository.CreateAsync(new CreateNotificationBatchRecord(Guid.NewGuid(), command.Title.Trim(), command.BodyMarkdown, command.CreatedBy, batchSize, studentIds.Distinct().ToArray(), timeProvider.GetUtcNow().UtcDateTime), cancellationToken);
-        await commandSender.SendAsync(ServiceNames.Notification, new DispatchNotificationBatchV1(result.Id), cancellationToken);
+        var result = await repository.CreateAsync(new CreateNotificationBatchRecord(Guid.NewGuid(), command.Title.Trim(), command.BodyMarkdown, command.CreatedBy, batchSize, timeProvider.GetUtcNow().UtcDateTime), cancellationToken);
+        await commandSender.SendAsync(ServiceNames.Notification, new SnapshotNotificationBatchV1(result.Id), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
         return result;
     }
