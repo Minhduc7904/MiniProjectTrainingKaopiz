@@ -35,4 +35,16 @@ export const API_ROUTES = {
     content: (mediaId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'content'),
   },
+  notifications: {
+    batches: joinPath(GATEWAY_PREFIXES.notification, '/api/notification-batches'),
+    batchById: (batchId) =>
+      joinPath(GATEWAY_PREFIXES.notification, '/api/notification-batches', batchId),
+    batchFailedItems: (batchId) =>
+      joinPath(
+        GATEWAY_PREFIXES.notification,
+        '/api/notification-batches',
+        batchId,
+        'failed-items',
+      ),
+  },
 }

@@ -3,7 +3,8 @@ export const APP_ROUTES = {
   students: '/student/students',
   courses: '/course/courses',
   mediaUpload: '/media/upload',
-  notifications: '/notification/messages',
+  notificationSend: '/notification/batches/send',
+  notificationProgress: '/notification/batches/progress',
   schedulerJobs: '/scheduler/jobs',
 }
 
@@ -63,10 +64,18 @@ export const SERVICES = [
     icon: 'notification',
     menus: [
       {
-        to: APP_ROUTES.notifications,
-        label: 'Thông báo',
-        icon: 'messages',
-        ready: false,
+        to: APP_ROUTES.notificationSend,
+        label: 'Gửi hàng loạt',
+        icon: 'send',
+        ready: true,
+        activityId: 'postNotificationBatch',
+      },
+      {
+        to: APP_ROUTES.notificationProgress,
+        label: 'Tiến trình gửi',
+        icon: 'progress',
+        ready: true,
+        activityId: 'getNotificationBatch',
       },
     ],
   },
