@@ -64,7 +64,7 @@ Poll `GET /api/notification-batches/{batchId}` qua gateway tại URL trong `Loca
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-API tạo một hàng `notification_batches` `PENDING` và ghi `SnapshotNotificationBatchV1(batchId)` vào MassTransit outbox trong cùng transaction. Worker stream `GET /api/students?status=ACTIVE&pageSize=100`, upsert từng trang vào `notification_batch_items` và chuyển batch sang `SNAPSHOT_READY`. Sau đó Worker phát `DispatchNotificationBatchV1(batchId)`. HTTP request không gọi Student Service, sender hoặc tạo `notifications`.
+API tạo một hàng `notification_batches` `PENDING` và ghi `SnapshotNotificationBatchV1(batchId)` vào MassTransit outbox trong cùng transaction. Worker commit trạng thái `SNAPSHOTTING` trước khi stream `GET /api/students?status=ACTIVE&pageSize=100`, rồi commit từng trang upsert vào `notification_batch_items` và chuyển batch sang `SNAPSHOT_READY`. Sau đó Worker phát `DispatchNotificationBatchV1(batchId)` trước khi ack command snapshot; nếu process dừng giữa hai thao tác, RabbitMQ redeliver command và Worker chỉ dispatch lại từ trạng thái `SNAPSHOT_READY`. HTTP request không gọi Student Service, sender hoặc tạo `notifications`.
 
 Các trạng thái polling gồm `PENDING`, `SNAPSHOTTING`, `SNAPSHOT_READY`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED` và `FAILED`. Nếu snapshot không lấy được Student Service hoặc không có recipient, Worker kết thúc batch ở `FAILED`; client tạo request mới khi dependency đã khôi phục.
 
