@@ -19,9 +19,11 @@ RegisterServiceHttpClient(builder, ServiceNames.Student);
 RegisterServiceHttpClient(builder, ServiceNames.Media);
 RegisterServiceHttpClient(builder, ServiceNames.Notification);
 RegisterServiceHttpClient(builder, ServiceNames.Scheduler);
+builder.Services.AddLmsCors(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseLmsCors();
 app.UseSharedApiMiddleware();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))

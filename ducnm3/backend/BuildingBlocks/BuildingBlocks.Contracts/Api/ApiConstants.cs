@@ -66,4 +66,10 @@ public static class GatewayRoutePrefixes
 public static class ConfigurationSectionNames
 {
     public const string ServiceEndpoints = "ServiceEndpoints";
+    public const string Cors = "Cors";
+}
+
+public static class CorsPolicyNames
+{
+    public const string Frontend = "frontend";
 }

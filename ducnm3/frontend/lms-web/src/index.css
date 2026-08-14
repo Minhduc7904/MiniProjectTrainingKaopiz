@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+@import './theme/tokens.css';
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-canvas);
+  color: var(--color-fg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  button:not(:disabled),
+  a[href],
+  summary,
+  label[for],
+  [role='button']:not([aria-disabled='true']),
+  [role='option'],
+  [role='menuitem'],
+  [role='tab'],
+  [role='link'] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled='true'],
+  [disabled] {
+    cursor: not-allowed;
+  }
+}
+
+@keyframes ledger-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.skeleton-pulse {
+  animation: ledger-pulse 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+
+  .skeleton-pulse {
+    animation: none;
+  }
+}

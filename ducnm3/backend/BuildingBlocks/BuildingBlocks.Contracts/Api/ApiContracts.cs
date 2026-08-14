@@ -11,10 +11,11 @@ public sealed record ResponseMeta(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     PaginationMeta? Pagination = null);
 
-[JsonPolymorphic]
-[JsonDerivedType(typeof(CursorPaginationMeta))]
-[JsonDerivedType(typeof(OffsetPaginationMeta))]
-public abstract record PaginationMeta(string Type);
+[JsonDerivedType(typeof(CursorPaginationMeta), "cursor")]
+[JsonDerivedType(typeof(OffsetPaginationMeta), "offset")]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+public abstract record PaginationMeta(
+    [property: JsonIgnore] string Type);
 
 public sealed record CursorPaginationMeta(
     int Limit,
