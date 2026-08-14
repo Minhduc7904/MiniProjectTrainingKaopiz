@@ -204,9 +204,12 @@ dừng ở `COMPLETED`, `PARTIAL_FAILED`, `FAILED` hoặc khi quản trị viên
 nút Tiếp tục gọi GET ngay, không thay đổi Worker nền. Khi batch kết thúc có lỗi,
 trang đọc `failed-items` để hiển thị `studentId`, retry và lỗi cuối.
 
-Form tạo Notification Batch có `NotificationMarkdownEditor` riêng. Component
-gọi lại Media upload qua hook, nhận `data.contentUrl` rồi chèn Markdown chuẩn
-`![alt](contentUrl)`; alt của từng ảnh đã chèn vẫn sửa trực tiếp được trong
-Markdown. Media API hiện chỉ xác minh actor `STUDENT`, nên MVP dùng UUID Người
-tạo làm `uploadedBy` và yêu cầu UUID đó tồn tại ở Student Service. Kích thước
-chunk và Người tạo được hiển thị ở hai input riêng để thao tác không bị nén.
+Form tạo Notification Batch có `NotificationMarkdownEditor` riêng. Nút ảnh mở
+modal giữa viewport: người dùng chọn ảnh, chọn Nhúng ảnh hoặc Attachment, nhập
+alt text/nhãn rồi component gọi Media upload qua hook và chèn
+`![alt](contentUrl)` hoặc `[nhãn](contentUrl)` đúng tại vị trí con trỏ.
+`mediaType` cố định là `IMAGE` theo luồng modal. Trong khi chưa có JWT, modal
+hiển thị riêng `uploadedByType` và `uploadedBy` (UUID Student) đúng multipart
+contract của Media API; hai trường tạm thời này sẽ được thay bằng actor từ
+claim xác thực. Kích thước chunk và Người tạo batch được hiển thị ở hai input
+riêng để thao tác không bị nén.

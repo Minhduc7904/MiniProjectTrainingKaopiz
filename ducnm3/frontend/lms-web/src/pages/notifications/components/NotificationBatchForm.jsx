@@ -22,12 +22,14 @@ export function NotificationBatchForm({
           disabled={loading}
           uploadLoading={mediaUpload.loading}
           uploadError={mediaUpload.error}
+          uploadQuery={mediaUpload.query}
           onChange={(bodyMarkdown) => onChange({ ...query, bodyMarkdown })}
           onUploadImage={onUploadImage}
+          onUploadQueryChange={mediaUpload.setQuery}
         />
         <Dropdown label="Phạm vi gửi" className="w-full" value={query.targetScope ?? ''} disabled={loading} options={[{ value: 'ALL_STUDENTS', label: 'Tất cả học viên đang hoạt động' }]} onChange={(targetScope) => onChange({ ...query, targetScope })} />
         <div className="flex flex-col gap-1"><FieldLabel htmlFor="batch-size">Kích thước chunk</FieldLabel><TextInput id="batch-size" name={NOTIFICATION_BATCH_FIELDS.batchSize} type="number" value={query.batchSize ?? ''} disabled={loading} onChange={(event) => onChange({ ...query, batchSize: Number(event.target.value) })} /></div>
-        <div className="flex flex-col gap-1"><FieldLabel htmlFor="batch-created-by" hint="MVP dùng UUID này khi tải ảnh; phải là học viên hợp lệ cho Media API.">Người tạo</FieldLabel><TextInput id="batch-created-by" name={NOTIFICATION_BATCH_FIELDS.createdBy} value={query.createdBy ?? ''} disabled={loading} onChange={(event) => onChange({ ...query, createdBy: event.target.value })} /></div>
+        <div className="flex flex-col gap-1"><FieldLabel htmlFor="batch-created-by" hint="UUID người tạo batch; thông tin upload media được nhập riêng trong modal.">Người tạo</FieldLabel><TextInput id="batch-created-by" name={NOTIFICATION_BATCH_FIELDS.createdBy} value={query.createdBy ?? ''} disabled={loading} onChange={(event) => onChange({ ...query, createdBy: event.target.value })} /></div>
       </div>
       <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}><Button type="submit" disabled={loading}>Tạo batch gửi</Button></div>
     </form>
