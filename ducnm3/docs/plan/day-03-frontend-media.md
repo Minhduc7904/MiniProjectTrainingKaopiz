@@ -1,19 +1,17 @@
 # NGÀY 3 — Hoàn thiện Media Service và hai trang FE
 
-Est là giờ thật, **không** ép tổng 8 giờ/ngày.
-
-Từ Ngày 3, mỗi hạng mục code có Task, Est và Ticket. `Chưa tạo` = cấm push
-**code**. Markdown tài liệu push thẳng `ducnm3`. Nhánh code:
-`feature/{mã backlog}`. Khi user yêu cầu, agent tạo pull request vào `ducnm3`.
-Quy trình: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
+Ba hạng mục đã có mã ticket. Code đi nhánh `feature/{mã backlog}` và pull
+request vào `ducnm3`. Markdown push thẳng `ducnm3`. Est là giờ thật, **không**
+ép tổng 8 giờ/ngày. Quy trình:
+[DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
 
 ## Ước lượng thời gian
 
 | Task | Est | Ticket |
 | --- | --- | --- |
-| Hoàn thiện Media Service | 2 giờ | ERBUL26-2680 |
-| FE: base Workbench và trang GET students | 1 giờ | ERBUL26-2681 |
-| FE: trang POST media upload | 1 giờ | ERBUL26-2682 |
+| Hoàn thiện Media Service | 2 giờ | `ERBUL26-2680` |
+| FE: base Workbench và trang GET students | 1 giờ | `ERBUL26-2681` |
+| FE: trang POST media upload | 1 giờ | `ERBUL26-2682` |
 
 ## Task dự kiến
 
@@ -25,8 +23,9 @@ Quy trình: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
 - [ ] Unit/component test cho hai endpoint; đồng bộ API doc, business flow,
   Gateway route và Postman.
 - Est: 2 giờ.
-- Ticket: ERBUL26-2680.
+- Ticket: `ERBUL26-2680`.
 - Nhánh: `feature/ERBUL26-2680`.
+- Nguồn: Day 2 đã có upload, content stream, avatar usage và thumbnail.
 
 ### 2. FE: base Workbench và trang GET students
 
@@ -36,8 +35,9 @@ Quy trình: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
 - [ ] Trang đúng một API `GET /student/api/students`: constants, slice, hook,
   tab Mẫu/Thủ công, JSON/Xem/UML. Page không gọi Axios.
 - Est: 1 giờ.
-- Ticket: ERBUL26-2681.
+- Ticket: `ERBUL26-2681`.
 - Nhánh: `feature/ERBUL26-2681`.
+- Nguồn: `pages/students/`, CORS Gateway, skill `frontend-api-page`.
 
 ### 3. FE: trang POST media upload
 
@@ -46,8 +46,9 @@ Quy trình: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
   multipart, output JSON/Xem.
 - [ ] Tái sử dụng Workbench/constants; không hard-code path/status.
 - Est: 1 giờ.
-- Ticket: ERBUL26-2682.
+- Ticket: `ERBUL26-2682`.
 - Nhánh: `feature/ERBUL26-2682`.
+- Nguồn: `pages/media/`, `api/mediaApi.js`, `constants/activities/postMedia.js`.
 
 ## Tiêu chí hoàn thành của phạm vi này
 
