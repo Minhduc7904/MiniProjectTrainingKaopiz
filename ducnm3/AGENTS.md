@@ -60,11 +60,14 @@ All project skills live in **one place**: `.agents/skills/`. See
   `.agents/skills/developer-task/`.
 - Product UI, dashboard, admin panel, frontend visual work:
   `.agents/skills/interface-design/` và `rules/frontend.md`.
+- Trang frontend một API (menu sidebar, Workbench Input/Output, clone
+  Sổ học viên): `.agents/skills/frontend-api-page/` cộng
+  `interface-design` và `rules/frontend.md`.
 
 An endpoint implementation normally requires one HTTP-method skill plus the
 applicable test skills. A schema-changing endpoint also requires the database
-migration skill. From Day 3 onward, also read `developer-task` for the matching
-plan item.
+migration skill. Một page frontend gọi API còn cần `frontend-api-page`. From
+Day 3 onward, also read `developer-task` for the matching plan item.
 
 ## Documentation map
 

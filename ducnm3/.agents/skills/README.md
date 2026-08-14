@@ -39,4 +39,5 @@ Testing skills không được dùng thay thế lẫn nhau:
 Schema workflow dùng `database-migration`; release workflow dùng `release`.
 Từ Ngày 3, Jira/WBS, estimate, nhánh ticket, cổng push và review PR dùng
 `developer-task` — đọc thêm, không thay skill kỹ thuật. Product UI (dashboard,
-admin, frontend) dùng `interface-design`.
+admin, frontend) dùng `interface-design`. Trang gọi đúng một API (mẫu Sổ học
+viên) dùng `frontend-api-page` cộng `interface-design`.

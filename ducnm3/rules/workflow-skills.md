@@ -6,6 +6,9 @@
   MiniProject workflow folder listed in `AGENTS.md`.
 - For `interface-design`, read `.agents/skills/interface-design/SKILL.md`
   and `rules/frontend.md` before frontend or product UI work.
+- For a new admin page that calls one API, also read
+  `.agents/skills/frontend-api-page/` (`SKILL.md`, `reference.md`,
+  `template.md`). Mẫu là trang Sổ học viên.
 - Do not use the generic legacy `add-endpoint` workflow.
 - Never combine GET detail, GET list, POST, PUT, PATCH, or DELETE instructions
   into one endpoint skill.

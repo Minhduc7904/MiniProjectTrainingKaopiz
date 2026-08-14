@@ -2,12 +2,14 @@
 
 - Frontend code sống trong `frontend/lms-web/`.
 - Đọc `docs/architecture/frontend.md` và `.agents/skills/interface-design/`
-  trước khi thêm page hoặc visual component.
+  trước khi thêm page hoặc visual component. Page gọi một API: đọc thêm
+  `.agents/skills/frontend-api-page/`.
 - Mỗi page tách: `Page` composition, `pages/<name>/components/` riêng trang,
   `components/ui/` dùng chung.
 - Gọi API chỉ trong `src/api/` và hook `src/hooks/`. Page không dùng Axios.
 - `data`, `pagination`, `loading`, `success`, `error` của API list/detail phải
-  nằm trong Redux, không giữ local state cho các field này.
+  nằm trong Redux, không giữ local state cho các field này. Draft Input
+  (`query`) cũng ở Redux và dùng chung cho tab Mẫu / Thủ công.
 - Mọi HTTP request qua `httpClient` phải hiện toast toàn cục; không gắn toast
   từng page. Pending progress = `VITE_API_TIMEOUT_MS`.
 - Không hard-code path, header, status, query name. Dùng `src/constants/`.

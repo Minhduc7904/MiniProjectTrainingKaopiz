@@ -11,6 +11,7 @@ Mọi skill của project nằm **một chỗ**: `.agents/skills/`.
 └── skills/
     ├── README.md             ← danh sách skill và format
     ├── developer-task/       ← WBS/Jira, nhánh ticket, cổng push từ Ngày 3
+    ├── frontend-api-page/    ← tạo trang FE một API (mẫu Sổ học viên)
     ├── interface-design/     ← skill UI chính chủ (Dammyjay93)
     ├── api-*-endpoint/
     ├── test-*

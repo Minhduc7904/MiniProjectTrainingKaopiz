@@ -39,12 +39,12 @@ frontend/lms-web/
     ├── hooks/               # Hook gọi API, đọc Redux
     ├── theme/               # tokens.css (hex) + ui.js (class semantic)
     ├── components/
-    │   ├── layout/          # AppShell và khung dùng chung
-    │   └── ui/              # Button, Field, Dropdown, Pagination, Skeleton, loading, toast
+    │   ├── layout/          # AppShell, Sidebar, Workbench, OutputPanel
+    │   └── ui/              # Button, Field, Dropdown, Tabs, JsonView, Pagination, ...
     └── pages/
-        └── students/
-            ├── StudentsPage.jsx
-            └── components/  # Chỉ dùng trong trang này
+        ├── students/
+        ├── media/
+        └── placeholder/
 ```
 
 Alias `@/` trỏ tới `src/`.
@@ -53,11 +53,11 @@ Alias `@/` trỏ tới `src/`.
 
 ```text
 Page
-  → hook (useStudentsList)
+  → hook (useStudentsList | useMediaUpload)
     → dispatch thunk
       → api/* (Axios)
         → Gateway
-    ← Redux: data, pagination, loading, success, error
+    ← Redux: data, pagination?, loading, success, error
   → page components (chỉ nhận props)
 ```
 
@@ -67,6 +67,8 @@ Quy tắc:
 - Component UI không biết Redux.
 - Hook là chỗ duy nhất page dùng để load API.
 - `data`, `pagination`, `loading`, `success`, `error` sống trong Redux slice.
+- `query` là draft Input: tab Mẫu và Thủ công đọc/ghi cùng object (`setQuery`).
+  Không draft `useState` riêng từng tab. `File` multipart giữ ở page, chia sẻ.
 
 Mẫu list state:
 
@@ -83,6 +85,9 @@ list: {
 ```
 
 Slice list mới tái sử dụng helper trong `src/features/createApiListSlice.js`.
+Slice mutation (POST upload) dùng `src/features/createApiMutationSlice.js`.
+Request `FormData` không gắn `Content-Type` sẵn — interceptor xóa header để
+browser đặt multipart boundary.
 
 ## Toast API toàn cục
 
@@ -145,9 +150,15 @@ Import từ `@/constants` hoặc file cụ thể.
 
 Mỗi trang tách ba lớp:
 
-1. `pages/<name>/<Name>Page.jsx` — composition: header, filter, table, empty.
+1. `pages/<name>/<Name>Page.jsx` — composition: Workbench Input / Output.
 2. `pages/<name>/components/` — component chỉ thuộc trang đó.
 3. `components/ui/` và `components/layout/` — dùng lại nhiều trang.
+
+Layout trang quản trị:
+
+- Sidebar `fixed`: header + chọn service + footer đứng yên; chỉ `menu` cuộn.
+- Service đổi thì hiện menu của service đó.
+- Output: cột Input (tab Mẫu / Thủ công) và cột Output (tab JSON / Xem / UML).
 
 Khi một component trang được dùng lần thứ hai, chuyển sang `components/ui/`.
 
@@ -155,12 +166,18 @@ Component dùng chung hiện có:
 
 | Component | File | Ghi chú |
 | --- | --- | --- |
-| `FieldLabel`, `TextInput` | `components/ui/Field.jsx` | Label ledger + input 36px |
+| `FieldLabel`, `TextInput`, `FileInput` | `components/ui/Field.jsx` | Label ledger + input 36px |
 | `Dropdown` | `components/ui/Dropdown.jsx` | Custom list; click ngoài hoặc Escape thì đóng. Không dùng `<select>`/`<option>` |
 | `Spinner`, `LoadingState` | `components/ui/Spinner.jsx`, `LoadingState.jsx` | Spinner phấn khi refetch |
 | `Skeleton`, `TableSkeleton` | `components/ui/Skeleton.jsx` | Lần tải đầu, chưa có data |
 | `Icon` | `components/ui/Icon.jsx` | Wrapper Lucide: size + strokeWidth cố định |
-| `Pagination` | `components/ui/Pagination.jsx` | pageSize Dropdown + nút icon first/prev/next/last |
+| `JsonView` | `components/ui/JsonView.jsx` | JSON kiểu code, số dòng |
+| `ActivityDiagram` | `components/ui/ActivityDiagram.jsx` | UML Activity Diagram theo đúng 1 API |
+| `Tabs` | `components/ui/Tabs.jsx` | Tab Output JSON / Xem / UML |
+| `InputPanel` | `components/layout/InputPanel.jsx` | Tab Mẫu / Thủ công; tab ẩn không unmount |
+| `ApiField` | `components/ui/ApiField.jsx` | Field API: nullability, default, allowlist |
+| `OutputPanel` | `components/layout/OutputPanel.jsx` | Tab JSON / Xem / UML |
+| `Sidebar` | `components/layout/Sidebar.jsx` | Service + menu; header/footer cố định |
 
 ## Token giao diện
 
@@ -174,6 +191,8 @@ Icon: chỉ Lucide qua `Icon`. Mọi chỗ ấn được dùng `cursor-pointer`.
 
 ## Phạm vi hiện tại
 
-Đã có khung app và trang `Sổ học viên` đọc `GET /student/api/students`.
-Khóa học, media, thông báo sẽ thêm theo cùng pattern: `api` + `slice` + `hook`
-+ `pages/<domain>/components`.
+Đã có khung app, trang `Danh sách học viên` (`GET /student/api/students`) và
+trang `Upload media` (`POST /media/api/media`). POST không tự gọi khi mở
+trang; Reset khôi phục default field và xóa kết quả, không tự upload.
+Khóa học, thông báo, scheduler sẽ thêm theo cùng pattern: `api` + `slice` +
+`hook` + `pages/<domain>/components`.

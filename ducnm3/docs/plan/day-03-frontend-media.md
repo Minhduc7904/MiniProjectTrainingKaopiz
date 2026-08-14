@@ -1,10 +1,6 @@
-# NGÀY 3 — Triển khai base FE và hoàn thiện Media Service
+# NGÀY 3 — Hoàn thiện Media Service và hai trang FE
 
-Ngày 2 đã có khung `lms-web` (trang Sổ học viên), Media upload/content/usage
-avatar và thumbnail pipeline. Ngày 3: hoàn thiện **base** frontend và khép
-usage/cleanup của Media Service.
-
-Est là giờ làm việc thật của từng hạng mục, **không** chỉnh cho khớp 8 giờ/ngày.
+Est là giờ thật, **không** ép tổng 8 giờ/ngày.
 
 Từ Ngày 3, mỗi hạng mục code có Task, Est và Ticket. `Chưa tạo` = cấm push
 **code**. Markdown tài liệu push thẳng `ducnm3`. Nhánh code:
@@ -15,40 +11,46 @@ Quy trình: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
 
 | Task | Est | Ticket |
 | --- | --- | --- |
-| Triển khai base FE | 2 giờ | `Chưa tạo` |
-| Hoàn thiện Media Service | 3 giờ | `Chưa tạo` |
+| Hoàn thiện Media Service | 2 giờ | ERBUL26-2680 |
+| FE: base Workbench và trang GET students | 1 giờ | ERBUL26-2681 |
+| FE: trang POST media upload | 1 giờ | ERBUL26-2682 |
 
 ## Task dự kiến
 
-### 1. Triển khai base FE
+### 1. Hoàn thiện Media Service
 
-- [ ] Chốt base `lms-web` theo
-  [docs/architecture/frontend.md](../architecture/frontend.md) và skill
-  `interface-design`: `AppShell`, router, constants, `api` + slice + hook +
-  page pattern. Page không gọi Axios; UI không biết Redux.
-- [ ] Tái sử dụng toast interceptor và component UI hiện có (`Field`,
-  `Dropdown`, `Pagination`, `Skeleton`). Không hard-code path/status trong page.
-- [ ] Cập nhật tài liệu frontend nếu thêm route/env.
+- [ ] Cài đặt `GET /api/media/usages/{usageId}/url` và
+  `GET /api/media/usages/urls` (query owner): trả content URL, không lộ
+  bucket/object key; `Cache-Control: no-store`.
+- [ ] Unit/component test cho hai endpoint; đồng bộ API doc, business flow,
+  Gateway route và Postman.
 - Est: 2 giờ.
-- Ticket: `Chưa tạo`.
-- Nguồn: khung Students, AppShell và toast đã có; task này chỉ hoàn thiện base,
-  không làm trang Media đầy đủ.
+- Ticket: ERBUL26-2680.
+- Nhánh: `feature/ERBUL26-2680`.
 
-### 2. Hoàn thiện Media Service
+### 2. FE: base Workbench và trang GET students
 
-- [ ] Mở command tạo `media_usages` cho tổ hợp Course/Lesson/Notification còn
-  thiếu (`THUMBNAIL` / `EMBED` / `ATTACHMENT`), đúng unique active và soft-delete
-  khi thay thế. Hiện command mới chấp nhận avatar Student.
-- [ ] Scheduler/Worker dọn `PENDING` stale và media không còn usage hoạt động
-  (job cleanup đã mô tả trong business flow, chưa triển khai).
-- [ ] Unit/component/integration test cho usage mới và cleanup; đồng bộ
-  `docs/api/media-service/`, business flow, database và Postman.
-- Est: 3 giờ.
-- Ticket: `Chưa tạo`.
-- Nguồn: Day 2 còn Course/Lesson media link và cleanup PENDING.
+- [ ] Chốt base `lms-web`: Vite, `AppShell`, Sidebar theo service, Workbench
+  Input/Output, toast `httpClient`, theme Lucide. Gateway CORS cho origin
+  Vite (`http://localhost:5173`).
+- [ ] Trang đúng một API `GET /student/api/students`: constants, slice, hook,
+  tab Mẫu/Thủ công, JSON/Xem/UML. Page không gọi Axios.
+- Est: 1 giờ.
+- Ticket: ERBUL26-2681.
+- Nhánh: `feature/ERBUL26-2681`.
+
+### 3. FE: trang POST media upload
+
+- [ ] Trang đúng một API `POST /media/api/media`: menu Media, route
+  `/media/upload`, `mediaApi` + slice mutation + `useMediaUpload`, form
+  multipart, output JSON/Xem.
+- [ ] Tái sử dụng Workbench/constants; không hard-code path/status.
+- Est: 1 giờ.
+- Ticket: ERBUL26-2682.
+- Nhánh: `feature/ERBUL26-2682`.
 
 ## Tiêu chí hoàn thành của phạm vi này
 
-- [ ] Base `lms-web` (layout, router, pattern page) sẵn sàng để thêm trang sau.
-- [ ] Media Service tạo được usage Course/Lesson/Notification theo contract.
-- [ ] Cleanup stale PENDING / orphan media chạy được và có test.
+- [ ] Media Service trả URL usage (một và theo owner) qua Gateway.
+- [ ] `lms-web` gọi được `GET /student/api/students` (CORS + Workbench).
+- [ ] `lms-web` upload được media qua `POST /media/api/media`.

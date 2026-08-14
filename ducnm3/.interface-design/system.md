@@ -70,8 +70,15 @@ Icon Lucide first/prev/next/last + Dropdown pageSize. Class màu từ `ui`.
 ### Toast API
 `ui.toast*` — rail + bar + icon theo phase.
 
-### Control
-`ui.control` — height 36px, nền control, focus inset accent.
+### Workbench
+Trang API: trái Input (tab Mẫu dropdown và tab Thủ công đủ field, ghi rõ
+nullable), phải Output. Output có tab JSON, Xem, và UML Activity Diagram
+(một menu = một API). Success tô luồng chính; lỗi tô nhánh Fault đúng error
+code.
+
+### Sidebar
+`fixed` full height. Header (brand) và footer không cuộn. Chỉ danh sách menu cuộn.
+Dropdown service đổi bộ menu.
 
 ## Decisions
 
