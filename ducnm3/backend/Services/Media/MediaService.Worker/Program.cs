@@ -3,6 +3,7 @@ using BuildingBlocks.Messaging;
 using MassTransit;
 using MediaService.Application;
 using MediaService.Application.Contracts.Messaging;
+using MediaService.Contracts.Messaging;
 using MediaService.Infrastructure;
 using MediaService.Infrastructure.Persistence;
 using MediaService.Worker;
@@ -33,6 +34,12 @@ builder.Services.AddLmsMessagingWithConsumers(
                 GenerateMediaThumbnailConsumer,
                 GenerateMediaThumbnailV1,
                 GenerateMediaThumbnailConsumerDefinition>(
+                ServiceNames.Media);
+        registration
+            .AddCommandConsumer<
+                RegisterNotificationMediaUsageConsumer,
+                RegisterNotificationMediaUsageV1,
+                RegisterNotificationMediaUsageConsumerDefinition>(
                 ServiceNames.Media);
         registration
             .AddConsumer<

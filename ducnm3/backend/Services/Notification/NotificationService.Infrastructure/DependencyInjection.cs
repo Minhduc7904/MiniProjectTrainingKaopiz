@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddDbContext<NotificationDbContext>(options => options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 4, 0))));
         services.AddServiceQueryClient<IStudentRecipientClient, StudentRecipientClient>(configuration, ServiceNames.Student);
         services.AddScoped<INotificationBatchRepository, EfNotificationBatchRepository>();
+        services.AddScoped<INotificationRepository, EfNotificationRepository>();
         services.AddSingleton<INotificationSender, FakeNotificationSender>();
         services.AddSingleton<IDatabaseHealthProbe>(serviceProvider => new NotificationDatabaseHealthProbe(connectionString, serviceProvider.GetRequiredService<ILogger<NotificationDatabaseHealthProbe>>()));
         return services;

@@ -197,8 +197,8 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
         CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyList<NotificationBatchWorkItem>>([]);
 
-    public Task MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken) =>
-        Task.CompletedTask;
+    public Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken) =>
+        Task.FromResult<NotificationSummary?>(null);
 
     public Task MarkFailureAsync(
         NotificationBatchWorkItem item,

@@ -57,6 +57,11 @@
       "type": "string"
     },
     {
+      "key": "notificationId",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "notificationCreatedBy",
       "value": "00007b9a-b898-5c29-8bcd-4fb33555a48d",
       "type": "string"
@@ -529,6 +534,104 @@
     {
       "name": "NotificationService",
       "item": [
+        {
+          "name": "POST Single Notification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Created notification\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "  const payload = pm.response.json();",
+                  "  pm.expect(payload.data.sourceType).to.eql(\"SINGLE\");",
+                  "  pm.expect(payload.data.status).to.eql(\"UNREAD\");",
+                  "  pm.expect(pm.response.headers.get(\"Location\")).to.match(/^\\/notification\\/api\\/notifications\\//);",
+                  "  pm.collectionVariables.set(\"notificationId\", payload.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"title\": \"Course update\",\n  \"bodyMarkdown\": \"![Image](/media/api/media/{{mediaId}}/content)\",\n  \"createdBy\": \"{{notificationCreatedBy}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notification",
+                "api",
+                "notifications"
+              ]
+            },
+            "description": "API contract: docs/api/notification-service/endpoints/post-notifications.md"
+          }
+        },
+        {
+          "name": "GET Single Notification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Notification detail is available\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const payload = pm.response.json();",
+                  "  pm.expect(payload.data.id).to.eql(pm.collectionVariables.get(\"notificationId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notifications/{{notificationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notification",
+                "api",
+                "notifications",
+                "{{notificationId}}"
+              ]
+            },
+            "description": "API contract: docs/api/notification-service/endpoints/get-notification-by-id.md"
+          }
+        },
         {
           "name": "POST Notification Batch - ALL_STUDENTS",
           "event": [

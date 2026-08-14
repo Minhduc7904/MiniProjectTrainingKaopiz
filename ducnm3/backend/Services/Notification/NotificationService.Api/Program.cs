@@ -73,6 +73,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Notification);
 app.MapDatabaseHealthEndpoint(ServiceNames.Notification);
+app.MapNotificationEndpoints();
 app.MapNotificationBatchEndpoints();
 
 app.Run();

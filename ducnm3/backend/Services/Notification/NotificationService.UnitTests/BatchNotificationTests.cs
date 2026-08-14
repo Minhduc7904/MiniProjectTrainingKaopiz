@@ -6,6 +6,7 @@ using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.Dispatch;
 using NotificationService.Application.Features.Batches.Snapshot;
+using NotificationService.Application.Content;
 using NotificationService.Infrastructure.Sending;
 
 namespace NotificationService.UnitTests;
@@ -18,6 +19,7 @@ public sealed class CreateNotificationBatchHandlerTests
         var handler = new CreateNotificationBatchHandler(
             new StubBatchRepository(),
             new StubCommandSender(),
+            new NotificationMediaReferenceExtractor(),
             TimeProvider.System);
 
         var exception = Assert.ThrowsAsync<NotificationService.Application.NotificationApplicationException>(
@@ -42,6 +44,7 @@ public sealed class CreateNotificationBatchHandlerTests
         var handler = new CreateNotificationBatchHandler(
             repository,
             commandSender,
+            new NotificationMediaReferenceExtractor(),
             TimeProvider.System);
 
         var result = await handler.HandleAsync(
@@ -132,7 +135,8 @@ public sealed class DispatchNotificationBatchHandlerTests
         var handler = new DispatchNotificationBatchHandler(
             repository,
             new ThrowingSender(),
-            commandSender);
+            commandSender,
+            new NotificationMediaReferenceExtractor());
 
         await handler.HandleAsync(
             new DispatchNotificationBatchV1(item.BatchId),
@@ -299,10 +303,19 @@ internal sealed class StubBatchRepository : INotificationBatchRepository
         CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyList<NotificationBatchWorkItem>>(Items ?? []);
 
-    public Task MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken)
+    public Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken)
     {
         SuccessItems.Add(item.Id);
-        return Task.CompletedTask;
+        return Task.FromResult<NotificationSummary?>(new NotificationSummary(
+            Guid.NewGuid(),
+            item.StudentId,
+            item.Title,
+            item.BodyMarkdown,
+            "BULK",
+            "UNREAD",
+            item.CreatedBy,
+            DateTime.UnixEpoch,
+            null));
     }
 
     public Task MarkFailureAsync(

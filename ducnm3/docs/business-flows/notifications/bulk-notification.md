@@ -62,6 +62,8 @@ sequenceDiagram
     participant Worker as Notification Worker
     participant DB as MySQL Notification
     participant Sender as FakeNotificationSender
+    participant Bus as RabbitMQ
+    participant Media as Media Worker
 
     Bus->>Worker: SnapshotNotificationBatchV1(batchId)
     Worker->>DB: PENDING -> SNAPSHOTTING
@@ -82,6 +84,8 @@ sequenceDiagram
         Worker->>Sender: Send(studentId, retryCount + 1)
         alt Gửi thành công
             Worker->>DB: INSERT notification BULK/UNREAD + item SUCCESS
+            DB-->>Bus: RegisterNotificationMediaUsageV1(notificationId) outbox
+            Bus->>Media: Register usage cho notificationId
         else Lần 1 thất bại
             Worker->>DB: item RETRY, retry_count = 1
         else Lần 2 thất bại
@@ -103,6 +107,7 @@ sequenceDiagram
 3. Fake sender thất bại lần một khi `hash(studentId) % 20 == 0`, và lần hai khi `hash(studentId) % 100 == 0`.
 4. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
 5. Khi không còn item: không có lỗi là `COMPLETED`; chỉ lỗi là `FAILED`; có cả thành công và lỗi là `PARTIAL_FAILED`.
+6. Markdown media được kiểm tra ngay khi tạo batch. Với mỗi item gửi thành công, Media Worker tạo usage `NOTIFICATION/NOTIFICATION_BODY/EMBED|ATTACHMENT` theo notification ID; item lỗi không có usage.
 
 ## Dữ liệu thay đổi
 

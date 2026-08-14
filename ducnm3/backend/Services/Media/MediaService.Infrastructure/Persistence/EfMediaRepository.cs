@@ -2,6 +2,8 @@ using System.Data;
 using MediaService.Application;
 using MediaService.Application.Abstractions.Persistence;
 using MediaService.Application.Abstractions.Storage;
+using MediaService.Contracts.Messaging;
+using MediaService.Domain.Actors;
 using MediaService.Domain.Media;
 using MediaService.Domain.Usages;
 using MediaService.Infrastructure.Persistence.Scaffolded;
@@ -14,6 +16,93 @@ public sealed class EfMediaRepository(
     MediaDbContext dbContext,
     TimeProvider timeProvider) : IMediaRepository
 {
+    public async Task EnsureNotificationBodyUsagesAsync(
+        Guid notificationId,
+        Guid createdBy,
+        IReadOnlyList<NotificationMediaUsageReferenceV1> references,
+        CancellationToken cancellationToken)
+    {
+        var distinctReferences = references
+            .GroupBy(reference => (reference.MediaId, reference.UsageType))
+            .Select(group => group.OrderBy(reference => reference.DisplayOrder).First())
+            .OrderBy(reference => reference.DisplayOrder)
+            .ToArray();
+        var mediaIds = distinctReferences
+            .Select(reference => reference.MediaId)
+            .Distinct()
+            .ToList();
+
+        await using var transaction = dbContext.Database.CurrentTransaction is null
+            ? await dbContext.Database.BeginTransactionAsync(
+                IsolationLevel.Serializable,
+                cancellationToken)
+            : null;
+        var readyMediaIds = await dbContext.MediaObjects
+            .AsNoTracking()
+            .Where(media =>
+                mediaIds.Contains(media.Id) &&
+                media.Status == MediaObjectStatuses.Ready &&
+                media.DeletedAt == null)
+            .Select(media => media.Id)
+            .ToListAsync(cancellationToken);
+        if (readyMediaIds.Count != mediaIds.Count)
+        {
+            throw MediaErrors.MediaNotReady();
+        }
+
+        var existing = await dbContext.MediaUsages
+            .AsNoTracking()
+            .Where(usage =>
+                usage.OwnerService == MediaOwnerServices.Notification &&
+                usage.OwnerType == MediaOwnerTypes.NotificationBody &&
+                usage.OwnerId == notificationId &&
+                usage.DeletedAt == null &&
+                mediaIds.Contains(usage.MediaId))
+            .Select(usage => new { usage.MediaId, usage.UsageType })
+            .ToListAsync(cancellationToken);
+        var existingKeys = existing
+            .Select(usage => (usage.MediaId, usage.UsageType))
+            .ToHashSet();
+        foreach (var reference in distinctReferences)
+        {
+            if (existingKeys.Contains((reference.MediaId, reference.UsageType)))
+            {
+                continue;
+            }
+
+            dbContext.MediaUsages.Add(new MediaUsage
+            {
+                Id = Guid.NewGuid(),
+                MediaId = reference.MediaId,
+                OwnerService = MediaOwnerServices.Notification,
+                OwnerType = MediaOwnerTypes.NotificationBody,
+                OwnerId = notificationId,
+                UsageType = reference.UsageType,
+                DisplayOrder = reference.DisplayOrder,
+                CreatedBy = createdBy,
+                CreatedByType = ActorTypes.Admin,
+                CreatedAt = timeProvider.GetUtcNow().UtcDateTime,
+            });
+        }
+
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+            if (transaction is not null)
+            {
+                await transaction.CommitAsync(cancellationToken);
+            }
+        }
+        catch (DbUpdateException exception) when (
+            exception.InnerException is MySqlException { Number: 1062 })
+        {
+            if (transaction is not null)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+            }
+        }
+    }
+
     public async Task AddPendingAsync(
         PendingMediaRecord media,
         CancellationToken cancellationToken)

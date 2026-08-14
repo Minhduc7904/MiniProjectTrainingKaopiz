@@ -11,7 +11,7 @@ public interface INotificationBatchRepository
     Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken);
     Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(Guid batchId, Guid? afterItemId, int limit, CancellationToken cancellationToken);
     Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken);
-    Task MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken);
+    Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken);
     Task MarkFailureAsync(NotificationBatchWorkItem item, string errorMessage, CancellationToken cancellationToken);
     Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken);
 }

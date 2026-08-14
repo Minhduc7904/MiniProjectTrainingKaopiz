@@ -1,11 +1,17 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
+using MediaService.Contracts.Messaging;
 using NotificationService.Application.Abstractions;
+using NotificationService.Application.Content;
 using NotificationService.Application.Contracts.Messaging;
 
 namespace NotificationService.Application.Features.Batches.Dispatch;
 
-public sealed class DispatchNotificationBatchHandler(INotificationBatchRepository repository, INotificationSender sender, ICommandSender commandSender)
+public sealed class DispatchNotificationBatchHandler(
+    INotificationBatchRepository repository,
+    INotificationSender sender,
+    ICommandSender commandSender,
+    NotificationMediaReferenceExtractor mediaReferenceExtractor)
 {
     public async Task HandleAsync(DispatchNotificationBatchV1 command, CancellationToken cancellationToken)
     {
@@ -15,7 +21,21 @@ public sealed class DispatchNotificationBatchHandler(INotificationBatchRepositor
             try
             {
                 await sender.SendAsync(item.StudentId, checked((int)item.RetryCount) + 1, cancellationToken);
-                await repository.MarkSuccessAsync(item, cancellationToken);
+                var notification = await repository.MarkSuccessAsync(item, cancellationToken);
+                if (notification is not null)
+                {
+                    var references = mediaReferenceExtractor.Extract(notification.BodyMarkdown);
+                    if (references.Count > 0)
+                    {
+                        await commandSender.SendAsync(
+                            ServiceNames.Media,
+                            new RegisterNotificationMediaUsageV1(
+                                notification.Id,
+                                notification.CreatedBy,
+                                references),
+                            cancellationToken);
+                    }
+                }
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {

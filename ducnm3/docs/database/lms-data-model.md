@@ -166,7 +166,7 @@ owner_id              // UUID tài nguyên ở owner_service; tham chiếu logic
 usage_type            // THUMBNAIL | EMBED | ATTACHMENT | AVATAR
 display_order         // Thứ tự hiển thị media trong cùng một đối tượng sở hữu
 created_by            // UUID actor tạo liên kết; logical reference
-created_by_type       // Actor type đã được Application validate; hiện là STUDENT
+created_by_type       // Actor type đã được Application validate; STUDENT hoặc ADMIN
 created_at            // Thời điểm tạo liên kết, UTC
 deleted_at            // Thời điểm xóa mềm; có thể null khi lượt sử dụng còn hiệu lực
 active_reference_guard // Generated 1 khi active, null khi đã soft-delete
@@ -321,8 +321,8 @@ created_at            // Thời điểm tạo lượt chạy, UTC
 
 - `description_markdown`, `content_markdown` và `body_markdown` lưu mã nguồn Markdown, không lưu HTML không được kiểm soát.
 - API chỉ hiển thị Markdown bằng bộ làm sạch/danh sách cho phép ở ứng dụng khách hoặc bộ hiển thị; không cho phép HTML thô và mã lệnh.
-- Media được nhúng bằng URL công khai/URL proxy do Media Service cấp, ví dụ `![Sơ đồ](/api/media/{mediaId}/content)`.
-- Sau khi đối tượng sở hữu tạo hoặc cập nhật Markdown, dịch vụ sở hữu gọi Media Service để đăng ký/xóa `media_usages`; Media Service xác thực `media_id` và quyền sở hữu trước khi tạo lượt sử dụng.
+- Media được nhúng bằng URL công khai do Media Service cấp, ví dụ `![Sơ đồ](/media/api/media/{mediaId}/content)`.
+- Notification Service ghi command Media vào transactional outbox cùng thay đổi notification. Media Worker xác thực `media_id` `READY` và tạo idempotent `media_usages` sau khi notification thành công; batch chỉ phát command cho item `SUCCESS`.
 
 ## Thay đổi lược đồ vật lý
 
