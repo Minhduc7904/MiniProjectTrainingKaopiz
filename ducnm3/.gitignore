@@ -3,3 +3,9 @@
 **/obj/
 !backend/Services/Scheduler/SchedulerService.Api/appsettings.json
 !backend/Services/Scheduler/SchedulerService.Api/appsettings.Development.json
+
+# Frontend (lms-web)
+**/node_modules/
+frontend/**/dist/
+frontend/**/dist-ssr/
+frontend/**/*.local
