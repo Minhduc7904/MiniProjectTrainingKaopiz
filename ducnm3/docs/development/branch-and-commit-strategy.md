@@ -21,7 +21,8 @@ Chi tiết: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md) và
 - Tên nhánh = `feature/{mã backlog}` (`feature/BLD-124_4`), không dùng tiêu đề
   Jira đầy đủ.
 - Không dùng `feature/ducnm3_*` từ Ngày 3.
-- Commit message = nội dung task trên backlog.
+- Commit message viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và phạm
+  vi thay đổi chính; ưu tiên nội dung task backlog khi tiêu đề đã rõ nghĩa.
 - `Chưa tạo` trên cột Ticket = cấm push **code**.
 - Markdown tài liệu (`docs/**/*.md`, `AGENTS.md`, `rules/*.md`,
   `.agents/**/*.md`) push thẳng `ducnm3`, không cần ticket/PR.
@@ -30,7 +31,9 @@ Chi tiết: [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md) và
 ---
 # 50. Commit
 
-Từ Ngày 3, message là nội dung task trên backlog (tiếng Việt):
+Từ Ngày 3, message viết bằng tiếng Việt, rõ hành động và phạm vi thay đổi.
+Ưu tiên dùng nội dung task backlog nếu tiêu đề đã rõ nghĩa; không dùng `feat:`
+hay message chung chung như `update`, `fix`, `wip`:
 
 ```text
 Triển khai base FE
@@ -38,6 +41,8 @@ Triển khai base FE
 Hoàn thiện Media Service
 
 CSV naive vs stream
+
+Chuẩn hóa gán media usage cho notification đơn và batch
 ```
 
 ---

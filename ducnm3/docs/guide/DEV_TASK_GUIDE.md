@@ -78,7 +78,9 @@ nào SQA cần PTYC/test case và khi nào vào Verify Bug.
    mã. Agent không tạo Jira.
 2. Base nhánh `ducnm3`. Tạo hoặc chuyển sang `feature/{mã backlog}`, ví dụ
    `feature/BLD-124_4`.
-3. Commit message = nội dung task trên backlog (tiếng Việt).
+3. Commit message viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và phạm
+   vi thay đổi chính. Dùng nội dung task backlog khi tiêu đề task đã rõ nghĩa;
+   không dùng `feat:` hoặc message chung chung như `update`, `fix`, `wip`.
 4. Push **code** chỉ khi Ticket đã có mã **và** user yêu cầu push. Nếu Ticket là
    `Chưa tạo` hoặc trống thì **không push code**, kể cả khi user bảo push. Commit
    local vẫn được.
@@ -217,7 +219,8 @@ Toàn bộ context tập trung tại Description / comment / attachment của ti
   `docs/`, Confluence, wiki).
 - **Mỗi phase** bổ sung section tương ứng (không tạo ticket mới).
 - Cùng **mã task** trên branch `feature/{mã backlog}` (`feature/BLD-124_4`).
-  Commit message = nội dung task backlog. Title Jira có thể giữ
+  Commit message viết bằng tiếng Việt, rõ hành động và phạm vi thay đổi; ưu tiên
+  dùng nội dung task backlog khi tiêu đề đã rõ nghĩa. Title Jira có thể giữ
   `【BLD-124_4】 …`.
 - Khi SQA/BrSE/KH comment: trích vào Jira; dev cập nhật code + (nếu cần) bản
   PTYC/PVAH đã sửa.
@@ -255,7 +258,8 @@ Toàn bộ context tập trung tại Description / comment / attachment của ti
 - Coding theo PTYC/PVAH đã duyệt, đồng thời đọc skill HTTP-method / test /
   migration tương ứng trong `.agents/skills/`.
 - Self test: Postman + unit/component/integration test theo skill test.
-- Commit message = nội dung task trên backlog.
+- Commit message viết bằng tiếng Việt, nêu rõ hành động và phạm vi thay đổi;
+  ưu tiên nội dung task backlog khi tiêu đề đã rõ nghĩa.
 - Khi user yêu cầu, agent tạo pull request vào `ducnm3` đúng mẫu tiếng Việt
   (Tổng quan / Trước chỉnh sửa / Sau chỉnh sửa / Nội dung chỉnh sửa / DB).
 - Review code đến merge chỉ khi user nhờ agent; user có thể merge luôn.

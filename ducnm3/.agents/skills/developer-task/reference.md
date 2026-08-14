@@ -32,11 +32,14 @@ git switch -c feature/BLD-124_4
 
 - Tên nhánh = `feature/{mã backlog}`, không phải `【BLD-124_4】 Đối ứng gửi mail…`.
 - Không dùng `feature/ducnm3_<short-description>` từ Ngày 3.
-- Commit message = nội dung task trên backlog, tiếng Việt:
+- Commit message viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và phạm
+  vi thay đổi chính. Ưu tiên nội dung task backlog khi tiêu đề đã rõ nghĩa;
+  không dùng `feat:` hoặc message chung chung như `update`, `fix`, `wip`:
 
 ```text
 Triển khai base FE
 Hoàn thiện Media Service
+Chuẩn hóa gán media usage cho notification đơn và batch
 ```
 
 ## Cổng push

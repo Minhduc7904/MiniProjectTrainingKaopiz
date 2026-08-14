@@ -4,7 +4,10 @@
 - `ducnm3` is the integration branch. Merge ticket pull requests into `ducnm3`.
 - From Day 3 onward, use branch `feature/{backlog-key}` (for example
   `feature/BLD-124_4`), based on `ducnm3`. Do not use `feature/ducnm3_<short-description>`.
-- Commit message is the backlog task title.
+- Commit message phải viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và
+  phạm vi thay đổi chính. Dùng tiêu đề task backlog khi tiêu đề đó đã rõ nghĩa;
+  không dùng prefix như `feat:` hoặc message chung chung như `update`, `fix`,
+  `wip`.
 - Do not push **code** when the matching `docs/plan/` task has Ticket `Chưa tạo`
   or no Jira key, even if the user asks to push. Local commits are allowed.
 - Documentation-only markdown (`docs/**/*.md`, `AGENTS.md`, `rules/*.md`,
