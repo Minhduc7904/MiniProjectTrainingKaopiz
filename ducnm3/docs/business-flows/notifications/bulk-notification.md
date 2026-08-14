@@ -2,17 +2,17 @@
 
 ## Mục đích
 
-Quản trị viên tạo một lô nội dung và bản chụp danh sách người nhận trong Notification Service. Việc Scheduler gọi bộ xử lý và Worker phân phối xử lý người nhận thuộc giai đoạn sau, chưa được triển khai trong phần nền tảng hiện tại.
+Quản trị viên tạo một lô và snapshot tất cả học viên đang hoạt động. Notification Worker xử lý lô bất đồng bộ; API không gửi inbox trong HTTP request.
 
 ## Tác nhân
 
-Quản trị viên; API của Notification Service; Student Service. Scheduler Service và Scheduler Worker chỉ là tác nhân trong tương lai.
+Quản trị viên; Notification API; Student Service; MySQL Notification; RabbitMQ; Notification Worker.
 
 ## Điều kiện đầu vào
 
-- Quản trị viên đã được xác thực và có quyền phát thông báo hàng loạt.
-- `targetScope` hợp lệ: `COURSE_ENROLLED`, `STUDENT_IDS`, hoặc `ALL_STUDENTS`.
-- Nội dung Markdown và các lượt sử dụng media đã được chuẩn bị.
+- `targetScope` là `ALL_STUDENTS`.
+- `createdBy`, `title` và `bodyMarkdown` hợp lệ.
+- Student Service trả về snapshot không rỗng.
 
 ## UML luồng chạy
 
@@ -21,75 +21,85 @@ Quản trị viên; API của Notification Service; Student Service. Scheduler S
 ```mermaid
 sequenceDiagram
     participant Admin
-    participant API as Notification Service
+    participant API as Notification API
     participant Student as Student Service
     participant DB as MySQL Notification
+    participant Bus as RabbitMQ
 
-    Admin->>API: POST /api/notification-batches
-    API->>API: Authorize + validate scope/Markdown
-    API->>Student: Resolve recipient snapshot
-    Student-->>API: Recipient IDs
-    alt Scope không hợp lệ hoặc recipients lỗi
-        API-->>Admin: 400/404
+    Admin->>API: POST batch (ALL_STUDENTS)
+    API->>API: Validate body, scope, createdBy
+    API->>Student: GET /api/students?status=ACTIVE&pageSize=100
+    loop hết các trang
+        Student-->>API: student ids + totalPages
+    end
+    alt Scope sai hoặc snapshot rỗng
+        API-->>Admin: 400 VALIDATION_FAILED
+    else Student Service không phản hồi
+        API-->>Admin: 503 STUDENT_SERVICE_UNAVAILABLE
     else Hợp lệ
         API->>DB: INSERT batch PENDING + batch items
-        DB-->>API: batchId
-        API-->>Admin: 202 Accepted
+        API->>Bus: DispatchNotificationBatchV1(batchId)
+        API-->>Admin: 202 + Location GET batch
     end
 ```
 
-### Luồng dispatch dự kiến (không có HTTP API hiện tại)
+### `GET /api/notification-batches/{batchId}`
 
 ```mermaid
 sequenceDiagram
-    participant Scheduler
-    participant Worker as Scheduler Worker
-    participant Notification as Notification Service
+    participant Client
+    participant API as Notification API
     participant DB as MySQL Notification
 
-    Scheduler->>Worker: Trigger NOTIFICATION_BATCH_DISPATCH(batchId)
-    Worker->>Notification: Internal dispatch request
-    Notification->>DB: Read PENDING/RETRY batch items
-    loop từng batch item
-        Notification->>DB: Create notification, update item status/counters
+    Client->>API: GET batchId
+    API->>DB: SELECT batch counters and status
+    alt Không tìm thấy
+        API-->>Client: 404 NOTIFICATION_BATCH_NOT_FOUND
+    else Tìm thấy
+        DB-->>API: batch summary
+        API-->>Client: 200 batch summary
     end
-    Notification-->>Worker: Summary
-    Worker-->>Scheduler: Persist run outcome
 ```
 
-## Luồng chính
+### `DispatchNotificationBatchV1` (Notification Worker)
 
-1. Quản trị viên gửi `POST /api/notification-batches` với nội dung và phạm vi đối tượng.
-2. Notification Service tạo `notification_batches` trạng thái `PENDING`.
-3. API chụp lại danh sách người nhận và tạo `notification_batch_items`.
-4. API trả `202 Accepted` cùng `batchId`.
-5. Phần nền tảng dừng tại đây; chưa tự tạo `background_jobs` hoặc `background_job_runs`.
+```mermaid
+sequenceDiagram
+    participant Bus as RabbitMQ
+    participant Worker as Notification Worker
+    participant DB as MySQL Notification
+    participant Sender as FakeNotificationSender
 
-Luồng dự kiến trong giai đoạn thực thi:
+    Bus->>Worker: DispatchNotificationBatchV1(batchId)
+    Worker->>DB: Claim tối đa batchSize item PENDING/RETRY
+    loop từng item trong chunk
+        Worker->>Sender: Send(studentId, retryCount + 1)
+        alt Gửi thành công
+            Worker->>DB: INSERT notification BULK/UNREAD + item SUCCESS
+        else Lần 1 thất bại
+            Worker->>DB: item RETRY, retry_count = 1
+        else Lần 2 thất bại
+            Worker->>DB: item FAILED + error_message
+        end
+    end
+    Worker->>DB: Update counters, kiểm tra item còn lại
+    alt Còn PENDING/RETRY
+        Worker->>Bus: DispatchNotificationBatchV1(batchId)
+    else Đã xong
+        Worker->>DB: COMPLETED / PARTIAL_FAILED / FAILED
+    end
+```
 
-1. Scheduler tạo lượt chạy của loại tác vụ `NOTIFICATION_BATCH_DISPATCH` với dữ liệu đầu vào nhỏ chỉ chứa `batchId`.
-2. Scheduler Worker nhận lượt chạy để xử lý và gọi hợp đồng nội bộ của Notification Service.
-3. Bộ xử lý của Notification Service lấy các mục `PENDING` hoặc `RETRY` theo `batch_size`.
-4. Bộ xử lý tạo `notifications`, cập nhật mục/các bộ đếm và kết thúc lô.
-5. Scheduler chỉ lưu trạng thái/kết quả tổng quát của lượt chạy, không sao chép nội dung hoặc danh sách người nhận.
+## Quy tắc xử lý
 
-## Thử lại và tính lũy đẳng
-
-1. Nếu một mục thất bại, bộ xử lý của Notification Service trong tương lai tăng `retry_count` và chuyển sang `RETRY`.
-2. Sau số lần thử lại tối đa, bộ xử lý lưu `error_message` và chuyển mục sang `FAILED`.
-3. `UNIQUE(batch_id, student_id)` ngăn chụp trùng Học viên.
-4. `UNIQUE(notification_batch_id, recipient_student_id)` ngăn tạo trùng mục hộp thư đến.
-5. `UNIQUE(background_job_id, idempotency_key)` bảo đảm tính lũy đẳng cho lượt chạy Scheduler, không thay thế hai ràng buộc nghiệp vụ trên.
-
-## Trường hợp lỗi
-
-- `400`: phạm vi đối tượng hoặc Markdown không hợp lệ.
-- `404`: Khóa học hoặc danh sách Học viên không tồn tại.
-- `409`: lô xung đột trạng thái hoặc yêu cầu tương đương đang hoạt động.
-- `202`: yêu cầu hợp lệ; việc xử lý chưa hoàn tất, không phải lỗi.
+1. Snapshot dùng danh sách Student Service trả tại lúc POST; Worker không gọi lại Student Service.
+2. Một chunk có tối đa `batchSize` item, mặc định 500; Worker không tải toàn bộ lô vào bộ nhớ. Consumer xử lý tuần tự một message; item `PROCESSING` còn lại sau khi process bị dừng được claim lại ở lượt dispatch tiếp theo.
+3. Fake sender thất bại lần một khi `hash(studentId) % 20 == 0`, và lần hai khi `hash(studentId) % 100 == 0`.
+4. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
+5. Khi không còn item: không có lỗi là `COMPLETED`; chỉ lỗi là `FAILED`; có cả thành công và lỗi là `PARTIAL_FAILED`.
 
 ## Dữ liệu thay đổi
 
-- Cơ sở dữ liệu Notification Service: `notification_batches`, `notification_batch_items`, `notifications`.
-- Cơ sở dữ liệu Scheduler Service trong tương lai chỉ thay đổi `background_job_runs`.
-- Student Service chỉ được đọc để lấy danh sách người nhận.
+- Notification DB: `notification_batches`, `notification_batch_items`, `notifications`.
+- Student Service chỉ đọc danh sách học viên.
+- Không có Scheduler Service hoặc `background_jobs` trong flow này.

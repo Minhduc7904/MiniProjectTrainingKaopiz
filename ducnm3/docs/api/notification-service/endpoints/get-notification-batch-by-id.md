@@ -6,9 +6,7 @@ Trả về các bộ đếm gửi và trạng thái của Notification Service c
 
 ## Xác thực và phân quyền
 
-- Xác thực: bắt buộc.
-- Vai trò/phạm vi: quản trị viên thông báo.
-- Quy tắc sở hữu: quyền truy cập tuân theo chính sách thông báo của tổ chức sở hữu.
+MVP hiện chưa có auth. Khi auth được bổ sung, endpoint phải giới hạn quyền xem theo chính sách thông báo của tổ chức sở hữu.
 
 ## Yêu cầu
 
@@ -29,7 +27,11 @@ Trả về các bộ đếm gửi và trạng thái của Notification Service c
     "totalCount": 3000,
     "processedCount": 1500,
     "successCount": 1490,
-    "failedCount": 10
+    "failedCount": 10,
+    "batchSize": 500,
+    "createdAtUtc": "2026-08-14T01:00:00Z",
+    "startedAtUtc": "2026-08-14T01:00:02Z",
+    "completedAtUtc": null
   },
   "meta": {
     "traceId": "01J..."
@@ -41,8 +43,6 @@ Trả về các bộ đếm gửi và trạng thái của Notification Service c
 
 - `200`: đã tìm thấy lô.
 - `400 VALIDATION_FAILED`: `batchId` không phải UUID.
-- `401`: thiếu thông tin xác thực hoặc thông tin xác thực không hợp lệ.
-- `403`: bên gọi không có quyền xem lô.
 - `404 NOTIFICATION_BATCH_NOT_FOUND`: lô không tồn tại.
 - `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
