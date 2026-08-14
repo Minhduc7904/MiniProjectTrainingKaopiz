@@ -67,6 +67,13 @@ Danh mục Student Service:
 - [`student-service/integration.md`](student-service/integration.md): MySQL
   filter, stable ordering và page boundaries với migration production.
 
+Danh mục Notification Service:
+
+- [`notification-service/unit.md`](notification-service/unit.md): batch create,
+  snapshot, dispatch, retry và fan-out media trong memory.
+- [`notification-service/integration.md`](notification-service/integration.md):
+  migration Notification production và claim lease với MySQL Testcontainer.
+
 Coverage hiện tại của Media Upload/Usage tập trung ở unit và integration.
 Gateway public paths, HTTP request binding/response envelope của hai command,
 typed HTTP call tới Student Service và Scheduler cleanup cho `PENDING` stale

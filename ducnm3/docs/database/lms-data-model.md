@@ -229,7 +229,9 @@ completed_at          // Thời điểm kết thúc, UTC; có thể null khi ch�
 created_at            // Thời điểm tạo lô, UTC
 ```
 
-Vòng đời trạng thái dự kiến: `PENDING -> PROCESSING -> COMPLETED | PARTIAL_FAILED | FAILED`. Phần nền tảng hiện chỉ có lược đồ; chưa có bộ xử lý chuyển trạng thái.
+Worker chuyển batch qua `PENDING -> SNAPSHOTTING -> SNAPSHOT_READY -> PROCESSING
+-> COMPLETED | PARTIAL_FAILED | FAILED`. Counter được cộng theo kết quả của từng
+chunk; không tổng hợp lại toàn bộ item sau mỗi chunk.
 
 ### notification_batch_items
 
@@ -242,9 +244,17 @@ status                // PENDING | PROCESSING | SUCCESS | RETRY | FAILED
 retry_count           // Số lần thử lại mục nghiệp vụ đã thực hiện
 error_message         // Lỗi cuối cùng; có thể null khi chưa lỗi hoặc đã thành công
 processed_at          // Thời điểm xử lý cuối, UTC; có thể null khi chưa xử lý
+lease_token           // UUID claim hiện tại khi PROCESSING; null với item chưa claim hoặc đã hoàn tất
+lease_expires_at      // Thời điểm UTC claim hết hạn; worker khác chỉ nhận lại PROCESSING sau thời điểm này
 ```
 
 `UNIQUE(batch_id, student_id)` ngăn chụp trùng người nhận khi Worker retry/redelivery. Khi xóa lô, các mục bị xóa theo; khi xóa mục hộp thư đến, `notification_id` của mục chỉ được đặt thành null.
+
+Chỉ mục `ix_notification_batch_items_claim(batch_id, status, lease_expires_at,
+id)` phục vụ claim có lease. Worker claim item trong transaction ngắn bằng lock
+`SKIP LOCKED`, ghi `lease_token` và `lease_expires_at`, rồi mới gửi. Kết quả chỉ
+được ghi khi token khớp; worker dừng giữa chừng không cho worker khác lấy item
+cho đến khi lease hết hạn.
 
 ### MassTransit outbox/inbox
 

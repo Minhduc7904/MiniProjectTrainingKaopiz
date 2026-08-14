@@ -135,6 +135,20 @@ prefetch và concurrency nằm một lần trong `.env` qua nhóm biến
 `MESSAGING_RETRY_*`, `MESSAGING_PREFETCH_COUNT` và
 `MESSAGING_CONCURRENCY_LIMIT`; consumer không có retry riêng.
 
+Riêng `notification-worker` có ba cấu hình performance, đều mặc định an toàn là
+`1`/`1`/`120`:
+
+- `NOTIFICATION_BATCH_DISPATCH_CHUNK_CONCURRENCY`: số chunk batch chạy cùng
+  lúc; Compose đồng thời ánh xạ giá trị này vào
+  `Messaging__Consumer__ConcurrencyLimit` của Notification Worker.
+- `NOTIFICATION_BATCH_MAX_CONCURRENT_SENDS`: số recipient sender xử lý cùng
+  lúc trong một chunk.
+- `NOTIFICATION_BATCH_CLAIM_LEASE_SECONDS`: thời gian lease cho item
+  `PROCESSING`; không đặt thấp hơn thời gian xử lý worst-case của một chunk.
+
+Tăng lần lượt 1 → 2 → 4 sau benchmark; không tăng chỉ
+`MESSAGING_CONCURRENCY_LIMIT` vì số dispatch command seed phải cùng giá trị.
+
 Mở management UI bằng credential `RABBITMQ_USER`/`RABBITMQ_PASSWORD` để xem
 exchange, queue và các queue `_error`.
 

@@ -75,10 +75,10 @@ sequenceDiagram
         Worker->>DB: batch -> FAILED
     else Snapshot hoàn tất
         Worker->>DB: total_count + batch -> SNAPSHOT_READY
-        Worker->>Bus: DispatchNotificationBatchV1(batchId)
+        Worker->>Bus: N DispatchNotificationBatchV1(batchId)
     end
     Bus->>Worker: DispatchNotificationBatchV1(batchId)
-    Worker->>DB: Claim tối đa batchSize item PENDING/RETRY
+    Worker->>DB: Claim tối đa batchSize item + lease token (SKIP LOCKED)
     loop từng item trong chunk
         Worker->>Sender: Send(studentId, retryCount + 1)
         alt Gửi thành công
@@ -90,6 +90,7 @@ sequenceDiagram
             Worker->>DB: item FAILED + error_message
         end
     end
+    Worker->>DB: Ghi notification + update item/counter trong một lần lưu theo chunk
     Worker->>DB: RegisterNotificationMediaUsageBatchV1(notificationIds) outbox
     DB-->>Bus: Send one usage command per bounded owner chunk
     Bus->>Media: Validate shared media once and insert usages for all notificationIds
@@ -104,11 +105,13 @@ sequenceDiagram
 ## Quy tắc xử lý
 
 1. POST chỉ tạo batch; Worker bắt đầu snapshot sau khi command được durable handoff. Snapshot dùng từng trang từ Student Service, không giữ toàn bộ recipient trong memory hoặc HTTP request. Retry/redelivery upsert theo `UNIQUE(batch_id, student_id)` nên không tạo item trùng.
-2. Một chunk có tối đa `batchSize` item, mặc định 500; Worker không tải toàn bộ lô vào bộ nhớ. Consumer xử lý tuần tự một message; item `PROCESSING` còn lại sau khi process bị dừng được claim lại ở lượt dispatch tiếp theo.
-3. Fake sender thất bại lần một khi `hash(studentId) % 20 == 0`, và lần hai khi `hash(studentId) % 100 == 0`.
-4. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
-5. Khi không còn item: không có lỗi là `COMPLETED`; chỉ lỗi là `FAILED`; có cả thành công và lỗi là `PARTIAL_FAILED`.
-6. Markdown media được kiểm tra ngay khi tạo batch. Sau một dispatch chunk, các `notificationId` thành công cùng bodyMarkdown được gom thành `RegisterNotificationMediaUsageBatchV1`; command chứa tối đa 500 owner IDs và tối đa 1,000 usage rows. Media Worker kiểm tra mỗi media `READY` một lần rồi tạo idempotent usage `NOTIFICATION/NOTIFICATION_BODY/EMBED|ATTACHMENT` cho từng notification ID. Item lỗi không có usage.
+2. Một chunk có tối đa `batchSize` item, mặc định 500; Worker không tải toàn bộ lô vào bộ nhớ. `NOTIFICATION_BATCH_DISPATCH_CHUNK_CONCURRENCY` xác định số chunk cùng chạy và phải đồng nhất với `Messaging__Consumer__ConcurrencyLimit` của Notification Worker. Mặc định cả hai là 1.
+3. Claim là transaction ngắn dùng `FOR UPDATE SKIP LOCKED`: item được gắn `lease_token` và `lease_expires_at`. Chỉ kết quả có token khớp mới cập nhật item; `PROCESSING` chỉ được worker khác nhận lại khi lease hết hạn.
+4. Trong một chunk, sender chạy song song tối đa `NOTIFICATION_BATCH_MAX_CONCURRENT_SENDS` (mặc định 1). Sau đó notification, trạng thái item và counter được ghi một lần theo chunk; không commit từng người nhận.
+5. Fake sender thất bại lần một khi `hash(studentId) % 20 == 0`, và lần hai khi `hash(studentId) % 100 == 0`.
+6. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
+7. Khi không còn item claim được hay item `PROCESSING` active: không có lỗi là `COMPLETED`; chỉ lỗi là `FAILED`; có cả thành công và lỗi là `PARTIAL_FAILED`.
+8. Markdown media được kiểm tra ngay khi tạo batch. Sau một dispatch chunk, các `notificationId` thành công cùng bodyMarkdown được gom thành `RegisterNotificationMediaUsageBatchV1`; command chứa tối đa 500 owner IDs và tối đa 1,000 usage rows. Media Worker kiểm tra mỗi media `READY` một lần rồi tạo idempotent usage `NOTIFICATION/NOTIFICATION_BODY/EMBED|ATTACHMENT` cho từng notification ID. Item lỗi không có usage.
 
 ## Dữ liệu thay đổi
 

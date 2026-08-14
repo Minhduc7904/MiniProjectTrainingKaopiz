@@ -110,6 +110,8 @@ Chịu trách nhiệm:
 - Tính lũy đẳng
 - Theo dõi lỗi
 - Đo kiểm hiệu năng xử lý hàng loạt
+- Claim recipient batch bằng lease trong Notification DB để nhiều Notification
+  Worker có thể xử lý song song mà không sở hữu chồng item
 
 ### Các bảng
 

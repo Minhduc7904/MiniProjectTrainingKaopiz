@@ -1,12 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using NotificationService.Application.Abstractions;
+using NotificationService.Application.Features.Batches;
 using NotificationService.Domain.Notifications;
 using NotificationService.Infrastructure.Persistence.Scaffolded;
+using System.Data;
 
 namespace NotificationService.Infrastructure.Persistence;
 
-public sealed class EfNotificationBatchRepository(NotificationDbContext dbContext) : INotificationBatchRepository
+public sealed class EfNotificationBatchRepository(
+    NotificationDbContext dbContext,
+    IDbContextFactory<NotificationDbContext> dbContextFactory,
+    TimeProvider timeProvider,
+    NotificationBatchProcessingOptions processingOptions) : INotificationBatchRepository
 {
     public Task<NotificationBatchSummary> CreateAsync(CreateNotificationBatchRecord record, CancellationToken cancellationToken)
     {
@@ -150,73 +156,184 @@ public sealed class EfNotificationBatchRepository(NotificationDbContext dbContex
             hasNextPage);
     }
 
-    public async Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken)
+    public async Task<NotificationBatchClaim?> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken)
     {
-        var batch = await dbContext.NotificationBatches.SingleOrDefaultAsync(x => x.Id == batchId, cancellationToken);
-        if (batch is null || batch.Status is not (NotificationBatchStatuses.SnapshotReady or NotificationBatchStatuses.Processing)) return [];
-        var items = await dbContext.NotificationBatchItems
-            .Where(x =>
-                x.BatchId == batchId &&
-                (x.Status == NotificationBatchItemStatuses.Pending ||
-                 x.Status == NotificationBatchItemStatuses.Retry ||
-                 x.Status == NotificationBatchItemStatuses.Processing))
-            .OrderBy(x => x.Id)
-            .Take(checked((int)batch.BatchSize))
+        await using var claimContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await using var transaction = await claimContext.Database.BeginTransactionAsync(
+            IsolationLevel.ReadCommitted,
+            cancellationToken);
+        var batch = await claimContext.NotificationBatches.SingleOrDefaultAsync(
+            x => x.Id == batchId,
+            cancellationToken);
+        if (batch is null || batch.Status is not (NotificationBatchStatuses.SnapshotReady or NotificationBatchStatuses.Processing))
+        {
+            return null;
+        }
+
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var leaseToken = Guid.NewGuid();
+        var items = await claimContext.NotificationBatchItems
+            .FromSqlInterpolated($"""
+                SELECT *
+                FROM notification_batch_items
+                WHERE batch_id = {batchId}
+                  AND (
+                    status IN ({NotificationBatchItemStatuses.Pending}, {NotificationBatchItemStatuses.Retry})
+                    OR (status = {NotificationBatchItemStatuses.Processing}
+                        AND lease_expires_at IS NOT NULL
+                        AND lease_expires_at <= {now})
+                  )
+                ORDER BY id
+                LIMIT {checked((int)batch.BatchSize)}
+                FOR UPDATE SKIP LOCKED
+                """)
             .ToListAsync(cancellationToken);
-        if (items.Count == 0) return [];
+        if (items.Count == 0)
+        {
+            await transaction.CommitAsync(cancellationToken);
+            return null;
+        }
+
         batch.Status = NotificationBatchStatuses.Processing;
-        batch.StartedAt ??= DateTime.UtcNow;
-        foreach (var item in items) item.Status = NotificationBatchItemStatuses.Processing;
-        await dbContext.SaveChangesAsync(cancellationToken);
-        return items.Select(x => new NotificationBatchWorkItem(x.Id, x.BatchId, x.StudentId, x.RetryCount, batch.Title, batch.BodyMarkdown, batch.CreatedBy)).ToArray();
+        batch.StartedAt ??= now;
+        var leaseExpiresAt = now.AddSeconds(processingOptions.ClaimLeaseSeconds);
+        foreach (var item in items)
+        {
+            item.Status = NotificationBatchItemStatuses.Processing;
+            item.LeaseToken = leaseToken;
+            item.LeaseExpiresAt = leaseExpiresAt;
+        }
+
+        await claimContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new NotificationBatchClaim(
+            batchId,
+            leaseToken,
+            items.Select(item => new NotificationBatchWorkItem(
+                item.Id,
+                item.BatchId,
+                item.StudentId,
+                item.RetryCount,
+                batch.Title,
+                batch.BodyMarkdown,
+                batch.CreatedBy)).ToArray());
     }
 
-    public async Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<NotificationSummary>> CompleteClaimAsync(
+        NotificationBatchClaim claim,
+        IReadOnlyList<NotificationBatchDeliveryResult> results,
+        CancellationToken cancellationToken)
     {
-        var entity = await dbContext.NotificationBatchItems.SingleAsync(x => x.Id == item.Id, cancellationToken);
-        if (entity.Status is NotificationBatchItemStatuses.Success or NotificationBatchItemStatuses.Failed) return null;
-        var notification = new Notification { Id = Guid.NewGuid(), RecipientStudentId = item.StudentId, Title = item.Title, BodyMarkdown = item.BodyMarkdown, SourceType = NotificationSourceTypes.Bulk, NotificationBatchId = item.BatchId, CreatedBy = item.CreatedBy, Status = NotificationStatuses.Unread, CreatedAt = DateTime.UtcNow };
-        dbContext.Notifications.Add(notification);
-        entity.Status = NotificationBatchItemStatuses.Success;
-        entity.NotificationId = notification.Id;
-        entity.ProcessedAt = DateTime.UtcNow;
-        await dbContext.SaveChangesAsync(cancellationToken);
-        return new NotificationSummary(notification.Id, notification.RecipientStudentId, notification.Title, notification.BodyMarkdown, notification.SourceType, notification.Status, notification.CreatedBy, notification.CreatedAt, notification.ReadAt);
-    }
+        var resultByItemId = results
+            .GroupBy(result => result.ItemId)
+            .ToDictionary(group => group.Key, group => group.Single());
+        if (resultByItemId.Count != claim.Items.Count ||
+            claim.Items.Any(item => !resultByItemId.ContainsKey(item.Id)))
+        {
+            throw new InvalidOperationException("Every claimed notification batch item must have exactly one delivery result.");
+        }
 
-    public async Task MarkFailureAsync(NotificationBatchWorkItem item, string errorMessage, CancellationToken cancellationToken)
-    {
-        var entity = await dbContext.NotificationBatchItems.SingleAsync(x => x.Id == item.Id, cancellationToken);
-        if (entity.Status is NotificationBatchItemStatuses.Success or NotificationBatchItemStatuses.Failed) return;
-        entity.RetryCount++;
-        entity.Status = entity.RetryCount >= 2 ? NotificationBatchItemStatuses.Failed : NotificationBatchItemStatuses.Retry;
-        entity.ErrorMessage = errorMessage;
-        if (entity.Status == NotificationBatchItemStatuses.Failed) entity.ProcessedAt = DateTime.UtcNow;
+        var itemIds = claim.Items.Select(item => item.Id).ToArray();
+        var batch = await dbContext.NotificationBatches.SingleAsync(
+            batch => batch.Id == claim.BatchId,
+            cancellationToken);
+        var claimedItems = await dbContext.NotificationBatchItems
+            .Where(item =>
+                item.BatchId == claim.BatchId &&
+                item.Status == NotificationBatchItemStatuses.Processing &&
+                item.LeaseToken == claim.LeaseToken &&
+                itemIds.Contains(item.Id))
+            .ToListAsync(cancellationToken);
+        if (claimedItems.Count != claim.Items.Count)
+        {
+            throw new InvalidOperationException("The notification batch claim has expired or was released before completion.");
+        }
+
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var notifications = new List<NotificationSummary>();
+        uint successCount = 0;
+        uint failedCount = 0;
+        foreach (var item in claimedItems)
+        {
+            var result = resultByItemId[item.Id];
+            item.LeaseToken = null;
+            item.LeaseExpiresAt = null;
+            if (result.IsSuccess)
+            {
+                var notification = new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    RecipientStudentId = item.StudentId,
+                    Title = batch.Title,
+                    BodyMarkdown = batch.BodyMarkdown,
+                    SourceType = NotificationSourceTypes.Bulk,
+                    NotificationBatchId = item.BatchId,
+                    CreatedBy = batch.CreatedBy,
+                    Status = NotificationStatuses.Unread,
+                    CreatedAt = now,
+                };
+                dbContext.Notifications.Add(notification);
+                item.Status = NotificationBatchItemStatuses.Success;
+                item.NotificationId = notification.Id;
+                item.ErrorMessage = null;
+                item.ProcessedAt = now;
+                successCount++;
+                notifications.Add(new NotificationSummary(
+                    notification.Id,
+                    notification.RecipientStudentId,
+                    notification.Title,
+                    notification.BodyMarkdown,
+                    notification.SourceType,
+                    notification.Status,
+                    notification.CreatedBy,
+                    notification.CreatedAt,
+                    notification.ReadAt));
+                continue;
+            }
+
+            item.RetryCount++;
+            item.Status = item.RetryCount >= 2
+                ? NotificationBatchItemStatuses.Failed
+                : NotificationBatchItemStatuses.Retry;
+            item.ErrorMessage = result.ErrorMessage ?? "Notification sender failed.";
+            if (item.Status == NotificationBatchItemStatuses.Failed)
+            {
+                item.ProcessedAt = now;
+                failedCount++;
+            }
+        }
+
+        batch.SuccessCount = checked(batch.SuccessCount + successCount);
+        batch.FailedCount = checked(batch.FailedCount + failedCount);
+        batch.ProcessedCount = checked(batch.ProcessedCount + successCount + failedCount);
         await dbContext.SaveChangesAsync(cancellationToken);
+        return notifications;
     }
 
     public async Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken)
     {
         var batch = await dbContext.NotificationBatches.SingleAsync(x => x.Id == batchId, cancellationToken);
-        var items = dbContext.NotificationBatchItems.Where(x => x.BatchId == batchId);
-        var hasRemaining = await items.AnyAsync(
-            x => x.Status == NotificationBatchItemStatuses.Pending || x.Status == NotificationBatchItemStatuses.Retry || x.Status == NotificationBatchItemStatuses.Processing,
+        var hasPending = await dbContext.NotificationBatchItems.AnyAsync(
+            item => item.BatchId == batchId &&
+                    (item.Status == NotificationBatchItemStatuses.Pending ||
+                     item.Status == NotificationBatchItemStatuses.Retry),
             cancellationToken);
-        batch.SuccessCount = checked((uint)await items.CountAsync(
-            x => x.Status == NotificationBatchItemStatuses.Success,
-            cancellationToken));
-        batch.FailedCount = checked((uint)await items.CountAsync(
-            x => x.Status == NotificationBatchItemStatuses.Failed,
-            cancellationToken));
-        batch.ProcessedCount = batch.SuccessCount + batch.FailedCount;
-        if (hasRemaining)
+        if (hasPending)
         {
-            await dbContext.SaveChangesAsync(cancellationToken);
             return true;
         }
 
+        var hasActiveClaim = await dbContext.NotificationBatchItems.AnyAsync(
+            item => item.BatchId == batchId &&
+                    item.Status == NotificationBatchItemStatuses.Processing,
+            cancellationToken);
+        if (hasActiveClaim)
+        {
+            return false;
+        }
+
         batch.Status = batch.FailedCount == 0 ? NotificationBatchStatuses.Completed : batch.SuccessCount == 0 ? NotificationBatchStatuses.Failed : NotificationBatchStatuses.PartialFailed;
-        batch.CompletedAt = DateTime.UtcNow;
+        batch.CompletedAt = timeProvider.GetUtcNow().UtcDateTime;
         await dbContext.SaveChangesAsync(cancellationToken);
         return false;
     }

@@ -45,6 +45,16 @@ public partial class NotificationBatchItem
     /// </summary>
     public DateTime? ProcessedAt { get; set; }
 
+    /// <summary>
+    /// UUID token sở hữu claim PROCESSING hiện tại; null khi item chưa được claim hoặc đã hoàn tất
+    /// </summary>
+    public Guid? LeaseToken { get; set; }
+
+    /// <summary>
+    /// Thời điểm UTC claim PROCESSING hết hạn để worker khác có thể nhận lại
+    /// </summary>
+    public DateTime? LeaseExpiresAt { get; set; }
+
     public virtual NotificationBatch Batch { get; set; } = null!;
 
     public virtual Notification? Notification { get; set; }
