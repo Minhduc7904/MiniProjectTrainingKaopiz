@@ -1,7 +1,8 @@
 # NGÀY 3 — Media, FE và notification batch
 
-Ba hạng mục Media/FE đã có mã ticket. Hạng mục batch Ticket `Chưa tạo` = cấm
-push code. Markdown push thẳng `ducnm3`. Est là giờ thật. Quy trình:
+Ba hạng mục Media/FE đã có mã ticket. Batch Job dùng `ERBUL26-2690`. Batch
+Performance Ticket `Chưa tạo` = cấm push code. Markdown push thẳng `ducnm3`.
+Est là giờ thật. Quy trình:
 [DEV_TASK_GUIDE.md](../guide/DEV_TASK_GUIDE.md).
 
 ## Ước lượng thời gian
@@ -11,7 +12,7 @@ push code. Markdown push thẳng `ducnm3`. Est là giờ thật. Quy trình:
 | Hoàn thiện Media Service | 2 giờ | `ERBUL26-2680` |
 | FE: base Workbench và trang GET students | 1 giờ | `ERBUL26-2681` |
 | FE: trang POST media upload | 1 giờ | `ERBUL26-2682` |
-| Batch Job — gửi notification ~3k | 3 giờ | `Chưa tạo` |
+| Batch Job — gửi notification ~3k | 3 giờ | `ERBUL26-2690` |
 | Batch Performance — 3k/10k/100k | 1 giờ | `Chưa tạo` |
 
 ## Task đã có ticket (Media / FE)
@@ -70,7 +71,8 @@ POST, Worker dispatch, retry trong code.
 - [ ] `GET /api/notification-batches/{batchId}` để poll trạng thái (Location
   của 202).
 - Est: 3 giờ.
-- Ticket: `Chưa tạo`.
+- Ticket: `ERBUL26-2690`.
+- Nhánh: `feature/ERBUL26-2690`.
 - Lý do est: schema sẵn; API snapshot + Worker chunk + nhánh retry/fail trong
   cùng handler. Một `targetScope` đủ cho demo 3k.
 

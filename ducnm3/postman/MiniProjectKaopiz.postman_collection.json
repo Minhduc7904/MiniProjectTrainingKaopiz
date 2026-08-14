@@ -50,6 +50,16 @@
       "key": "studentPageSize",
       "value": "20",
       "type": "string"
+    },
+    {
+      "key": "notificationBatchId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notificationCreatedBy",
+      "value": "00007b9a-b898-5c29-8bcd-4fb33555a48d",
+      "type": "string"
     }
   ],
   "item": [
@@ -518,7 +528,100 @@
     },
     {
       "name": "NotificationService",
-      "item": []
+      "item": [
+        {
+          "name": "POST Notification Batch - ALL_STUDENTS",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Accepted and poll location is returned\", function () {",
+                  "  pm.response.to.have.status(202);",
+                  "  const payload = pm.response.json();",
+                  "  pm.expect(payload.data.status).to.eql(\"PENDING\");",
+                  "  pm.expect(payload.data.totalCount).to.be.above(0);",
+                  "  pm.expect(pm.response.headers.get(\"Location\")).to.match(/^\\/notification\\/api\\/notification-batches\\//);",
+                  "  pm.collectionVariables.set(\"notificationBatchId\", payload.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Maintenance notice\",\n  \"bodyMarkdown\": \"The system will be updated tonight.\",\n  \"targetScope\": \"ALL_STUDENTS\",\n  \"createdBy\": \"{{notificationCreatedBy}}\",\n  \"batchSize\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notification-batches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notification",
+                "api",
+                "notification-batches"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Notification Batch Poll",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Batch summary is available\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const payload = pm.response.json();",
+                  "  pm.expect(payload.data.id).to.eql(pm.collectionVariables.get(\"notificationBatchId\"));",
+                  "  pm.expect(payload.data.status).to.be.oneOf([\"PENDING\", \"PROCESSING\", \"COMPLETED\", \"PARTIAL_FAILED\", \"FAILED\"]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notification-batches/{{notificationBatchId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notification",
+                "api",
+                "notification-batches",
+                "{{notificationBatchId}}"
+              ]
+            }
+          }
+        }
+      ]
     },
     {
       "name": "SchedulerService",

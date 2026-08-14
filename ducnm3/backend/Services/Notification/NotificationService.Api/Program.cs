@@ -3,7 +3,11 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
-using NotificationService.Infrastructure.Health;
+using NotificationService.Application;
+using NotificationService.Infrastructure;
+using NotificationService.Api.Endpoints;
+using NotificationService.Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +15,15 @@ builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
 {
-    builder.Services.AddLmsMessaging(builder.Configuration, ServiceNames.Notification);
+    builder.Services.AddLmsMessaging(
+        builder.Configuration,
+        ServiceNames.Notification,
+        registration => registration
+            .AddEntityFrameworkOutbox<NotificationDbContext>(outbox =>
+            {
+                outbox.UseMySql();
+                outbox.UseBusOutbox();
+            }));
 }
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(document =>
@@ -27,10 +39,11 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Notification Service.");
 }
 
-builder.Services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
-    new NotificationDatabaseHealthProbe(
-        connectionString,
-        serviceProvider.GetRequiredService<ILogger<NotificationDatabaseHealthProbe>>()));
+if (!migrationsRunOnly)
+{
+    builder.Services.AddNotificationApplication();
+    builder.Services.AddNotificationInfrastructure(builder.Configuration, connectionString);
+}
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(
@@ -60,5 +73,6 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Notification);
 app.MapDatabaseHealthEndpoint(ServiceNames.Notification);
+app.MapNotificationBatchEndpoints();
 
 app.Run();

@@ -78,6 +78,20 @@ public static class ApiRoutes
                 FormatGuidRoute(GetByIdTemplate, "studentId", studentId));
     }
 
+    public static class Notifications
+    {
+        public const string Batches = "/api/notification-batches";
+        public const string BatchByIdTemplate = "/api/notification-batches/{batchId}";
+
+        public static string BatchByIdServicePath(Guid batchId) =>
+            BuildServicePath(FormatGuidRoute(BatchByIdTemplate, "batchId", batchId));
+
+        public static string BatchByIdPublicPath(Guid batchId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Notification,
+                FormatGuidRoute(BatchByIdTemplate, "batchId", batchId));
+    }
+
     public static string BuildServicePath(string route)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(route);

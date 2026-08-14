@@ -266,6 +266,25 @@ services:
     ports:
       - "5104:8080"
 
+  notification-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Notification/NotificationService.Worker/NotificationService.Worker.csproj
+    command: NotificationService.Worker.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      <<: [*messaging-environment, *http-query-environment]
+      DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Database: ${NOTIFICATION_DB_CONNECTION_STRING:?NOTIFICATION_DB_CONNECTION_STRING must be set}
+      ServiceEndpoints__student-service: http://student-service:8080/
+    restart: unless-stopped
+
   scheduler-service:
     build:
       context: ./backend
