@@ -40,7 +40,7 @@ public static class DependencyInjection
         services.AddScoped<CreateMediaUsageHandler>();
         services.AddScoped<GetMediaUsageUrlHandler>();
         services.AddScoped<GetMediaUsageUrlsHandler>();
-        services.AddScoped<RegisterNotificationMediaUsageHandler>();
+        services.AddScoped<RegisterNotificationMediaUsagesHandler>();
         services.AddSingleton<IMediaUrlProvider, ContentEndpointMediaUrlProvider>();
         services.AddScoped<GenerateMediaThumbnailHandler>();
         services.AddScoped<GetMediaThumbnailStatusHandler>();

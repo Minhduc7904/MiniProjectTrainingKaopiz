@@ -6,7 +6,6 @@ using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
 using MediaService.Application.Abstractions.Persistence;
-using MediaService.Contracts.Messaging;
 using MediaService.Application.Abstractions.Urls;
 using MediaService.Application.Features.Media.Upload;
 using MediaService.Application.Features.Usages.GetUrls;
@@ -165,10 +164,8 @@ public sealed class GetMediaUsageUrlEndpointsComponentTests
 
         public IReadOnlyList<MediaUsageUrlRecord> Many { get; set; } = [];
 
-        public Task EnsureNotificationBodyUsagesAsync(
-            Guid notificationId,
-            Guid createdBy,
-            IReadOnlyList<NotificationMediaUsageReferenceV1> references,
+        public Task EnsureMediaUsagesAsync(
+            IReadOnlyList<CreateMediaUsageRecord> usages,
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 

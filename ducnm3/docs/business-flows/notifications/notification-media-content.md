@@ -33,10 +33,10 @@ sequenceDiagram
         Notification-->>Admin: 400
     else Hợp lệ
         Notification->>DB: Store notification or batch
-        DB-->>Bus: RegisterNotificationMediaUsageV1 outbox
+        DB-->>Bus: RegisterNotificationMediaUsageV1 or BatchV1 outbox
         Notification-->>Admin: Success response
-        Bus->>Worker: RegisterNotificationMediaUsageV1(notificationId)
-        Worker->>Media: Verify READY media + insert idempotent usage
+        Bus->>Worker: Register notification usage command
+        Worker->>Media: Verify shared READY media once + insert idempotent usages
         Student->>Notification: Open inbox
         Notification-->>Student: Sanitized Markdown
         Student->>Media: GET media content URL
@@ -49,11 +49,11 @@ sequenceDiagram
 1. Quản trị viên tải media lên Media Service và nhận `mediaId` cùng URL nội dung.
 2. Quản trị viên soạn `bodyMarkdown`, ví dụ `![Thông báo](/media/api/media/{mediaId}/content)`.
 3. Notification Service chỉ chấp nhận link Markdown trỏ đúng `contentUrl` công khai của Media Service. Image syntax `![]()` là `EMBED`; link `[]()` là `ATTACHMENT`.
-4. Sau khi từng notification được tạo thành công, Notification Service ghi `RegisterNotificationMediaUsageV1` vào transactional outbox. Media Worker tạo `media_usages` với:
+4. Sau khi notification đơn lẻ được tạo thành công, Notification Service ghi `RegisterNotificationMediaUsageV1` vào transactional outbox. Với batch, Notification Worker gom các notification thành công trong một chunk và ghi `RegisterNotificationMediaUsageBatchV1`. Media Worker dùng cùng core `EnsureMediaUsagesAsync` để tạo `media_usages` với:
    - `owner_service = NOTIFICATION`
    - `owner_type = NOTIFICATION_BODY`
    - `usage_type = EMBED` hoặc `ATTACHMENT`
-5. Với batch, worker chỉ phát command sau khi sender thành công, `notifications` đã được ghi và item chuyển `SUCCESS`; owner luôn là `notification.id`, không phải `batch.id`.
+5. Với batch, worker chỉ phát command sau khi sender thành công, `notifications` đã được ghi và item chuyển `SUCCESS`; owner luôn là `notification.id`, không phải `batch.id`. Một media dùng cho N notification vẫn tạo N usage rows, nhưng được validate và ghi theo bounded batch thay vì N command riêng.
 6. Học viên mở hộp thư đến; ứng dụng khách hiển thị Markdown đã được làm sạch và tải media từ Media Service.
 
 ## Trường hợp lỗi

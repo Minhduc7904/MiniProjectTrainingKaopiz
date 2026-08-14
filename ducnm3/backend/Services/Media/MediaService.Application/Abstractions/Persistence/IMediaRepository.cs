@@ -1,7 +1,5 @@
 namespace MediaService.Application.Abstractions.Persistence;
 
-using MediaService.Contracts.Messaging;
-
 public interface IMediaRepository
 {
     Task AddPendingAsync(
@@ -39,9 +37,7 @@ public interface IMediaRepository
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);
 
-    Task EnsureNotificationBodyUsagesAsync(
-        Guid notificationId,
-        Guid createdBy,
-        IReadOnlyList<NotificationMediaUsageReferenceV1> references,
+    Task EnsureMediaUsagesAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
         CancellationToken cancellationToken);
 }

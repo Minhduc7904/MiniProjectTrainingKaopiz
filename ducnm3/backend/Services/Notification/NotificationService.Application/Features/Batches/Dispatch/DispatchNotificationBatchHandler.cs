@@ -16,6 +16,7 @@ public sealed class DispatchNotificationBatchHandler(
     public async Task HandleAsync(DispatchNotificationBatchV1 command, CancellationToken cancellationToken)
     {
         var items = await repository.ClaimChunkAsync(command.BatchId, cancellationToken);
+        var successfulNotifications = new List<NotificationSummary>();
         foreach (var item in items)
         {
             try
@@ -24,22 +25,40 @@ public sealed class DispatchNotificationBatchHandler(
                 var notification = await repository.MarkSuccessAsync(item, cancellationToken);
                 if (notification is not null)
                 {
-                    var references = mediaReferenceExtractor.Extract(notification.BodyMarkdown);
-                    if (references.Count > 0)
-                    {
-                        await commandSender.SendAsync(
-                            ServiceNames.Media,
-                            new RegisterNotificationMediaUsageV1(
-                                notification.Id,
-                                notification.CreatedBy,
-                                references),
-                            cancellationToken);
-                    }
+                    successfulNotifications.Add(notification);
                 }
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 await repository.MarkFailureAsync(item, "Fake sender failed.", cancellationToken);
+            }
+        }
+
+        if (successfulNotifications.Count > 0)
+        {
+            var references = mediaReferenceExtractor.Extract(
+                successfulNotifications[0].BodyMarkdown);
+            if (references.Count > 0)
+            {
+                var notificationIdsPerCommand = Math.Min(
+                    NotificationMediaUsageBatchLimits.MaxNotificationIdsPerCommand,
+                    Math.Max(
+                        1,
+                        NotificationMediaUsageBatchLimits.MaxUsageRowsPerCommand /
+                        references.Count));
+                foreach (var notificationIds in successfulNotifications
+                    .Select(notification => notification.Id)
+                    .Distinct()
+                    .Chunk(notificationIdsPerCommand))
+                {
+                    await commandSender.SendAsync(
+                        ServiceNames.Media,
+                        new RegisterNotificationMediaUsageBatchV1(
+                            notificationIds,
+                            successfulNotifications[0].CreatedBy,
+                            references),
+                        cancellationToken);
+                }
             }
         }
 

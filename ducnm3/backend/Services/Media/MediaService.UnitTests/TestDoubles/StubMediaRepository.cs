@@ -1,5 +1,4 @@
 using MediaService.Application.Abstractions.Persistence;
-using MediaService.Contracts.Messaging;
 using MediaService.Domain.Media;
 
 namespace MediaService.UnitTests.TestDoubles;
@@ -21,15 +20,13 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
 
     public MediaUsageOwnerQuery? LastUsageUrlQuery { get; private set; }
 
-    public (Guid NotificationId, Guid CreatedBy, IReadOnlyList<NotificationMediaUsageReferenceV1> References)? NotificationBodyUsageRequest { get; private set; }
+    public IReadOnlyList<CreateMediaUsageRecord> EnsuredUsages { get; private set; } = [];
 
-    public Task EnsureNotificationBodyUsagesAsync(
-        Guid notificationId,
-        Guid createdBy,
-        IReadOnlyList<NotificationMediaUsageReferenceV1> references,
+    public Task EnsureMediaUsagesAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
         CancellationToken cancellationToken)
     {
-        NotificationBodyUsageRequest = (notificationId, createdBy, references);
+        EnsuredUsages = usages;
         return Task.CompletedTask;
     }
 

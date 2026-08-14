@@ -1,4 +1,5 @@
 using BuildingBlocks.Messaging.Abstractions;
+using MediaService.Contracts.Messaging;
 using System.Runtime.CompilerServices;
 using NotificationService.Application;
 using NotificationService.Application.Abstractions;
@@ -119,6 +120,51 @@ public sealed class FakeNotificationSenderTests
 
 public sealed class DispatchNotificationBatchHandlerTests
 {
+    [Test]
+    public async Task HandleAsyncSuccessfulChunkQueuesOneMediaUsageBatchCommand()
+    {
+        var batchId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var createdBy = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        var mediaId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        var firstItem = new NotificationBatchWorkItem(
+            Guid.Parse("44444444-4444-4444-4444-444444444444"),
+            batchId,
+            Guid.Parse("55555555-5555-5555-5555-555555555555"),
+            0,
+            "Title",
+            $"![media](/media/api/media/{mediaId:D}/content)",
+            createdBy);
+        var secondItem = firstItem with
+        {
+            Id = Guid.Parse("66666666-6666-6666-6666-666666666666"),
+            StudentId = Guid.Parse("77777777-7777-7777-7777-777777777777"),
+        };
+        var repository = new StubBatchRepository([firstItem, secondItem]);
+        var commandSender = new StubCommandSender();
+        var handler = new DispatchNotificationBatchHandler(
+            repository,
+            new SuccessfulSender(),
+            commandSender,
+            new NotificationMediaReferenceExtractor());
+
+        await handler.HandleAsync(
+            new DispatchNotificationBatchV1(batchId),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(repository.SuccessItems, Has.Count.EqualTo(2));
+            Assert.That(commandSender.Commands, Has.One.TypeOf<RegisterNotificationMediaUsageBatchV1>());
+            var command = (RegisterNotificationMediaUsageBatchV1)commandSender.Commands[0];
+            Assert.That(command.NotificationIds, Has.Count.EqualTo(2));
+            Assert.That(command.References, Has.One.EqualTo(
+                new NotificationMediaUsageReferenceV1(
+                    mediaId,
+                    NotificationMediaUsageTypes.Embed,
+                    0)));
+        });
+    }
+
     [Test]
     public async Task HandleAsync_FirstBusinessFailureMarksItemForRetryAndRequeues()
     {
@@ -350,4 +396,10 @@ internal sealed class ThrowingSender : INotificationSender
 {
     public Task SendAsync(Guid studentId, int attempt, CancellationToken cancellationToken) =>
         Task.FromException(new InvalidOperationException("Expected sender failure."));
+}
+
+internal sealed class SuccessfulSender : INotificationSender
+{
+    public Task SendAsync(Guid studentId, int attempt, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 }

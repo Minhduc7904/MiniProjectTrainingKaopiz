@@ -62,7 +62,6 @@ sequenceDiagram
     participant Worker as Notification Worker
     participant DB as MySQL Notification
     participant Sender as FakeNotificationSender
-    participant Bus as RabbitMQ
     participant Media as Media Worker
 
     Bus->>Worker: SnapshotNotificationBatchV1(batchId)
@@ -84,14 +83,16 @@ sequenceDiagram
         Worker->>Sender: Send(studentId, retryCount + 1)
         alt Gửi thành công
             Worker->>DB: INSERT notification BULK/UNREAD + item SUCCESS
-            DB-->>Bus: RegisterNotificationMediaUsageV1(notificationId) outbox
-            Bus->>Media: Register usage cho notificationId
+            Worker->>Worker: Buffer notificationId thành công
         else Lần 1 thất bại
             Worker->>DB: item RETRY, retry_count = 1
         else Lần 2 thất bại
             Worker->>DB: item FAILED + error_message
         end
     end
+    Worker->>DB: RegisterNotificationMediaUsageBatchV1(notificationIds) outbox
+    DB-->>Bus: Send one usage command per bounded owner chunk
+    Bus->>Media: Validate shared media once and insert usages for all notificationIds
     Worker->>DB: Update counters, kiểm tra item còn lại
     alt Còn PENDING/RETRY
         Worker->>Bus: DispatchNotificationBatchV1(batchId)
@@ -107,7 +108,7 @@ sequenceDiagram
 3. Fake sender thất bại lần một khi `hash(studentId) % 20 == 0`, và lần hai khi `hash(studentId) % 100 == 0`.
 4. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
 5. Khi không còn item: không có lỗi là `COMPLETED`; chỉ lỗi là `FAILED`; có cả thành công và lỗi là `PARTIAL_FAILED`.
-6. Markdown media được kiểm tra ngay khi tạo batch. Với mỗi item gửi thành công, Media Worker tạo usage `NOTIFICATION/NOTIFICATION_BODY/EMBED|ATTACHMENT` theo notification ID; item lỗi không có usage.
+6. Markdown media được kiểm tra ngay khi tạo batch. Sau một dispatch chunk, các `notificationId` thành công cùng bodyMarkdown được gom thành `RegisterNotificationMediaUsageBatchV1`; command chứa tối đa 500 owner IDs và tối đa 1,000 usage rows. Media Worker kiểm tra mỗi media `READY` một lần rồi tạo idempotent usage `NOTIFICATION/NOTIFICATION_BODY/EMBED|ATTACHMENT` cho từng notification ID. Item lỗi không có usage.
 
 ## Dữ liệu thay đổi
 

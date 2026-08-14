@@ -322,7 +322,7 @@ created_at            // Thời điểm tạo lượt chạy, UTC
 - `description_markdown`, `content_markdown` và `body_markdown` lưu mã nguồn Markdown, không lưu HTML không được kiểm soát.
 - API chỉ hiển thị Markdown bằng bộ làm sạch/danh sách cho phép ở ứng dụng khách hoặc bộ hiển thị; không cho phép HTML thô và mã lệnh.
 - Media được nhúng bằng URL công khai do Media Service cấp, ví dụ `![Sơ đồ](/media/api/media/{mediaId}/content)`.
-- Notification Service ghi command Media vào transactional outbox cùng thay đổi notification. Media Worker xác thực `media_id` `READY` và tạo idempotent `media_usages` sau khi notification thành công; batch chỉ phát command cho item `SUCCESS`.
+- Notification Service ghi command Media vào transactional outbox cùng thay đổi notification. Media Worker xác thực `media_id` `READY` và tạo idempotent `media_usages` sau khi notification thành công; batch chỉ phát command cho item `SUCCESS`, gom tối đa 500 notification IDs / 1,000 usage rows để một media dùng chung được validate một lần nhưng vẫn có một usage row cho mỗi notification owner.
 
 ## Thay đổi lược đồ vật lý
 

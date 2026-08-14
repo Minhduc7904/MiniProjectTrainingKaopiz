@@ -29,6 +29,7 @@ có kiểm thử tích hợp MySQL hoặc RabbitMQ trong dự án này.
 | `HandleAsync_StudentServiceUnavailable_MarksBatchFailed` | Student client giả ném `STUDENT_SERVICE_UNAVAILABLE`. | Batch được đánh dấu `FAILED`, không phát dispatch command. |
 | `FakeNotificationSenderTests` | Sinh UUID có hash thỏa từng rule. | Lần một/lần hai thất bại đúng điều kiện `% 20`/`% 100`. |
 | `HandleAsync_FirstBusinessFailureMarksItemForRetryAndRequeues` | Sender giả ném lỗi ở lần gửi đầu. | Item được đánh dấu thất bại nghiệp vụ và command được phát lại. |
+| `HandleAsyncSuccessfulChunkQueuesOneMediaUsageBatchCommand` | Hai item cùng bodyMarkdown media được gửi thành công trong một chunk. | Phát đúng một `RegisterNotificationMediaUsageBatchV1` chứa hai notification IDs; không phát command theo từng item. |
 | `NotificationBatchEndpointTests` | TestServer map POST/GET cùng doubles in-memory. | POST trả 202 + Location, GET trả 200, scope lạ trả 400. |
 | `GetFailedItems_BatchExists_ReturnsCursorEnvelope` | TestServer map GET lỗi theo batch có summary in-memory. | Trả `200`, `Cache-Control: no-store`, data `items` rỗng và cursor pagination envelope. |
 | `ExtractEmbeddedAndAttachedContentUrlsReturnsDistinctReferences` | Parse image và link Markdown dùng Media `contentUrl`. | Sinh lần lượt `EMBED`/`ATTACHMENT` và bỏ cặp trùng. |

@@ -86,6 +86,13 @@ Actor fields mô tả người thực hiện thao tác và được lưu riêng.
 
 ## Ngữ nghĩa sử dụng
 
+Mọi đường tạo usage đi qua core `EnsureMediaUsagesAsync`: dedupe theo unique
+active reference, xác thực media `READY`, tạo idempotent trong transaction hiện
+có của outbox hoặc một transaction `SERIALIZABLE` mới. Policy theo type giữ phần
+khác nhau: avatar/thumbnail thay usage active cũ; thumbnail derivation cập nhật
+trạng thái derivation; notification body chỉ thêm usage. Nhờ đó phần persistence
+chung không bị sao chép giữa các luồng.
+
 - `AVATAR`: phiên bản hiện tại hỗ trợ
   `STUDENT/STUDENT_AVATAR/AVATAR`. Khi thay avatar, usage active cũ được xóa mềm
   và usage mới được tạo trong transaction `SERIALIZABLE`. Generated
@@ -106,5 +113,6 @@ hiện tại chưa chấp nhận các tổ hợp đó.
 
 - Một thông báo đơn lẻ ghi một hàng `notifications` cho một người nhận.
 - Một lô gửi hàng loạt chụp lại danh sách người nhận và ghi `notification_batch_items`.
-- Bộ xử lý phân phối Thông báo trong tương lai tạo một hàng `notifications` cho mỗi mục thành công.
-- Bộ xử lý phân phối trong tương lai dùng `(notification_batch_id, recipient_student_id)` làm khóa lũy đẳng, ngăn tạo mục hộp thư đến thứ hai sau khi thử lại hoặc khởi động lại.
+- Bộ xử lý phân phối tạo một hàng `notifications` cho mỗi mục thành công.
+- Trong một dispatch chunk, các notification thành công cùng Markdown được gom thành `RegisterNotificationMediaUsageBatchV1`. Media Worker xác thực media dùng chung một lần và tạo một usage idempotent cho mỗi `notification.id`.
+- Bộ xử lý phân phối dùng `(notification_batch_id, recipient_student_id)` làm khóa lũy đẳng, ngăn tạo mục hộp thư đến thứ hai sau khi thử lại hoặc khởi động lại.

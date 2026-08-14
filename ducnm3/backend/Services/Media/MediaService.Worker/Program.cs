@@ -42,6 +42,12 @@ builder.Services.AddLmsMessagingWithConsumers(
                 RegisterNotificationMediaUsageConsumerDefinition>(
                 ServiceNames.Media);
         registration
+            .AddCommandConsumer<
+                RegisterNotificationMediaUsageBatchConsumer,
+                RegisterNotificationMediaUsageBatchV1,
+                RegisterNotificationMediaUsageBatchConsumerDefinition>(
+                ServiceNames.Media);
+        registration
             .AddConsumer<
                 GenerateMediaThumbnailFaultConsumer,
                 GenerateMediaThumbnailFaultConsumerDefinition>()
