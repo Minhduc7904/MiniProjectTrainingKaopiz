@@ -40,6 +40,12 @@ public static class MediaErrors
             "The media usage conflicts with an active usage.",
             409);
 
+    public static MediaApplicationException MediaUsageNotFound() =>
+        new(
+            MediaErrorCodes.MediaUsageNotFound,
+            "The media usage was not found.",
+            404);
+
     public static MediaApplicationException ThumbnailNotFound() =>
         new(
             MediaErrorCodes.ThumbnailNotFound,

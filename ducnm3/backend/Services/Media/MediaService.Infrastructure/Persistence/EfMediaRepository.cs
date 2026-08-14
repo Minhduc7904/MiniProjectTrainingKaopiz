@@ -100,6 +100,26 @@ public sealed class EfMediaRepository(
                 item.DerivationType))
             .SingleOrDefaultAsync(cancellationToken);
 
+    public async Task<MediaUsageUrlRecord?> GetActiveUsageUrlByIdAsync(
+        Guid usageId,
+        CancellationToken cancellationToken) =>
+        await ActiveUsageUrls()
+            .Where(item => item.Usage.Id == usageId)
+            .SingleOrDefaultAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<MediaUsageUrlRecord>> GetActiveUsageUrlsAsync(
+        MediaUsageOwnerQuery query,
+        CancellationToken cancellationToken) =>
+        await ActiveUsageUrls()
+            .Where(item =>
+                item.Usage.OwnerService == query.OwnerService &&
+                item.Usage.OwnerType == query.OwnerType &&
+                item.Usage.UsageType == query.UsageType &&
+                item.Usage.OwnerId == query.OwnerId)
+            .OrderBy(item => item.Usage.DisplayOrder)
+            .ThenBy(item => item.Usage.Id)
+            .ToListAsync(cancellationToken);
+
     public async Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken) =>
@@ -214,4 +234,38 @@ public sealed class EfMediaRepository(
             entity.DisplayOrder,
             entity.CreatedAt);
     }
+
+    private IQueryable<MediaUsageUrlRecord> ActiveUsageUrls() =>
+        dbContext.MediaUsages
+            .AsNoTracking()
+            .Where(usage => usage.DeletedAt == null)
+            .Join(
+                dbContext.MediaObjects.AsNoTracking().Where(media =>
+                    media.DeletedAt == null &&
+                    media.Status == MediaObjectStatuses.Ready &&
+                    media.MediaType == MediaTypes.Image),
+                usage => usage.MediaId,
+                media => media.Id,
+                (usage, media) => new MediaUsageUrlRecord(
+                    new MediaUsageRecord(
+                        usage.Id,
+                        usage.MediaId,
+                        usage.OwnerService,
+                        usage.OwnerType,
+                        usage.OwnerId,
+                        usage.UsageType,
+                        usage.DisplayOrder,
+                        usage.CreatedAt),
+                    new MediaRecord(
+                        media.Id,
+                        new StorageObjectLocation(media.Bucket, media.ObjectKey),
+                        media.MediaType,
+                        media.ContentType,
+                        media.OriginalFileName,
+                        (long)media.SizeBytes,
+                        media.Status,
+                        media.CreatedAt,
+                        media.DeletedAt,
+                        media.SourceMediaId,
+                        media.DerivationType)));
 }

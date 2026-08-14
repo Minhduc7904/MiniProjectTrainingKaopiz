@@ -21,6 +21,14 @@ public interface IMediaRepository
         Guid mediaId,
         CancellationToken cancellationToken);
 
+    Task<MediaUsageUrlRecord?> GetActiveUsageUrlByIdAsync(
+        Guid usageId,
+        CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<MediaUsageUrlRecord>> GetActiveUsageUrlsAsync(
+        MediaUsageOwnerQuery query,
+        CancellationToken cancellationToken);
+
     Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);

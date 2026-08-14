@@ -13,12 +13,12 @@
     },
     {
       "key": "studentId",
-      "value": "00000000-0000-0000-0000-000000000001",
+      "value": "00007b9a-b898-5c29-8bcd-4fb33555a48d",
       "type": "string"
     },
     {
       "key": "ownerId",
-      "value": "00000000-0000-0000-0000-000000000001",
+      "value": "00007b9a-b898-5c29-8bcd-4fb33555a48d",
       "type": "string"
     },
     {
@@ -253,6 +253,7 @@
                 "exec": [
                   "pm.test(\"Created\", function () { pm.response.to.have.status(201); });",
                   "const payload = pm.response.json();",
+                  "pm.collectionVariables.set(\"mediaUsageId\", payload.data.id);",
                   "pm.test(\"Usage references media\", function () {",
                   "  pm.expect(payload.data.mediaId).to.eql(pm.collectionVariables.get(\"mediaId\"));",
                   "});"
@@ -296,6 +297,78 @@
               ]
             },
             "description": "Business flow: docs/business-flows/media/post-media-usages.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Media usage URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Returns a media URL\", function () { pm.expect(payload.data.url).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/usages/{{mediaUsageId}}/url",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "usages", "{{mediaUsageId}}", "url"]
+            },
+            "description": "Business flow: docs/business-flows/media/get-media-usage-url.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Media usage URLs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Returns an array\", function () { pm.expect(payload.data).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/usages/urls?ownerService=STUDENT&ownerType=STUDENT_AVATAR&usageType=AVATAR&ownerId={{ownerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "usages", "urls"],
+              "query": [
+                { "key": "ownerService", "value": "STUDENT" },
+                { "key": "ownerType", "value": "STUDENT_AVATAR" },
+                { "key": "usageType", "value": "AVATAR" },
+                { "key": "ownerId", "value": "{{ownerId}}" }
+              ]
+            },
+            "description": "Business flow: docs/business-flows/media/get-media-usage-urls.md"
           },
           "response": []
         },
