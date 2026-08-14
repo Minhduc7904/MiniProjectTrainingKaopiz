@@ -203,3 +203,10 @@ trong Redux; hook chỉ polling lại sau 3 giây khi status chưa terminal. Pol
 dừng ở `COMPLETED`, `PARTIAL_FAILED`, `FAILED` hoặc khi quản trị viên pause;
 nút Tiếp tục gọi GET ngay, không thay đổi Worker nền. Khi batch kết thúc có lỗi,
 trang đọc `failed-items` để hiển thị `studentId`, retry và lỗi cuối.
+
+Form tạo Notification Batch có `NotificationMarkdownEditor` riêng. Component
+gọi lại Media upload qua hook, nhận `data.contentUrl` rồi chèn Markdown chuẩn
+`![alt](contentUrl)`; alt của từng ảnh đã chèn vẫn sửa trực tiếp được trong
+Markdown. Media API hiện chỉ xác minh actor `STUDENT`, nên MVP dùng UUID Người
+tạo làm `uploadedBy` và yêu cầu UUID đó tồn tại ở Student Service. Kích thước
+chunk và Người tạo được hiển thị ở hai input riêng để thao tác không bị nén.

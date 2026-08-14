@@ -10,6 +10,8 @@ import { Workbench } from '@/components/layout/Workbench'
 import { POST_NOTIFICATION_BATCH_ACTIVITY } from '@/constants/activities/postNotificationBatch'
 import { UI_LABELS } from '@/constants/ui'
 import { useNotificationBatchCreate } from '@/hooks/notifications/useNotificationBatchCreate'
+import { useMediaUpload } from '@/hooks/media/useMediaUpload'
+import { ACTOR_TYPES, MEDIA_TYPES } from '@/constants/media'
 import { NotificationBatchForm } from './components/NotificationBatchForm'
 import { NotificationBatchManualForm } from './components/NotificationBatchManualForm'
 import { NotificationBatchResult } from './components/NotificationBatchResult'
@@ -18,5 +20,10 @@ function toOutputJson({ data, error, success, query, traceId, location }) { retu
 
 export function NotificationBatchCreatePage() {
   const { data, query, loading, success, error, traceId, location, setQuery, submit, reset } = useNotificationBatchCreate()
-  return <Workbench input={<InputPanel actions={<Button variant="ghost" disabled={loading} onClick={reset}><Icon icon={RotateCcw} />{UI_LABELS.reset}</Button>} guided={<div className="flex h-full min-h-0 flex-col"><div className="shrink-0 px-5 pt-4"><PageHeader eyebrow="Notification · batch" title="Gửi thông báo hàng loạt" description="Tạo batch cho tất cả học viên đang hoạt động. Worker xử lý nền theo từng chunk." /></div><div className="min-h-0 flex-1"><NotificationBatchForm query={query} loading={loading} onChange={setQuery} onSubmit={() => submit(query)} /></div></div>} manual={<NotificationBatchManualForm query={query} loading={loading} onChange={setQuery} onSubmit={() => submit(query)} />} />} output={<OutputPanel json={toOutputJson({ data, error, success, query, traceId, location })} activity={POST_NOTIFICATION_BATCH_ACTIVITY} run={{ loading, success, error }}>{error ? <EmptyState title="Không tạo được batch" description={`${error.code}: ${error.message}`} /> : null}{!error && loading ? <LoadingState /> : null}{!error && !loading && !data ? <EmptyState title="Sẵn sàng tạo batch" description="Nhập nội dung, tạo batch, rồi chuyển sang trang tiến trình để quan sát Worker." /> : null}{!error && data ? <NotificationBatchResult batch={data} /> : null}</OutputPanel>} />
+  const mediaUpload = useMediaUpload()
+  const uploadImage = async (file) => {
+    const result = await mediaUpload.submit({ file, mediaType: MEDIA_TYPES.image, uploadedByType: ACTOR_TYPES.student, uploadedBy: String(query.createdBy ?? '').trim() })
+    return result.meta.requestStatus === 'fulfilled' ? result.payload.data : null
+  }
+  return <Workbench input={<InputPanel actions={<Button variant="ghost" disabled={loading} onClick={reset}><Icon icon={RotateCcw} />{UI_LABELS.reset}</Button>} guided={<div className="flex h-full min-h-0 flex-col"><div className="shrink-0 px-5 pt-4"><PageHeader eyebrow="Notification · batch" title="Gửi thông báo hàng loạt" description="Tạo batch cho tất cả học viên đang hoạt động. Worker xử lý nền theo từng chunk." /></div><div className="min-h-0 flex-1"><NotificationBatchForm query={query} loading={loading} mediaUpload={mediaUpload} onChange={setQuery} onSubmit={() => submit(query)} onUploadImage={uploadImage} /></div></div>} manual={<NotificationBatchManualForm query={query} loading={loading} onChange={setQuery} onSubmit={() => submit(query)} />} />} output={<OutputPanel json={toOutputJson({ data, error, success, query, traceId, location })} activity={POST_NOTIFICATION_BATCH_ACTIVITY} run={{ loading, success, error }}>{error ? <EmptyState title="Không tạo được batch" description={`${error.code}: ${error.message}`} /> : null}{!error && loading ? <LoadingState /> : null}{!error && !loading && !data ? <EmptyState title="Sẵn sàng tạo batch" description="Nhập nội dung, tạo batch, rồi chuyển sang trang tiến trình để quan sát Worker." /> : null}{!error && data ? <NotificationBatchResult batch={data} /> : null}</OutputPanel>} />
 }

@@ -45,6 +45,7 @@ export function TextInput({
 export function FileInput({
   id,
   name,
+  accept,
   disabled = false,
   invalid = false,
   fileName,
@@ -56,6 +57,7 @@ export function FileInput({
         id={id}
         name={name}
         type="file"
+        accept={accept}
         disabled={disabled}
         aria-invalid={invalid}
         onChange={onChange}
