@@ -20,10 +20,7 @@ builder.Services.AddLmsMessagingWithConsumers(
     {
         registration.AddEntityFrameworkOutbox<NotificationDbContext>(outbox =>
             outbox.UseMySql());
-        registration.AddCommandConsumer<
-            DispatchNotificationBatchConsumer,
-            DispatchNotificationBatchV1,
-            DispatchNotificationBatchConsumerDefinition>(ServiceNames.Notification);
+        registration.AddCommandConsumer<DispatchNotificationBatchConsumer, DispatchNotificationBatchV1>(ServiceNames.Notification);
         registration.AddCommandConsumer<
             SnapshotNotificationBatchConsumer,
             SnapshotNotificationBatchV1,

@@ -36,7 +36,7 @@ public partial class NotificationBatch
     public Guid CreatedBy { get; set; }
 
     /// <summary>
-    /// PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
+    /// PENDING | SNAPSHOTTING | SNAPSHOT_READY | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
     /// </summary>
     public string Status { get; set; } = null!;
 

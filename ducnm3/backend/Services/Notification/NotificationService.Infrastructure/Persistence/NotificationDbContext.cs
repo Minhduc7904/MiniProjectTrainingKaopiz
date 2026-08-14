@@ -141,7 +141,7 @@ public partial class NotificationDbContext : DbContext
                 .HasColumnName("started_at");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
-                .HasComment("PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED")
+                .HasComment("PENDING | SNAPSHOTTING | SNAPSHOT_READY | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED")
                 .HasColumnName("status")
                 .UseCollation("ascii_general_ci")
                 .HasCharSet("ascii");
@@ -173,6 +173,8 @@ public partial class NotificationDbContext : DbContext
 
             entity.HasIndex(e => new { e.BatchId, e.Status }, "ix_notification_batch_items_batch_status");
 
+            entity.HasIndex(e => new { e.BatchId, e.Status, e.LeaseExpiresAt, e.Id }, "ix_notification_batch_items_claim");
+
             entity.HasIndex(e => new { e.BatchId, e.StudentId }, "uq_notification_batch_items_batch_student").IsUnique();
 
             entity.Property(e => e.Id)
@@ -189,6 +191,15 @@ public partial class NotificationDbContext : DbContext
                 .HasComment("Lỗi cuối cùng; null khi thành công")
                 .HasColumnType("text")
                 .HasColumnName("error_message");
+            entity.Property(e => e.LeaseExpiresAt)
+                .HasMaxLength(6)
+                .HasComment("Thời điểm UTC claim PROCESSING hết hạn để worker khác có thể nhận lại")
+                .HasColumnName("lease_expires_at");
+            entity.Property(e => e.LeaseToken)
+                .HasComment("UUID token sở hữu claim PROCESSING hiện tại; null khi item chưa được claim hoặc đã hoàn tất")
+                .HasColumnName("lease_token")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
             entity.Property(e => e.NotificationId)
                 .HasComment("UUID notifications.id được tạo; null khi chưa thành công")
                 .HasColumnName("notification_id")

@@ -192,19 +192,16 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
     public Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.CompletedTask;
 
-    public Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(
+    public Task<NotificationBatchClaim?> ClaimChunkAsync(
         Guid batchId,
         CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<NotificationBatchWorkItem>>([]);
+        Task.FromResult<NotificationBatchClaim?>(null);
 
-    public Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken) =>
-        Task.FromResult<NotificationSummary?>(null);
-
-    public Task MarkFailureAsync(
-        NotificationBatchWorkItem item,
-        string errorMessage,
+    public Task<IReadOnlyList<NotificationSummary>> CompleteClaimAsync(
+        NotificationBatchClaim claim,
+        IReadOnlyList<NotificationBatchDeliveryResult> results,
         CancellationToken cancellationToken) =>
-        Task.CompletedTask;
+        Task.FromResult<IReadOnlyList<NotificationSummary>>([]);
 
     public Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult(false);

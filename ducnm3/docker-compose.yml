@@ -283,6 +283,10 @@ services:
       DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ConnectionStrings__Database: ${NOTIFICATION_DB_CONNECTION_STRING:?NOTIFICATION_DB_CONNECTION_STRING must be set}
       ServiceEndpoints__student-service: http://student-service:8080/
+      Messaging__Consumer__ConcurrencyLimit: ${NOTIFICATION_BATCH_DISPATCH_CHUNK_CONCURRENCY:-1}
+      NotificationBatchProcessing__DispatchChunkConcurrency: ${NOTIFICATION_BATCH_DISPATCH_CHUNK_CONCURRENCY:-1}
+      NotificationBatchProcessing__MaxConcurrentSends: ${NOTIFICATION_BATCH_MAX_CONCURRENT_SENDS:-1}
+      NotificationBatchProcessing__ClaimLeaseSeconds: ${NOTIFICATION_BATCH_CLAIM_LEASE_SECONDS:-120}
     restart: unless-stopped
 
   scheduler-service:

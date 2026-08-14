@@ -26,6 +26,7 @@ có kiểm thử tích hợp MySQL hoặc RabbitMQ trong dự án này.
 | `HandleAsync_RejectsScopeOtherThanAllStudents` | Gọi Create handler với `COURSE_ENROLLED`. | Trả validation 400 trước khi gọi Student Service. |
 | `HandleAsync_CreatesPendingBatchAndQueuesSnapshotCommand` | Create handler với batch hợp lệ. | Chỉ tạo batch `PENDING` và phát `SnapshotNotificationBatchV1`; không gọi Student Service trong HTTP path. |
 | `HandleAsync_RecipientsStreamed_PersistsPagesAndQueuesDispatch` | Snapshot handler dùng Student client giả trả hai trang. | Lưu từng trang và phát `DispatchNotificationBatchV1` sau khi snapshot hoàn tất. |
+| `HandleAsync_ConcurrentDispatchConfigured_QueuesOneCommandPerSlot` | Snapshot hoàn tất với `DispatchChunkConcurrency=3`. | Phát đúng ba dispatch command để duy trì ba slot chunk. |
 | `HandleAsync_StudentServiceUnavailable_MarksBatchFailed` | Student client giả ném `STUDENT_SERVICE_UNAVAILABLE`. | Batch được đánh dấu `FAILED`, không phát dispatch command. |
 | `FakeNotificationSenderTests` | Sinh UUID có hash thỏa từng rule. | Lần một/lần hai thất bại đúng điều kiện `% 20`/`% 100`. |
 | `HandleAsync_FirstBusinessFailureMarksItemForRetryAndRequeues` | Sender giả ném lỗi ở lần gửi đầu. | Item được đánh dấu thất bại nghiệp vụ và command được phát lại. |

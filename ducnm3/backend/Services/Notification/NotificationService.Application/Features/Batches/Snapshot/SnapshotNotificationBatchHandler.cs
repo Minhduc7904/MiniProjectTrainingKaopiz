@@ -1,6 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using NotificationService.Application.Abstractions;
+using NotificationService.Application.Features.Batches;
 using NotificationService.Application.Contracts.Messaging;
 
 namespace NotificationService.Application.Features.Batches.Snapshot;
@@ -8,7 +9,8 @@ namespace NotificationService.Application.Features.Batches.Snapshot;
 public sealed class SnapshotNotificationBatchHandler(
     IStudentRecipientClient studentRecipientClient,
     INotificationBatchRepository repository,
-    ICommandSender commandSender)
+    ICommandSender commandSender,
+    NotificationBatchProcessingOptions options)
 {
     public async Task HandleAsync(
         SnapshotNotificationBatchV1 command,
@@ -43,10 +45,13 @@ public sealed class SnapshotNotificationBatchHandler(
 
         if (work.ShouldDispatch || work.ShouldReadRecipients)
         {
-            await commandSender.SendAsync(
-                ServiceNames.Notification,
-                new DispatchNotificationBatchV1(command.BatchId),
-                cancellationToken);
+            for (var index = 0; index < options.DispatchChunkConcurrency; index++)
+            {
+                await commandSender.SendAsync(
+                    ServiceNames.Notification,
+                    new DispatchNotificationBatchV1(command.BatchId),
+                    cancellationToken);
+            }
         }
     }
 }

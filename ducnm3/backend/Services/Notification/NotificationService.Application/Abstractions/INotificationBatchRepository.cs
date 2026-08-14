@@ -10,9 +10,11 @@ public interface INotificationBatchRepository
     Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken);
     Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken);
     Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(Guid batchId, Guid? afterItemId, int limit, CancellationToken cancellationToken);
-    Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken);
-    Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken);
-    Task MarkFailureAsync(NotificationBatchWorkItem item, string errorMessage, CancellationToken cancellationToken);
+    Task<NotificationBatchClaim?> ClaimChunkAsync(Guid batchId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<NotificationSummary>> CompleteClaimAsync(
+        NotificationBatchClaim claim,
+        IReadOnlyList<NotificationBatchDeliveryResult> results,
+        CancellationToken cancellationToken);
     Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken);
 }
 
@@ -30,3 +32,7 @@ public sealed record NotificationBatchFailedItemsPage(IReadOnlyList<Notification
 
 public sealed record NotificationBatchWorkItem(
     Guid Id, Guid BatchId, Guid StudentId, uint RetryCount, string Title, string BodyMarkdown, Guid CreatedBy);
+
+public sealed record NotificationBatchClaim(Guid BatchId, Guid LeaseToken, IReadOnlyList<NotificationBatchWorkItem> Items);
+
+public sealed record NotificationBatchDeliveryResult(Guid ItemId, bool IsSuccess, string? ErrorMessage);

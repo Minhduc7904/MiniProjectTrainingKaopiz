@@ -2,8 +2,10 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Contracts.Messaging;
 using NotificationService.Application.Abstractions;
+using NotificationService.Application.Features.Batches;
 using NotificationService.Application.Content;
 using NotificationService.Application.Contracts.Messaging;
+using System.Collections.Concurrent;
 
 namespace NotificationService.Application.Features.Batches.Dispatch;
 
@@ -11,28 +13,42 @@ public sealed class DispatchNotificationBatchHandler(
     INotificationBatchRepository repository,
     INotificationSender sender,
     ICommandSender commandSender,
-    NotificationMediaReferenceExtractor mediaReferenceExtractor)
+    NotificationMediaReferenceExtractor mediaReferenceExtractor,
+    NotificationBatchProcessingOptions options)
 {
     public async Task HandleAsync(DispatchNotificationBatchV1 command, CancellationToken cancellationToken)
     {
-        var items = await repository.ClaimChunkAsync(command.BatchId, cancellationToken);
-        var successfulNotifications = new List<NotificationSummary>();
-        foreach (var item in items)
+        var claim = await repository.ClaimChunkAsync(command.BatchId, cancellationToken);
+        if (claim is null || claim.Items.Count == 0)
         {
-            try
-            {
-                await sender.SendAsync(item.StudentId, checked((int)item.RetryCount) + 1, cancellationToken);
-                var notification = await repository.MarkSuccessAsync(item, cancellationToken);
-                if (notification is not null)
-                {
-                    successfulNotifications.Add(notification);
-                }
-            }
-            catch (Exception exception) when (exception is not OperationCanceledException)
-            {
-                await repository.MarkFailureAsync(item, "Fake sender failed.", cancellationToken);
-            }
+            return;
         }
+
+        var results = new ConcurrentBag<NotificationBatchDeliveryResult>();
+        await Parallel.ForEachAsync(
+            claim.Items,
+            new ParallelOptions
+            {
+                CancellationToken = cancellationToken,
+                MaxDegreeOfParallelism = options.MaxConcurrentSends,
+            },
+            async (item, token) =>
+            {
+                try
+                {
+                    await sender.SendAsync(item.StudentId, checked((int)item.RetryCount) + 1, token);
+                    results.Add(new NotificationBatchDeliveryResult(item.Id, true, null));
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    results.Add(new NotificationBatchDeliveryResult(item.Id, false, "Fake sender failed."));
+                }
+            });
+
+        var successfulNotifications = await repository.CompleteClaimAsync(
+            claim,
+            results.ToArray(),
+            cancellationToken);
 
         if (successfulNotifications.Count > 0)
         {

@@ -7,6 +7,7 @@ using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.Dispatch;
 using NotificationService.Application.Features.Batches.Snapshot;
+using NotificationService.Application.Features.Batches;
 using NotificationService.Application.Content;
 using NotificationService.Infrastructure.Sending;
 
@@ -145,7 +146,8 @@ public sealed class DispatchNotificationBatchHandlerTests
             repository,
             new SuccessfulSender(),
             commandSender,
-            new NotificationMediaReferenceExtractor());
+            new NotificationMediaReferenceExtractor(),
+            new NotificationBatchProcessingOptions());
 
         await handler.HandleAsync(
             new DispatchNotificationBatchV1(batchId),
@@ -182,7 +184,8 @@ public sealed class DispatchNotificationBatchHandlerTests
             repository,
             new ThrowingSender(),
             commandSender,
-            new NotificationMediaReferenceExtractor());
+            new NotificationMediaReferenceExtractor(),
+            new NotificationBatchProcessingOptions());
 
         await handler.HandleAsync(
             new DispatchNotificationBatchV1(item.BatchId),
@@ -201,6 +204,31 @@ public sealed class DispatchNotificationBatchHandlerTests
 public sealed class SnapshotNotificationBatchHandlerTests
 {
     [Test]
+    public async Task HandleAsync_ConcurrentDispatchConfigured_QueuesOneCommandPerSlot()
+    {
+        var batchId = Guid.Parse("88888888-8888-8888-8888-888888888888");
+        var repository = new StubBatchRepository
+        {
+            SnapshotWork = new NotificationSnapshotWork(false, true),
+        };
+        var commandSender = new StubCommandSender();
+        var handler = new SnapshotNotificationBatchHandler(
+            new StubStudentRecipientClient(),
+            repository,
+            commandSender,
+            new NotificationBatchProcessingOptions
+            {
+                DispatchChunkConcurrency = 3,
+            });
+
+        await handler.HandleAsync(new SnapshotNotificationBatchV1(batchId), CancellationToken.None);
+
+        Assert.That(
+            commandSender.Commands.OfType<DispatchNotificationBatchV1>().Select(command => command.BatchId),
+            Is.EqualTo(new[] { batchId, batchId, batchId }));
+    }
+
+    [Test]
     public async Task HandleAsync_RecipientsStreamed_PersistsPagesAndQueuesDispatch()
     {
         var batchId = Guid.NewGuid();
@@ -215,7 +243,8 @@ public sealed class SnapshotNotificationBatchHandlerTests
                 [Guid.Parse("11111111-1111-1111-1111-111111111111")],
                 [Guid.Parse("22222222-2222-2222-2222-222222222222")]),
             repository,
-            commandSender);
+            commandSender,
+            new NotificationBatchProcessingOptions());
 
         await handler.HandleAsync(
             new SnapshotNotificationBatchV1(batchId),
@@ -239,7 +268,8 @@ public sealed class SnapshotNotificationBatchHandlerTests
         var handler = new SnapshotNotificationBatchHandler(
             new FailingStudentRecipientClient(),
             repository,
-            new StubCommandSender());
+            new StubCommandSender(),
+            new NotificationBatchProcessingOptions());
 
         await handler.HandleAsync(new SnapshotNotificationBatchV1(Guid.NewGuid()), CancellationToken.None);
 
@@ -344,33 +374,44 @@ internal sealed class StubBatchRepository : INotificationBatchRepository
         return Task.CompletedTask;
     }
 
-    public Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(
+    public Task<NotificationBatchClaim?> ClaimChunkAsync(
         Guid batchId,
         CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<NotificationBatchWorkItem>>(Items ?? []);
+        Task.FromResult<NotificationBatchClaim?>(
+            Items is null
+                ? null
+                : new NotificationBatchClaim(batchId, Guid.NewGuid(), Items));
 
-    public Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken)
-    {
-        SuccessItems.Add(item.Id);
-        return Task.FromResult<NotificationSummary?>(new NotificationSummary(
-            Guid.NewGuid(),
-            item.StudentId,
-            item.Title,
-            item.BodyMarkdown,
-            "BULK",
-            "UNREAD",
-            item.CreatedBy,
-            DateTime.UnixEpoch,
-            null));
-    }
-
-    public Task MarkFailureAsync(
-        NotificationBatchWorkItem item,
-        string errorMessage,
+    public Task<IReadOnlyList<NotificationSummary>> CompleteClaimAsync(
+        NotificationBatchClaim claim,
+        IReadOnlyList<NotificationBatchDeliveryResult> results,
         CancellationToken cancellationToken)
     {
-        FailedItems.Add(item.Id);
-        return Task.CompletedTask;
+        var itemsById = claim.Items.ToDictionary(item => item.Id);
+        var notifications = new List<NotificationSummary>();
+        foreach (var result in results)
+        {
+            var item = itemsById[result.ItemId];
+            if (!result.IsSuccess)
+            {
+                FailedItems.Add(item.Id);
+                continue;
+            }
+
+            SuccessItems.Add(item.Id);
+            notifications.Add(new NotificationSummary(
+                Guid.NewGuid(),
+                item.StudentId,
+                item.Title,
+                item.BodyMarkdown,
+                "BULK",
+                "UNREAD",
+                item.CreatedBy,
+                DateTime.UnixEpoch,
+                null));
+        }
+
+        return Task.FromResult<IReadOnlyList<NotificationSummary>>(notifications);
     }
 
     public Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken) =>
