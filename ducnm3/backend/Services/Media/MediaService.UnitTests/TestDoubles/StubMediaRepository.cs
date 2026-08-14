@@ -14,6 +14,12 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
 
     public CreateMediaUsageRecord? CreatedUsage { get; private set; }
 
+    public MediaUsageUrlRecord? ExistingUsageUrl { get; set; }
+
+    public IReadOnlyList<MediaUsageUrlRecord> UsageUrls { get; set; } = [];
+
+    public MediaUsageOwnerQuery? LastUsageUrlQuery { get; private set; }
+
     public Task AddPendingAsync(
         PendingMediaRecord media,
         CancellationToken cancellationToken)
@@ -66,6 +72,22 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
             ExistingMedia?.Id == mediaId
                 ? ExistingMedia
                 : null);
+
+    public Task<MediaUsageUrlRecord?> GetActiveUsageUrlByIdAsync(
+        Guid usageId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(
+            ExistingUsageUrl?.Usage.Id == usageId
+                ? ExistingUsageUrl
+                : null);
+
+    public Task<IReadOnlyList<MediaUsageUrlRecord>> GetActiveUsageUrlsAsync(
+        MediaUsageOwnerQuery query,
+        CancellationToken cancellationToken)
+    {
+        LastUsageUrlQuery = query;
+        return Task.FromResult(UsageUrls);
+    }
 
     public Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,

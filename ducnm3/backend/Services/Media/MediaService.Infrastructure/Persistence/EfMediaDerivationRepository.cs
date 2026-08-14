@@ -1,4 +1,3 @@
-using System.Data;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Application;
@@ -66,9 +65,6 @@ public sealed class EfMediaDerivationRepository(
         DateTime completedAtUtc,
         CancellationToken cancellationToken)
     {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(
-            IsolationLevel.Serializable,
-            cancellationToken);
         var job = await dbContext.MediaDerivationJobs
             .Include(item => item.SourceMedia)
             .Include(item => item.DerivativeMedia)
@@ -79,7 +75,6 @@ public sealed class EfMediaDerivationRepository(
         if (job.Status == MediaDerivationStatuses.Ready &&
             job.DerivativeMedia.Status == MediaObjectStatuses.Ready)
         {
-            await transaction.CommitAsync(cancellationToken);
             return;
         }
 
@@ -121,7 +116,6 @@ public sealed class EfMediaDerivationRepository(
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
     }
 
     public async Task MarkFailedAsync(

@@ -3,6 +3,9 @@ using MediaService.Application.Features.Derivations;
 using MediaService.Application.Features.Media.GetContent;
 using MediaService.Application.Features.Media.Upload;
 using MediaService.Application.Features.Usages.Create;
+using MediaService.Application.Features.Usages.GetUrls;
+using MediaService.Application.Abstractions.Urls;
+using MediaService.Application.Urls;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -34,6 +37,9 @@ public static class DependencyInjection
         services.AddScoped<UploadMediaHandler>();
         services.AddScoped<GetMediaContentHandler>();
         services.AddScoped<CreateMediaUsageHandler>();
+        services.AddScoped<GetMediaUsageUrlHandler>();
+        services.AddScoped<GetMediaUsageUrlsHandler>();
+        services.AddSingleton<IMediaUrlProvider, ContentEndpointMediaUrlProvider>();
         services.AddScoped<GenerateMediaThumbnailHandler>();
         services.AddScoped<GetMediaThumbnailStatusHandler>();
         services.AddScoped<RetryMediaThumbnailHandler>();

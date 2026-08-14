@@ -3,6 +3,7 @@ using MediaService.Api.Contracts.Responses;
 using MediaService.Application.Features.Media.Upload;
 using MediaService.Application.Features.Derivations;
 using MediaService.Application.Features.Usages.Create;
+using MediaService.Application.Features.Usages.GetUrls;
 
 namespace MediaService.Api.Mappers;
 
@@ -48,4 +49,13 @@ public static class MediaResponseMapper
             result.UsageType,
             result.DisplayOrder,
             result.CreatedAtUtc);
+
+    public static MediaUsageUrlResponse ToResponse(
+        MediaUsageUrlResult result) =>
+        new(
+            result.UsageId,
+            result.MediaId,
+            result.Url,
+            result.ExpiresAtUtc,
+            result.DisplayOrder);
 }

@@ -83,6 +83,8 @@ app.MapServiceInfoEndpoint(ServiceNames.Media);
 app.MapMediaHealthEndpoint();
 app.MapUploadMedia();
 app.MapCreateMediaUsage();
+app.MapGetMediaUsageUrl();
+app.MapGetMediaUsageUrls();
 app.MapGetMediaContent();
 app.MapGetMediaThumbnailStatus();
 app.MapRetryMediaThumbnail();

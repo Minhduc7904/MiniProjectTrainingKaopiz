@@ -8,6 +8,8 @@ public static class ApiRoutes
     {
         public const string Upload = "/api/media";
         public const string Usages = "/api/media/usages";
+        public const string UsageUrlTemplate = "/api/media/usages/{usageId}/url";
+        public const string UsageUrls = "/api/media/usages/urls";
         public const string ContentTemplate = "/api/media/{mediaId}/content";
         public const string ThumbnailStatusTemplate =
             "/api/media/{mediaId}/thumbnail";
@@ -21,6 +23,20 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(ContentTemplate, "mediaId", mediaId));
+
+        public static string UsageUrlServicePath(Guid usageId) =>
+            BuildServicePath(FormatGuidRoute(UsageUrlTemplate, "usageId", usageId));
+
+        public static string UsageUrlPublicPath(Guid usageId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Media,
+                FormatGuidRoute(UsageUrlTemplate, "usageId", usageId));
+
+        public static string UsageUrlsServicePath() =>
+            BuildServicePath(UsageUrls);
+
+        public static string UsageUrlsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Media, UsageUrls);
 
         public static string ThumbnailStatusServicePath(Guid mediaId) =>
             BuildServicePath(
