@@ -1,3 +1,4 @@
+using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using NotificationService.Application.Abstractions;
 using NotificationService.Application.Contracts.Messaging;
