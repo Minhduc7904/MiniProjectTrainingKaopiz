@@ -15,7 +15,6 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 | CSV naive vs stream | 4 giờ | `Chưa tạo` |
 | Chỉ mục + `EXPLAIN ANALYZE` | 5 giờ | `Chưa tạo` |
 | Phân trang offset vs cursor | 4 giờ | `Chưa tạo` |
-| Benchmark batch 3k/10k/100k | 4 giờ | `Chưa tạo` |
 
 ## Task dự kiến
 
@@ -51,20 +50,10 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 - Ticket: `Chưa tạo`.
 - Lý do est: bốn mốc OFFSET trên tập lớn + API cursor + bảng so sánh.
 
-### 4. Benchmark batch 3k/10k/100k
-
-- [ ] Kiểm thử xử lý theo lô với 3k, 10k, 100k.
-- [ ] Ghi lại thời gian, bộ nhớ và thông lượng.
-- Est: 4 giờ.
-- Ticket: `Chưa tạo`.
-- Lý do est: ba quy mô, đo throughput/memory và ghi `docs/benchmark`. Phụ thuộc
-  Worker batch đã chạy được.
-
 ## Tiêu chí hoàn thành Ngày 4
 
 - [ ] CSV trước/sau tối ưu có số liệu.
 - [ ] N+1 trước/sau tối ưu có số lượng truy vấn.
 - [ ] Chỉ mục trước/sau tối ưu có EXPLAIN.
 - [ ] Phân trang trước/sau tối ưu có số liệu thời gian.
-- [ ] Có đánh giá hiệu năng xử lý theo lô.
 - [ ] Lưu kết quả vào `docs/benchmark`.

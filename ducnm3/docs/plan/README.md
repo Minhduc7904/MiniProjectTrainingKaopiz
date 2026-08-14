@@ -31,8 +31,8 @@ Luồng git (code):
 
 ## File theo ngày
 
-- [Ngày 1](day-01-foundation-docker-clean-architecture.md) — đã hoàn thành
-- [Ngày 2](day-02-lms-core-minio-n-1.md) — đã hoàn thành
-- [Ngày 3](day-03-frontend-media.md) — hoàn thiện Media Service và hai trang FE
-- [Ngày 4](day-04-performance-day.md) — áp dụng quy trình ticket
-- [Ngày 5](day-05-error-handling-test-slide-demo.md) — áp dụng quy trình ticket
+- [Ngày 1](day-01.md) — đã hoàn thành
+- [Ngày 2](day-02.md) — đã hoàn thành
+- [Ngày 3](day-03.md) — Media, FE và notification batch
+- [Ngày 4](day-04.md) — áp dụng quy trình ticket
+- [Ngày 5](day-05.md) — áp dụng quy trình ticket

@@ -41,10 +41,10 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 
 ## Kế hoạch hằng ngày
 
-- `plan/day-01-foundation-docker-clean-architecture.md`
-- `plan/day-02-lms-core-minio-n-1.md`
-- `plan/day-03-frontend-media.md`
-- `plan/day-04-performance-day.md`
-- `plan/day-05-error-handling-test-slide-demo.md`
+- `plan/day-01.md`
+- `plan/day-02.md`
+- `plan/day-03.md`
+- `plan/day-04.md`
+- `plan/day-05.md`
 
 Cập nhật tài liệu liên quan trong cùng một thay đổi mỗi khi phần triển khai làm thay đổi hành vi hoặc quyết định đã được ghi lại.
