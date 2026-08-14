@@ -15,7 +15,10 @@
 - Create or switch to a branch named `feature/{backlog-key}`, for example
   `feature/BLD-124_4`. Base it on `ducnm3`.
 - Do not use `feature/ducnm3_<short-description>` from Day 3 onward.
-- Commit message is the backlog task title (Vietnamese), not a `feat:` prefix.
+- Commit message phải viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và
+  phạm vi thay đổi chính. Ưu tiên dùng tiêu đề task backlog nếu tiêu đề đã rõ
+  nghĩa; không dùng `feat:` prefix hoặc message chung chung như `update`,
+  `fix`, `wip`.
 - When the user asks, create a pull request targeting `ducnm3`. PR title is the
   backlog task title. PR body must follow the Vietnamese template in
   `docs/guide/GIT_GUIDE.md` (Tổng quan, Trước chỉnh sửa, Sau chỉnh sửa, Nội dung

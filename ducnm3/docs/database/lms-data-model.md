@@ -166,7 +166,7 @@ owner_id              // UUID tài nguyên ở owner_service; tham chiếu logic
 usage_type            // THUMBNAIL | EMBED | ATTACHMENT | AVATAR
 display_order         // Thứ tự hiển thị media trong cùng một đối tượng sở hữu
 created_by            // UUID actor tạo liên kết; logical reference
-created_by_type       // Actor type đã được Application validate; hiện là STUDENT
+created_by_type       // Actor type đã được Application validate; STUDENT hoặc ADMIN
 created_at            // Thời điểm tạo liên kết, UTC
 deleted_at            // Thời điểm xóa mềm; có thể null khi lượt sử dụng còn hiệu lực
 active_reference_guard // Generated 1 khi active, null khi đã soft-delete
@@ -218,7 +218,7 @@ title                 // Tiêu đề thông báo dùng cho toàn lô
 body_markdown         // Nội dung Markdown dùng cho toàn lô
 target_scope          // COURSE_ENROLLED | STUDENT_IDS | ALL_STUDENTS
 created_by            // UUID quản trị viên tạo lô; tham chiếu logic
-status                // PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
+status                // PENDING | SNAPSHOTTING | SNAPSHOT_READY | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED
 total_count           // Tổng số người nhận đã được chụp khi tạo lô
 processed_count       // Số người nhận đã được xử lý
 success_count         // Số mục hộp thư đến được tạo thành công
@@ -244,7 +244,11 @@ error_message         // Lỗi cuối cùng; có thể null khi chưa lỗi ho�
 processed_at          // Thời điểm xử lý cuối, UTC; có thể null khi chưa xử lý
 ```
 
-`UNIQUE(batch_id, student_id)` ngăn chụp trùng người nhận. Khi xóa lô, các mục bị xóa theo; khi xóa mục hộp thư đến, `notification_id` của mục chỉ được đặt thành null.
+`UNIQUE(batch_id, student_id)` ngăn chụp trùng người nhận khi Worker retry/redelivery. Khi xóa lô, các mục bị xóa theo; khi xóa mục hộp thư đến, `notification_id` của mục chỉ được đặt thành null.
+
+### MassTransit outbox/inbox
+
+`InboxState`, `OutboxState` và `OutboxMessage` là bảng hạ tầng do Notification Service sở hữu. Chúng bảo đảm `SnapshotNotificationBatchV1` và các command tiếp theo được ghi bền cùng transaction nghiệp vụ, đồng thời consumer deduplicate delivery at-least-once. Các bảng này không chứa dữ liệu notification hiển thị cho người dùng.
 
 ### notifications
 
@@ -317,8 +321,8 @@ created_at            // Thời điểm tạo lượt chạy, UTC
 
 - `description_markdown`, `content_markdown` và `body_markdown` lưu mã nguồn Markdown, không lưu HTML không được kiểm soát.
 - API chỉ hiển thị Markdown bằng bộ làm sạch/danh sách cho phép ở ứng dụng khách hoặc bộ hiển thị; không cho phép HTML thô và mã lệnh.
-- Media được nhúng bằng URL công khai/URL proxy do Media Service cấp, ví dụ `![Sơ đồ](/api/media/{mediaId}/content)`.
-- Sau khi đối tượng sở hữu tạo hoặc cập nhật Markdown, dịch vụ sở hữu gọi Media Service để đăng ký/xóa `media_usages`; Media Service xác thực `media_id` và quyền sở hữu trước khi tạo lượt sử dụng.
+- Media được nhúng bằng URL công khai do Media Service cấp, ví dụ `![Sơ đồ](/media/api/media/{mediaId}/content)`.
+- Notification Service ghi command Media vào transactional outbox cùng thay đổi notification. Media Worker xác thực `media_id` `READY` và tạo idempotent `media_usages` sau khi notification thành công; batch chỉ phát command cho item `SUCCESS`, gom tối đa 500 notification IDs / 1,000 usage rows để một media dùng chung được validate một lần nhưng vẫn có một usage row cho mỗi notification owner.
 
 ## Thay đổi lược đồ vật lý
 

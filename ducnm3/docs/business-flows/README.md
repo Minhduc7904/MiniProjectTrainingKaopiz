@@ -19,6 +19,7 @@ business-flows/
 │   └── get-student-by-id.md
 ├── notifications/
 │   ├── single-notification-and-inbox.md
+│   ├── get-notification-by-id.md
 │   ├── bulk-notification.md
 │   └── notification-media-content.md
 └── scheduler/

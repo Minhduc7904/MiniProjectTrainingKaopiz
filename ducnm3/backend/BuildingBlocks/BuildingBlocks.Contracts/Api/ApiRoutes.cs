@@ -80,8 +80,11 @@ public static class ApiRoutes
 
     public static class Notifications
     {
+        public const string Items = "/api/notifications";
+        public const string ItemByIdTemplate = "/api/notifications/{notificationId}";
         public const string Batches = "/api/notification-batches";
         public const string BatchByIdTemplate = "/api/notification-batches/{batchId}";
+        public const string BatchFailedItemsTemplate = "/api/notification-batches/{batchId}/failed-items";
 
         public static string BatchByIdServicePath(Guid batchId) =>
             BuildServicePath(FormatGuidRoute(BatchByIdTemplate, "batchId", batchId));
@@ -90,6 +93,18 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Notification,
                 FormatGuidRoute(BatchByIdTemplate, "batchId", batchId));
+
+        public static string BatchFailedItemsServicePath(Guid batchId) =>
+            BuildServicePath(
+                FormatGuidRoute(BatchFailedItemsTemplate, "batchId", batchId));
+
+        public static string ItemByIdServicePath(Guid notificationId) =>
+            BuildServicePath(FormatGuidRoute(ItemByIdTemplate, "notificationId", notificationId));
+
+        public static string ItemByIdPublicPath(Guid notificationId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Notification,
+                FormatGuidRoute(ItemByIdTemplate, "notificationId", notificationId));
     }
 
     public static string BuildServicePath(string route)

@@ -14,8 +14,9 @@ phải có **Task**, **Est** và **Ticket**. Quy trình làm task:
 | Ticket | Mã Jira, ví dụ `BLD-124_4`. `Chưa tạo` = **cấm push code** |
 
 User tạo ticket trên Jira; agent không tạo Jira. Khi user gửi mã, agent điền cột
-Ticket. Nhánh git: `feature/{mã backlog}` (`feature/BLD-124_4`). Commit message =
-nội dung task trên backlog.
+Ticket. Nhánh git: `feature/{mã backlog}` (`feature/BLD-124_4`). Commit message
+viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và phạm vi thay đổi chính;
+ưu tiên nội dung task backlog khi tiêu đề đã rõ nghĩa.
 
 Markdown tài liệu (`docs/**/*.md`, `AGENTS.md`, `rules/*.md`, `.agents/**/*.md`)
 được push thẳng lên `ducnm3`: không cần ticket, không bắt buộc PR.

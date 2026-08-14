@@ -20,6 +20,16 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
 
     public MediaUsageOwnerQuery? LastUsageUrlQuery { get; private set; }
 
+    public IReadOnlyList<CreateMediaUsageRecord> EnsuredUsages { get; private set; } = [];
+
+    public Task EnsureMediaUsagesAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
+        CancellationToken cancellationToken)
+    {
+        EnsuredUsages = usages;
+        return Task.CompletedTask;
+    }
+
     public Task AddPendingAsync(
         PendingMediaRecord media,
         CancellationToken cancellationToken)

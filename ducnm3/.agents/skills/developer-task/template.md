@@ -57,7 +57,9 @@ git switch -c feature/<TICKET_KEY>
 
 ```text
 - [ ] Nhánh = feature/{mã backlog}, base ducnm3.
-- [ ] Commit message = nội dung task trên backlog.
+- [ ] Commit message viết bằng tiếng Việt, nêu rõ hành động và phạm vi thay đổi;
+      ưu tiên nội dung task backlog khi tiêu đề đã rõ nghĩa; không dùng `feat:`,
+      `update`, `fix` hoặc `wip`.
 - [ ] Self-test: build/test liên quan pass; Postman case chính nếu có API.
 ```
 

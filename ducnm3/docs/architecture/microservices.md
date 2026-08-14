@@ -210,7 +210,7 @@ Course Service
     └── HTTP → Student Service
 ```
 
-Tương tự, Course Service và Notification Service chỉ gọi HTTP tới Media Service để tải lên, lấy URL hoặc đăng ký `media_usages`; tuyệt đối không gọi MinIO hay truy vấn `lms_media_db` trực tiếp.
+Tương tự, Course Service và Notification Service không gọi MinIO hay truy vấn `lms_media_db` trực tiếp. QUERY tải lên/lấy URL dùng HTTP; command đăng ký `media_usages` của Notification dùng RabbitMQ + transactional outbox để tránh dual-write.
 
 Foundation giao tiếp liên service dùng HTTP cho QUERY cần response ngay,
 RabbitMQ `Send` cho COMMAND và RabbitMQ `Publish` cho EVENT. Scheduler chưa có

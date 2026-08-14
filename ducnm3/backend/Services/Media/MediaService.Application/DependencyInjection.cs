@@ -4,6 +4,7 @@ using MediaService.Application.Features.Media.GetContent;
 using MediaService.Application.Features.Media.Upload;
 using MediaService.Application.Features.Usages.Create;
 using MediaService.Application.Features.Usages.GetUrls;
+using MediaService.Application.Features.Usages.RegisterNotification;
 using MediaService.Application.Abstractions.Urls;
 using MediaService.Application.Urls;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<CreateMediaUsageHandler>();
         services.AddScoped<GetMediaUsageUrlHandler>();
         services.AddScoped<GetMediaUsageUrlsHandler>();
+        services.AddScoped<RegisterNotificationMediaUsagesHandler>();
         services.AddSingleton<IMediaUrlProvider, ContentEndpointMediaUrlProvider>();
         services.AddScoped<GenerateMediaThumbnailHandler>();
         services.AddScoped<GetMediaThumbnailStatusHandler>();

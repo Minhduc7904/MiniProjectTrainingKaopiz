@@ -14,6 +14,138 @@ public sealed class EfMediaRepository(
     MediaDbContext dbContext,
     TimeProvider timeProvider) : IMediaRepository
 {
+    public async Task EnsureMediaUsagesAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
+        CancellationToken cancellationToken)
+    {
+        var distinctUsages = usages
+            .GroupBy(usage => (
+                usage.MediaId,
+                usage.OwnerService,
+                usage.OwnerType,
+                usage.OwnerId,
+                usage.UsageType))
+            .Select(group => group.OrderBy(usage => usage.DisplayOrder).First())
+            .OrderBy(usage => usage.OwnerId)
+            .ThenBy(usage => usage.DisplayOrder)
+            .ToArray();
+        var mediaIds = distinctUsages
+            .Select(usage => usage.MediaId)
+            .Distinct()
+            .ToList();
+        var ownerIds = distinctUsages
+            .Select(usage => usage.OwnerId)
+            .Distinct()
+            .ToList();
+        var ownerServices = distinctUsages
+            .Select(usage => usage.OwnerService)
+            .Distinct()
+            .ToList();
+        var ownerTypes = distinctUsages
+            .Select(usage => usage.OwnerType)
+            .Distinct()
+            .ToList();
+        var usageTypes = distinctUsages
+            .Select(usage => usage.UsageType)
+            .Distinct()
+            .ToList();
+
+        await using var transaction = dbContext.Database.CurrentTransaction is null
+            ? await dbContext.Database.BeginTransactionAsync(
+                IsolationLevel.Serializable,
+                cancellationToken)
+            : null;
+        var readyMediaIds = await dbContext.MediaObjects
+            .AsNoTracking()
+            .Where(media =>
+                mediaIds.Contains(media.Id) &&
+                media.Status == MediaObjectStatuses.Ready &&
+                media.DeletedAt == null)
+            .Select(media => media.Id)
+            .ToListAsync(cancellationToken);
+        readyMediaIds.AddRange(
+            dbContext.MediaObjects.Local
+                .Where(media =>
+                    mediaIds.Contains(media.Id) &&
+                    media.Status == MediaObjectStatuses.Ready &&
+                    media.DeletedAt == null)
+                .Select(media => media.Id));
+        if (readyMediaIds.Distinct().Count() != mediaIds.Count)
+        {
+            throw MediaErrors.MediaNotReady();
+        }
+
+        var existing = await dbContext.MediaUsages
+            .AsNoTracking()
+            .Where(usage =>
+                usage.DeletedAt == null &&
+                mediaIds.Contains(usage.MediaId) &&
+                ownerIds.Contains(usage.OwnerId) &&
+                ownerServices.Contains(usage.OwnerService) &&
+                ownerTypes.Contains(usage.OwnerType) &&
+                usageTypes.Contains(usage.UsageType))
+            .Select(usage => new
+            {
+                usage.MediaId,
+                usage.OwnerService,
+                usage.OwnerType,
+                usage.OwnerId,
+                usage.UsageType,
+            })
+            .ToListAsync(cancellationToken);
+        var existingKeys = existing
+            .Select(usage => (
+                usage.MediaId,
+                usage.OwnerService,
+                usage.OwnerType,
+                usage.OwnerId,
+                usage.UsageType))
+            .ToHashSet();
+        foreach (var usage in distinctUsages)
+        {
+            if (existingKeys.Contains((
+                    usage.MediaId,
+                    usage.OwnerService,
+                    usage.OwnerType,
+                    usage.OwnerId,
+                    usage.UsageType)))
+            {
+                continue;
+            }
+
+            dbContext.MediaUsages.Add(new MediaUsage
+            {
+                Id = usage.Id,
+                MediaId = usage.MediaId,
+                OwnerService = usage.OwnerService,
+                OwnerType = usage.OwnerType,
+                OwnerId = usage.OwnerId,
+                UsageType = usage.UsageType,
+                DisplayOrder = usage.DisplayOrder,
+                CreatedBy = usage.CreatedBy.Id,
+                CreatedByType = usage.CreatedBy.Type,
+                CreatedAt = timeProvider.GetUtcNow().UtcDateTime,
+            });
+        }
+
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+            if (transaction is not null)
+            {
+                await transaction.CommitAsync(cancellationToken);
+            }
+        }
+        catch (DbUpdateException exception) when (
+            exception.InnerException is MySqlException { Number: 1062 })
+        {
+            if (transaction is not null)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+            }
+        }
+    }
+
     public async Task AddPendingAsync(
         PendingMediaRecord media,
         CancellationToken cancellationToken)
@@ -198,24 +330,10 @@ public sealed class EfMediaRepository(
             activeUsage.DeletedAt = now;
         }
 
-        var entity = new MediaUsage
-        {
-            Id = usage.Id,
-            MediaId = usage.MediaId,
-            OwnerService = usage.OwnerService,
-            OwnerType = usage.OwnerType,
-            OwnerId = usage.OwnerId,
-            UsageType = usage.UsageType,
-            DisplayOrder = usage.DisplayOrder,
-            CreatedBy = usage.CreatedBy.Id,
-            CreatedByType = usage.CreatedBy.Type,
-            CreatedAt = now,
-        };
-        dbContext.MediaUsages.Add(entity);
-
         try
         {
             await dbContext.SaveChangesAsync(cancellationToken);
+            await EnsureMediaUsagesAsync([usage], cancellationToken);
             await transaction.CommitAsync(cancellationToken);
         }
         catch (DbUpdateException exception) when (
@@ -225,14 +343,14 @@ public sealed class EfMediaRepository(
         }
 
         return new MediaUsageRecord(
-            entity.Id,
-            entity.MediaId,
-            entity.OwnerService,
-            entity.OwnerType,
-            entity.OwnerId,
-            entity.UsageType,
-            entity.DisplayOrder,
-            entity.CreatedAt);
+            usage.Id,
+            usage.MediaId,
+            usage.OwnerService,
+            usage.OwnerType,
+            usage.OwnerId,
+            usage.UsageType,
+            usage.DisplayOrder,
+            now);
     }
 
     private IQueryable<MediaUsageUrlRecord> ActiveUsageUrls() =>

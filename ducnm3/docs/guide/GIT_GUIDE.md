@@ -17,11 +17,19 @@ Quy trình task đầy đủ: [DEV_TASK_GUIDE.md](DEV_TASK_GUIDE.md).
 
 ## Commit
 
-Message = **nội dung task trên backlog**, không viết kiểu `feat:` hay prefix mã
-nhánh. Ví dụ backlog “Triển khai base FE” thì:
+Message phải viết **tiếng Việt**, ngắn gọn nhưng nêu rõ hành động và phạm vi
+thay đổi chính. Ưu tiên dùng **nội dung task trên backlog** khi tiêu đề task đã
+rõ nghĩa; không viết kiểu `feat:` hay prefix mã nhánh, cũng không dùng message
+chung chung như `update`, `fix`, `wip`. Ví dụ backlog “Triển khai base FE” thì:
 
 ```bash
 git commit -m "Triển khai base FE"
+```
+
+Ví dụ rõ phạm vi hơn:
+
+```bash
+git commit -m "Chuẩn hóa gán media usage cho notification đơn và batch"
 ```
 
 ## Cổng push

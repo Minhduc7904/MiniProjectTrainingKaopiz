@@ -22,19 +22,20 @@ Quản trị viên; Học viên; Notification Service.
 sequenceDiagram
     participant Admin
     participant API as Notification Service
-    participant Student as Student Service
     participant DB as MySQL Notification
+    participant Bus as RabbitMQ
+    participant Media as Media Worker
 
     Admin->>API: POST /api/notifications
-    API->>API: Authorize + validate title/Markdown
-    API->>Student: Verify recipient ACTIVE
-    Student-->>API: Student exists
-    alt Không hợp lệ/không tồn tại
-        API-->>Admin: 400/403/404
+    API->>API: Validate UUID, title and Markdown contentUrl
+    alt Không hợp lệ
+        API-->>Admin: 400
     else Hợp lệ
-        API->>DB: INSERT notification UNREAD
+        API->>DB: INSERT notification UNREAD + media command outbox
         DB-->>API: Created notification
         API-->>Admin: 201 notification
+        DB-->>Bus: RegisterNotificationMediaUsageV1(notificationId)
+        Bus->>Media: Create idempotent media usages
     end
 ```
 
@@ -74,14 +75,15 @@ sequenceDiagram
 
 ## Luồng gửi đơn
 
-1. Quản trị viên gửi `POST /api/notifications` với `studentId`, `title` và `bodyMarkdown`.
-2. Notification Service xác thực dữ liệu và xác nhận Học viên.
+1. Quản trị viên gửi `POST /api/notifications` với `studentId`, `title`, `bodyMarkdown` và `createdBy`.
+2. Notification Service xác thực dữ liệu và các `contentUrl` media trong Markdown.
 3. Notification Service tạo một bản ghi `notifications`:
    - `recipient_student_id` là Học viên nhận.
    - `source_type` là `SINGLE`.
    - `status` là `UNREAD`.
    - `notification_batch_id` là `null`.
-4. API trả về mục hộp thư đến đã tạo.
+4. Khi Markdown có media, API ghi command cho Media Worker trong transactional outbox. Media usage chỉ được tạo sau notification thành công và được gắn với `notification.id`.
+5. API trả về mục hộp thư đến đã tạo.
 
 ## Luồng đọc hộp thư đến
 
@@ -94,10 +96,11 @@ sequenceDiagram
 ## Trường hợp lỗi
 
 - `403`: Quản trị viên không có quyền gửi hoặc Học viên cố đọc thông báo của người khác.
-- `404`: Học viên hoặc thông báo không tồn tại.
+- `404`: notification không tồn tại khi truy vấn chi tiết.
 - `409`: thông báo đã ở trạng thái `READ` nếu API chọn xử lý xung đột thay vì trả về thành công theo cách lũy đẳng.
 
 ## Dữ liệu thay đổi
 
-- Cơ sở dữ liệu Notification Service: một bản ghi `notifications`.
+- Cơ sở dữ liệu Notification Service: một bản ghi `notifications` và outbox command nếu Markdown có media.
+- Cơ sở dữ liệu Media Service: `media_usages` chỉ sau khi Media Worker xử lý thành công command.
 - Không tạo `notification_batches`, `notification_batch_items` hoặc lượt chạy Scheduler.

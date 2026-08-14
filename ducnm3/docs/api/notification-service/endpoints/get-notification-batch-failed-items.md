@@ -1,14 +1,15 @@
 # `GET /api/notification-batches/{batchId}/failed-items`
 
+Business flow: [Xem lỗi người nhận của batch thông báo](../../../business-flows/notifications/get-notification-batch-failed-items.md).
+
 ## Mục đích
 
 Liệt kê các mục người nhận thất bại trong một lô hàng loạt của Notification Service.
 
 ## Xác thực và phân quyền
 
-- Xác thực: bắt buộc.
-- Vai trò/phạm vi: quản trị viên thông báo.
-- Quy tắc sở hữu: quyền truy cập tuân theo chính sách thông báo của tổ chức sở hữu.
+- MVP hiện chưa có auth; khi auth được bổ sung, endpoint phải giới hạn quyền xem
+  theo chính sách thông báo của tổ chức sở hữu.
 
 ## Yêu cầu
 
@@ -19,7 +20,8 @@ Liệt kê các mục người nhận thất bại trong một lô hàng loạt 
 
 ## Phản hồi thành công
 
-Thứ tự ổn định theo ID của mục. Máy khách phải coi `nextCursor` là giá trị không trong suốt.
+Thứ tự ổn định theo `notification_batch_items.id` tăng dần. Máy khách phải coi
+`nextCursor` là giá trị không trong suốt và không tự tạo cursor.
 
 ```http
 200 OK
@@ -59,4 +61,8 @@ Thứ tự ổn định theo ID của mục. Máy khách phải coi `nextCursor`
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Đọc `notification_batch_items` có `status = FAILED`. Điểm cuối không kích hoạt thử lại hoặc tạo lượt chạy Scheduler.
+GET an toàn, idempotent, `Cache-Control: no-store`. Endpoint đọc
+`notification_batches` để xác nhận batch tồn tại, rồi đọc
+`notification_batch_items` có `status = FAILED`. Không kích hoạt retry hoặc tạo
+lượt chạy Worker. Trong khi dữ liệu còn thay đổi, item mới có thể xuất hiện sau
+cursor hiện tại; UI chỉ đọc lỗi chi tiết khi batch đã ở trạng thái cuối.

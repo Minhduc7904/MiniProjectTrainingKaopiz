@@ -164,6 +164,11 @@ public sealed class GetMediaUsageUrlEndpointsComponentTests
 
         public IReadOnlyList<MediaUsageUrlRecord> Many { get; set; } = [];
 
+        public Task EnsureMediaUsagesAsync(
+            IReadOnlyList<CreateMediaUsageRecord> usages,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
         public Task<MediaUsageUrlRecord?> GetActiveUsageUrlByIdAsync(
             Guid usageId,
             CancellationToken cancellationToken) =>

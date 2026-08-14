@@ -6,7 +6,9 @@ import {
   Images,
   Library,
   Mail,
+  Send,
   Timer,
+  Activity,
   Upload,
   Users,
 } from 'lucide-react'
@@ -37,6 +39,8 @@ const menuIcons = {
   courses: Library,
   upload: Upload,
   messages: Mail,
+  send: Send,
+  progress: Activity,
   jobs: Timer,
 }
 

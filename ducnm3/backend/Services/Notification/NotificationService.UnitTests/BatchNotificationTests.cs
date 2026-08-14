@@ -1,8 +1,13 @@
 using BuildingBlocks.Messaging.Abstractions;
+using MediaService.Contracts.Messaging;
+using System.Runtime.CompilerServices;
+using NotificationService.Application;
 using NotificationService.Application.Abstractions;
 using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.Dispatch;
+using NotificationService.Application.Features.Batches.Snapshot;
+using NotificationService.Application.Content;
 using NotificationService.Infrastructure.Sending;
 
 namespace NotificationService.UnitTests;
@@ -12,11 +17,10 @@ public sealed class CreateNotificationBatchHandlerTests
     [Test]
     public void HandleAsync_RejectsScopeOtherThanAllStudents()
     {
-        var studentClient = new StubStudentRecipientClient([Guid.NewGuid()]);
         var handler = new CreateNotificationBatchHandler(
-            studentClient,
             new StubBatchRepository(),
             new StubCommandSender(),
+            new NotificationMediaReferenceExtractor(),
             TimeProvider.System);
 
         var exception = Assert.ThrowsAsync<NotificationService.Application.NotificationApplicationException>(
@@ -31,18 +35,17 @@ public sealed class CreateNotificationBatchHandlerTests
                 CancellationToken.None));
 
         Assert.That(exception!.StatusCode, Is.EqualTo(400));
-        Assert.That(studentClient.WasCalled, Is.False);
     }
 
     [Test]
-    public async Task HandleAsync_CreatesSnapshotAndDispatchesCommand()
+    public async Task HandleAsync_CreatesPendingBatchAndQueuesSnapshotCommand()
     {
         var repository = new StubBatchRepository();
         var commandSender = new StubCommandSender();
         var handler = new CreateNotificationBatchHandler(
-            new StubStudentRecipientClient([Guid.NewGuid(), Guid.NewGuid()]),
             repository,
             commandSender,
+            new NotificationMediaReferenceExtractor(),
             TimeProvider.System);
 
         var result = await handler.HandleAsync(
@@ -57,12 +60,12 @@ public sealed class CreateNotificationBatchHandlerTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(repository.CreatedRecord, Is.Not.Null);
-            Assert.That(repository.CreatedRecord!.StudentIds, Has.Count.EqualTo(2));
-            Assert.That(repository.CreatedRecord.BatchSize, Is.EqualTo(500));
+            var createdRecord = repository.CreatedRecord;
+            Assert.That(createdRecord, Is.Not.Null);
+            Assert.That(createdRecord!.BatchSize, Is.EqualTo(500));
             Assert.That(commandSender.Commands, Has.Count.EqualTo(1));
-            Assert.That(commandSender.Commands[0], Is.TypeOf<DispatchNotificationBatchV1>());
-            Assert.That(((DispatchNotificationBatchV1)commandSender.Commands[0]).BatchId, Is.EqualTo(result.Id));
+            Assert.That(commandSender.Commands[0], Is.TypeOf<SnapshotNotificationBatchV1>());
+            Assert.That(((SnapshotNotificationBatchV1)commandSender.Commands[0]).BatchId, Is.EqualTo(result.Id));
         });
     }
 }
@@ -118,6 +121,51 @@ public sealed class FakeNotificationSenderTests
 public sealed class DispatchNotificationBatchHandlerTests
 {
     [Test]
+    public async Task HandleAsyncSuccessfulChunkQueuesOneMediaUsageBatchCommand()
+    {
+        var batchId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var createdBy = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        var mediaId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        var firstItem = new NotificationBatchWorkItem(
+            Guid.Parse("44444444-4444-4444-4444-444444444444"),
+            batchId,
+            Guid.Parse("55555555-5555-5555-5555-555555555555"),
+            0,
+            "Title",
+            $"![media](/media/api/media/{mediaId:D}/content)",
+            createdBy);
+        var secondItem = firstItem with
+        {
+            Id = Guid.Parse("66666666-6666-6666-6666-666666666666"),
+            StudentId = Guid.Parse("77777777-7777-7777-7777-777777777777"),
+        };
+        var repository = new StubBatchRepository([firstItem, secondItem]);
+        var commandSender = new StubCommandSender();
+        var handler = new DispatchNotificationBatchHandler(
+            repository,
+            new SuccessfulSender(),
+            commandSender,
+            new NotificationMediaReferenceExtractor());
+
+        await handler.HandleAsync(
+            new DispatchNotificationBatchV1(batchId),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(repository.SuccessItems, Has.Count.EqualTo(2));
+            Assert.That(commandSender.Commands, Has.One.TypeOf<RegisterNotificationMediaUsageBatchV1>());
+            var command = (RegisterNotificationMediaUsageBatchV1)commandSender.Commands[0];
+            Assert.That(command.NotificationIds, Has.Count.EqualTo(2));
+            Assert.That(command.References, Has.One.EqualTo(
+                new NotificationMediaUsageReferenceV1(
+                    mediaId,
+                    NotificationMediaUsageTypes.Embed,
+                    0)));
+        });
+    }
+
+    [Test]
     public async Task HandleAsync_FirstBusinessFailureMarksItemForRetryAndRequeues()
     {
         var item = new NotificationBatchWorkItem(
@@ -133,7 +181,8 @@ public sealed class DispatchNotificationBatchHandlerTests
         var handler = new DispatchNotificationBatchHandler(
             repository,
             new ThrowingSender(),
-            commandSender);
+            commandSender,
+            new NotificationMediaReferenceExtractor());
 
         await handler.HandleAsync(
             new DispatchNotificationBatchV1(item.BatchId),
@@ -149,24 +198,103 @@ public sealed class DispatchNotificationBatchHandlerTests
     }
 }
 
-internal sealed class StubStudentRecipientClient(IReadOnlyList<Guid> studentIds) : IStudentRecipientClient
+public sealed class SnapshotNotificationBatchHandlerTests
 {
-    public bool WasCalled { get; private set; }
-
-    public Task<IReadOnlyList<Guid>> GetAllActiveStudentIdsAsync(CancellationToken cancellationToken)
+    [Test]
+    public async Task HandleAsync_RecipientsStreamed_PersistsPagesAndQueuesDispatch()
     {
-        WasCalled = true;
-        return Task.FromResult(studentIds);
+        var batchId = Guid.NewGuid();
+        var repository = new StubBatchRepository
+        {
+            SnapshotWork = new NotificationSnapshotWork(true, false),
+            SnapshotCompleted = true,
+        };
+        var commandSender = new StubCommandSender();
+        var handler = new SnapshotNotificationBatchHandler(
+            new StubStudentRecipientClient(
+                [Guid.Parse("11111111-1111-1111-1111-111111111111")],
+                [Guid.Parse("22222222-2222-2222-2222-222222222222")]),
+            repository,
+            commandSender);
+
+        await handler.HandleAsync(
+            new SnapshotNotificationBatchV1(batchId),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(repository.SnapshotPages, Has.Count.EqualTo(2));
+            Assert.That(repository.SnapshotPages.SelectMany(page => page).ToArray().Length, Is.EqualTo(2));
+            Assert.That(commandSender.Commands, Has.One.TypeOf<DispatchNotificationBatchV1>());
+        });
+    }
+
+    [Test]
+    public async Task HandleAsync_StudentServiceUnavailable_MarksBatchFailed()
+    {
+        var repository = new StubBatchRepository
+        {
+            SnapshotWork = new NotificationSnapshotWork(true, false),
+        };
+        var handler = new SnapshotNotificationBatchHandler(
+            new FailingStudentRecipientClient(),
+            repository,
+            new StubCommandSender());
+
+        await handler.HandleAsync(new SnapshotNotificationBatchV1(Guid.NewGuid()), CancellationToken.None);
+
+        Assert.That(repository.SnapshotMarkedFailed, Is.True);
     }
 }
 
-internal sealed class StubBatchRepository(
-    IReadOnlyList<NotificationBatchWorkItem>? items = null,
-    bool hasRemaining = false) : INotificationBatchRepository
+internal sealed class StubStudentRecipientClient(params IReadOnlyList<Guid>[] pages) : IStudentRecipientClient
 {
+    public bool WasCalled { get; private set; }
+
+    public async IAsyncEnumerable<IReadOnlyList<Guid>> GetActiveStudentIdPagesAsync(
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        WasCalled = true;
+        foreach (var page in pages)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return page;
+        }
+    }
+}
+
+internal sealed class FailingStudentRecipientClient : IStudentRecipientClient
+{
+    public async IAsyncEnumerable<IReadOnlyList<Guid>> GetActiveStudentIdPagesAsync(
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await Task.Yield();
+        if (cancellationToken.IsCancellationRequested)
+        {
+            yield break;
+        }
+
+        throw NotificationErrors.StudentServiceUnavailable();
+    }
+}
+
+internal sealed class StubBatchRepository : INotificationBatchRepository
+{
+    public StubBatchRepository(IReadOnlyList<NotificationBatchWorkItem>? items = null, bool hasRemaining = false)
+    {
+        Items = items;
+        HasRemaining = hasRemaining;
+    }
+
+    private IReadOnlyList<NotificationBatchWorkItem>? Items { get; }
+    private bool HasRemaining { get; }
     public CreateNotificationBatchRecord? CreatedRecord { get; private set; }
     public List<Guid> FailedItems { get; } = [];
     public List<Guid> SuccessItems { get; } = [];
+    public List<IReadOnlyList<Guid>> SnapshotPages { get; } = [];
+    public NotificationSnapshotWork SnapshotWork { get; set; } = new(false, false);
+    public bool SnapshotCompleted { get; set; }
+    public bool SnapshotMarkedFailed { get; private set; }
 
     public Task<NotificationBatchSummary> CreateAsync(
         CreateNotificationBatchRecord record,
@@ -176,7 +304,7 @@ internal sealed class StubBatchRepository(
         return Task.FromResult(new NotificationBatchSummary(
             record.Id,
             "PENDING",
-            checked((uint)record.StudentIds.Count),
+            0,
             0,
             0,
             0,
@@ -189,17 +317,51 @@ internal sealed class StubBatchRepository(
     public Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult<NotificationBatchSummary?>(null);
 
+    public Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(
+        Guid batchId,
+        Guid? afterItemId,
+        int limit,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationBatchFailedItemsPage([], null, false));
+
     public Task SaveChangesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task<NotificationSnapshotWork> PrepareSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
+        Task.FromResult(SnapshotWork);
+
+    public Task AppendSnapshotPageAsync(Guid batchId, IReadOnlyList<Guid> studentIds, CancellationToken cancellationToken)
+    {
+        SnapshotPages.Add(studentIds);
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> CompleteSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
+        Task.FromResult(SnapshotCompleted);
+
+    public Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken)
+    {
+        SnapshotMarkedFailed = true;
+        return Task.CompletedTask;
+    }
 
     public Task<IReadOnlyList<NotificationBatchWorkItem>> ClaimChunkAsync(
         Guid batchId,
         CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<NotificationBatchWorkItem>>(items ?? []);
+        Task.FromResult<IReadOnlyList<NotificationBatchWorkItem>>(Items ?? []);
 
-    public Task MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken)
+    public Task<NotificationSummary?> MarkSuccessAsync(NotificationBatchWorkItem item, CancellationToken cancellationToken)
     {
         SuccessItems.Add(item.Id);
-        return Task.CompletedTask;
+        return Task.FromResult<NotificationSummary?>(new NotificationSummary(
+            Guid.NewGuid(),
+            item.StudentId,
+            item.Title,
+            item.BodyMarkdown,
+            "BULK",
+            "UNREAD",
+            item.CreatedBy,
+            DateTime.UnixEpoch,
+            null));
     }
 
     public Task MarkFailureAsync(
@@ -212,7 +374,7 @@ internal sealed class StubBatchRepository(
     }
 
     public Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken) =>
-        Task.FromResult(hasRemaining);
+        Task.FromResult(HasRemaining);
 }
 
 internal sealed class StubCommandSender : ICommandSender
@@ -234,4 +396,10 @@ internal sealed class ThrowingSender : INotificationSender
 {
     public Task SendAsync(Guid studentId, int attempt, CancellationToken cancellationToken) =>
         Task.FromException(new InvalidOperationException("Expected sender failure."));
+}
+
+internal sealed class SuccessfulSender : INotificationSender
+{
+    public Task SendAsync(Guid studentId, int attempt, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 }

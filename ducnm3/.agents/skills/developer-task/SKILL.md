@@ -39,7 +39,9 @@ một endpoint vẫn đọc skill HTTP-method + test (+ migration nếu đổi s
    `feature/BLD-124_4`). Không dùng `feature/ducnm3_*`. Không dùng tiêu đề Jira
    làm tên nhánh.
 7. Phase Implement: coding theo skill kỹ thuật tương ứng; self-test; commit
-   message = nội dung task trên backlog.
+   message viết bằng tiếng Việt, ngắn gọn nhưng nêu rõ hành động và phạm vi thay
+   đổi chính; ưu tiên nội dung task backlog khi tiêu đề đã rõ nghĩa. Không dùng
+   `feat:` hoặc message chung chung như `update`, `fix`, `wip`.
 8. Push nhánh **chỉ khi** Ticket đã có mã **và** user yêu cầu push. Docs-only
    markdown thì push `ducnm3`, không tạo nhánh ticket.
 9. Khi user yêu cầu **tạo pull request**: tạo PR target `ducnm3`. Title = nội
@@ -56,7 +58,9 @@ một endpoint vẫn đọc skill HTTP-method + test (+ migration nếu đổi s
   `Chưa tạo` nếu user chưa tạo — khi đó chưa push **code**; docs-only markdown
   vẫn push `ducnm3`).
 - Design docs trong `docs/` đã cập nhật trước merge PR chính.
-- Nhánh `feature/{mã backlog}`; commit message = nội dung task backlog.
+- Nhánh `feature/{mã backlog}`; commit message viết bằng tiếng Việt, rõ hành
+  động và phạm vi thay đổi; ưu tiên nội dung task backlog khi tiêu đề đã rõ
+  nghĩa.
 - PR (khi user yêu cầu tạo) đúng mẫu GIT_GUIDE, target `ducnm3`.
 - Self-test và test skill tương ứng đã chạy.
 - Bug fix (nếu có) ghi đủ ba mục trên Jira.

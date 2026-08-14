@@ -5,6 +5,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Shared\BuildingBlocks.Shared.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Contracts\BuildingBlocks.Contracts.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.Abstractions\BuildingBlocks.Messaging.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Media\MediaService.Contracts\MediaService.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,6 +15,7 @@ namespace MediaService.Infrastructure.Persistence;
 public sealed class EfMediaDerivationRepository(
     MediaDbContext dbContext,
     ICommandSender commandSender,
+    IMediaRepository mediaRepository,
     TimeProvider timeProvider) : IMediaDerivationRepository
 {
     public async Task<ThumbnailDerivationWork?> BeginAsync(
@@ -89,33 +90,21 @@ public sealed class EfMediaDerivationRepository(
         job.UpdatedAt = completedAtUtc;
         job.LastError = null;
 
-        var hasActiveThumbnail = await dbContext.MediaUsages.AnyAsync(
-            item =>
-                item.OwnerService == MediaOwnerServices.Media &&
-                item.OwnerType == MediaOwnerTypes.MediaThumbnail &&
-                item.OwnerId == job.SourceMediaId &&
-                item.UsageType == MediaUsageTypes.Thumbnail &&
-                item.DeletedAt == null,
+        await mediaRepository.EnsureMediaUsagesAsync(
+            [
+                new CreateMediaUsageRecord(
+                    Guid.NewGuid(),
+                    derivativeMediaId,
+                    MediaOwnerServices.Media,
+                    MediaOwnerTypes.MediaThumbnail,
+                    job.SourceMediaId,
+                    MediaUsageTypes.Thumbnail,
+                    0,
+                    new ActorReference(
+                        job.SourceMedia.UploadedByType,
+                        job.SourceMedia.UploadedBy)),
+            ],
             cancellationToken);
-        if (!hasActiveThumbnail)
-        {
-            dbContext.MediaUsages.Add(
-                new MediaUsage
-                {
-                    Id = Guid.NewGuid(),
-                    MediaId = derivativeMediaId,
-                    OwnerService = MediaOwnerServices.Media,
-                    OwnerType = MediaOwnerTypes.MediaThumbnail,
-                    OwnerId = job.SourceMediaId,
-                    UsageType = MediaUsageTypes.Thumbnail,
-                    DisplayOrder = 0,
-                    CreatedBy = job.SourceMedia.UploadedBy,
-                    CreatedByType = job.SourceMedia.UploadedByType,
-                    CreatedAt = completedAtUtc,
-                });
-        }
-
-        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task MarkFailedAsync(

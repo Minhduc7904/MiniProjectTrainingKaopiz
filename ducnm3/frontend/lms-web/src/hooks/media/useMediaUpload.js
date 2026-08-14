@@ -19,7 +19,7 @@ export function useMediaUpload() {
 
   const submit = useCallback(
     (form) => {
-      dispatch(uploadMedia(form))
+      return dispatch(uploadMedia(form))
     },
     [dispatch],
   )

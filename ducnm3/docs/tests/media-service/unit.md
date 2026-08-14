@@ -4,7 +4,9 @@
 
 Dự án: `backend/Services/Media/MediaService.UnitTests`
 Mã nguồn: `Application/MediaCommandHandlerTests.cs`,
-`Application/GetMediaContentHandlerTests.cs`, `Clients/StudentLookupClientTests.cs`,
+`Application/GetMediaContentHandlerTests.cs`,
+`Application/RegisterNotificationMediaUsagesHandlerTests.cs`,
+`Clients/StudentLookupClientTests.cs`,
 `Endpoints/MediaRequestParserTests.cs`,
 `Health/MediaDatabaseHealthProbeTests.cs` và `Storage/*.cs`
 Thành phần phụ thuộc: không gọi MinIO, MySQL, mạng hoặc Docker.
@@ -31,6 +33,8 @@ dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests
 | Workflow upload | `UploadCreatesPendingBeforeStorageAndThenMarksReady` | Dùng repository/storage giả ghi lại thứ tự event. | Thứ tự là `pending -> upload -> ready`; response `READY`; actor được chuẩn hóa thành `STUDENT`. |
 | Compensation upload | `UploadFailureDeletesObjectAndMarksRecordFailed` | Storage giả ném lỗi khi upload. | Thứ tự là `pending -> upload -> delete -> failed` và handler trả `MEDIA_UPLOAD_FAILED`. |
 | Actor và owner | `UsageKeepsCreatorActorSeparateFromOwner` | Tạo avatar usage với `createdBy` khác `ownerId`. | Actor được xác minh riêng, owner được tra cứu riêng, repository nhận đúng hai ID và `ownerType=STUDENT_AVATAR`. |
+| Notification bulk usage | `HandleAsyncBatchMapsOneReferenceToEveryNotification` | Command chứa hai notification IDs và cùng một media reference. | Core assignment nhận hai usage `NOTIFICATION/NOTIFICATION_BODY/EMBED`, mỗi usage có owner ID riêng và actor `ADMIN`. |
+| Notification bulk usage | `HandleAsyncBatchExceedsUsageRowLimitThrowsValidationError` | Command vượt giới hạn usage rows trong một message. | Handler trả `INVALID_MEDIA` trước khi gọi repository. |
 | Mở rộng actor | `ActorValidationDispatchesWithoutChangingHandlers` | Đăng ký validator `STUDENT` và validator giả `ADMIN`, gửi actor viết thường `admin`. | Actor được chuẩn hóa; chỉ validator `ADMIN` được gọi, không cần đổi command handler. |
 | Content handler | READY/missing/PENDING/storage failure | Dùng repository/storage stub để đọc media ở từng trạng thái và copy stream. | READY copy đúng bytes, missing trả `404`, PENDING trả `409`, storage failure trả `503`; result không public storage location. |
 | URL handler | active/missing/non-image usage | `GetMediaUsageUrlHandlerTests` và `GetMediaUsageUrlsHandlerTests` dùng repository/provider giả trong memory. | Một usage trả URL, usage thiếu trả `MEDIA_USAGE_NOT_FOUND`, owner trả URL cho mọi usage và input owner sai trả `INVALID_MEDIA`. |

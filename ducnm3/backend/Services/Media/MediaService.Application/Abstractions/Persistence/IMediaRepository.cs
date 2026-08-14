@@ -36,4 +36,8 @@ public interface IMediaRepository
     Task<MediaUsageRecord> ReplaceMediaThumbnailAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);
+
+    Task EnsureMediaUsagesAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
+        CancellationToken cancellationToken);
 }
