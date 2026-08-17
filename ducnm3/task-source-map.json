@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "defaults": {
+    "specKind": "none",
+    "repoPathTemplate": "docs/specs/{{taskId}}.md"
+  },
+  "tasks": {
+    "EXAMPLE-INLINE": {
+      "type": "inline",
+      "title": "Chỉ cần text trong file này",
+      "description": "AC: …"
+    },
+    "EXAMPLE-REPO": {
+      "type": "repo",
+      "path": "docs/specs/README.md"
+    }
+  }
+}

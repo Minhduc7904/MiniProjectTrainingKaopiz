@@ -7,3 +7,10 @@ riderModule.iml
 appsettings.json
 appsettings.Development.json
 Properties/
+
+# MCP config (contains personal tokens)
+.cursor/mcp.json
+
+# MCP config (contains personal tokens)
+.mcp.json
+node_modules
