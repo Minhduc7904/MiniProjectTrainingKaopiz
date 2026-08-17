@@ -1,7 +1,7 @@
-# NGÀY 4 — Ngày hiệu năng
+# NGÀY 4 — Hoàn thiện Database
 
-Đây là ngày quan trọng nhất. Mục tiêu: hoàn thành toàn bộ benchmark trước và
-sau khi tối ưu. Est là giờ làm việc thật, **không** chỉnh cho khớp 8 giờ/ngày.
+Mục tiêu: hoàn thiện tài liệu data model và ERD theo ownership của từng service.
+Est là giờ làm việc thật, **không** chỉnh cho khớp 8 giờ/ngày.
 
 Từ Ngày 3, mỗi hạng mục có Task, Est và Ticket. `Chưa tạo` = cấm push **code**.
 Markdown tài liệu push thẳng `ducnm3`. Nhánh code: `feature/{mã backlog}`. Khi
@@ -12,48 +12,23 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 
 | Task | Est | Ticket |
 | --- | --- | --- |
-| CSV naive vs stream | 4 giờ | `Chưa tạo` |
-| Chỉ mục + `EXPLAIN ANALYZE` | 5 giờ | `Chưa tạo` |
-| Phân trang offset vs cursor | 4 giờ | `Chưa tạo` |
+| Hoàn thiện Database | 8 giờ | `ERBUL26-2722` |
 
 ## Task dự kiến
 
-### 1. CSV naive vs stream
+### 1. Hoàn thiện Database
 
-- [ ] Triển khai `/courses/export-naive` và `/courses/export-stream`.
-- [ ] Kiểm thử với 10k và 100k bản ghi.
-- [ ] Ghi lại thời gian, bộ nhớ và kích thước tệp.
-- Est: 4 giờ.
-- Ticket: `Chưa tạo`.
-- Lý do est: hai endpoint, streaming vs buffer, đo 10k/100k và ghi
-  `docs/benchmark`.
-
-### 2. Chỉ mục và `EXPLAIN ANALYZE`
-
-- [ ] Seed dữ liệu 100k khóa học; thử 1M nếu máy cho phép. Nếu seed 1M mất quá
-  nhiều thời gian: giữ script riêng và tạo ít nhất một tập đủ lớn để thấy khác
-  biệt.
-- [ ] Truy vấn kiểm thử theo `status` + `created_at`.
-- [ ] Đo trước khi tối ưu (không có chỉ mục) và sau khi tối ưu (chỉ mục kết hợp).
-- [ ] Chạy `EXPLAIN ANALYZE`.
-- Est: 5 giờ.
-- Ticket: `Chưa tạo`.
-- Lý do est: seed 100k–1M tốn thời gian máy; thêm index, so sánh EXPLAIN và
-  docs.
-
-### 3. Phân trang offset vs cursor
-
-- [ ] Kiểm thử OFFSET 0, 10k, 100k, 500k.
-- [ ] Triển khai cursor `afterId`.
-- [ ] So sánh thời gian trước/sau.
-- Est: 4 giờ.
-- Ticket: `Chưa tạo`.
-- Lý do est: bốn mốc OFFSET trên tập lớn + API cursor + bảng so sánh.
+- [ ] Tách data model theo ownership của Course, Student, Media, Notification
+  và Scheduler Service.
+- [ ] Bổ sung ERD và quy tắc ràng buộc/index cho từng service.
+- [ ] Chuẩn hóa tham chiếu tài liệu architecture và database.
+- Est: 8 giờ.
+- Ticket: `ERBUL26-2722`.
+- Lý do est: rà soát năm database service, tách data model, tạo ERD và kiểm tra
+  các liên kết tài liệu.
 
 ## Tiêu chí hoàn thành Ngày 4
 
-- [ ] CSV trước/sau tối ưu có số liệu.
-- [ ] N+1 trước/sau tối ưu có số lượng truy vấn.
-- [ ] Chỉ mục trước/sau tối ưu có EXPLAIN.
-- [ ] Phân trang trước/sau tối ưu có số liệu thời gian.
-- [ ] Lưu kết quả vào `docs/benchmark`.
+- [ ] Mỗi service có data model và ERD riêng.
+- [ ] Ownership database, ràng buộc và index được mô tả rõ.
+- [ ] Liên kết từ tài liệu architecture đến database còn hợp lệ.

@@ -30,12 +30,13 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 
 - `api/`: các hợp đồng API được nhóm theo Course, Student, Media, Notification và Scheduler Service.
 - `api/shared/error-handling-observability.md`: error contract, logging và observability.
-- `database/lms-data-model.md`: các thực thể LMS, nội dung đa phương tiện, tác vụ thông báo và hộp thư đến của học viên.
+- `database/README.md`: data model và ERD được tách theo Course, Student, Media, Notification và Scheduler Service.
 
 ## Phát triển và vận hành
 
 - `development/`: các hướng dẫn về ngăn xếp công nghệ, MinIO, Docker, hiệu năng, bàn giao và chuẩn bị.
 - `guide/`: các hướng dẫn thiết lập và vận hành thực tế, bao gồm Docker Compose và Swagger dùng chung.
+- `guide/DEVKIT_GUIDE.md`: cách dùng DevKit CLI, task session, task runner và MCP tools trong Cursor, Claude và Codex.
 - `runbooks/notification-batch.md`: xử lý theo lô, thử lại, tính lũy đẳng và xử lý lỗi.
 - `runbooks/demo-script.md`: quy trình trình diễn trong 30 phút.
 

@@ -17,4 +17,4 @@ khung lưu trữ dữ liệu và khung Worker chưa chạy. Việc phân tích C
 chạy để xử lý, thực thi bộ xử lý và gọi liên dịch vụ sẽ được triển khai sau.
 
 Xem `microservices.md`, `clean-architecture.md`, `frontend.md` và
-`../database/lms-data-model.md` để biết chi tiết các ranh giới.
+`../database/README.md` để biết chi tiết các ranh giới.
