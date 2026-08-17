@@ -12,10 +12,9 @@ Est là giờ thật. Quy trình:
 | Hoàn thiện Media Service | 2 giờ | `ERBUL26-2680` |
 | FE: base Workbench và trang GET students | 1 giờ | `ERBUL26-2681` |
 | FE: trang POST media upload | 1 giờ | `ERBUL26-2682` |
-| Batch Job — gửi notification ~3k | 3 giờ | `ERBUL26-2690` |
-| Batch Performance — 3k/10k/100k | 1 giờ | `ERBUL26-2690` |
+| Batch Job — gửi notification ~3k | 4 giờ | `ERBUL26-2690` |
 
-## Task đã có ticket (Media / FE)
+## Task đã có ticket
 
 ### 1. Hoàn thiện Media Service
 
@@ -28,6 +27,8 @@ Est là giờ thật. Quy trình:
 - Ticket: `ERBUL26-2680`.
 - Nhánh: `feature/ERBUL26-2680`.
 - Nguồn: Day 2 đã có upload, content stream, avatar usage và thumbnail.
+- Pull request:
+  - [#151 — Hoàn thiện Media Service](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/151)
 
 ### 2. FE: base Workbench và trang GET students
 
@@ -40,6 +41,8 @@ Est là giờ thật. Quy trình:
 - Ticket: `ERBUL26-2681`.
 - Nhánh: `feature/ERBUL26-2681`.
 - Nguồn: `pages/students/`, CORS Gateway, skill `frontend-api-page`.
+- Pull request:
+  - [#152 — FE: base Workbench và trang GET students](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/152)
 
 ### 3. FE: trang POST media upload
 
@@ -51,6 +54,8 @@ Est là giờ thật. Quy trình:
 - Ticket: `ERBUL26-2682`.
 - Nhánh: `feature/ERBUL26-2682`.
 - Nguồn: `pages/media/`, `api/mediaApi.js`, `constants/activities/postMedia.js`.
+- Pull request:
+  - [#153 — FE: trang POST media upload](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/153)
 
 ## Task tiếp theo: notification batch
 
@@ -70,21 +75,18 @@ POST, Worker dispatch, retry trong code.
   1 lần; vẫn lỗi → `FAILED` + `error_message`. Fake sender, không email/SMS.
 - [ ] `GET /api/notification-batches/{batchId}` để poll trạng thái (Location
   của 202).
-- Est: 3 giờ.
+- [ ] Worker claim item bằng lease và `SKIP LOCKED`, dispatch theo chunk với
+  concurrency cấu hình được để tránh xử lý trùng khi scale worker.
+- Est: 4 giờ.
 - Ticket: `ERBUL26-2690`.
 - Nhánh: `feature/ERBUL26-2690`.
 - Lý do est: schema sẵn; API snapshot + Worker chunk + nhánh retry/fail trong
-  cùng handler. Một `targetScope` đủ cho demo 3k.
-
-### 5. Batch Performance — 3k → 10k → 100k
-
-- [ ] Chạy batch với 3k, 10k, 100k user (seed hiện có nếu đủ; 100k dùng
-  script seed, không tối ưu thêm trong task này).
-- [ ] Đo execution time và memory usage; ghi `docs/benchmark`.
-- Est: 1 giờ.
-- Ticket: `ERBUL26-2690` (gộp theo xác nhận của user).
-- Lý do est: chỉ đo và ghi số, phụ thuộc task 4 đã chạy được. Seed 100k
-  nếu chưa có thì dùng tập nhỏ hơn và ghi rõ trong benchmark.
+  cùng handler; bổ sung lease/concurrency cho worker. Một `targetScope` đủ cho
+  demo 3k.
+- Pull request:
+  - [#154 — Batch Job — gửi notification ~3k](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/154)
+  - [#158 — Feature/ERBUL26-2690](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/158)
+  - [#159 — Feature/ERBUL26-2690](https://bitbucket.kaopiz.com/projects/SBUIN/repos/intern_be/pull-requests/159)
 
 ## Tiêu chí hoàn thành của phạm vi này
 
@@ -94,4 +96,3 @@ POST, Worker dispatch, retry trong code.
 - [ ] `POST /notification-batches` trả 202; Worker gửi theo chunk, không trong
   HTTP request.
 - [ ] Item lỗi retry 1 lần; fail cuối ghi `FAILED` + `error_message`.
-- [ ] Có số liệu time/memory cho 3k → 10k → 100k (hoặc ghi rõ nếu seed thiếu).
