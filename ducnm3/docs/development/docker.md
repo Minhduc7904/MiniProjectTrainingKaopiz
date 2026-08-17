@@ -10,6 +10,8 @@ media-api
 notification-api
 scheduler-api
 scheduler-worker
+media-worker
+notification-worker
 mysql
 minio
 rabbitmq
@@ -32,6 +34,10 @@ rabbitmq
 
 `scheduler-worker` chạy MassTransit host và kết nối RabbitMQ. Worker chưa có
 polling/claim/execution loop hoặc consumer nghiệp vụ.
+
+`media-worker` xử lý thumbnail và notification media usage; `notification-worker`
+xử lý snapshot/dispatch notification batch. Hai worker này cùng dùng RabbitMQ và
+database của service sở hữu, không mở HTTP port riêng.
 
 `data-seeder` là công cụ phát triển chạy một lần trong profile `seed`; nó không
 chạy khi dùng `docker compose up` bình thường. Chỉ gọi qua

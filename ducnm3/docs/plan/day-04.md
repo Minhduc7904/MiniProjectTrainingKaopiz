@@ -14,6 +14,7 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 | --- | --- | --- |
 | Hoàn thiện Database | 8 giờ | `ERBUL26-2722` |
 | Hoàn thiện kiến trúc | 8 giờ | `ERBUL26-2724` |
+| Hoàn thiện Phase 0–2 | 8 giờ | `ERBUL26-2726` |
 
 ## Task dự kiến
 
@@ -39,6 +40,16 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 - Lý do est: rà soát dependency, runtime boundary, database/integration và test
   boundary của năm service cùng BuildingBlocks; viết và kiểm tra liên kết tài liệu.
 
+### 3. Hoàn thiện Phase 0–2
+
+- [x] Rà soát source, Docker Compose và tài liệu hiện có.
+- [x] Lập Project Initiation, Kickoff và Planning ở mức high-level.
+- [x] Ghi assumptions, risks, traceability và tiêu chí hoàn thành Phase 0–2.
+- Est: 8 giờ.
+- Ticket: `ERBUL26-2726`.
+- Lý do est: tổng hợp scope/constraint/dependency thực tế, chuẩn hóa planning
+  artifacts và phân biệt capability đã có với mục tiêu Phase sau.
+
 ## Tiêu chí hoàn thành Ngày 4
 
 - [ ] Mỗi service có data model và ERD riêng.
@@ -46,3 +57,5 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 - [ ] Liên kết từ tài liệu architecture đến database còn hợp lệ.
 - [x] Mỗi service và BuildingBlocks có tài liệu tổng quan cùng tài liệu chi tiết
   theo layer/runtime đang tồn tại.
+- [x] Phase 0–2 có project initiation, kickoff, planning, registers và
+  traceability ở mức lead.

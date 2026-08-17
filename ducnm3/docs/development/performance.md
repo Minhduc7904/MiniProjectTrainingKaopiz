@@ -1,5 +1,9 @@
 # 23. Kiểm thử hiệu năng xử lý theo lô
 
+> [!IMPORTANT]
+> Đây là kế hoạch benchmark cho Phase sau, không phải kết quả đã đo. Chỉ ghi số
+> liệu thật sau khi chạy trên cùng môi trường, dataset và cấu hình.
+
 Tập dữ liệu:
 
 ```text

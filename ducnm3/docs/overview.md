@@ -7,6 +7,7 @@ Xây dựng một **LMS thu gọn** theo kiến trúc **Vi dịch vụ + Kiến 
 - Docker / Docker Compose
 - MySQL
 - MinIO / Lưu trữ đối tượng
+- RabbitMQ / MassTransit
 - Tác vụ theo lô
 - Thử lại + Theo dõi lỗi + Tính lũy đẳng
 - Hiệu năng xử lý theo lô
@@ -61,7 +62,6 @@ Xây dựng một **LMS thu gọn** theo kiến trúc **Vi dịch vụ + Kiến 
 - Trình chỉnh sửa mẫu email
 - Chuyển mã video
 - Công cụ tìm kiếm Elasticsearch
-- Kafka/RabbitMQ
 - Kubernetes
 - Theo dõi phân tán phức tạp
 - CQRS/Lưu nguồn sự kiện đầy đủ

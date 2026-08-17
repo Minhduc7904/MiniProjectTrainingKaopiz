@@ -6,7 +6,8 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 
 - [Tổng quan dự án](overview.md)
 - [Kiến trúc hệ thống](architecture/README.md)
-- [Ngăn xếp công nghệ](development/tech-stack.md)
+- [Current Tech Stack](development/tech-stack.md)
+- [Project Phase 0–2](project/README.md)
 - [Kế hoạch triển khai trong năm ngày](plan/)
 
 ## Kiến trúc
