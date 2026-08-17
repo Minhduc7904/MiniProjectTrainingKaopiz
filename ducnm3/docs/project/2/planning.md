@@ -19,7 +19,7 @@ flowchart LR
 
 Mỗi service giữ database riêng; HTTP dùng cho query cần response, RabbitMQ cho
 command/event. Scheduler không sở hữu business data và job execution chưa có
-evidence runtime. Xem [architecture](../architecture/README.md).
+evidence runtime. Xem [architecture](../../architecture/README.md).
 
 ## Service Responsibilities
 
@@ -52,6 +52,6 @@ và throughput. Không chạy benchmark trong Phase 0–2.
 
 - Local infrastructure chạy Docker Compose; API/Worker build bằng Dockerfile.
 - Test strategy: NUnit unit/component/integration; Testcontainers khi cần dependency thật.
-- Git strategy tham chiếu [branch strategy](../development/branch-and-commit-strategy.md); `ducnm3` là integration branch, ticket branch dùng `feature/<ticket>`.
+- Git strategy tham chiếu [branch strategy](../../development/branch-and-commit-strategy.md); `ducnm3` là integration branch, ticket branch dùng `feature/<ticket>`.
 - Milestone: Phase 0–2 → Requirements → Design/Testcase → Development → Verify/Demo.
 - Deliverable Phase 0–2: scope, direction, assumptions/risks, traceability, planning DoD.

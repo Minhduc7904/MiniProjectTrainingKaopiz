@@ -4,12 +4,12 @@ Bộ tài liệu này ghi nhận Presale/Initiation, Kickoff và Planning ở m�
 Mini LMS. Nó không thay thế requirement chi tiết, Basic Design hay testcase của
 Phase sau.
 
-- [Phase 0 — Initiation](phase-0-initiation.md)
-- [Phase 1 — Kickoff](phase-1-kickoff.md)
-- [Phase 2 — Planning](phase-2-planning.md)
-- [Assumptions](registers/assumptions.md)
-- [Risks](registers/risks.md)
-- [Requirement traceability](traceability.md)
+- [Phase 0 — Initiation](0/initiation.md)
+- [Phase 1 — Kickoff](1/kickoff.md)
+- [Assumptions](1/registers/assumptions.md)
+- [Risks](1/registers/risks.md)
+- [Phase 2 — Planning](2/planning.md)
+- [Requirement traceability](2/traceability.md)
 
 > [!NOTE]
 > Tài liệu chỉ khẳng định capability có evidence trong repository; benchmark,
