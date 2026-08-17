@@ -9,9 +9,12 @@ Phase sau.
 - [Assumptions](1/registers/assumptions.md)
 - [Risks](1/registers/risks.md)
 - [Phase 2 — Planning](2/planning.md)
-- [Requirement traceability](2/traceability.md)
+- [Requirement traceability và G1 readiness](2/traceability.md)
 
 > [!NOTE]
 > Tài liệu chỉ khẳng định capability có evidence trong repository; benchmark,
 > Course CRUD và Scheduler execution được đánh dấu Planned khi chưa có runtime
 > evidence.
+>
+> G1 chỉ được coi là Approved sau khi Lead review và sign-off checklist trong
+> Phase 2; việc hoàn thiện artefact không tự động thay thế approval.
