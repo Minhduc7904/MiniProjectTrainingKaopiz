@@ -16,6 +16,7 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 | Hoàn thiện kiến trúc | 8 giờ | `ERBUL26-2724` |
 | Hoàn thiện Phase 0–2 | 8 giờ | `ERBUL26-2726` |
 | Hoàn thiện Phase 3 — Requirements | 8 giờ | `ERBUL26-2827` |
+| Hoàn thiện Phase 4 — Basic Design + Testcase | 16 giờ | `ERBUL26-2834` |
 
 ## Task dự kiến
 
@@ -62,6 +63,21 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 - Lý do est: tổng hợp capability và phần Planned của năm service, chuẩn hóa yêu
   cầu có thể kiểm thử mà không đi trước Phase 4 Design + Testcase.
 
+### 5. Hoàn thiện Phase 4 — Basic Design + Testcase
+
+- [x] Lập design baseline và ánh xạ F01–F18 tới architecture, API, database,
+  messaging/worker hiện có hoặc phần `Planned`.
+- [x] Thiết kế testcase theo domain cho happy/boundary/negative case và side
+  effect cần xác minh.
+- [x] Thiết kế testcase NFR cho Docker, batch, CSV, query, pagination,
+  reliability, security, observability và error handling.
+- [x] Hoàn thiện traceability từ Function/BR/AC/NFR tới design và testcase.
+- [ ] Đóng Q&A critical và nhận Lead/TL/SQA sign-off G3.
+- Est: 16 giờ.
+- Ticket: `ERBUL26-2834`.
+- Lý do est: audit và tái sử dụng design hiện có, bổ sung contract còn thiếu,
+  chuẩn hóa testcase cho 18 function/15 NFR và chuẩn bị cổng G3.
+
 ## Tiêu chí hoàn thành Ngày 4
 
 - [ ] Mỗi service có data model và ERD riêng.
@@ -73,3 +89,5 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
   traceability ở mức lead.
 - [x] Phase 3 có Function List, functional specification, NFR và traceability
   cho các phạm vi đã chốt.
+- [x] Phase 4 có Basic Design baseline, testcase catalog và traceability draft;
+  G3 chờ review/sign-off.
