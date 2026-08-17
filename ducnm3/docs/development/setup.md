@@ -328,7 +328,7 @@ App lắng nghe cổng `5173` và gọi Gateway tại `VITE_API_BASE_URL`
 (`http://localhost:5100` mặc định). `VITE_API_TIMEOUT_MS` mặc định `5000` để
 khớp timeout HttpClient của Gateway. `VITE_HTTP_LOG=true` in từng request/response
 Axios ra DevTools. Folder, Redux và rule page nằm ở
-`docs/architecture/frontend.md`. Gateway CORS cho origin Vite nằm ở
+`docs/architecture/frontend/architecture.md`. Gateway CORS cho origin Vite nằm ở
 `Cors:AllowedOrigins` trong `Lms.ApiGateway/appsettings.json`.
 
 ## 13. Các giới hạn hiện tại
@@ -342,7 +342,9 @@ usage, nhưng vẫn còn các giới hạn:
 - Compensation đồng bộ đã có, nhưng cleanup hàng `PENDING` stale được hoãn cho
   Scheduler và chưa có job thực thi.
 - Chưa có CRUD khóa học/bài học/ghi danh/tiến độ.
-- Chưa có worker gửi thông báo hoặc quy trình xử lý theo lô/thử lại/tính idempotent.
+- Notification Worker đã đăng ký consumer snapshot/dispatch và Entity Framework
+  Outbox; cần đối chiếu từng handler trước khi khẳng định toàn bộ luồng batch,
+  retry và idempotency đã hoàn tất.
 - Scheduler Worker mới là khung cơ bản; chưa phân tích CRON, claim lần chạy, thực thi handler
   hoặc gọi Media/Notification Service.
 - Frontend đã có khung `lms-web` (Vite, Tailwind, Axios, Redux) và trang sổ học viên;

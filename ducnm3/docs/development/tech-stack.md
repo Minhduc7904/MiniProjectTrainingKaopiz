@@ -12,7 +12,7 @@ Redux Toolkit
 React Router
 ```
 
-Chi tiết folder và luồng API: `docs/architecture/frontend.md`.
+Chi tiết folder và luồng API: `docs/architecture/frontend/architecture.md`.
 
 ## Phía backend
 

@@ -5,22 +5,15 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 ## Bắt đầu tại đây
 
 - [Tổng quan dự án](overview.md)
-- [Đề xuất kiến trúc](architecture/microservices.md)
+- [Kiến trúc hệ thống](architecture/README.md)
 - [Ngăn xếp công nghệ](development/tech-stack.md)
 - [Kế hoạch triển khai trong năm ngày](plan/)
 
 ## Kiến trúc
 
-- `architecture/microservices.md`: ranh giới dịch vụ, quyền sở hữu cơ sở dữ liệu và trách nhiệm.
-- `architecture/clean-architecture.md`: kiến trúc sạch và cấu trúc thư mục dịch vụ.
-- `architecture/service-communication.md`: QUERY qua HTTP, COMMAND/EVENT qua
-  RabbitMQ, centralized retry và reliability boundary.
-- `architecture/message-contract-template.md`: template ownership, versioning
-  và idempotency khi thêm message contract.
-- `architecture/rich-content-and-media.md`: quyền sở hữu của Media Service, nội dung Markdown và vòng đời sử dụng nội dung đa phương tiện.
-- `architecture/frontend.md`: SPA React, folder, Axios, Redux và rule page/component/hook.
-- `architecture/uml.md`: các sơ đồ UML bắt buộc.
-- `architecture/conclusion.md`: bản tổng kết kiến trúc cuối cùng.
+- `architecture/backend/`: kiến trúc Backend dùng chung và năm service theo ownership.
+- `architecture/frontend/architecture.md`: SPA React, Redux, Axios, Gateway và rule page/component/hook.
+- `architecture/README.md`: mục lục và đường dẫn đọc toàn bộ kiến trúc.
 
 ## Luồng nghiệp vụ
 

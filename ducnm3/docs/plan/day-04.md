@@ -13,6 +13,7 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 | Task | Est | Ticket |
 | --- | --- | --- |
 | Hoàn thiện Database | 8 giờ | `ERBUL26-2722` |
+| Hoàn thiện kiến trúc | 8 giờ | `ERBUL26-2724` |
 
 ## Task dự kiến
 
@@ -27,8 +28,21 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 - Lý do est: rà soát năm database service, tách data model, tạo ERD và kiểm tra
   các liên kết tài liệu.
 
+### 2. Hoàn thiện kiến trúc
+
+- [x] Tái cấu trúc tài liệu kiến trúc theo Backend và Frontend.
+- [x] Bổ sung `architecture.md` tổng quan và tài liệu chi tiết theo layer cho
+  từng service có source tương ứng.
+- [x] Chuẩn hóa BuildingBlocks theo cấu trúc tổng quan và `details/`.
+- Est: 8 giờ.
+- Ticket: `ERBUL26-2724`.
+- Lý do est: rà soát dependency, runtime boundary, database/integration và test
+  boundary của năm service cùng BuildingBlocks; viết và kiểm tra liên kết tài liệu.
+
 ## Tiêu chí hoàn thành Ngày 4
 
 - [ ] Mỗi service có data model và ERD riêng.
 - [ ] Ownership database, ràng buộc và index được mô tả rõ.
 - [ ] Liên kết từ tài liệu architecture đến database còn hợp lệ.
+- [x] Mỗi service và BuildingBlocks có tài liệu tổng quan cùng tài liệu chi tiết
+  theo layer/runtime đang tồn tại.
