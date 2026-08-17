@@ -26,3 +26,22 @@
   ],
   "verify_commands_count": 1
 }
+{
+  "ts": "2026-08-17T03:31:40.516Z",
+  "log_format": "1",
+  "event": "review_reject",
+  "task_id": "INIT-1",
+  "step_index": 0,
+  "flat_id": "define_architecture",
+  "reviewer_id": "rvw:c055931dae3e",
+  "detail": "Khởi tạo nhầm, không dùng workflow này"
+}
+
+{
+  "ts": "2026-08-17T03:31:40.533Z",
+  "log_format": "1",
+  "event": "session_failed",
+  "task_id": "INIT-1",
+  "reason": "Khởi tạo nhầm, không dùng workflow này"
+}
+
