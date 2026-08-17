@@ -125,11 +125,11 @@
     }
   ],
   "step_index": 0,
-  "status": "awaiting_approval",
+  "status": "failed",
   "task_title": "Task INIT-1",
   "task_description": "No description (mock provider). Use JiraTaskProvider when configured.",
   "global_rules": [],
-  "updated_at": "2026-08-17T02:52:57.256Z",
+  "updated_at": "2026-08-17T03:31:40.548Z",
   "docs_specs_baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "step_open_counts": [
     1,
@@ -137,5 +137,6 @@
     0,
     0,
     0
-  ]
+  ],
+  "reject_reason": "Khởi tạo nhầm, không dùng workflow này"
 }
