@@ -1,5 +1,6 @@
 namespace BuildingBlocks.Http;
 
+/// <summary>Options của HTTP query client lấy từ <c>Communication:HttpQuery</c>.</summary>
 public sealed class ServiceQueryOptions
 {
     public const string SectionName = "Communication:HttpQuery";
@@ -10,6 +11,7 @@ public sealed class ServiceQueryOptions
 
     public int RetryDelayMilliseconds { get; init; } = 200;
 
+    /// <summary>Kiểm tra giới hạn timeout và retry để phát hiện cấu hình nguy hiểm ngay lúc khởi động.</summary>
     public void Validate()
     {
         if (TimeoutSeconds is < 1 or > 120)

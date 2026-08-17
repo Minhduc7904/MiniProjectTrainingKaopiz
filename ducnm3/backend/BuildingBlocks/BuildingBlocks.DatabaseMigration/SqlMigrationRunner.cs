@@ -6,15 +6,24 @@ using MySqlConnector;
 
 namespace BuildingBlocks.DatabaseMigration;
 
+/// <summary>Thông tin service, kết nối và thư mục migration cần thiết để chạy migration SQL.</summary>
 public sealed record SqlMigrationRunnerOptions(
     string ServiceName,
     string ConnectionString,
     string MigrationsDirectory);
 
+/// <summary>
+/// Chạy SQL migration theo tên <c>V&lt;version&gt;__&lt;name&gt;.sql</c> một cách tuần tự và an toàn trên MySQL.
+/// Dùng tại entry point khởi động/migration tool của từng service; migration đã áp dụng không được sửa nội dung.
+/// </summary>
 public static partial class SqlMigrationRunner
 {
     private const int LockTimeoutSeconds = 60;
 
+    /// <summary>
+    /// Áp dụng các migration chưa có trong <c>schema_migrations</c>.
+    /// <paramref name="options"/> cung cấp database và nguồn file; <paramref name="log"/> nhận tiến trình; tác vụ hoàn thành khi toàn bộ migration hợp lệ đã commit.
+    /// </summary>
     public static async Task ApplyAsync(
         SqlMigrationRunnerOptions options,
         Action<string> log,
@@ -31,6 +40,7 @@ public static partial class SqlMigrationRunner
                 $"SQL migrations directory does not exist: {options.MigrationsDirectory}");
         }
 
+        // Khóa theo database ngăn hai instance cùng ghi schema_migrations và chạy trùng migration.
         await using var connection = new MySqlConnection(options.ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
@@ -44,6 +54,7 @@ public static partial class SqlMigrationRunner
             var migrations = GetMigrations(options.MigrationsDirectory);
             var appliedMigrations = await GetAppliedMigrationsAsync(connection, cancellationToken);
 
+            // Checksum bảo vệ lịch sử: bản đã áp dụng phải giữ nguyên, bản mới được chạy trong transaction riêng.
             foreach (var migration in migrations)
             {
                 if (appliedMigrations.TryGetValue(migration.Version, out var appliedChecksum))
@@ -96,6 +107,7 @@ public static partial class SqlMigrationRunner
         }
     }
 
+    /// <summary>Đọc file migration, sắp theo version và từ chối version trùng trước khi chạm database.</summary>
     private static List<SqlMigration> GetMigrations(string migrationsDirectory)
     {
         var migrations = Directory
@@ -117,6 +129,7 @@ public static partial class SqlMigrationRunner
         return migrations;
     }
 
+    /// <summary>Tạo bảng lịch sử idempotent, nơi lưu version và checksum của migration đã commit.</summary>
     private static async Task EnsureHistoryTableAsync(
         MySqlConnection connection,
         CancellationToken cancellationToken)
@@ -134,6 +147,7 @@ public static partial class SqlMigrationRunner
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
+    /// <summary>Đọc checksum theo version để quyết định migration nào bỏ qua hoặc báo bị chỉnh sửa trái phép.</summary>
     private static async Task<Dictionary<string, string>> GetAppliedMigrationsAsync(
         MySqlConnection connection,
         CancellationToken cancellationToken)
@@ -152,6 +166,7 @@ public static partial class SqlMigrationRunner
         return migrations;
     }
 
+    /// <summary>Lấy advisory lock MySQL trong thời gian giới hạn; ném lỗi nếu không lấy được lock.</summary>
     private static async Task AcquireLockAsync(
         MySqlConnection connection,
         string lockName,
@@ -173,6 +188,7 @@ public static partial class SqlMigrationRunner
         }
     }
 
+    /// <summary>Giải phóng advisory lock trong finally, kể cả khi migration thất bại.</summary>
     private static async Task ReleaseLockAsync(
         MySqlConnection connection,
         string lockName,
@@ -185,8 +201,10 @@ public static partial class SqlMigrationRunner
         await command.ExecuteScalarAsync(cancellationToken);
     }
 
+    /// <summary>Biểu diễn file migration đã parse, bao gồm SQL và SHA-256 checksum để so với lịch sử.</summary>
     private sealed record SqlMigration(string Version, string Name, string Checksum, string Sql)
     {
+        /// <summary>Parse tên file, đọc UTF-8 SQL và tính checksum; ném lỗi nếu tên không theo convention.</summary>
         public static SqlMigration FromFile(string path)
         {
             var fileName = Path.GetFileName(path);

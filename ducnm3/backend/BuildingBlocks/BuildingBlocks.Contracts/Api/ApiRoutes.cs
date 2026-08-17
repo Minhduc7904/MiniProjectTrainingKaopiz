@@ -2,8 +2,13 @@ using System.Globalization;
 
 namespace BuildingBlocks.Contracts.Api;
 
+/// <summary>
+/// Nguồn duy nhất cho route contract giữa service, Gateway và client nội bộ.
+/// Dùng các hàm <c>*ServicePath</c> cho YARP/downstream và <c>*PublicPath</c> cho URL đi qua Gateway.
+/// </summary>
 public static class ApiRoutes
 {
+    /// <summary>Route contract do Media Service sở hữu.</summary>
     public static class Media
     {
         public const string Upload = "/api/media";
@@ -16,68 +21,84 @@ public static class ApiRoutes
         public const string ThumbnailRetryTemplate =
             "/api/media/{mediaId}/thumbnail/retry";
 
+        /// <summary>Nhận media ID hợp lệ và trả path content không có dấu <c>/</c> đầu để dùng làm destination service.</summary>
         public static string ContentServicePath(Guid mediaId) =>
             BuildServicePath(FormatGuidRoute(ContentTemplate, "mediaId", mediaId));
 
+        /// <summary>Nhận media ID hợp lệ và trả URL path public đã ghép prefix Gateway.</summary>
         public static string ContentPublicPath(Guid mediaId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(ContentTemplate, "mediaId", mediaId));
 
+        /// <summary>Trả path nội bộ để lấy signed URL của một media usage.</summary>
         public static string UsageUrlServicePath(Guid usageId) =>
             BuildServicePath(FormatGuidRoute(UsageUrlTemplate, "usageId", usageId));
 
+        /// <summary>Trả path Gateway để client lấy signed URL của một media usage.</summary>
         public static string UsageUrlPublicPath(Guid usageId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(UsageUrlTemplate, "usageId", usageId));
 
+        /// <summary>Trả path nội bộ cho truy vấn signed URL theo lô.</summary>
         public static string UsageUrlsServicePath() =>
             BuildServicePath(UsageUrls);
 
+        /// <summary>Trả path public cho truy vấn signed URL theo lô.</summary>
         public static string UsageUrlsPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Media, UsageUrls);
 
+        /// <summary>Trả path nội bộ để xem trạng thái thumbnail của media.</summary>
         public static string ThumbnailStatusServicePath(Guid mediaId) =>
             BuildServicePath(
                 FormatGuidRoute(ThumbnailStatusTemplate, "mediaId", mediaId));
 
+        /// <summary>Trả path Gateway để xem trạng thái thumbnail của media.</summary>
         public static string ThumbnailStatusPublicPath(Guid mediaId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(ThumbnailStatusTemplate, "mediaId", mediaId));
 
+        /// <summary>Trả path nội bộ để yêu cầu retry xử lý thumbnail.</summary>
         public static string ThumbnailRetryServicePath(Guid mediaId) =>
             BuildServicePath(
                 FormatGuidRoute(ThumbnailRetryTemplate, "mediaId", mediaId));
 
+        /// <summary>Trả path Gateway để yêu cầu retry xử lý thumbnail.</summary>
         public static string ThumbnailRetryPublicPath(Guid mediaId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(ThumbnailRetryTemplate, "mediaId", mediaId));
     }
 
+    /// <summary>Route contract do Student Service sở hữu.</summary>
     public static class Students
     {
         public const string List = "/api/students";
         public const string GetByIdTemplate = "/api/students/{studentId}";
 
+        /// <summary>Trả path nội bộ của endpoint danh sách học viên.</summary>
         public static string ListServicePath() =>
             BuildServicePath(List);
 
+        /// <summary>Trả path public của endpoint danh sách học viên.</summary>
         public static string ListPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Student, List);
 
+        /// <summary>Nhận student ID hợp lệ và trả path nội bộ lấy chi tiết học viên.</summary>
         public static string GetByIdServicePath(Guid studentId) =>
             BuildServicePath(
                 FormatGuidRoute(GetByIdTemplate, "studentId", studentId));
 
+        /// <summary>Nhận student ID hợp lệ và trả path Gateway lấy chi tiết học viên.</summary>
         public static string GetByIdPublicPath(Guid studentId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Student,
                 FormatGuidRoute(GetByIdTemplate, "studentId", studentId));
     }
 
+    /// <summary>Route contract do Notification Service sở hữu.</summary>
     public static class Notifications
     {
         public const string Items = "/api/notifications";
@@ -86,33 +107,45 @@ public static class ApiRoutes
         public const string BatchByIdTemplate = "/api/notification-batches/{batchId}";
         public const string BatchFailedItemsTemplate = "/api/notification-batches/{batchId}/failed-items";
 
+        /// <summary>Trả path nội bộ của một notification batch.</summary>
         public static string BatchByIdServicePath(Guid batchId) =>
             BuildServicePath(FormatGuidRoute(BatchByIdTemplate, "batchId", batchId));
 
+        /// <summary>Trả path Gateway của một notification batch.</summary>
         public static string BatchByIdPublicPath(Guid batchId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Notification,
                 FormatGuidRoute(BatchByIdTemplate, "batchId", batchId));
 
+        /// <summary>Trả path nội bộ của các item thất bại trong batch.</summary>
         public static string BatchFailedItemsServicePath(Guid batchId) =>
             BuildServicePath(
                 FormatGuidRoute(BatchFailedItemsTemplate, "batchId", batchId));
 
+        /// <summary>Trả path nội bộ của một notification.</summary>
         public static string ItemByIdServicePath(Guid notificationId) =>
             BuildServicePath(FormatGuidRoute(ItemByIdTemplate, "notificationId", notificationId));
 
+        /// <summary>Trả path Gateway của một notification.</summary>
         public static string ItemByIdPublicPath(Guid notificationId) =>
             BuildPublicPath(
                 GatewayRoutePrefixes.Notification,
                 FormatGuidRoute(ItemByIdTemplate, "notificationId", notificationId));
     }
 
+    /// <summary>Chuẩn hóa route thành path không có dấu <c>/</c> đầu, phù hợp cấu hình downstream/YARP.</summary>
+    /// <param name="route">Route contract đầy đủ, không được rỗng.</param>
+    /// <returns>Route sau khi bỏ dấu <c>/</c> đầu.</returns>
     public static string BuildServicePath(string route)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(route);
         return route.TrimStart('/');
     }
 
+    /// <summary>Ghép prefix Gateway và route thành public path có đúng một dấu phân cách.</summary>
+    /// <param name="gatewayRoutePrefix">Prefix public, ví dụ <c>/student</c>.</param>
+    /// <param name="route">Route service bắt đầu bằng hoặc không bắt đầu bằng <c>/</c>.</param>
+    /// <returns>Public path bắt đầu bằng <c>/</c>.</returns>
     public static string BuildPublicPath(string gatewayRoutePrefix, string route)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(gatewayRoutePrefix);
@@ -124,6 +157,7 @@ public static class ApiRoutes
             route.TrimStart('/'));
     }
 
+    /// <summary>Thay placeholder GUID theo invariant format và chặn Guid.Empty để không sinh URL không hợp lệ.</summary>
     private static string FormatGuidRoute(
         string template,
         string parameterName,

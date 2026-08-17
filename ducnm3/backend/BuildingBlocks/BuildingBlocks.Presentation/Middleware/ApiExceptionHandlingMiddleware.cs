@@ -5,17 +5,23 @@ using Microsoft.Extensions.Options;
 
 namespace BuildingBlocks.Presentation.Middleware;
 
+/// <summary>
+/// Biên dịch exception thành error envelope chuẩn và chỉ log chi tiết ở server.
+/// Đăng ký qua <c>UseSharedApiMiddleware</c>; middleware không ghi response nếu downstream đã bắt đầu response.
+/// </summary>
 public sealed partial class ApiExceptionHandlingMiddleware(
     RequestDelegate next,
     ILogger<ApiExceptionHandlingMiddleware> logger,
     IOptions<JsonOptions> jsonOptions)
 {
+    /// <summary>Chạy request pipeline và ánh xạ exception đã biết sang HTTP status/error code an toàn.</summary>
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
             await next(context);
         }
+        // Ưu tiên lỗi nghiệp vụ đã có status/code, rồi phân loại request body lỗi trước khi fallback lỗi 500.
         catch (ApiException exception) when (!context.Response.HasStarted)
         {
             await WriteErrorAsync(
@@ -56,6 +62,7 @@ public sealed partial class ApiExceptionHandlingMiddleware(
         }
     }
 
+    /// <summary>Ghi status và JSON error envelope. Chi tiết field là tùy chọn và serializer dùng options của host.</summary>
     private async Task WriteErrorAsync(
         HttpContext context,
         int statusCode,

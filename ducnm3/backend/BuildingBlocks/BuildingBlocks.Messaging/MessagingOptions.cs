@@ -2,6 +2,7 @@ using System.Globalization;
 
 namespace BuildingBlocks.Messaging;
 
+/// <summary>Root options của RabbitMQ/MassTransit, bind từ section <c>Messaging</c>.</summary>
 public sealed class MessagingOptions
 {
     public const string SectionName = "Messaging";
@@ -14,8 +15,10 @@ public sealed class MessagingOptions
 
     public MessagingHostOptions Host { get; init; } = new();
 
+    /// <summary>Fail fast khi thông tin kết nối, retry hoặc giới hạn consumer nằm ngoài phạm vi vận hành an toàn.</summary>
     public void Validate()
     {
+        // Các nhóm validation phản chiếu cấu trúc config để lỗi khởi động chỉ đúng key cần sửa.
         if (string.IsNullOrWhiteSpace(RabbitMq.Host))
         {
             throw new InvalidOperationException("Messaging:RabbitMq:Host is required.");
@@ -73,6 +76,7 @@ public sealed class MessagingOptions
     }
 }
 
+/// <summary>Thông tin kết nối RabbitMQ; password được lấy từ configuration/secret, không log ra ngoài.</summary>
 public sealed class RabbitMqOptions
 {
     public string Host { get; init; } = string.Empty;
@@ -86,6 +90,7 @@ public sealed class RabbitMqOptions
     public string Password { get; init; } = string.Empty;
 }
 
+/// <summary>Thông số incremental retry tập trung cho receive endpoint.</summary>
 public sealed class MessagingRetryOptions
 {
     public int RetryCount { get; init; } = 3;
@@ -95,6 +100,7 @@ public sealed class MessagingRetryOptions
     public double IntervalIncrementSeconds { get; init; } = 2;
 }
 
+/// <summary>Giới hạn lượng message prefetch và số consumer chạy đồng thời.</summary>
 public sealed class MessagingConsumerOptions
 {
     public int PrefetchCount { get; init; } = 32;
@@ -102,6 +108,7 @@ public sealed class MessagingConsumerOptions
     public int ConcurrencyLimit { get; init; } = 8;
 }
 
+/// <summary>Timeout khởi động và dừng MassTransit host.</summary>
 public sealed class MessagingHostOptions
 {
     public int StartTimeoutSeconds { get; init; } = 30;
