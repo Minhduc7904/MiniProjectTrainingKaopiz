@@ -16,9 +16,10 @@
 | Preconditions | Job hợp lệ có lịch UTC và retention; contract cleanup nội bộ được duyệt. |
 | Input / Output | Job schedule, idempotency key, tham số retention / job run và summary an toàn. |
 | Main flow | Tính lượt chạy → tạo run idempotent → worker yêu cầu Media cleanup → lưu `SUCCEEDED`/`FAILED` cùng summary. |
-| Error cases | CRON/param sai; run trùng; Media/MinIO lỗi; worker dừng giữa chừng. |
+| Alternative flow | Không có media cần dọn vẫn kết thúc `SUCCEEDED` với counter bằng 0; kích hoạt lại cùng idempotency key không tạo thêm job run. |
+| Error cases | CRON/param sai; Media/MinIO lỗi; worker dừng giữa chừng; cùng idempotency key nhưng payload xung đột. |
 | AC | Given job hợp lệ đến hạn, when kích hoạt, then có tối đa một run cho idempotency key; when cleanup được gọi lại, then object đã xóa không gây lỗi nghiêm trọng và Scheduler không truy cập Media database. |
-| Cases | Happy: cleanup thành công. Boundary: không có media cần dọn, object đã xóa. Negative: CRON sai, Media không sẵn sàng, run trùng. |
+| Cases | Happy: cleanup thành công. Boundary: không có media cần dọn, object đã xóa, kích hoạt lặp cùng payload. Negative: CRON sai, Media không sẵn sàng, idempotency key có payload xung đột. |
 
 > [!NOTE]
 > Function này là `Planned`: hiện tại chỉ có data boundary/health evidence.

@@ -17,6 +17,7 @@
 | Preconditions | Caller được xác thực theo boundary; query hợp lệ. |
 | Input / Output | Filter trạng thái, sort, pagination / danh sách nhất quán và metadata trang. |
 | Main flow | Validate → lọc/sắp xếp → phân trang → trả danh sách. |
+| Alternative flow | Query hợp lệ không có Học viên phù hợp hoặc đi đến trang cuối trả danh sách rỗng cùng metadata nhất quán. |
 | Error cases | Filter, sort hoặc pagination không hợp lệ; dependency/database lỗi. |
 | AC | Given tập Học viên, when query `ACTIVE` theo trang, then chỉ trả record ACTIVE và metadata đúng; when query sai, then không chạy truy vấn không giới hạn. |
 | Cases | Happy: list ACTIVE. Boundary: trang đầu/cuối, page size tối đa. Negative: status/sort/page size sai. |
@@ -29,6 +30,7 @@
 | Preconditions | Định danh hợp lệ; caller có quyền theo boundary. |
 | Input / Output | Student ID / hồ sơ Học viên hoặc không tìm thấy. |
 | Main flow | Validate ID → đọc Học viên → trả dữ liệu được phép lộ. |
+| Alternative flow | Học viên tồn tại nhưng trường hồ sơ tùy chọn chưa có dữ liệu vẫn trả hồ sơ hợp lệ với các trường đó để trống/null theo contract. |
 | Error cases | ID không hợp lệ; không tồn tại; không có quyền; dependency lỗi. |
 | AC | Given Học viên tồn tại, when caller hợp lệ tra cứu, then trả đúng Học viên; when ID không tồn tại, then không trả profile khác. |
 | Cases | Happy: lấy một Học viên. Boundary: UUID hợp lệ biên. Negative: UUID sai, không tồn tại, caller không hợp lệ. |

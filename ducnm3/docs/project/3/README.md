@@ -45,7 +45,8 @@ cầu xuyên suốt, không tạo thêm business function.
 
 1. Đọc [Function List](function-list.md) để xác nhận scope, trạng thái và runtime
    evidence.
-2. Review spec từng domain để xác nhận Business Rules, AC và ba nhóm case.
+2. Review spec từng domain để xác nhận Business Rules, main/alternative flow,
+   AC và ba nhóm case.
 3. Đối chiếu [NFR](non-functional-requirements.md) với metric/điều kiện nghiệm
    thu, không điền kết quả benchmark giả.
 4. Kiểm tra đủ 13 dòng tại [Traceability](traceability.md) trước khi sign-off G2.
@@ -64,7 +65,7 @@ cầu xuyên suốt, không tạo thêm business function.
 - [x] Scope được phân rã thành Function List và không phát sinh feature ngoài
   scope.
 - [x] Mỗi function có purpose, actor, precondition, input/output, Business
-  Rules, main flow, error cases, AC và nhóm case.
+  Rules, main/alternative flow, error cases, AC và nhóm case.
 - [x] NFR performance/quality có metric hoặc điều kiện đo rõ ràng.
 - [x] Cả 13 nhóm trong requirements mapping trace được tới function, rule, AC
   hoặc NFR.
