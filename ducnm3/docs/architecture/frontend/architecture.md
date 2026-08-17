@@ -10,6 +10,47 @@ flowchart LR
   Redux --> Components
 ~~~
 
+## Cấu trúc thư mục
+
+```text
+frontend/
+└── lms-web/
+    ├── public/
+    ├── src/
+    │   ├── api/                    # Axios client và API adapter
+    │   ├── app/                    # Store/router/bootstrap
+    │   ├── assets/
+    │   ├── components/
+    │   │   ├── layout/
+    │   │   └── ui/
+    │   ├── constants/
+    │   │   ├── activities/
+    │   │   └── inputs/
+    │   ├── features/
+    │   │   ├── media/
+    │   │   ├── notifications/
+    │   │   ├── students/
+    │   │   └── toasts/
+    │   ├── hooks/
+    │   │   ├── media/
+    │   │   ├── notifications/
+    │   │   ├── students/
+    │   │   ├── toasts/
+    │   │   └── ui/
+    │   ├── pages/
+    │   │   ├── media/
+    │   │   ├── notifications/
+    │   │   ├── placeholder/
+    │   │   └── students/
+    │   └── theme/
+    ├── index.html
+    ├── package.json
+    └── vite.config.js
+```
+
+Page composition đi qua Hook/Redux/API theo cùng domain. `components/ui` không
+được import Axios hoặc biết response envelope của backend.
+
 ## Các tầng
 
 - **Page:** composition Workbench Input/Output, không gọi Axios.
@@ -25,4 +66,3 @@ Vite + React, Tailwind, React Router, Redux Toolkit, Axios, toast interceptor, t
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.
-

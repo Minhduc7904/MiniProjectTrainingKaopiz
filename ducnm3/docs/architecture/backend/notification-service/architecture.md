@@ -13,6 +13,45 @@ flowchart LR
   App -. command .-> Media[Media Service]
 ~~~
 
+## Cấu trúc thư mục
+
+```text
+backend/Services/Notification/
+├── NotificationService.Api/
+│   ├── Contracts/
+│   │   ├── Requests/
+│   │   └── Responses/
+│   └── Endpoints/                  # Notification, inbox và batch endpoints
+├── NotificationService.Application/
+│   ├── Abstractions/
+│   ├── Content/                    # Markdown/media reference processing
+│   ├── Contracts/Messaging/
+│   └── Features/
+│       ├── Batches/
+│       │   ├── Create/
+│       │   ├── Dispatch/
+│       │   ├── GetById/
+│       │   ├── GetFailedItems/
+│       │   └── Snapshot/
+│       └── Notifications/
+│           ├── Create/
+│           └── GetById/
+├── NotificationService.Domain/
+│   └── Notifications/
+├── NotificationService.Infrastructure/
+│   ├── Clients/Student/
+│   ├── Database/Migrations/
+│   ├── Health/
+│   ├── Persistence/Scaffolded/
+│   └── Sending/
+├── NotificationService.Worker/     # Snapshot/dispatch consumers
+├── NotificationService.UnitTests/
+└── NotificationService.IntegrationTests/Persistence/
+```
+
+API và Worker cùng gọi Application; Worker không chứa business rule riêng và
+không truy cập trực tiếp database của Student hoặc Media.
+
 ## Các tầng
 
 - **Domain:** notification và batch state.

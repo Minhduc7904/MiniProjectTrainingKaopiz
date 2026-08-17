@@ -11,6 +11,25 @@ flowchart LR
   MQ[RabbitMQ] --> Worker[Scheduler Worker host]
 ~~~
 
+## Cấu trúc thư mục
+
+```text
+backend/Services/Scheduler/
+├── SchedulerService.Api/           # Health/info host; chưa có business API
+├── SchedulerService.Application/   # Scheduling ports/use case còn tối giản
+├── SchedulerService.Domain/        # BackgroundJob/BackgroundJobRun model
+├── SchedulerService.Infrastructure/
+│   ├── Database/Migrations/
+│   ├── Health/
+│   └── Persistence/Scaffolded/
+├── SchedulerService.Worker/        # Worker host; chưa có polling/job handler
+└── SchedulerService.UnitTests/
+    └── Health/
+```
+
+Cây thư mục tách rõ host API và Worker, nhưng không được hiểu rằng Cron, claim
+hoặc job execution đã tồn tại khi các feature folder/handler tương ứng chưa có.
+
 ## Các tầng
 
 - **Domain:** model BackgroundJob/BackgroundJobRun.

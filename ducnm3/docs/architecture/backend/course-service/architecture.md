@@ -10,6 +10,26 @@ flowchart LR
   App --> Infra[Infrastructure] --> Db[(Course database)]
 ~~~
 
+## Cấu trúc thư mục
+
+```text
+backend/Services/Course/
+├── CourseService.Api/              # HTTP host, endpoint registration, startup
+├── CourseService.Application/      # Use case và abstraction; hiện còn tối giản
+├── CourseService.Domain/           # Course/Lesson/Enrollment/Progress rule
+├── CourseService.Infrastructure/
+│   ├── Database/
+│   │   └── Migrations/             # SQL migration nguồn sự thật
+│   ├── Health/                     # Course database health probe
+│   └── Persistence/
+│       └── Scaffolded/             # EF model sinh từ schema Course
+└── CourseService.UnitTests/        # Unit test hiện có của service
+```
+
+Application và Domain hiện chưa phân rã thành feature folder sâu như Media hoặc
+Notification; cây trên phản ánh source đang tồn tại, không mô tả trước phần chưa
+được implement.
+
 ## Các tầng
 
 - **Domain:** entity/rule Course và Lesson.
