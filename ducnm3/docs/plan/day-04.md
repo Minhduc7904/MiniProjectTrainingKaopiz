@@ -15,6 +15,7 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 | Hoàn thiện Database | 8 giờ | `ERBUL26-2722` |
 | Hoàn thiện kiến trúc | 8 giờ | `ERBUL26-2724` |
 | Hoàn thiện Phase 0–2 | 8 giờ | `ERBUL26-2726` |
+| Hoàn thiện Phase 3 — Requirements | 8 giờ | `ERBUL26-2827` |
 
 ## Task dự kiến
 
@@ -50,6 +51,17 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
 - Lý do est: tổng hợp scope/constraint/dependency thực tế, chuẩn hóa planning
   artifacts và phân biệt capability đã có với mục tiêu Phase sau.
 
+### 4. Hoàn thiện Phase 3 — Requirements
+
+- [x] Review scope Phase 0–2 và phân rã thành Function List.
+- [x] Viết spec theo domain, Business Rules, Acceptance Criteria và các case
+  happy/boundary/negative.
+- [x] Xác định NFR, traceability và tiêu chí G2 — Requirements Approved.
+- Est: 8 giờ.
+- Ticket: `ERBUL26-2827`.
+- Lý do est: tổng hợp capability và phần Planned của năm service, chuẩn hóa yêu
+  cầu có thể kiểm thử mà không đi trước Phase 4 Design + Testcase.
+
 ## Tiêu chí hoàn thành Ngày 4
 
 - [ ] Mỗi service có data model và ERD riêng.
@@ -59,3 +71,5 @@ user yêu cầu, agent tạo pull request vào `ducnm3`. Quy trình:
   theo layer/runtime đang tồn tại.
 - [x] Phase 0–2 có project initiation, kickoff, planning, registers và
   traceability ở mức lead.
+- [x] Phase 3 có Function List, functional specification, NFR và traceability
+  cho các phạm vi đã chốt.
