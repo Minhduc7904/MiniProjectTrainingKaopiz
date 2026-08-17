@@ -1,0 +1,12 @@
+{
+  "id": "task_compact_with_ingest",
+  "name": "Task workflow (compact + ingest)",
+  "description": "Tier-1 router: compact execution lane with a one-step Ingest before Plan (~6 flat steps + optional Deliver). Use when requirements are mostly clear but still need a short research/scope pass before planning; if AC/scope are still fuzzy, run spec_discovery first.",
+  "routes_to_workflow": "default.compact.with-ingest",
+  "global_rules": [
+    "always_write_plan_first",
+    "no_production_code_before_plan_gate",
+    "prefer_subagent_two_layer_for_multi_step"
+  ],
+  "shortcut_alias": "compact-ingest"
+}

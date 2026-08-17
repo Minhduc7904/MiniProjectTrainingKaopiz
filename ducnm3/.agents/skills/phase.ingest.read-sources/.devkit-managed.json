@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "phase.ingest.read-sources",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "6a44f9c2f8ce1ef5fd80b03cbe7afbea653ff2656a0933f5543e66a13e74ddea"
+}

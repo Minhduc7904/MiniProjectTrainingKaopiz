@@ -1,0 +1,69 @@
+---
+description: Principles for designing Cursor slash commands (agent orchestration) and the CLI↔Agent contract — use when developing Hub commands, rules, or kaopiz-devkit handoff
+alwaysApply: true
+---
+
+# Agent-orchestrated commands — development principles
+
+This document aligns how **commands run in the Agent window** (`.cursor/commands/*.md` after `devkit-sync`) differ from **plain terminal CLI**. Goal: the Agent knows *when* to call the CLI, *what to read*, *what file to write*, *when to pause for the user* — not only “user runs bash themselves”.
+
+## Two layers (do not mix)
+
+| Layer | Role | Agent interaction |
+| ----- | ---- | ----------------- |
+| **CLI / script** | Engine: validate, transform, log, exit code | Limited if TTY `prompts`, no signal/handoff |
+| **Slash command** | **Playbook** for the Agent: flow, branches, gates, artifacts | Full file content loads into chat → Agent orchestrates |
+
+**Rule:** CLI is a tool; slash command is an **orchestration playbook**. Do not leave “next step” only in the script author’s head.
+
+## Slash command = playbook for the Agent
+
+- Include a clear block for **YOU (AI)** / automation: detect signal → action → what is forbidden.
+- Distinguish **running CLI** vs **reading files / working** after the CLI exits.
+- If a **human gate** is needed (plan → Accept → output): state it in the command; the Agent must not skip the gate unless user/flags allow (e.g. `--auto-accept`).
+
+## CLI ↔ Agent contract
+
+1. **Stable signals** in stdout/stderr or **trigger files** (magic string, fixed path) so the Agent knows state: which file to wait for, errors, which step.
+2. **On-disk artifacts** (plan, tasks, JSON input) — user and Agent can edit/review; workflow can resume.
+3. **Documented loop:** Run CLI → (optional) pause → Agent writes file → run CLI again / next subcommand — each step described in the slash command.
+
+## “Machine work” vs “LLM work”
+
+- Hard, deterministic logic → CLI.
+- Broad context, filling content, judgment → Agent (or user) → write CLI input.
+- Avoid **TTY** for what the Agent can do via file + chat; any TTY flow needs a **file/chat alternative**: non-interactive flag, export prompt (`llm-prompt`), MCP/chat command, `template` + manual edit.
+
+## Human-in-the-loop
+
+- Reasonable default: **plan / task list → user Accept → then** fill output / continue (except auto mode).
+- Command must say when the Agent **stops** and **waits** for what; avoid the Agent `approve`ing for the user when the gate is intentional (see rule `kaopiz-devkit-current-instruction`).
+
+## Showing CLI output
+
+- If the user needs **raw audit** (verify, show): slash command should say **verbatim / do not summarize**.
+- Other steps may allow summarizing next actions — state it clearly to avoid confusion.
+
+## Anti-patterns
+
+- CLI waits on stdin with no file-only or instruction-block path for the Agent.
+- Exit 0 but no signal / no artifact — Agent cannot tell done vs waiting.
+- Only “run `foo`” without what the Agent does **after** `foo`.
+- One command hiding too much work with no documented pause.
+
+## Checklist for new command/skill handoff
+
+1. Slash usage + map to terminal command (if any).
+2. Table or list: what CLI does / what Agent does.
+3. Signal or file that triggers the Agent.
+4. Artifact paths (plan, tasks, JSON).
+5. Pause + Accept vs auto (flag/env).
+6. Resume / idempotent re-run for long workflows.
+7. **YOU (AI):** block — execute → if signal → … → short forbidden/required.
+8. Optional: verify via Agent — checklist + output format.
+
+## References in DevKit
+
+- Slash index: rule **`devkit-commands`**.
+- Vibe workflow session: **`kaopiz-devkit`** (command) + **`kaopiz-devkit-current-instruction`** — handoff via **`.vibe/sessions/<segment>/current_instruction.md`** (or per-task **`.vibe/current_instruction.<segment>.md`**, or **`kaopiz-devkit run`** stdout **`@` path**).
+- Workflow profile: **`devkit-workflow-profile`** + chat vs TTY split.

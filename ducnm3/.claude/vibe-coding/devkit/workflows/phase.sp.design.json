@@ -1,0 +1,30 @@
+{
+  "id": "phase.sp.design",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Design (Superpowers)",
+  "description": "Brainstorm design then write bite-sized plan. Two flat steps, two approval gates.",
+  "steps": [
+    {
+      "id": "brainstorm",
+      "title": "Brainstorm design",
+      "skill_id": "skill.sp.brainstorming",
+      "notes": "Invoke `superpowers:brainstorming`. During the Q&A, record answered questions / decisions / assumptions in `.vibe/research/<task-id>.md` (working notes, not gated). Only after every open question is resolved and the design is locked, write the finalized design to `.vibe/sessions/<segment>/SPEC.md` (the gated artifact) — do NOT use the upstream `docs/superpowers/specs/...` default.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/SPEC.md"
+      ]
+    },
+    {
+      "id": "write_plan",
+      "title": "Write bite-sized plan",
+      "skill_id": "skill.sp.writing-plans",
+      "notes": "Invoke `superpowers:writing-plans`. Read the locked design from `.vibe/sessions/<segment>/SPEC.md`, then output PLAN.md with checkboxed tasks to `.vibe/sessions/<segment>/PLAN.md` — do NOT use the upstream `docs/superpowers/plans/...` default.",
+      "inputs_from_steps": [
+        "brainstorm"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    }
+  ]
+}

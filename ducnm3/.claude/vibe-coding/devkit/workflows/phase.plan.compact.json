@@ -1,0 +1,21 @@
+{
+  "id": "phase.plan.compact",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Plan (compact)",
+  "description": "Single step: load task context and produce PLAN.md. Omits a separate domain/risk micro-step; use default or detailed plan variant for large multi-domain work.",
+  "steps": [
+    {
+      "id": "context_and_plan",
+      "title": "Load context & write PLAN.md",
+      "skill_id": "phase.plan.write-plan",
+      "mcp_tools": [
+        "get_task_context"
+      ],
+      "notes": "Call get_task_context(task_id) first; capture AC and constraints. Then draft PLAN.md with traceability and Won't do / Later. No production code until the user approves in Review. Note domains inline for fetch_knowhow during Execute.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "phase.deliver",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Deliver / wrap-up",
+  "description": "After green verify: controlled handoff — PR, docs, ticket. Per team policy (may be skipped on the parent workflow).",
+  "steps": [
+    {
+      "id": "handoff",
+      "title": "PR summary, docs if needed, ticket status",
+      "skill_id": "phase.deliver.final",
+      "notes": "(1) Summarize commit/PR: goal, how to test, risks; link issue/task. (2) If the feature changes public contract or ops flow: README, OpenAPI, short ADR (same intent as optional docs step). (3) Update tracker (Done, Ready for QA, …) per team convention. Create DELIVER.md for handoff / deferred-scope notes (phase.deliver.final).",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/DELIVER.md"
+      ]
+    },
+    {
+      "id": "docs_if_needed",
+      "title": "Update docs (when API / behavior changes)",
+      "skill_id": "qa.docs.writing",
+      "optional": true,
+      "notes": "If the feature changes public contract or ops flow: README, OpenAPI, short ADR. Skip if already covered in handoff or no doc change."
+    }
+  ]
+}

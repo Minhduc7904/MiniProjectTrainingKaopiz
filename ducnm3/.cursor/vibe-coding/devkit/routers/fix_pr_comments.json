@@ -1,0 +1,8 @@
+{
+  "id": "fix_pr_comments",
+  "name": "Fix PR comments",
+  "description": "Tier-1 router for fixing Bitbucket PR comments after cloud AI ReviewCode or human review. Fetch/read PR comments, triage them, plan fixes, implement scoped changes, verify, and produce a final comment-fix summary. Use after a PR has review comments, not for local pre-PR code review.",
+  "routes_to_workflow": "qa.fix-comments",
+  "global_rules": [],
+  "shortcut_alias": "pr-comments"
+}

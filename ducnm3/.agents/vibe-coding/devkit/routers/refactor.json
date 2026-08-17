@@ -1,0 +1,8 @@
+{
+  "id": "refactor",
+  "name": "Refactor",
+  "description": "Tier-1 router for internal code cleanup without external dependency/version change: improve structure, naming, and maintainability while preserving behavior.",
+  "routes_to_workflow": "dev.refactor",
+  "global_rules": [],
+  "shortcut_alias": "refactor"
+}

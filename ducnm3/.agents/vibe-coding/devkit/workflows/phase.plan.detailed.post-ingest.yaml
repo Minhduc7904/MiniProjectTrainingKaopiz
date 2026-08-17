@@ -1,0 +1,31 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: phase.plan.detailed.post-ingest
+
+id: phase.plan.detailed.post-ingest
+version: 1.0.0
+kind: atomic
+title: Phase — Plan detailed (after ingest)
+description: Map domains/risks and draft PLAN.md when ingest already produced research — skips
+  duplicate load-spec step.
+steps:
+  - id: map_domains
+    title: Map domains / risks
+    skill_id: phase.plan.risk-assess
+    notes: List domains touched (payment, auth, …) so fetch_knowhow can be called at the right time.
+      Write/update **RISK.md** (session-scoped) before approve — domains, risks, mitigations to fold
+      into PLAN next.
+    inputs_from_steps:
+      - ingest::capture_scope
+      - ingest::read_sources
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/RISK.md
+  - id: write_plan
+    title: Draft and self-check PLAN.md
+    skill_id: phase.plan.write-plan
+    notes: "After map_domains: MUST have read .vibe/research/<task-id>.md and **RISK.md**. Draft
+      PLAN.md: merge risk-assess outcomes into steps; implementation order; dependencies; Won't do.
+      Self-check: traceability to research + AC; update PLAN.md before review."
+    inputs_from_steps:
+      - plan::map_domains
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/PLAN.md

@@ -1,0 +1,820 @@
+{
+  "schema_version": 1,
+  "layout_version": 6,
+  "managed_by": "devkit-sync",
+  "generated_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "project_id": "ducnm3",
+  "payload_version": "1.0.0",
+  "targets": [
+    "cursor",
+    "claude",
+    "codex"
+  ],
+  "rules": [],
+  "skills": [],
+  "workflows": [],
+  "routers": [],
+  "cursor_commands": [],
+  "claude_skills": [
+    {
+      "id": "kaopiz-devkit",
+      "relative_root": ".claude/skills/kaopiz-devkit",
+      "managed_marker_relative_path": ".claude/skills/kaopiz-devkit/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "code-review",
+      "relative_root": ".claude/skills/code-review",
+      "managed_marker_relative_path": ".claude/skills/code-review/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "dev.conflict.resolve",
+      "relative_root": ".claude/skills/dev.conflict.resolve",
+      "managed_marker_relative_path": ".claude/skills/dev.conflict.resolve/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "dev.debug.systematic",
+      "relative_root": ".claude/skills/dev.debug.systematic",
+      "managed_marker_relative_path": ".claude/skills/dev.debug.systematic/.devkit-managed.json",
+      "files": [
+        "references/phases-detail.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "dev.refactor.identify",
+      "relative_root": ".claude/skills/dev.refactor.identify",
+      "managed_marker_relative_path": ".claude/skills/dev.refactor.identify/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "dev.tdd",
+      "relative_root": ".claude/skills/dev.tdd",
+      "managed_marker_relative_path": ".claude/skills/dev.tdd/.devkit-managed.json",
+      "files": [
+        "references/tdd-detail.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.api.graphql",
+      "relative_root": ".claude/skills/init.api.graphql",
+      "managed_marker_relative_path": ".claude/skills/init.api.graphql/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.api.rest",
+      "relative_root": ".claude/skills/init.api.rest",
+      "managed_marker_relative_path": ".claude/skills/init.api.rest/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.api.trpc",
+      "relative_root": ".claude/skills/init.api.trpc",
+      "managed_marker_relative_path": ".claude/skills/init.api.trpc/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.architecture",
+      "relative_root": ".claude/skills/init.architecture",
+      "managed_marker_relative_path": ".claude/skills/init.architecture/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.architecture.brownfield",
+      "relative_root": ".claude/skills/init.architecture.brownfield",
+      "managed_marker_relative_path": ".claude/skills/init.architecture.brownfield/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.brownfield.discover",
+      "relative_root": ".claude/skills/init.brownfield.discover",
+      "managed_marker_relative_path": ".claude/skills/init.brownfield.discover/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.convention.align.brownfield",
+      "relative_root": ".claude/skills/init.convention.align.brownfield",
+      "managed_marker_relative_path": ".claude/skills/init.convention.align.brownfield/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.database",
+      "relative_root": ".claude/skills/init.database",
+      "managed_marker_relative_path": ".claude/skills/init.database/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.documentation",
+      "relative_root": ".claude/skills/init.documentation",
+      "managed_marker_relative_path": ".claude/skills/init.documentation/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.documentation.brownfield",
+      "relative_root": ".claude/skills/init.documentation.brownfield",
+      "managed_marker_relative_path": ".claude/skills/init.documentation.brownfield/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.env.docker",
+      "relative_root": ".claude/skills/init.env.docker",
+      "managed_marker_relative_path": ".claude/skills/init.env.docker/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.env.docker.brownfield",
+      "relative_root": ".claude/skills/init.env.docker.brownfield",
+      "managed_marker_relative_path": ".claude/skills/init.env.docker.brownfield/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.pipeline",
+      "relative_root": ".claude/skills/init.pipeline",
+      "managed_marker_relative_path": ".claude/skills/init.pipeline/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.pipeline.brownfield",
+      "relative_root": ".claude/skills/init.pipeline.brownfield",
+      "managed_marker_relative_path": ".claude/skills/init.pipeline.brownfield/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "init.scaffold.backend-node",
+      "relative_root": ".claude/skills/init.scaffold.backend-node",
+      "managed_marker_relative_path": ".claude/skills/init.scaffold.backend-node/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "maint.investigate.triage",
+      "relative_root": ".claude/skills/maint.investigate.triage",
+      "managed_marker_relative_path": ".claude/skills/maint.investigate.triage/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.deliver.final",
+      "relative_root": ".claude/skills/phase.deliver.final",
+      "managed_marker_relative_path": ".claude/skills/phase.deliver.final/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.execute.fetch-knowhow",
+      "relative_root": ".claude/skills/phase.execute.fetch-knowhow",
+      "managed_marker_relative_path": ".claude/skills/phase.execute.fetch-knowhow/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.execute.subagent-two-layer-review",
+      "relative_root": ".claude/skills/phase.execute.subagent-two-layer-review",
+      "managed_marker_relative_path": ".claude/skills/phase.execute.subagent-two-layer-review/.devkit-managed.json",
+      "files": [
+        "prompts/implementer.md",
+        "prompts/quality-reviewer.md",
+        "prompts/spec-reviewer.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.execute.tidy-refactor",
+      "relative_root": ".claude/skills/phase.execute.tidy-refactor",
+      "managed_marker_relative_path": ".claude/skills/phase.execute.tidy-refactor/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.ingest.lock-scope",
+      "relative_root": ".claude/skills/phase.ingest.lock-scope",
+      "managed_marker_relative_path": ".claude/skills/phase.ingest.lock-scope/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.ingest.read-sources",
+      "relative_root": ".claude/skills/phase.ingest.read-sources",
+      "managed_marker_relative_path": ".claude/skills/phase.ingest.read-sources/.devkit-managed.json",
+      "files": [
+        "references/api-contracts.md",
+        "references/nfr-checklist.md",
+        "references/security-privacy.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.plan.risk-assess",
+      "relative_root": ".claude/skills/phase.plan.risk-assess",
+      "managed_marker_relative_path": ".claude/skills/phase.plan.risk-assess/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.plan.write-plan",
+      "relative_root": ".claude/skills/phase.plan.write-plan",
+      "managed_marker_relative_path": ".claude/skills/phase.plan.write-plan/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.pr-comments.ingest",
+      "relative_root": ".claude/skills/phase.pr-comments.ingest",
+      "managed_marker_relative_path": ".claude/skills/phase.pr-comments.ingest/.devkit-managed.json",
+      "files": [
+        "references/bitbucket-comment-ingest.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.pr-comments.summary",
+      "relative_root": ".claude/skills/phase.pr-comments.summary",
+      "managed_marker_relative_path": ".claude/skills/phase.pr-comments.summary/.devkit-managed.json",
+      "files": [
+        "references/reply-draft-template.md",
+        "references/summary-template.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.pr-comments.triage-plan",
+      "relative_root": ".claude/skills/phase.pr-comments.triage-plan",
+      "managed_marker_relative_path": ".claude/skills/phase.pr-comments.triage-plan/.devkit-managed.json",
+      "files": [
+        "references/comment-taxonomy.md",
+        "references/triage-template.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.review.code-request",
+      "relative_root": ".claude/skills/phase.review.code-request",
+      "managed_marker_relative_path": ".claude/skills/phase.review.code-request/.devkit-managed.json",
+      "files": [
+        "references/example-flow.md",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.review.plan-approval",
+      "relative_root": ".claude/skills/phase.review.plan-approval",
+      "managed_marker_relative_path": ".claude/skills/phase.review.plan-approval/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.review.validate-plan",
+      "relative_root": ".claude/skills/phase.review.validate-plan",
+      "managed_marker_relative_path": ".claude/skills/phase.review.validate-plan/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.spec.handoff",
+      "relative_root": ".claude/skills/phase.spec.handoff",
+      "managed_marker_relative_path": ".claude/skills/phase.spec.handoff/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.verify.compliance",
+      "relative_root": ".claude/skills/phase.verify.compliance",
+      "managed_marker_relative_path": ".claude/skills/phase.verify.compliance/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "phase.verify.run-tests",
+      "relative_root": ".claude/skills/phase.verify.run-tests",
+      "managed_marker_relative_path": ".claude/skills/phase.verify.run-tests/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "qa.docs.writing",
+      "relative_root": ".claude/skills/qa.docs.writing",
+      "managed_marker_relative_path": ".claude/skills/qa.docs.writing/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "qa.testing.strategy",
+      "relative_root": ".claude/skills/qa.testing.strategy",
+      "managed_marker_relative_path": ".claude/skills/qa.testing.strategy/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "release.prep.checklist",
+      "relative_root": ".claude/skills/release.prep.checklist",
+      "managed_marker_relative_path": ".claude/skills/release.prep.checklist/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "setup.convention.apply",
+      "relative_root": ".claude/skills/setup.convention.apply",
+      "managed_marker_relative_path": ".claude/skills/setup.convention.apply/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "setup.project-init",
+      "relative_root": ".claude/skills/setup.project-init",
+      "managed_marker_relative_path": ".claude/skills/setup.project-init/.devkit-managed.json",
+      "files": [
+        "SKILL.md"
+      ]
+    }
+  ],
+  "claude_rules": [
+    {
+      "id": "vibe-coding-workflow",
+      "relative_path": ".claude/rules/vibe-coding-workflow.md",
+      "sha256": "4dd275b3a8822fb686a7b733943d6814251aaba4c7193c49d99e70275d093314"
+    },
+    {
+      "id": "kaopiz-devkit-current-instruction",
+      "relative_path": ".claude/rules/kaopiz-devkit-current-instruction.md",
+      "sha256": "8fba7e8f3a7d8d45161ac44291bac5e8334504ec87b5d87f362fedaf235e5056"
+    },
+    {
+      "id": "devkit-commands",
+      "relative_path": ".claude/rules/devkit-commands.md",
+      "sha256": "124899ab8b1b24ed0f722e2d4a0521ff79c7ae77c0b28edbee8a732f5d390c5f"
+    },
+    {
+      "id": "kaopiz-devkit-skill-scan-after-write",
+      "relative_path": ".claude/rules/kaopiz-devkit-skill-scan-after-write.md",
+      "sha256": "3a9060f4ef1dd9bc2bcc06d5368583997e77cba36b1693ccea3445757051c27a"
+    },
+    {
+      "id": "artifact-spec-plan-log",
+      "relative_path": ".claude/rules/artifact-spec-plan-log.md",
+      "sha256": "3c3d4c5cdb346bc43aafee460de463403dcb949db8544d1627a78a181a35c211"
+    },
+    {
+      "id": "agent-orchestrated-commands",
+      "relative_path": ".claude/rules/agent-orchestrated-commands.md",
+      "sha256": "f30284a0f03678b768a70091c1f8b694d12cd92864c4472b0195e1df9c32f89f"
+    },
+    {
+      "id": "sbu2-audit-logging",
+      "relative_path": ".claude/rules/sbu2-audit-logging.md",
+      "sha256": "7f8fe075bebaac586c629147779ab98f49004a421ebd3bc2e637a6d83f541756"
+    }
+  ],
+  "claude_workflows": [
+    {
+      "id": "default.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/default.compact.json"
+    },
+    {
+      "id": "default.compact.bare",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/default.compact.bare.json"
+    },
+    {
+      "id": "default.compact.with-ingest",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/default.compact.with-ingest.json"
+    },
+    {
+      "id": "default.with-ingest",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/default.with-ingest.json"
+    },
+    {
+      "id": "dev.bugfix",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/dev.bugfix.json"
+    },
+    {
+      "id": "dev.conflict",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/dev.conflict.json"
+    },
+    {
+      "id": "dev.feature",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/dev.feature.json"
+    },
+    {
+      "id": "dev.feature.superpowers",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/dev.feature.superpowers.json"
+    },
+    {
+      "id": "dev.refactor",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/dev.refactor.json"
+    },
+    {
+      "id": "maint.investigate",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/maint.investigate.json"
+    },
+    {
+      "id": "maint.migration",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/maint.migration.json"
+    },
+    {
+      "id": "phase.deliver",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.deliver.json"
+    },
+    {
+      "id": "phase.deliver.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.deliver.compact.json"
+    },
+    {
+      "id": "phase.execute",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.execute.json"
+    },
+    {
+      "id": "phase.execute.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.execute.compact.json"
+    },
+    {
+      "id": "phase.ingest",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.ingest.json"
+    },
+    {
+      "id": "phase.ingest.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.ingest.compact.json"
+    },
+    {
+      "id": "phase.plan.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.plan.compact.json"
+    },
+    {
+      "id": "phase.plan.detailed.post-ingest",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.plan.detailed.post-ingest.json"
+    },
+    {
+      "id": "phase.plan.post-ingest",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.plan.post-ingest.json"
+    },
+    {
+      "id": "phase.review",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.review.json"
+    },
+    {
+      "id": "phase.review.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.review.compact.json"
+    },
+    {
+      "id": "phase.sp.build",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.sp.build.json"
+    },
+    {
+      "id": "phase.sp.design",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.sp.design.json"
+    },
+    {
+      "id": "phase.spec-clarity",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.spec-clarity.json"
+    },
+    {
+      "id": "phase.task.minimal",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.task.minimal.json"
+    },
+    {
+      "id": "phase.verify",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.verify.json"
+    },
+    {
+      "id": "phase.verify.compact",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/phase.verify.compact.json"
+    },
+    {
+      "id": "qa.docs",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/qa.docs.json"
+    },
+    {
+      "id": "qa.fix-comments",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/qa.fix-comments.json"
+    },
+    {
+      "id": "qa.review",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/qa.review.json"
+    },
+    {
+      "id": "qa.testing",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/qa.testing.json"
+    },
+    {
+      "id": "release.prep",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/release.prep.json"
+    },
+    {
+      "id": "setup.init.brownfield",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/setup.init.brownfield.json"
+    },
+    {
+      "id": "setup.init.greenfield",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/setup.init.greenfield.json"
+    },
+    {
+      "id": "spec-discovery",
+      "relative_path": ".claude/vibe-coding/devkit/workflows/spec-discovery.json"
+    }
+  ],
+  "claude_routers": [
+    {
+      "id": "bug_fix",
+      "relative_path": ".claude/vibe-coding/devkit/routers/bug_fix.json"
+    },
+    {
+      "id": "code_review",
+      "relative_path": ".claude/vibe-coding/devkit/routers/code_review.json"
+    },
+    {
+      "id": "feature_dev",
+      "relative_path": ".claude/vibe-coding/devkit/routers/feature_dev.json"
+    },
+    {
+      "id": "feature_with_superpowers",
+      "relative_path": ".claude/vibe-coding/devkit/routers/feature_with_superpowers.json"
+    },
+    {
+      "id": "fix_pr_comments",
+      "relative_path": ".claude/vibe-coding/devkit/routers/fix_pr_comments.json"
+    },
+    {
+      "id": "full_task_with_ingest",
+      "relative_path": ".claude/vibe-coding/devkit/routers/full_task_with_ingest.json"
+    },
+    {
+      "id": "init_brownfield",
+      "relative_path": ".claude/vibe-coding/devkit/routers/init_brownfield.json"
+    },
+    {
+      "id": "init_greenfield",
+      "relative_path": ".claude/vibe-coding/devkit/routers/init_greenfield.json"
+    },
+    {
+      "id": "investigate",
+      "relative_path": ".claude/vibe-coding/devkit/routers/investigate.json"
+    },
+    {
+      "id": "migration",
+      "relative_path": ".claude/vibe-coding/devkit/routers/migration.json"
+    },
+    {
+      "id": "refactor",
+      "relative_path": ".claude/vibe-coding/devkit/routers/refactor.json"
+    },
+    {
+      "id": "release_prep",
+      "relative_path": ".claude/vibe-coding/devkit/routers/release_prep.json"
+    },
+    {
+      "id": "resolve_conflict",
+      "relative_path": ".claude/vibe-coding/devkit/routers/resolve_conflict.json"
+    },
+    {
+      "id": "spec_discovery",
+      "relative_path": ".claude/vibe-coding/devkit/routers/spec_discovery.json"
+    },
+    {
+      "id": "task_compact",
+      "relative_path": ".claude/vibe-coding/devkit/routers/task_compact.json"
+    },
+    {
+      "id": "task_compact_min",
+      "relative_path": ".claude/vibe-coding/devkit/routers/task_compact_min.json"
+    },
+    {
+      "id": "task_compact_with_ingest",
+      "relative_path": ".claude/vibe-coding/devkit/routers/task_compact_with_ingest.json"
+    },
+    {
+      "id": "write_docs",
+      "relative_path": ".claude/vibe-coding/devkit/routers/write_docs.json"
+    },
+    {
+      "id": "write_test",
+      "relative_path": ".claude/vibe-coding/devkit/routers/write_test.json"
+    }
+  ],
+  "claude_commands": [
+    {
+      "filename": "devkit-answer-interview.md",
+      "relative_path": ".claude/commands/devkit-answer-interview.md"
+    },
+    {
+      "filename": "devkit-pick-router.md",
+      "relative_path": ".claude/commands/devkit-pick-router.md"
+    },
+    {
+      "filename": "devkit-plan.md",
+      "relative_path": ".claude/commands/devkit-plan.md"
+    },
+    {
+      "filename": "devkit-research.md",
+      "relative_path": ".claude/commands/devkit-research.md"
+    },
+    {
+      "filename": "devkit-review.md",
+      "relative_path": ".claude/commands/devkit-review.md"
+    },
+    {
+      "filename": "devkit-spec.md",
+      "relative_path": ".claude/commands/devkit-spec.md"
+    },
+    {
+      "filename": "devkit-sync.md",
+      "relative_path": ".claude/commands/devkit-sync.md"
+    },
+    {
+      "filename": "devkit-verify.md",
+      "relative_path": ".claude/commands/devkit-verify.md"
+    },
+    {
+      "filename": "devkit-workflow-profile-brownfield.md",
+      "relative_path": ".claude/commands/devkit-workflow-profile-brownfield.md"
+    },
+    {
+      "filename": "devkit-workflow-profile-greenfield.md",
+      "relative_path": ".claude/commands/devkit-workflow-profile-greenfield.md"
+    },
+    {
+      "filename": "devkit-workflow-profile.md",
+      "relative_path": ".claude/commands/devkit-workflow-profile.md"
+    },
+    {
+      "filename": "kaopiz-devkit-skill-authoring.md",
+      "relative_path": ".claude/commands/kaopiz-devkit-skill-authoring.md"
+    },
+    {
+      "filename": "kaopiz-devkit.md",
+      "relative_path": ".claude/commands/kaopiz-devkit.md"
+    },
+    {
+      "filename": "kz-analyze-bug.md",
+      "relative_path": ".claude/commands/kz-analyze-bug.md"
+    },
+    {
+      "filename": "kz-analyze-token.md",
+      "relative_path": ".claude/commands/kz-analyze-token.md"
+    },
+    {
+      "filename": "kz-bugfix.md",
+      "relative_path": ".claude/commands/kz-bugfix.md"
+    },
+    {
+      "filename": "kz-review.md",
+      "relative_path": ".claude/commands/kz-review.md"
+    },
+    {
+      "filename": "kz-feature.md",
+      "relative_path": ".claude/commands/kz-feature.md"
+    },
+    {
+      "filename": "kz-superpowers.md",
+      "relative_path": ".claude/commands/kz-superpowers.md"
+    },
+    {
+      "filename": "kz-pr-comments.md",
+      "relative_path": ".claude/commands/kz-pr-comments.md"
+    },
+    {
+      "filename": "kz-full-ingest.md",
+      "relative_path": ".claude/commands/kz-full-ingest.md"
+    },
+    {
+      "filename": "kz-brownfield.md",
+      "relative_path": ".claude/commands/kz-brownfield.md"
+    },
+    {
+      "filename": "kz-greenfield.md",
+      "relative_path": ".claude/commands/kz-greenfield.md"
+    },
+    {
+      "filename": "kz-investigate.md",
+      "relative_path": ".claude/commands/kz-investigate.md"
+    },
+    {
+      "filename": "kz-migration.md",
+      "relative_path": ".claude/commands/kz-migration.md"
+    },
+    {
+      "filename": "kz-refactor.md",
+      "relative_path": ".claude/commands/kz-refactor.md"
+    },
+    {
+      "filename": "kz-release.md",
+      "relative_path": ".claude/commands/kz-release.md"
+    },
+    {
+      "filename": "kz-conflict.md",
+      "relative_path": ".claude/commands/kz-conflict.md"
+    },
+    {
+      "filename": "kz-spec.md",
+      "relative_path": ".claude/commands/kz-spec.md"
+    },
+    {
+      "filename": "kz-compact.md",
+      "relative_path": ".claude/commands/kz-compact.md"
+    },
+    {
+      "filename": "kz-compact-min.md",
+      "relative_path": ".claude/commands/kz-compact-min.md"
+    },
+    {
+      "filename": "kz-compact-ingest.md",
+      "relative_path": ".claude/commands/kz-compact-ingest.md"
+    },
+    {
+      "filename": "kz-docs.md",
+      "relative_path": ".claude/commands/kz-docs.md"
+    },
+    {
+      "filename": "kz-test.md",
+      "relative_path": ".claude/commands/kz-test.md"
+    }
+  ],
+  "counts": {
+    "rules": 0,
+    "skills_cursor": 0,
+    "claude_skill_files": 58,
+    "claude_rules": 7,
+    "claude_workflows": 36,
+    "claude_routers": 19,
+    "claude_commands": 34,
+    "workflows": 0,
+    "routers": 0,
+    "cursor_commands": 0,
+    "antigravity_skills": 0,
+    "antigravity_rules": 0,
+    "antigravity_workflows": 0,
+    "antigravity_commands": 0,
+    "antigravity_routers": 0,
+    "opencode_skills": 0,
+    "opencode_rules": 0,
+    "opencode_workflows": 0,
+    "opencode_routers": 0,
+    "opencode_commands": 0,
+    "codex_skills": 0,
+    "codex_rules": 0,
+    "codex_workflows": 0,
+    "codex_routers": 0,
+    "codex_commands": 0
+  },
+  "warnings": [
+    "Skill directory missing: skill.sp.brainstorming",
+    "Skill directory missing: skill.sp.executing-plans",
+    "Skill directory missing: skill.sp.finishing-a-development-branch",
+    "Skill directory missing: skill.sp.writing-plans",
+    "[overwrite] .cursor/vibe-coding/devkit/sync-summary.json replaced (previous content differed)."
+  ]
+}

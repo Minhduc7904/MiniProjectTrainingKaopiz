@@ -1,0 +1,42 @@
+{
+  "id": "phase.task.minimal",
+  "version": "1.0.1",
+  "kind": "atomic",
+  "title": "Phase — Task (minimal flat)",
+  "description": "Two flat approve boundaries: (1) context + PLAN.md + validate_plan + user approval; (2) implement with fetch_knowhow + inline two-layer review + tests + verify_compliance. Same MCP/skills as compact paths, fewer step/approve cycles — weaker per-slice audit trail.",
+  "steps": [
+    {
+      "id": "plan_validate_approve",
+      "title": "Plan, validate, approve",
+      "skill_id": "phase.plan.write-plan",
+      "skill_candidates": [
+        {
+          "skill_id": "phase.review.plan-approval",
+          "when": "After PLAN.md exists: run validate_plan, present MCP output, then apply the approval criteria from this skill before asking the user to sign off (same combined gate as phase.review.compact step validate_approve)."
+        }
+      ],
+      "mcp_tools": [
+        "get_task_context",
+        "validate_plan"
+      ],
+      "requires_user_approval": true,
+      "notes": "Primary: draft PLAN.md per write-plan (get_task_context when applicable, traceability, Won't do / Later). Then validate_plan(PLAN.md) and use plan-approval criteria for the human gate. No production code in this step. If plan changes → update PLAN.md and validate again.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    },
+    {
+      "id": "implement_review_verify",
+      "title": "Implement, review, test, compliance",
+      "skill_id": "dev.tdd",
+      "mcp_tools": [
+        "fetch_knowhow",
+        "verify_compliance"
+      ],
+      "notes": "Per PLAN: fetch_knowhow(domain) before each domain slice; Red–Green–Refactor; small commits. Include a single two-layer review pass (AC + quality) before calling tests green; then verify_compliance. On wrong requirement → return to Plan step via reject/new session per team policy.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    }
+  ]
+}

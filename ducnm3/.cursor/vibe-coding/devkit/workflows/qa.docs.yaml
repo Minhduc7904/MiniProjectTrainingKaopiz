@@ -1,0 +1,33 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: qa.docs
+
+id: qa.docs
+version: 1.0.0
+kind: atomic
+title: QA — Documentation
+description: "Documentation workflow: update user/developer docs to reflect current behavior without
+  changing runtime logic."
+steps:
+  - id: scope_docs
+    title: Define doc scope
+    skill_id: phase.ingest.lock-scope
+    notes: Define target audiences and doc files (README/API guides/OpenAPI) impacted by current
+      behavior changes.
+  - id: update_docs
+    title: Update doc files
+    skill_id: qa.docs.writing
+    requires_user_approval: true
+    notes: Keep request/response examples in sync; do not commit logic-only code. Ensure changed docs
+      explain impact and usage clearly.
+    verify_commands:
+      - node -e "const fs=require('fs');const roots=['README.md','docs'];const
+        present=roots.some((p)=>fs.existsSync(p));if(!present){console.error('No documentation root
+        found (README.md or docs/).');process.exit(1);}const
+        changed=['README.md','docs/README.md','docs/openapi.yaml','openapi.yaml','swagger.yaml'].filter((p)=>fs.existsSync(p));if(changed.length===0){console.error('No
+        common docs file found; update at least one documentation artifact.');process.exit(1);}let
+        ok=false;for(const p of changed){const
+        b=fs.readFileSync(p,'utf8');if(/(usage|example|request|response|endpoint|breaking|compatib|how
+        to)/i.test(b) &&
+        b.replace(/\s+/g,'').length>120){ok=true;break;}}if(!ok){console.error('Docs updates look
+        too thin. Add usage/examples/impact details in updated documentation
+        files.');process.exit(1);}"

@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "release.prep.checklist",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "20229d223d5f55a55df389e46e8eab53db368c34ee863eaf62f465bf26080c3e"
+}

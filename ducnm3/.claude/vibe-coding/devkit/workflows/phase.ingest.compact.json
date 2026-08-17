@@ -1,0 +1,21 @@
+{
+  "id": "phase.ingest.compact",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Ingest (compact)",
+  "description": "One step: read sources and lock scope into .vibe/research/<task-id>.md before PLAN. Combines read-sources and lock-scope expectations from phase.ingest.",
+  "steps": [
+    {
+      "id": "ingest_and_scope",
+      "title": "Ingest & lock scope",
+      "skill_id": "phase.ingest.read-sources",
+      "mcp_tools": [
+        "get_task_context"
+      ],
+      "notes": "Gather ticket, AC, and constraints; in the same pass, record in-/out-of-scope and assumptions in .vibe/research/<task-id>.md (artifact-spec-plan-log). No PLAN.md in this phase.",
+      "expected_artifacts": [
+        ".vibe/research/<task-id>.md"
+      ]
+    }
+  ]
+}

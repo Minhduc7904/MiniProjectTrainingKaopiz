@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "init.database",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "22c8d2d5d4dead852339f5e1e494d4fa1f54c4a1335b08ed4c1e40d5d6d74eb2"
+}

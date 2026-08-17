@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "phase.verify.compliance",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "e9d8b8549e45a0f90586cd57de9fc4551590555fd2dc6eb6f2335a1707bdf17a"
+}

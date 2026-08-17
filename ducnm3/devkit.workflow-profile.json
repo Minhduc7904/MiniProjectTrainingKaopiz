@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "allow_non_candidate_skills": false,
+  "interview": {
+    "answers": {
+      "stack": "node",
+      "api_style": "none",
+      "needs_docker": true,
+      "needs_ci": false,
+      "docs_level": "readme",
+      "domains": [],
+      "enable_detailed_planning": true,
+      "skip_manual_review_step": false
+    },
+    "answer_sources": {}
+  },
+  "steps": {
+    "brownfield_architecture": [
+      "init.architecture.brownfield"
+    ],
+    "brownfield_align_conventions": [
+      "init.convention.align.brownfield"
+    ],
+    "brownfield_environment": [
+      "init.env.docker.brownfield"
+    ],
+    "brownfield_pipeline": [
+      "init.pipeline.brownfield"
+    ],
+    "brownfield_documentation": [
+      "init.documentation.brownfield"
+    ]
+  },
+  "domains": [],
+  "daily_workflow": {
+    "preferred_router_skill_id": "",
+    "require_ingest_first": false,
+    "prefer_full_gates": false,
+    "compliance_strictness": "",
+    "test_bar": "",
+    "deliverables_policy": "",
+    "notes": ""
+  },
+  "skills": {
+    "enabled": [],
+    "disabled": []
+  },
+  "init": {
+    "enabled_phases": [
+      "architecture",
+      "scaffold",
+      "environment",
+      "pipeline",
+      "documentation"
+    ],
+    "steps": {}
+  }
+}

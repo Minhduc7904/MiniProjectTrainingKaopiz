@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "cursor-skill",
+  "skill_id": "phase.ingest.lock-scope",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "1174151d3cd6f6f16ec6140c40228cf1cfac8fbdcd857f4526559deafb386d89"
+}

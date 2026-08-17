@@ -1,0 +1,50 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/log-skill-read.ts"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx --no-install kaopiz-devkit remind"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/log-skill-read.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/log-skill-read.ts"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx .claude/hooks/*)",
+      "Bash(npx kaopiz-devkit status*)",
+      "Bash(npx kaopiz-devkit remind*)",
+      "Bash(git config *)"
+    ]
+  }
+}

@@ -95,3 +95,20 @@ Day 3 onward, also read `developer-task` for the matching plan item.
 - `frontend/`: web client and frontend tests.
 - `tests/`: cross-service integration and end-to-end tests.
 - `scripts/`: local development and CI helper scripts.
+
+<!-- devkit:begin — managed by devkit-sync, do not edit -->
+## DevKit rules
+
+Read the matching file when the task touches it — do not load them all up front.
+
+| Rule | File |
+| --- | --- |
+| Default MCP macro for “implement/execute task” when no active Vibe session; defers to resolved per-session current_instruction when a session applies | `.agents/rules/vibe-coding-workflow.md` |
+| kaopiz-devkit session — resolve task (--task → chat/context → DEVKIT_TASK_ID/docs → active.json); instruction contract is per-session files under .vibe/sessions/ | `.agents/rules/kaopiz-devkit-current-instruction.md` |
+| DevKit slash command index — research / plan / verify (agent-centric shortcuts) | `.agents/rules/devkit-commands.md` |
+| kaopiz-devkit-skill-scan-after-write | `.agents/rules/kaopiz-devkit-skill-scan-after-write.md` |
+| Minimum structure for .vibe/research and per-task PLAN — spec/plan analysis log (on-disk artifacts; does not replace DevKit JSONL) | `.agents/rules/artifact-spec-plan-log.md` |
+| Principles for designing Cursor slash commands (agent orchestration) and the CLI↔Agent contract — use when developing Hub commands, rules, or kaopiz-devkit handoff | `.agents/rules/agent-orchestrated-commands.md` |
+| SBU2 runtime audit-logging contract — applies ONLY when runtime_engine=sbu2-ai-kit and you dispatch subagents via MCP batch_invoke_subagents. When runtime_engine=devkit, this rule does not apply and … | `.agents/rules/sbu2-audit-logging.md` |
+
+<!-- devkit:end -->

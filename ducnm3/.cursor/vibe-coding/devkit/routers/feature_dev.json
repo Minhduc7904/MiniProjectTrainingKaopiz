@@ -1,0 +1,12 @@
+{
+  "id": "feature_dev",
+  "name": "Feature development workflow",
+  "description": "Tier-1 router: feature delivery with a shorter flow (Ingest → Plan → Execute → Verify, no separate Review/Deliver phase). Use when implementing product features with clear scope where compact/full generic task lanes are unnecessary.",
+  "routes_to_workflow": "dev.feature",
+  "global_rules": [
+    "always_write_plan_first",
+    "no_production_code_before_plan_gate",
+    "prefer_subagent_two_layer_for_multi_step"
+  ],
+  "shortcut_alias": "feature"
+}

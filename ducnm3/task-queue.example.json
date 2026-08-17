@@ -1,0 +1,10 @@
+{
+  "defaultSkillId": "full_task_with_ingest",
+  "quietRouterHints": true,
+  "continueOnTaskFailure": false,
+  "claudeAgentSessionPerTask": false,
+  "tasks": [
+    { "taskId": "DEMO-100" },
+    { "taskId": "DEMO-101", "skillId": "feature_dev" }
+  ]
+}

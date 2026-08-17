@@ -1,0 +1,30 @@
+{
+  "id": "dev.refactor",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Dev — Refactor",
+  "description": "No new features; clean structure, extract functions, Clean Code.",
+  "steps": [
+    {
+      "id": "scope_refactor",
+      "title": "Bound refactor scope",
+      "skill_id": "dev.refactor.identify",
+      "notes": "List files/modules; do not change observable behavior (or document if tests must change)."
+    },
+    {
+      "id": "mechanical_changes",
+      "title": "Rename / split / dedupe",
+      "skill_id": "phase.execute.subagent-two-layer-review",
+      "notes": "Small commits; after each step tests stay green."
+    },
+    {
+      "id": "verify_after",
+      "title": "Run related test suite",
+      "skill_id": "phase.verify.run-tests",
+      "mcp_tools": [
+        "verify_compliance"
+      ],
+      "notes": "Do not merge new behavior; structure only."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "investigate",
+  "name": "Legacy code investigation",
+  "description": "Tier-1 router for read-only legacy/system investigation: trace runtime flow, hidden constraints, and assumptions in existing code (no implementation). Use when the goal is understanding and diagnosis, not PR diff review.",
+  "routes_to_workflow": "maint.investigate",
+  "global_rules": [],
+  "shortcut_alias": "investigate"
+}

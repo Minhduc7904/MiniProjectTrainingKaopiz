@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "devkit-workflow-profile-brownfield",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "86b9899f55bde7c7094792be6cb8616ce533adc719c48fa36d95f0dc44a37073"
+}

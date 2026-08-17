@@ -1,0 +1,78 @@
+{
+  "id": "qa.fix-comments",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "QA - Fix PR comments",
+  "description": "Post-PR workflow: ingest Bitbucket PR comments, triage and plan fixes, implement scoped comment resolutions, verify, and produce a final resolution summary with reply draft.",
+  "steps": [
+    {
+      "id": "ingest_comments",
+      "title": "Ingest PR comments",
+      "skill_id": "phase.pr-comments.ingest",
+      "notes": "Resolve the PR, fetch open Bitbucket comments when MCP is available, fall back to manual pasted/exported comments, and write PR-COMMENTS.md.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PR-COMMENTS.md"
+      ]
+    },
+    {
+      "id": "triage_and_plan",
+      "title": "Triage comments and plan fixes",
+      "skill_id": "phase.pr-comments.triage-plan",
+      "requires_user_approval": true,
+      "notes": "Read all comments before editing. Group by file/type/risk, classify as fix/ask/skip, and write COMMENT-TRIAGE.md plus COMMENT-FIX-PLAN.md. Also write PLAN.md as the canonical execution-plan alias consumed by shared implementation/review/verify skills. Approval is required for high risk, broad scope, or unclear comments.",
+      "inputs_from_steps": [
+        "ingest_comments"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/COMMENT-TRIAGE.md",
+        ".vibe/sessions/{{task_segment}}/COMMENT-FIX-PLAN.md",
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    },
+    {
+      "id": "fix_implementation",
+      "title": "Implement planned comment fixes",
+      "skill_id": "dev.tdd",
+      "notes": "Implement only the fixes listed in PLAN.md, which is the canonical alias for COMMENT-FIX-PLAN.md in this workflow. Avoid unrelated refactors. If a planned fix touches a symbol, follow repo rules for impact analysis before editing it.",
+      "inputs_from_steps": [
+        "triage_and_plan"
+      ]
+    },
+    {
+      "id": "review_fix_slice",
+      "title": "Review fix slice",
+      "skill_id": "phase.execute.subagent-two-layer-review",
+      "notes": "Check that the code changes resolve the planned comments and do not introduce unrelated behavior changes.",
+      "inputs_from_steps": [
+        "fix_implementation"
+      ]
+    },
+    {
+      "id": "verify_fixes",
+      "title": "Verify fixes",
+      "skill_id": "phase.verify.run-tests",
+      "notes": "Run the verification commands listed in PLAN.md and any relevant project lint/typecheck/test commands. If verification fails, return to implementation or record a blocker.",
+      "inputs_from_steps": [
+        "review_fix_slice"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/VERIFY-TESTS.md",
+        ".vibe/sessions/{{task_segment}}/VERIFY-EVIDENCE.json"
+      ]
+    },
+    {
+      "id": "summarize_comment_resolution",
+      "title": "Summarize comment resolution",
+      "skill_id": "phase.pr-comments.summary",
+      "notes": "Write final counts, resolution map, verification results, unresolved discussion items, skipped comments, and a Bitbucket PR reply draft.",
+      "inputs_from_steps": [
+        "ingest_comments",
+        "triage_and_plan",
+        "verify_fixes"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/COMMENT-FIX-SUMMARY.md"
+      ]
+    }
+  ]
+}

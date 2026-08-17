@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "phase.execute.subagent-two-layer-review",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "76eeeeea89cd91da5928d05ada039fb96805136b47357807d4d5a5b893fe252c"
+}

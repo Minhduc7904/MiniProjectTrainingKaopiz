@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "npx tsx .cursor/hooks/log-skill-read.ts",
+        "matcher": "Read"
+      },
+      {
+        "command": "npx tsx .cursor/hooks/log-skill-used.ts",
+        "matcher": "Used"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "npx --no-install kaopiz-devkit remind --format=cursor"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "npx --no-install kaopiz-devkit remind --format=cursor"
+      }
+    ]
+  }
+}

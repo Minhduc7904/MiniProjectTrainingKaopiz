@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "init.env.docker",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "38dab7b5bb4dec93914995bd3115c12a04a9dd1b777b55f53c576f57a9012d7b"
+}

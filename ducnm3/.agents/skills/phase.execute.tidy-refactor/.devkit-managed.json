@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "phase.execute.tidy-refactor",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "2c855908f533153b522e644f7711c7e2193aedaacd86dc90dc885ebb96c915da"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "full_task_with_ingest",
+  "name": "Full task workflow (with Ingest)",
+  "description": "Tier-1 router: same gates as default but runs Ingest (research notes) before Plan. Use when requirements need discovery first.",
+  "routes_to_workflow": "default.with-ingest",
+  "global_rules": [
+    "always_write_plan_first",
+    "no_production_code_before_plan_gate",
+    "prefer_subagent_two_layer_for_multi_step"
+  ],
+  "shortcut_alias": "full-ingest"
+}

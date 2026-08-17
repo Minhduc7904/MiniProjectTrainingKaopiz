@@ -1,0 +1,8 @@
+{
+  "id": "code_review",
+  "name": "Code review",
+  "description": "Tier-1 router for PR/diff review only: assess changed lines for risk, correctness, and maintainability; produce findings without code edits. Use for review requests, not full-system investigation.",
+  "routes_to_workflow": "qa.review",
+  "global_rules": [],
+  "shortcut_alias": "review"
+}

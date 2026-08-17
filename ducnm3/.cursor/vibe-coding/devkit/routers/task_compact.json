@@ -1,0 +1,12 @@
+{
+  "id": "task_compact",
+  "name": "Task workflow (compact)",
+  "description": "Tier-1 router: same gates as full task execution but ~5 flat steps per phase (Plan → Review → Execute → Verify → optional Deliver). For small, well-scoped tickets.",
+  "routes_to_workflow": "default.compact",
+  "global_rules": [
+    "always_write_plan_first",
+    "no_production_code_before_plan_gate",
+    "prefer_subagent_two_layer_for_multi_step"
+  ],
+  "shortcut_alias": "compact"
+}

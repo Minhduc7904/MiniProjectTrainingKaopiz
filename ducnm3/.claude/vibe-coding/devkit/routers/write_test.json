@@ -1,0 +1,8 @@
+{
+  "id": "write_test",
+  "name": "Write / extend tests",
+  "description": "Tier-1 router for test-only work: add or extend unit/integration coverage for existing behavior without introducing new runtime features.",
+  "routes_to_workflow": "qa.testing",
+  "global_rules": [],
+  "shortcut_alias": "test"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "dev.bugfix",
+  "version": "1.0.0",
+  "kind": "composite",
+  "title": "Dev — Bugfix",
+  "description": "Non-emergency bugfix workflow: reproduce issue, confirm root cause, implement minimal fix, then verify regression safety.",
+  "steps": [
+    {
+      "id": "ingest_bug",
+      "title": "Ingest bug report",
+      "sub_workflow_id": "phase.ingest",
+      "skill_id": "phase.ingest.read-sources",
+      "notes": "Reproduction, environment, steps to reproduce."
+    },
+    {
+      "id": "bug_investigation",
+      "title": "Root cause investigation",
+      "skill_id": "dev.debug.systematic",
+      "requires_user_approval": true,
+      "notes": "Find root cause before attempting fix; reproduce failing test and record root-cause notes in .vibe/research/<task-id>.md.",
+      "verify_commands": [
+        "node -e \"const fs=require('fs'),path=require('path');const root=process.cwd();const active=path.join(root,'.vibe','active.json');const legacy=path.join(root,'.vibe','state.json');let st;if(fs.existsSync(active)){const p=JSON.parse(fs.readFileSync(active,'utf8'));const seg=p.session_segment;if(!seg||typeof seg!=='string'){console.error('Invalid .vibe/active.json');process.exit(1);}const sp=path.join(root,'.vibe','sessions',seg,'state.json');if(!fs.existsSync(sp)){console.error('Missing session state: '+sp);process.exit(1);}st=JSON.parse(fs.readFileSync(sp,'utf8'));}else if(fs.existsSync(legacy)){st=JSON.parse(fs.readFileSync(legacy,'utf8'));}else{console.error('No Vibe state: expected .vibe/active.json + .vibe/sessions/<segment>/state.json, or legacy .vibe/state.json');process.exit(1);}const id=String(st.task_id||'').replace(/[^a-zA-Z0-9._-]+/g,'_');const f=path.join(root,'.vibe/research',id+'.md');if(!fs.existsSync(f)){console.error('Missing research file: '+f);process.exit(1);}const b=fs.readFileSync(f,'utf8');if(!/(root cause|nguyen nhan goc|nguyên nhân gốc)/i.test(b)){console.error('Record root-cause notes in .vibe/research/<task-id>.md before implementation.');process.exit(1);}\""
+      ]
+    },
+    {
+      "id": "fix_implementation",
+      "title": "Bugfix implementation",
+      "skill_id": "phase.execute.subagent-two-layer-review",
+      "notes": "Follow systematic debug hypothesis; TDD for fix verification. Keep patch minimal and avoid unrelated refactors."
+    },
+    {
+      "id": "fix_verify",
+      "title": "Fix + test",
+      "sub_workflow_id": "phase.verify",
+      "skill_id": "phase.verify.run-tests",
+      "notes": "Minimal fix; run related tests + smoke regression."
+    }
+  ]
+}

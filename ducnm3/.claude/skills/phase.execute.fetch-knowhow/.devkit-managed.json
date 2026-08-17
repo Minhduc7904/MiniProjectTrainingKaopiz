@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "phase.execute.fetch-knowhow",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "fb6e9cb81c1a149254a2f442ab86815459592638655af2a54a590b840a3a0296"
+}

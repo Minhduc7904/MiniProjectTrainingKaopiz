@@ -1,0 +1,31 @@
+{
+  "id": "phase.review",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Review plan",
+  "description": "Senior (user) reviews the plan; validate_plan; early branches (cancel/blocked) instead of moving to Execute.",
+  "steps": [
+    {
+      "id": "validate_and_present",
+      "title": "Validate & present",
+      "skill_id": "phase.review.validate-plan",
+      "mcp_tools": [
+        "validate_plan"
+      ],
+      "notes": "Treat PLAN.md as the artifact under review: call validate_plan(planContent), summarize MCP result, and walk the user through scope/traceability. Use phase.review.validate-plan (review gate), not phase.plan.write-plan (drafting).",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    },
+    {
+      "id": "approval_and_outcome",
+      "title": "Await approval & review outcome",
+      "skill_id": "phase.review.plan-approval",
+      "requires_user_approval": true,
+      "notes": "Move to Execute only after explicit user approval. If the plan changes → repeat from validate_and_present. After approval: Approve → Execute. User requests plan changes → update PLAN.md and repeat Review phase. Task infeasible, out-of-scope, or blocked on externals → mark Cancelled / Blocked on the ticket; do not enter Execute or add more code for that task.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    }
+  ]
+}

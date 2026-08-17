@@ -1,0 +1,17 @@
+> Default MCP macro for “implement/execute task” when no active Vibe session; defers to resolved per-session current_instruction when a session applies
+
+# Task execution — MCP path (Vibe Coding)
+
+## Precedence (read first)
+
+- If an **orchestrator session** exists for the task you are executing (**`.vibe/sessions/<task>/state.json`**; pointer in **`.vibe/active.json`** when using the default active task; legacy **`.vibe/state.json`** at repo root may exist until the CLI migrates it) and session status is **not** `failed` / **`completed`**: follow **`kaopiz-devkit-current-instruction`** — resolve **task** in order **`--task` (if passed) → chat/context → project config (`DEVKIT_TASK_ID` / documented scoped CLI) → `active.json`**, then treat **`.vibe/sessions/<segment>/current_instruction.md`** (or **`kaopiz-devkit run`** stdout **`@` path**) as the step source of truth; slash playbooks and structure live under **`devkit-commands`** and **`artifact-spec-plan-log`**. Do **not** override that with the short macro below.
+- **Otherwise** (no active session, or ad-hoc task execution): use the macro below when the user asks to **execute / implement / do** a task (e.g. by `task_id`).
+
+## Default macro (MCP only — no step-by-step repeat of Hub skills)
+
+1. **Context:** **`get_task_context`** when the task comes from MCP — prefer **`project_root`** (repo path) so the tool can resolve **`task_id`** from **`.vibe/active.json`** when omitted; else pass **`task_id`** / use ticket/docs/user-guide if MCP unavailable.
+2. **Plan + gate:** **`PLAN.md`**, **`validate_plan`**, user **approval** before production code — sections and artifacts per **`artifact-spec-plan-log`**; planning flow per **`devkit-plan`**.
+3. **Execute:** for plan slices in sensitive domains, **`fetch_knowhow`** (`domain`); implement; small commits.
+4. **Verify:** tests + project checks; **`verify_compliance`** when applicable — align with **`devkit-verify`**.
+
+**Tool names (audit / fixtures):** `get_task_context`, `validate_plan`, `fetch_knowhow`, `verify_compliance`.

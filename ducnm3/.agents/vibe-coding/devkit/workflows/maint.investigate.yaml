@@ -1,0 +1,46 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: maint.investigate
+
+id: maint.investigate
+version: 1.0.0
+kind: atomic
+title: Maintenance — Legacy investigation
+description: "Read-only investigation workflow for legacy/system behavior: trace execution flow and
+  produce actionable investigation notes for the team."
+steps:
+  - id: entry_points
+    title: Find entry & callers
+    skill_id: phase.ingest.read-sources
+    notes: From the file/symbol the user asked about; expand via references. Write/update
+      .vibe/research/<task-id>.md with paths and observed call flow.
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+  - id: summarize_behavior
+    title: Summarize behavior & assumptions
+    skill_id: maint.investigate.triage
+    requires_user_approval: true
+    notes: Record hidden constraints, side effects, and tech debt in .vibe/research/<task-id>.md — no
+      refactor in this step unless requested.
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+    verify_commands:
+      - "node -e \"const fs=require('fs'),path=require('path');const root=process.cwd();const
+        active=path.join(root,'.vibe','active.json');const
+        legacy=path.join(root,'.vibe','state.json');let st;if(fs.existsSync(active)){const
+        p=JSON.parse(fs.readFileSync(active,'utf8'));const seg=p.session_segment;if(!seg||typeof
+        seg!=='string'){console.error('Invalid .vibe/active.json');process.exit(1);}const
+        sp=path.join(root,'.vibe','sessions',seg,'state.json');if(!fs.existsSync(sp)){console.error\
+        ('Missing session state:
+        '+sp);process.exit(1);}st=JSON.parse(fs.readFileSync(sp,'utf8'));}else
+        if(fs.existsSync(legacy)){st=JSON.parse(fs.readFileSync(legacy,'utf8'));}else{console.error\
+        ('No Vibe state: expected .vibe/active.json + .vibe/sessions/<segment>/state.json, or legacy
+        .vibe/state.json');process.exit(1);}const
+        id=String(st.task_id||'').replace(/[^a-zA-Z0-9._-]+/g,'_');const
+        f=path.join(root,'.vibe/research',id+'.md');if(!fs.existsSync(f)){console.error('Missing
+        research file: '+f);process.exit(1);}const b=fs.readFileSync(f,'utf8');const
+        required=['Sources','Confirmed vs Assumptions','Ambiguities & questions'];const
+        missing=required.filter((h)=>!new
+        RegExp('^#{1,6}\\\\s*'+h+'\\\\s*$','im').test(b));if(missing.length){console.error('Investi\
+        gation notes missing sections: '+missing.join(', '));process.exit(1);}if(!/(investigation
+        summary|legacy summary|impact|next step|risk)/i.test(b)){console.error('Add an investigation
+        summary with impact/risks/next steps to the research file.');process.exit(1);}\""

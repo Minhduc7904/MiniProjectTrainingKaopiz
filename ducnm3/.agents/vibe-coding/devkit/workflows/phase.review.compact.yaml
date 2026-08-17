@@ -1,0 +1,21 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: phase.review.compact
+
+id: phase.review.compact
+version: 1.0.0
+kind: atomic
+title: Phase — Review plan (compact)
+description: "One step: validate_plan, present results, await user approval. Same gates as
+  phase.review; fewer orchestration steps."
+steps:
+  - id: validate_approve
+    title: Validate plan & get approval
+    skill_id: phase.review.plan-approval
+    mcp_tools:
+      - validate_plan
+    requires_user_approval: true
+    notes: Call validate_plan(PLAN.md content), summarize MCP output and scope, then wait for explicit
+      approval before Execute. If the plan changes → update PLAN.md and validate again.
+      Cancelled/Blocked → do not enter Execute.
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/PLAN.md

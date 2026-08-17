@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "phase.verify.run-tests",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "2928c7beaa3e155f640c89f6680080e8fb9740c8f0e3d3b73e60431cb91679be"
+}

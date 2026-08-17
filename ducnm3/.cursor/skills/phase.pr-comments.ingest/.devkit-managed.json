@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "cursor-skill",
+  "skill_id": "phase.pr-comments.ingest",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "8a26e5ac6a506b416540788586e57a9578e47490c03a421ac2d3367309fbfaaa"
+}

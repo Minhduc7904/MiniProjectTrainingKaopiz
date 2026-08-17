@@ -1,0 +1,42 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: default.compact
+
+id: default.compact
+version: 1.0.0
+kind: composite
+title: Vibe Coding — Task execution (compact)
+description: "Short path: ~6 flat steps plus optional Deliver — Plan → Review → Execute (TDD +
+  two-layer) → Verify → Deliver(opt). Same approval and compliance gates as default; Execute phase
+  uses two atomic steps (implement + review). Non-ingest sibling of default.compact.with-ingest —
+  use when ingest-before-plan is not needed; Plan uses phase.plan.compact (not post-ingest)."
+steps:
+  - id: plan
+    title: Plan
+    sub_workflow_id: phase.plan.compact
+    skill_id: phase.plan.write-plan
+    notes: Context + PLAN.md in one step. For ingest-first research + PLAN from .vibe/research use
+      workflow default.compact.with-ingest (or task_compact_with_ingest). For fuzzy requirements or
+      large multi-domain work prefer default.with-ingest or default (+ detailed plan variant).
+  - id: review_plan
+    title: Review plan
+    sub_workflow_id: phase.review.compact
+    skill_id: phase.review.plan-approval
+    notes: validate_plan and user approval in one orchestration step.
+  - id: execute
+    title: Execute
+    sub_workflow_id: phase.execute.compact
+    skill_id: dev.tdd
+    notes: TDD then two-layer review; fetch_knowhow inline per domain slice on the implement step.
+  - id: test_compliance
+    title: Test & compliance
+    sub_workflow_id: phase.verify.compact
+    skill_id: phase.verify.run-tests
+    notes: Tests then verify_compliance in one step.
+  - id: deliver
+    title: Deliver
+    sub_workflow_id: phase.deliver.compact
+    optional: true
+    skill_id: phase.deliver.final
+    notes: "Minimal handoff when required. optional=true is engine-only: team may still require
+      PR/handoff — document in CONTRIBUTING or devkit.workflow-profile.json (PLAN-VERIFY-DELIVER
+      §1.3)."

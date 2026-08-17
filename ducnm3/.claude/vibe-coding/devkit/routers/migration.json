@@ -1,0 +1,8 @@
+{
+  "id": "migration",
+  "name": "Dependency upgrade (migration)",
+  "description": "Tier-1 router for dependency/runtime migration: read release notes, map breaking changes, apply compatibility fixes, and verify build/tests. Use when external version changes drive code updates.",
+  "routes_to_workflow": "maint.migration",
+  "global_rules": [],
+  "shortcut_alias": "migration"
+}

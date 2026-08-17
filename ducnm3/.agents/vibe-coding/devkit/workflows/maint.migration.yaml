@@ -1,0 +1,45 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: maint.migration
+
+id: maint.migration
+version: 1.0.0
+kind: atomic
+title: Maintenance — Dependency upgrade
+description: "Dependency/runtime migration workflow: analyze upstream release notes, implement
+  compatibility changes, and verify build/test health."
+steps:
+  - id: read_changelog
+    title: Read release notes / migration guide
+    skill_id: phase.ingest.read-sources
+    requires_user_approval: true
+    notes: List breaking changes and migration requirements; capture impacted modules in
+      .vibe/research/<task-id>.md before code edits.
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+    verify_commands:
+      - "node -e \"const fs=require('fs'),path=require('path');const root=process.cwd();const
+        active=path.join(root,'.vibe','active.json');const
+        legacy=path.join(root,'.vibe','state.json');let st;if(fs.existsSync(active)){const
+        p=JSON.parse(fs.readFileSync(active,'utf8'));const seg=p.session_segment;if(!seg||typeof
+        seg!=='string'){console.error('Invalid .vibe/active.json');process.exit(1);}const
+        sp=path.join(root,'.vibe','sessions',seg,'state.json');if(!fs.existsSync(sp)){console.error\
+        ('Missing session state:
+        '+sp);process.exit(1);}st=JSON.parse(fs.readFileSync(sp,'utf8'));}else
+        if(fs.existsSync(legacy)){st=JSON.parse(fs.readFileSync(legacy,'utf8'));}else{console.error\
+        ('No Vibe state: expected .vibe/active.json + .vibe/sessions/<segment>/state.json, or legacy
+        .vibe/state.json');process.exit(1);}const
+        id=String(st.task_id||'').replace(/[^a-zA-Z0-9._-]+/g,'_');const
+        f=path.join(root,'.vibe/research',id+'.md');if(!fs.existsSync(f)){console.error('Missing
+        research file: '+f);process.exit(1);}const b=fs.readFileSync(f,'utf8');if(!/(breaking
+        change|migration|deprecat|impact)/i.test(b)){console.error('Record breaking changes /
+        migration impact in .vibe/research/<task-id>.md before applying
+        updates.');process.exit(1);}\""
+  - id: apply_migrations
+    title: Update code & lockfile
+    skill_id: phase.execute.subagent-two-layer-review
+    notes: Fix compile errors; address deprecations; keep scope focused on migration compatibility.
+  - id: verify_build
+    title: Full build + test (or CI)
+    skill_id: phase.verify.run-tests
+    requires_user_approval: true
+    notes: Run full build + tests (or equivalent CI gate). Do not merge while red.

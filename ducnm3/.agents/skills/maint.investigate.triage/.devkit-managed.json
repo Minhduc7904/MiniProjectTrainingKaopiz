@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "maint.investigate.triage",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "a48eb607a0afafd1eced414dbc40045ac700badf47ceb342c1a116f7b0bbfc88"
+}

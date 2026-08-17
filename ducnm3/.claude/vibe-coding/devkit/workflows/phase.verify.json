@@ -1,0 +1,52 @@
+{
+  "id": "phase.verify",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Test & compliance",
+  "description": "Tests → (optional) light refactor once green → compliance. On failure: classify and return to Execute or Plan/Review.",
+  "steps": [
+    {
+      "id": "run_tests",
+      "title": "Run / add tests",
+      "skill_id": "phase.verify.run-tests",
+      "notes": "Prefer tests close to user-visible behavior; gate: do not add more feature work while red. Summarize commands run, pass/fail, and key failures in **VERIFY-TESTS.md** (short — avoid pasting secrets or full PII). Also write **VERIFY-EVIDENCE.json** with machine-readable records (`command`, `exit_code`, `timestamp`, `commit_sha`, `evidence_path`).",
+      "inputs_from_steps": [
+        "execute::review_slice"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/VERIFY-TESTS.md",
+        ".vibe/sessions/{{task_segment}}/VERIFY-EVIDENCE.json"
+      ],
+      "on_failure": {
+        "minor_bug": "Return to Execute phase (phase.execute): fix, commit, re-run tests until green.",
+        "wrong_requirement": "Stop extending the wrong direction; update PLAN.md if needed and return to Review or Plan (phase.review / phase.plan) to reset scope."
+      }
+    },
+    {
+      "id": "post_green_refactor",
+      "title": "Light refactor before compliance (when tests are green)",
+      "skill_id": "phase.execute.tidy-refactor",
+      "optional": true,
+      "notes": "Same skill as Execute step refactor_chunk (tidy-refactor) but different step context: chunk tidy vs one pass before verify_compliance. Skip if already clean. See PLAN-VERIFY-DELIVER-SKILL-REFACTOR.md §4.1."
+    },
+    {
+      "id": "compliance",
+      "title": "Compliance",
+      "skill_id": "phase.verify.compliance",
+      "mcp_tools": [
+        "verify_compliance"
+      ],
+      "notes": "verify_compliance with artifact + checklist. Pass = verify phase complete unless the parent workflow marks it optional. Record outcome and checklist id(s) in **VERIFY-COMPLIANCE.md** before approve (summary only).",
+      "inputs_from_steps": [
+        "verify::run_tests"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/VERIFY-COMPLIANCE.md"
+      ],
+      "on_failure": {
+        "minor_bug": "Return to Execute until checklist passes; re-run tests + compliance.",
+        "wrong_requirement": "If the checklist reflects a spec misunderstanding: return to Plan/Review instead of patching blindly."
+      }
+    }
+  ]
+}

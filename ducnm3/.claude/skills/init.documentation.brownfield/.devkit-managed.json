@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "init.documentation.brownfield",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "30ab7d5e6a5051f24bb04578726560aff74cc30e92f58899fe2bb49a507816eb"
+}

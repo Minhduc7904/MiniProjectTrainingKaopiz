@@ -1,0 +1,30 @@
+---
+description: DevKit slash command index — research / plan / verify (agent-centric shortcuts)
+alwaysApply: true
+---
+
+# DevKit — slash shortcuts for the Agent
+
+Commands map to files under **`.cursor/commands/`** (after `devkit-sync`). In Cursor, the user types a slash matching the **file name** (e.g. `devkit-research` from `devkit-research.md`).
+
+| Shortcut (concept) | Command file | When to use |
+|--------------------|--------------|-------------|
+| « Research / Ingest » | `devkit-research.md` | Read sources, write `.vibe/research/<task>.md`, **not** `PLAN.md` yet |
+| « Plan » | `devkit-plan.md` | Create/update plan file (canonical: `.vibe/sessions/<task>/PLAN.md`), breakdown, review plan |
+| « Review » | `devkit-review.md` | Review code changes on current branch, produce REVIEW.md report for PR |
+| « Verify » | `devkit-verify.md` | Run tests + lint/format per project config, compliance |
+| « Workflow profile » | `devkit-workflow-profile.md` | CLI: infer / **write-with-audit** / llm-prompt / interview / template → `devkit.workflow-profile.json` |
+| « Workflow profile (brownfield) » | `devkit-workflow-profile-brownfield.md` | MCP brownfield + repo → interview (**`AskQuestion`** only when UI choice is needed) → audit **`answer_sources`** → finalize / or **`write-with-audit`** |
+| « Workflow profile (greenfield) » | `devkit-workflow-profile-greenfield.md` | MCP greenfield → interview (**`AskQuestion`** only when UI choice is needed) → audit **`answer_sources`** → finalize / or **`write-with-audit`** |
+| « Workflow profile (index) » | `devkit-answer-interview.md` | Points to brownfield or greenfield |
+| « Pick router (daily) » | `devkit-pick-router.md` | Agent picks a matching short router ID + `kaopiz-devkit start --skill …` (CLI still requires `--skill`) |
+| « Skill authoring » | `kaopiz-devkit-skill-authoring.md` | Prompt to draft `SKILL.md` from user text + Hub *writing-skills* (CLI `skill-authoring prompt`) |
+| *(rule by file)* | `kaopiz-devkit-skill-scan-after-write.mdc` | Glob `.cursor/skills/**/SKILL.md` — Agent runs scan after writing a skill |
+
+**Research / PLAN structure (audit spec & plan):** when using `devkit-research` or `devkit-plan`, follow rule **`artifact-spec-plan-log`** — minimum sections in `.vibe/research/<task>.md` and the per-task plan file (`PLAN.md` under `.vibe/sessions/…` when using current workflows).
+
+**General rule:** If an **orchestrator session** applies (**`.vibe/sessions/...`**; legacy **`.vibe/state.json`** may exist until migrated) and the session for the **resolved task** is not `failed` / `completed`, follow rule **`kaopiz-devkit-current-instruction`**: resolve **which task** in order **`--task` (if passed on CLI) → chat/context → `DEVKIT_TASK_ID` / documented scoped CLI → `.vibe/active.json`**, then read **`.vibe/sessions/<segment>/current_instruction.md`** (or **`.vibe/current_instruction.<segment>.md`**, or the **`@` path** from **`kaopiz-devkit run`**). These shortcuts **add** phase context; they do not replace the full **`/kaopiz-devkit`** CLI.
+
+**Base CLI:** `npm run kaopiz-devkit -- …` or `npx kaopiz-devkit …` at repo root.
+
+**Command design / CLI↔Agent handoff:** see rule **`agent-orchestrated-commands`** (playbook slash vs plain terminal CLI, artifacts, approval gates).

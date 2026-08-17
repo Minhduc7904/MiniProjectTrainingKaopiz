@@ -1,0 +1,101 @@
+{
+  "id": "setup.init.brownfield",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Init — Brownfield project (audit + gap-fill)",
+  "description": "One session: discover → architecture retrofit → convention alignment → environment verify → pipeline gap-fill → documentation gap-fill. Each segment is one approve; phases disabled in devkit.workflow-profile.json init.enabled_phases are skipped (discover always runs).",
+  "steps": [
+    {
+      "id": "brownfield_discover",
+      "title": "Discover existing repository",
+      "skill_id": "init.brownfield.discover",
+      "notes": "Brownfield step 1 of 6 — ALWAYS runs (not affected by init.enabled_phases). Read manifests, README, Docker, CI, docs; record evidence in .vibe/research/brownfield-init.md. No proposals here — downstream steps cite this file.",
+      "expected_artifacts": [
+        ".vibe/research/brownfield-init.md"
+      ],
+      "skill_candidates": []
+    },
+    {
+      "id": "brownfield_architecture",
+      "title": "Backfill ADRs for existing architecture",
+      "skill_id": "init.architecture.brownfield",
+      "notes": "Brownfield step 2 of 6 — retrofit ADRs for decisions already in code (data store, API style, runtime, auth, app architecture). Index file + one ADR per decision under docs/adrs/. Candidates are filtered to the project stack (devkit.config.json `stack`); pick those matching the repo. Skipped when phase architecture is disabled.",
+      "expected_artifacts": [
+        "docs/adrs/0001-record-architecture-decisions.md"
+      ],
+      "skill_candidates": [
+        {
+          "skill_id": "init.database",
+          "label": "Database design",
+          "when": "Schema, migrations, ORM, indexing — retrofit DB decisions when repo evidence points to Postgres/Mongo/etc."
+        },
+        {
+          "skill_id": "init.api.rest",
+          "label": "REST API",
+          "when": "Code uses REST-style HTTP endpoints — backfill ADR around routing/versioning."
+        },
+        {
+          "skill_id": "init.api.graphql",
+          "label": "GraphQL API",
+          "when": "Code exposes a GraphQL schema — backfill ADR around schema/resolvers."
+        },
+        {
+          "skill_id": "init.api.trpc",
+          "label": "tRPC",
+          "when": "Repo uses tRPC end-to-end typesafe RPC."
+        }
+      ]
+    },
+    {
+      "id": "brownfield_align_conventions",
+      "title": "Audit & gap-fill project conventions",
+      "skill_id": "init.convention.align.brownfield",
+      "notes": "Brownfield step 3 of 6 — audit lint/format/hooks/tests. Add only what is missing; never swap an adopted tool. Candidate `dev.tdd` when test harness is absent. Skipped when phase scaffold is disabled.",
+      "expected_artifacts": [],
+      "skill_candidates": [
+        {
+          "skill_id": "setup.convention.apply",
+          "label": "Apply lint / format / hooks",
+          "when": "Gap-fill lint, Prettier, Husky, EditorConfig using existing deps."
+        },
+        {
+          "skill_id": "dev.tdd",
+          "label": "Introduce a test harness",
+          "when": "No test runner is present yet — start with small red/green slices on foundation code."
+        }
+      ]
+    },
+    {
+      "id": "brownfield_environment",
+      "title": "Verify & patch local environment",
+      "skill_id": "init.env.docker.brownfield",
+      "notes": "Brownfield step 4 of 6 — audit docker/compose/env templates. Add missing services, pin versions, generate .env.example from discovered env vars. Skipped when phase environment is disabled.",
+      "expected_artifacts": [],
+      "skill_candidates": []
+    },
+    {
+      "id": "brownfield_pipeline",
+      "title": "Audit CI/CD & add missing gates",
+      "skill_id": "init.pipeline.brownfield",
+      "notes": "Brownfield step 5 of 6 — audit existing pipelines. Priority: test → lint → image-pin → security scan. Never silently weaken a gate. Skipped when phase pipeline is disabled.",
+      "expected_artifacts": [],
+      "skill_candidates": []
+    },
+    {
+      "id": "brownfield_documentation",
+      "title": "Audit docs & close onboarding gaps",
+      "skill_id": "init.documentation.brownfield",
+      "notes": "Brownfield step 6 of 6 — audit README / CONTRIBUTING / docs/specs / docs/adrs. Metric: first-green-test time for a new engineer. Gap-fill only; do not rewrite working prose. Skipped when phase documentation is disabled.",
+      "expected_artifacts": [
+        "CONTRIBUTING.md"
+      ],
+      "skill_candidates": [
+        {
+          "skill_id": "qa.docs.writing",
+          "label": "Deeper docs quality pass",
+          "when": "Onboarding gap is narrative/tone, not just missing files."
+        }
+      ]
+    }
+  ]
+}

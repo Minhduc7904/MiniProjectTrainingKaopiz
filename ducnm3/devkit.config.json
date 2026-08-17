@@ -1,0 +1,39 @@
+{
+  "project_id": "ducnm3",
+  "stack": "node",
+  "profile": "backend-node",
+  "require_tests": true,
+  "targets": [
+    "cursor",
+    "claude",
+    "codex"
+  ],
+  "hub": {
+    "mode": "bundled"
+  },
+  "review_context": {
+    "final_summary_dir": ".vibe/logs/summaries"
+  },
+  "runtime_engine": "devkit",
+  "routers": [
+    "bug_fix",
+    "code_review",
+    "feature_dev",
+    "feature_with_superpowers",
+    "fix_pr_comments",
+    "full_task_with_ingest",
+    "init_brownfield",
+    "init_greenfield",
+    "investigate",
+    "migration",
+    "refactor",
+    "release_prep",
+    "resolve_conflict",
+    "spec_discovery",
+    "task_compact",
+    "task_compact_min",
+    "task_compact_with_ingest",
+    "write_docs",
+    "write_test"
+  ]
+}

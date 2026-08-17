@@ -1,0 +1,37 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: dev.feature
+
+id: dev.feature
+version: 1.0.0
+kind: composite
+title: Dev — Feature development (daily)
+description: "Dev-centric flow: Ingest spec → Plan → Execute → Verify. No separate Review/Deliver
+  (use default for full gates)."
+steps:
+  - id: ingest
+    title: Ingest spec
+    sub_workflow_id: phase.ingest
+    skill_id: phase.ingest.read-sources
+    notes: "Sub-workflow `phase.ingest`: read sources then lock scope in `.vibe/research/<task-id>.md`.
+      Use `phase.spec.brainstorm` only when the spec is fuzzy (L1b) — see read-sources skill. No
+      PLAN.md in this phase."
+  - id: plan
+    title: Plan
+    sub_workflow_id: phase.plan.post-ingest
+    variants:
+      - workflow_id: phase.plan.detailed.post-ingest
+        label: Detailed plan
+        description: Large task or multiple domains (skips duplicate load-spec; ingest already ran).
+    skill_id: phase.plan.write-plan
+    notes: "PLAN.md from research; default sub_workflow: plan.post-ingest (no duplicate task_context
+      after ingest). No production code until the plan is stable."
+  - id: execute
+    title: Execute & Review
+    sub_workflow_id: phase.execute
+    skill_id: dev.tdd
+    notes: TDD per implement step; two-layer review per review_slice step.
+  - id: verify
+    title: Test & compliance
+    sub_workflow_id: phase.verify
+    skill_id: phase.verify.run-tests
+    notes: Tests + verify_compliance; on_failure see hints in the verify phase.

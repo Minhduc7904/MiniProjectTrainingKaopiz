@@ -1,0 +1,14 @@
+{
+  "id": "init_brownfield",
+  "name": "Init — Brownfield (audit + gap-fill, 6 steps in one session)",
+  "description": "Router for brownfield setup in one workflow: discover → architecture retrofit → convention alignment → environment verify → pipeline gap-fill → documentation gap-fill. Each step audits existing repo evidence before proposing changes. `init.enabled_phases` in devkit.workflow-profile.json skips audit phases, but `discover` always runs.",
+  "routes_to_workflow": "setup.init.brownfield",
+  "global_rules": [],
+  "init_sequence": {
+    "phase": 1,
+    "of": 1,
+    "unified_steps": 6,
+    "next_router": null
+  },
+  "shortcut_alias": "brownfield"
+}

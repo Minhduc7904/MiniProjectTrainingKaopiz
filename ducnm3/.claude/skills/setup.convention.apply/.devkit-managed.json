@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "setup.convention.apply",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "50e7311dd42d46c5878ab92328b2531bd92cc544020fa4fccbbf7e7e40318dfd"
+}

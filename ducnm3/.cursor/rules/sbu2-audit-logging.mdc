@@ -1,0 +1,20 @@
+---
+description: "SBU2 runtime audit-logging contract — applies ONLY when runtime_engine=sbu2-ai-kit and you dispatch subagents via MCP batch_invoke_subagents. When runtime_engine=devkit, this rule does not apply and kaopiz-devkit sbu2-log will reject."
+alwaysApply: true
+---
+
+# SBU2 Audit Logging
+
+**DO NOT** call `kaopiz-devkit sbu2-log` when `runtime_engine=devkit` (or the field is absent). The CLI rejects with `sbu2-log requires runtime_engine=sbu2-ai-kit`.
+
+When `runtime_engine=sbu2-ai-kit` and you dispatch subagents via MCP `batch_invoke_subagents`, you MUST call:
+
+- `kaopiz-devkit sbu2-log spawn` (before dispatch: `--status attempt`; after: `--status success` or `--status failed`)
+- `kaopiz-devkit sbu2-log review` (after collecting results)
+- `kaopiz-devkit sbu2-log verify-attempt` (at each saturation-loop iteration)
+
+Call `review` before `verify-attempt --result pass` for the same `--phase`. The CLI rejects pass without a prior `subagent_review_result` for that phase.
+
+Prefer the `--phase` value from the rendered `## SBU2 Audit Trail (MANDATORY)` block in `current_instruction.md`. If that block is absent, use the workflow step mapping: `verify-spec` / `verify-change` / `archive`. Do **not** treat the HTML comment `<!-- sbu2-subagent-spawn-point -->` as the primary phase discovery cue.
+
+Skipping these calls leaves the dashboard Spawn Audit, Reviews, and Verify Loop columns as `missing`.

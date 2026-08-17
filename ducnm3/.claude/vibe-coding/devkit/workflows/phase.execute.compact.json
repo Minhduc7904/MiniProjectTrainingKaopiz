@@ -1,0 +1,24 @@
+{
+  "id": "phase.execute.compact",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Execute (compact)",
+  "description": "Two steps: TDD implementation with fetch_knowhow per domain slice, then two-layer review. Optional tidy/refactor is not a separate manifest step (can be done inside the same pass).",
+  "steps": [
+    {
+      "id": "implement",
+      "title": "Implement per PLAN (TDD)",
+      "skill_id": "dev.tdd",
+      "mcp_tools": [
+        "fetch_knowhow"
+      ],
+      "notes": "Per domain slice: fetch_knowhow(domain) before code in that slice, then Red–Green–Refactor; small commits. If PLAN.md defines non-unit verification, follow PLAN. Next step: two-layer review."
+    },
+    {
+      "id": "review_slice",
+      "title": "Review slice (two-layer)",
+      "skill_id": "phase.execute.subagent-two-layer-review",
+      "notes": "Layer 1 = plan / AC compliance; Layer 2 = quality. Skip extra passes for trivial edits."
+    }
+  ]
+}

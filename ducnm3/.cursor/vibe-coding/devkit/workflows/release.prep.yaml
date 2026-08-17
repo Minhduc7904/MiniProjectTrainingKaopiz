@@ -1,0 +1,29 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: release.prep
+
+id: release.prep
+version: 1.0.0
+kind: atomic
+title: Release — Version & changelog prep
+description: "Release preparation workflow: confirm release scope, apply semver bump, and update
+  CHANGELOG with user-facing impact."
+steps:
+  - id: version_and_changelog
+    title: Scan commits, bump version + CHANGELOG.md
+    skill_id: release.prep.checklist
+    notes: (1) Scan commits since last tag; group feat/fix/breaking for changelog. (2) Update
+      package.json / monorepo workspace version and CHANGELOG.md; do not skip semver. Tag per team
+      convention.
+    requires_user_approval: true
+    expected_artifacts:
+      - CHANGELOG.md
+    verify_commands:
+      - node -e "const fs=require('fs');const
+        p='CHANGELOG.md';if(!fs.existsSync(p)){console.error('Missing
+        CHANGELOG.md');process.exit(1);}const
+        b=fs.readFileSync(p,'utf8');if(!/^#\s+|^##\s+/m.test(b)){console.error('CHANGELOG.md must
+        contain markdown
+        headings.');process.exit(1);}if(!/(added|changed|fixed|breaking|release)/i.test(b)){console.error('CHANGELOG.md
+        should summarize release impact
+        (added/changed/fixed/breaking).');process.exit(1);}if(b.replace(/\s+/g,'').length<180){console.error('CHANGELOG.md
+        update is too thin for release communication.');process.exit(1);}"

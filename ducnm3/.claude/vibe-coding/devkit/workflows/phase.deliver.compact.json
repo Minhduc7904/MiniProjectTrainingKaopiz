@@ -1,0 +1,18 @@
+{
+  "id": "phase.deliver.compact",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Deliver (compact)",
+  "description": "Single handoff step after green verify: PR/issue summary and tracker update; extended docs can follow in a separate task if policy allows.",
+  "steps": [
+    {
+      "id": "handoff",
+      "title": "Handoff",
+      "skill_id": "phase.deliver.final",
+      "notes": "Summarize goal, how to test, and risks; link task/issue; update status. If the public contract changed, flag doc updates (or do minimal docs here per team policy). Create DELIVER.md for handoff / deferred-scope notes (phase.deliver.final).",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/DELIVER.md"
+      ]
+    }
+  ]
+}

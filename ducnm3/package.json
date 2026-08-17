@@ -1,0 +1,37 @@
+{
+  "name": "ducnm3",
+  "version": "1.0.0",
+  "description": "- `AGENTS.md`: mandatory starting point for agents working in this project. - `docs/`: architecture, API, database, development, operations, and detailed test documentation. - `rules/`: implementation and review requirements. - `.agents/skills/`: every project skill lives here. Start with `AGENTS.md`   and `.agents/README.md`, then read the matching skill before coding. - `backend/`: four business services, Scheduler API/Worker foundation, Gateway, shared building blocks, backend tests, and opt-in development tools. - `frontend/`: web client and its UI tests. - `tests/`: automated tests. - `scripts/`: development and CI helper scripts, including database bootstrap/migrate/scaffold, MinIO provisioning, and guarded development data seeding.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "handbook:sync-data": "node node_modules/@kaopiz/devkit-handbook/scripts/sync-from-cursor.mjs --project .",
+    "handbook:tools": "node node_modules/@kaopiz/devkit-handbook/scripts/build-tools-devkit.mjs --project .",
+    "handbook:dashboard": "node node_modules/@kaopiz/devkit-handbook/scripts/build-workflow-dashboard.mjs --project .",
+    "handbook:sync:core": "npm run handbook:sync-data && npm run handbook:tools",
+    "handbook:sync": "npm run handbook:sync-data && npm run handbook:tools && npm run handbook:dashboard",
+    "handbook:serve": "npm run devkit:sync && bash node_modules/@kaopiz/devkit-handbook/scripts/serve-handbook.sh",
+    "devkit:sync:only": "node node_modules/@kaopiz/devkit-sync/dist/cli.js --project .",
+    "devkit:sync": "node node_modules/@kaopiz/devkit-sync/dist/cli.js --project . && npm run handbook:sync",
+    "kaopiz-devkit": "node node_modules/@kaopiz/devkit/dist/cli.js",
+    "devkit-task-runner": "node node_modules/@kaopiz/devkit-task-runner/dist/cli.js",
+    "devkit:mcp-sync": "node node_modules/@kaopiz/devkit/dist/cli.js sync --source mcp --targets cursor,claude",
+    "devkit:mcp-start": "node node_modules/@kaopiz/vibe-coding-mcp/dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "optionalDependencies": {
+    "@kaopiz/devkit": "^0.21.0",
+    "@kaopiz/devkit-handbook": "^0.8.4",
+    "@kaopiz/devkit-hub": "^0.16.0",
+    "@kaopiz/devkit-sync": "^0.13.0",
+    "@kaopiz/devkit-task-runner": "^0.4.1",
+    "@kaopiz/vibe-coding-mcp": "^0.8.0"
+  }
+}

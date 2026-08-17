@@ -1,0 +1,32 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: qa.testing
+
+id: qa.testing
+version: 1.0.0
+kind: atomic
+title: QA — Write / extend tests
+description: "Testing workflow: understand current behavior, add/extend tests, and stabilize the
+  suite without changing runtime logic."
+steps:
+  - id: read_code_under_test
+    title: Read module under test
+    skill_id: phase.ingest.read-sources
+    notes: Identify public API, edge cases, and dependencies to mock. Capture test intent in
+      .vibe/research/<task-id>.md.
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+  - id: write_tests
+    title: Write unit/integration
+    skill_id: qa.testing.strategy
+    notes: Arrange-act-assert; stable mocks; no order-dependent flakiness. Keep focus on coverage of
+      existing behavior.
+  - id: run_suite
+    title: Run tests & stabilize
+    skill_id: phase.verify.run-tests
+    requires_user_approval: true
+    notes: Run relevant test suites, fix flakes, and report test outcomes before completion.
+    verify_commands:
+      - node -e "const fs=require('fs');const roots=['test','tests','__tests__','spec'];const
+        hasRoot=roots.some((d)=>fs.existsSync(d));if(!hasRoot){console.error('No common test
+        directory found (test/tests/__tests__/spec). Ensure test files are added in your project
+        structure.');process.exit(1);}console.log('Test directory detected.');"

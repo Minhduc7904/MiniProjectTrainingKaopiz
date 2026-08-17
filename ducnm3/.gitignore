@@ -9,3 +9,9 @@
 frontend/**/dist/
 frontend/**/dist-ssr/
 frontend/**/*.local
+
+# MCP config (contains personal tokens)
+.cursor/mcp.json
+
+# MCP config (contains personal tokens)
+.mcp.json

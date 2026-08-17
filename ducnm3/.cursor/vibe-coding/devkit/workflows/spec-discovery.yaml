@@ -1,0 +1,29 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: spec-discovery
+
+id: spec-discovery
+version: 1.0.0
+kind: composite
+title: Vibe Coding — Spec discovery (unclear requirements)
+description: "Requirement-quality workflow for tasks where the spec is not yet locked: ingest (read
+  sources + lock scope), then clarify until AC/scope are decision-ready and hand off. Does not
+  include PLAN.md or Execute."
+steps:
+  - id: ingest
+    title: Ingest spec
+    sub_workflow_id: phase.ingest
+    skill_id: phase.ingest.read-sources
+    notes: "Research and scope only — no PLAN.md. Output: .vibe/research/<task-id>.md"
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+  - id: spec_clarity
+    title: Clarify & hand off
+    sub_workflow_id: phase.spec-clarity
+    skill_id: phase.spec.handoff
+    notes: 'Same phase as phase.spec-clarity: clarify (ingest.read-sources) then handoff. Quality bar:
+      AC, scope boundaries, assumptions, and open questions are explicit in
+      .vibe/research/<task-id>.md. When ready, add "Spec ready for PLAN" and approve. Use
+      phase.spec.brainstorm only if exploration is needed before AC exist. Then start planning with
+      the same task_id and an execution router.'
+    expected_artifacts:
+      - .vibe/research/<task-id>.md

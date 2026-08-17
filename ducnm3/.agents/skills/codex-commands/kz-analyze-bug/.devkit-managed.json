@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "kz-analyze-bug",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "39e42cce17d3ca15a9128ee41844f39891f2be27372ccad0b21c492ce3223ba8"
+}

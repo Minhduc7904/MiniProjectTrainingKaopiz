@@ -1,0 +1,15 @@
+{
+  "id": "phase.sp.build",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Build (Superpowers)",
+  "description": "Execute plan with TDD inner loop, review, and verify in one approval window.",
+  "steps": [
+    {
+      "id": "execute",
+      "title": "Execute with TDD + review + verify",
+      "skill_id": "skill.sp.executing-plans",
+      "notes": "Run executing-plans → test-driven-development → requesting-code-review → verification-before-completion. When subagents are available, executing-plans hands off to subagent-driven-development (skill.sp.subagent-driven-development) for per-slice fresh-context execution — follow that handoff. All in one gate so TDD loop is not interrupted."
+    }
+  ]
+}

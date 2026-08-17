@@ -1,0 +1,17 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: qa.review
+
+id: qa.review
+version: 1.0.0
+kind: atomic
+title: QA — Code review (read-only)
+description: Read diff only; spot smell, risk, security; output comments/report — no code edits in this step.
+steps:
+  - id: review_diff
+    title: Review changes
+    skill_id: phase.review.code-request
+    notes: Use code-request skill for fresh context review; security & style checklist.
+  - id: write_findings
+    title: Record findings
+    skill_id: qa.docs.writing
+    notes: Summarize blocking vs nit; link to specific lines.

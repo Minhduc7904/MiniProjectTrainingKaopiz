@@ -1,0 +1,8 @@
+{
+  "id": "feature_with_superpowers",
+  "name": "Feature dev — Superpowers methodology",
+  "description": "Tier-1 router using obra/superpowers methodology: brainstorm-first design → bite-sized plan → execute with TDD → land. 4 approval gates. Use for feature work with design uncertainty where SP rigor adds value.",
+  "routes_to_workflow": "dev.feature.superpowers",
+  "shortcut_alias": "superpowers",
+  "global_rules": []
+}

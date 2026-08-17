@@ -1,0 +1,32 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: phase.ingest
+
+id: phase.ingest
+version: 1.0.0
+kind: atomic
+title: Phase — Ingest spec
+description: Read ticket/spec/AC; capture scope and constraints before a detailed PLAN.
+steps:
+  - id: read_sources
+    title: Read requirement sources
+    skill_id: phase.ingest.read-sources
+    mcp_tools:
+      - get_task_context
+    notes: "L0–L2: gather sources; write/update `.vibe/research/<task-id>.md` (canonical). If MCP fails
+      or AC missing, document in Sources and use brainstorm/clarify — do not PLAN yet. See skill
+      references."
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+  - id: capture_scope
+    title: Lock scope & assumptions
+    skill_id: phase.ingest.lock-scope
+    execution_config:
+      action_skill_id: phase.ingest.lock-scope
+      resolution_strategy: fallback
+      notes: List in-scope / out-of-scope; assumptions to confirm with PO/lead.
+    notes: "L3: concrete in/out scope on same `.vibe/research/<task-id>.md`. If spec not ready, BLOCKED
+      in file — do not invent scope."
+    inputs_from_steps:
+      - ingest::read_sources
+    expected_artifacts:
+      - .vibe/research/<task-id>.md

@@ -1,0 +1,43 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: dev.conflict
+
+id: dev.conflict
+version: 1.0.0
+kind: atomic
+title: Dev — Merge conflict
+description: "Conflict-resolution workflow: analyze both branch intents, resolve semantic conflicts
+  safely, and verify merged behavior."
+steps:
+  - id: understand_branches
+    title: Read both branch diffs
+    skill_id: phase.ingest.read-sources
+    notes: Understand intent on each side; note semantic conflicts (not just text). Record
+      decisions/risks in .vibe/research/<task-id>.md.
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+  - id: resolve_merge
+    title: Merge & verify
+    skill_id: dev.conflict.resolve
+    requires_user_approval: true
+    notes: Keep both changes when needed; run build + related tests before marking resolved. Update
+      .vibe/research/<task-id>.md with final merge decision and verification notes.
+    expected_artifacts:
+      - .vibe/research/<task-id>.md
+    verify_commands:
+      - "node -e \"const fs=require('fs'),path=require('path');const root=process.cwd();const
+        active=path.join(root,'.vibe','active.json');const
+        legacy=path.join(root,'.vibe','state.json');let st;if(fs.existsSync(active)){const
+        p=JSON.parse(fs.readFileSync(active,'utf8'));const seg=p.session_segment;if(!seg||typeof
+        seg!=='string'){console.error('Invalid .vibe/active.json');process.exit(1);}const
+        sp=path.join(root,'.vibe','sessions',seg,'state.json');if(!fs.existsSync(sp)){console.error\
+        ('Missing session state:
+        '+sp);process.exit(1);}st=JSON.parse(fs.readFileSync(sp,'utf8'));}else
+        if(fs.existsSync(legacy)){st=JSON.parse(fs.readFileSync(legacy,'utf8'));}else{console.error\
+        ('No Vibe state: expected .vibe/active.json + .vibe/sessions/<segment>/state.json, or legacy
+        .vibe/state.json');process.exit(1);}const
+        id=String(st.task_id||'').replace(/[^a-zA-Z0-9._-]+/g,'_');const
+        f=path.join(root,'.vibe/research',id+'.md');if(!fs.existsSync(f)){console.error('Missing
+        research file: '+f);process.exit(1);}const b=fs.readFileSync(f,'utf8');if(!/(merge
+        decision|conflict resolution|resolved by|verification)/i.test(b)){console.error('Record
+        merge decision + verification notes in .vibe/research/<task-id>.md before
+        approving.');process.exit(1);}\""

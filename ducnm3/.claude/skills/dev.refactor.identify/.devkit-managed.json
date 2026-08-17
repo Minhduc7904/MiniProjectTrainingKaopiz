@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "dev.refactor.identify",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "215f8a9af3be16f4f4724b0997616cafcfecd45e21aeda2ec6470909027bb24e"
+}

@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "init.pipeline.brownfield",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "8f0de24bf1ec6a7496440765e145a964b66588940a89dde953a143df3059c283"
+}

@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "phase.review.code-request",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "14cc1759a40152d7bdaa3021a48ef2e7484da69a7ec8313e8119c5a5164b0a77"
+}

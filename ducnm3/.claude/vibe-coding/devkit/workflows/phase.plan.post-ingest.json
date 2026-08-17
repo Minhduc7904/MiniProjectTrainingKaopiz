@@ -1,0 +1,27 @@
+{
+  "id": "phase.plan.post-ingest",
+  "version": "1.0.0",
+  "kind": "atomic",
+  "title": "Phase — Plan (after ingest)",
+  "description": "Write PLAN.md only. Use when a parent workflow already ran phase.ingest (task context and research live in .vibe/research/).",
+  "steps": [
+    {
+      "id": "write_plan",
+      "title": "Write PLAN.md",
+      "skill_id": "phase.plan.write-plan",
+      "execution_config": {
+        "action_skill_id": "phase.plan.write-plan",
+        "resolution_strategy": "fallback",
+        "notes": "Prefer overlay at .vibe/skills/phase.plan.write-plan/ when present; otherwise use Hub."
+      },
+      "notes": "Agent MUST read .vibe/research/<task-id>.md (canonical with ingest) before editing PLAN.md; map scope/assumptions/BLOCKED per phase.plan.write-plan. Then break into small steps; Won't do / Later. No production code before the plan is stable.",
+      "inputs_from_steps": [
+        "ingest::capture_scope",
+        "ingest::read_sources"
+      ],
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/PLAN.md"
+      ]
+    }
+  ]
+}

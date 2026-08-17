@@ -1,0 +1,8 @@
+{
+  "id": "bug_fix",
+  "name": "Bugfix",
+  "description": "Tier-1 unified defect router: reproduce → root-cause analysis → minimal fix → regression verify. Use for both normal defects and urgent incidents; keep emergency scope minimal and follow with cleanup when needed.",
+  "routes_to_workflow": "dev.bugfix",
+  "global_rules": [],
+  "shortcut_alias": "bugfix"
+}

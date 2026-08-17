@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "dev.conflict.resolve",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "996a8c8f111ea2a2acc097ce77003fa228117235f379e8e3d00bb9db05b01cbe"
+}

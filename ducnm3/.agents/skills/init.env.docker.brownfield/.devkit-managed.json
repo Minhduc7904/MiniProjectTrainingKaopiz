@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "codex-skill",
+  "skill_id": "init.env.docker.brownfield",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "f1b214f97bf3e6600bc099d755601778dd06af5755283af62a96b11de06747d1"
+}

@@ -1,0 +1,23 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: phase.verify.compact
+
+id: phase.verify.compact
+version: 1.0.0
+kind: atomic
+title: Phase — Verify (compact)
+description: "One step: run tests then verify_compliance. Same failure routing as phase.verify
+  without a separate optional post-green refactor step in the manifest."
+steps:
+  - id: tests_and_compliance
+    title: Tests & compliance
+    skill_id: phase.verify.run-tests
+    mcp_tools:
+      - verify_compliance
+    notes: "Run the test suite until green, then verify_compliance. Record machine-readable verify
+      evidence in **VERIFY-EVIDENCE.json** (`command`, `exit_code`, `timestamp`, `commit_sha`,
+      `evidence_path`) plus short markdown summary in **VERIFY-TESTS.md**. On failure: minor issues
+      → return to Execute; wrong requirement → Plan/Review. Combine any light refactor with the
+      test-fix loop if needed."
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/VERIFY-TESTS.md
+      - .vibe/sessions/{{task_segment}}/VERIFY-EVIDENCE.json

@@ -1,0 +1,11 @@
+{
+  "id": "spec_discovery",
+  "name": "Spec discovery (unclear requirements)",
+  "description": "Tier-1 router for requirement quality first: use when acceptance criteria/scope are fuzzy and you need a high-confidence requirement package before planning. Runs Ingest + spec-clarity handoff only (no PLAN.md, no production code). After completion, start your normal task router with the same task_id.",
+  "routes_to_workflow": "spec-discovery",
+  "global_rules": [
+    "no_production_code_before_plan_gate",
+    "spec_discovery_handoff_before_planning"
+  ],
+  "shortcut_alias": "spec"
+}

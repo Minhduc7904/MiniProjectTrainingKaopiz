@@ -1,0 +1,8 @@
+{
+  "id": "resolve_conflict",
+  "name": "Resolve merge conflict",
+  "description": "Tier-1 router for merge/rebase conflict resolution: reconcile competing branch intent, preserve correct behavior, and verify the merged result before completion.",
+  "routes_to_workflow": "dev.conflict",
+  "global_rules": [],
+  "shortcut_alias": "conflict"
+}

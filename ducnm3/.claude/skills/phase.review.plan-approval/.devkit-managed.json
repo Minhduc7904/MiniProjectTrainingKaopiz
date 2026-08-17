@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "phase.review.plan-approval",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "0eca1c0df07ed42ad062c214158e350f9c650be503714b66e548d8c894b1ad63"
+}

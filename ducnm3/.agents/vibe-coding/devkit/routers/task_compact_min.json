@@ -1,0 +1,12 @@
+{
+  "id": "task_compact_min",
+  "name": "Task workflow (compact, min — fewest flat approves)",
+  "description": "Routes to default.compact.bare: **2 flat steps** (+ optional Deliver) — plan+validate+approval, then implement+review+tests+compliance in one boundary. Same suggested MCP gates as compact; fewer approve cycles than task_compact (weaker per-step audit).",
+  "routes_to_workflow": "default.compact.bare",
+  "global_rules": [
+    "always_write_plan_first",
+    "no_production_code_before_plan_gate",
+    "prefer_subagent_two_layer_for_multi_step"
+  ],
+  "shortcut_alias": "compact-min"
+}

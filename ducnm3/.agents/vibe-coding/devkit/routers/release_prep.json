@@ -1,0 +1,8 @@
+{
+  "id": "release_prep",
+  "name": "Release prep",
+  "description": "Tier-1 router for release readiness: review commit scope, apply semver bump policy, and produce a high-signal CHANGELOG for the release.",
+  "routes_to_workflow": "release.prep",
+  "global_rules": [],
+  "shortcut_alias": "release"
+}

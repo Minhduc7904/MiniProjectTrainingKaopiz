@@ -1,0 +1,51 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: phase.execute
+
+id: phase.execute
+version: 1.0.0
+kind: atomic
+title: Phase — Execute
+description: Implement per PLAN.md; know-how per domain; TDD; two-layer review per slice; small
+  commits; optional tidy refactor between chunks.
+steps:
+  - id: per_domain_knowhow
+    title: Know-how before each domain change
+    skill_id: phase.execute.fetch-knowhow
+    mcp_tools:
+      - fetch_knowhow
+    notes: "For each plan slice that touches a domain: call fetch_knowhow(domain) before coding that
+      slice. Append a short entry (domain, slice, summary of know-how) to **KNOWHOW.md** before
+      approve."
+    inputs_from_steps:
+      - plan::write_plan
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/KNOWHOW.md
+  - id: implement_commits
+    title: Implement (TDD) & commit per slice
+    skill_id: dev.tdd
+    notes: "Follow approved PLAN.md: Red–Green–Refactor per checkbox group; commit incrementally. If
+      PLAN.md defines verification that is not classic unit-test TDD (e.g. E2E, build gate, manual
+      QA checklist), follow that Run/Expected — still keep small commits. The next step is formal
+      two-layer review — do not skip it for non-trivial or multi-slice work. Append per-slice notes
+      (commits, files, PLAN checkboxes) to **IMPLEMENT.md** before approve."
+    inputs_from_steps:
+      - execute::per_domain_knowhow
+      - plan::write_plan
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/IMPLEMENT.md
+  - id: review_slice
+    title: Review slice (two-layer)
+    skill_id: phase.execute.subagent-two-layer-review
+    notes: "After each slice (or before the next chunk): Layer 1 = plan / AC compliance; Layer 2 =
+      quality. Skip extra passes for trivial single-line edits. Record Layer 1/2 conclusions in
+      **REVIEW-SLICES.md** before approve."
+    inputs_from_steps:
+      - execute::implement_commits
+    expected_artifacts:
+      - .vibe/sessions/{{task_segment}}/REVIEW-SLICES.md
+  - id: refactor_chunk
+    title: Refactor / tidy (per chunk)
+    skill_id: phase.execute.tidy-refactor
+    optional: true
+    notes: "After the slice passes two-layer review: simplify naming, remove dead code before the next
+      chunk (Vibe #9). Skip for tiny changes."

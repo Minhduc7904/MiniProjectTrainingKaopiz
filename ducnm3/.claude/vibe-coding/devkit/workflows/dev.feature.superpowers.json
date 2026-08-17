@@ -1,0 +1,32 @@
+{
+  "id": "dev.feature.superpowers",
+  "version": "1.0.0",
+  "kind": "composite",
+  "title": "Dev — Feature flow (Superpowers methodology)",
+  "description": "Feature delivery using obra/superpowers methodology. Three phases: design → build → land, 4 approval gates total.",
+  "steps": [
+    {
+      "id": "design",
+      "title": "Design (brainstorm + plan)",
+      "sub_workflow_id": "phase.sp.design",
+      "skill_id": "skill.sp.brainstorming",
+      "notes": "Brainstorm then write-plan. User approves design before plan effort."
+    },
+    {
+      "id": "build",
+      "title": "Build (execute + TDD + review + verify)",
+      "sub_workflow_id": "phase.sp.build",
+      "skill_id": "skill.sp.executing-plans",
+      "notes": "Execute with TDD inner loop, not interrupted by gates."
+    },
+    {
+      "id": "land",
+      "title": "Land (finish branch)",
+      "skill_id": "skill.sp.finishing-a-development-branch",
+      "notes": "Decide merge vs PR, final gate before task closes.",
+      "expected_artifacts": [
+        ".vibe/sessions/{{task_segment}}/DELIVER.md"
+      ]
+    }
+  ]
+}

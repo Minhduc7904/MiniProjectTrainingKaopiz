@@ -1,0 +1,8 @@
+{
+  "id": "write_docs",
+  "name": "Documentation",
+  "description": "Tier-1 router for documentation-only updates: API docs, README/guides, and examples synchronized with current behavior (no runtime logic changes).",
+  "routes_to_workflow": "qa.docs",
+  "global_rules": [],
+  "shortcut_alias": "docs"
+}

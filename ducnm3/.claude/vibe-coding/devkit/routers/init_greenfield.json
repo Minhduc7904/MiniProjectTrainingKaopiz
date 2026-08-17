@@ -1,0 +1,14 @@
+{
+  "id": "init_greenfield",
+  "name": "Init — Greenfield (unified, 5 steps in one session)",
+  "description": "Tier-1 router for true greenfield bootstrap (new repo/new module baseline): architecture → scaffold → environment → pipeline → documentation, with per-step quality gates and approvals. Use when the project foundation is not established yet; do not use for brownfield feature/bugfix work.",
+  "routes_to_workflow": "setup.init.greenfield",
+  "global_rules": [],
+  "init_sequence": {
+    "phase": 1,
+    "of": 1,
+    "unified_steps": 5,
+    "next_router": null
+  },
+  "shortcut_alias": "greenfield"
+}

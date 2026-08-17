@@ -1,0 +1,8 @@
+{
+  "managed_by": "devkit-sync",
+  "kind": "claude-skill",
+  "skill_id": "dev.debug.systematic",
+  "synced_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "content_hash": "d183e49308be648eff1655d8a4fd5ab8b018359b79aa47d8a7a3ab41deb164ad"
+}

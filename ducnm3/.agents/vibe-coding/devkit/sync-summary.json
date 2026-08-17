@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "layout_version": 6,
+  "managed_by": "devkit-sync",
+  "generated_at": "2026-08-17T02:45:18.405Z",
+  "profile": "backend-node",
+  "project_id": "ducnm3",
+  "payload_version": "1.0.0",
+  "targets": [
+    "cursor",
+    "claude",
+    "codex"
+  ],
+  "rules": [],
+  "skills": [],
+  "workflows": [],
+  "routers": [],
+  "cursor_commands": [],
+  "counts": {
+    "rules": 0,
+    "skills_cursor": 0,
+    "claude_skill_files": 0,
+    "claude_rules": 0,
+    "claude_workflows": 0,
+    "claude_routers": 0,
+    "claude_commands": 0,
+    "workflows": 0,
+    "routers": 0,
+    "cursor_commands": 0,
+    "antigravity_skills": 0,
+    "antigravity_rules": 0,
+    "antigravity_workflows": 0,
+    "antigravity_commands": 0,
+    "antigravity_routers": 0,
+    "opencode_skills": 0,
+    "opencode_rules": 0,
+    "opencode_workflows": 0,
+    "opencode_routers": 0,
+    "opencode_commands": 0,
+    "codex_skills": 44,
+    "codex_rules": 7,
+    "codex_workflows": 36,
+    "codex_routers": 19,
+    "codex_commands": 34
+  },
+  "warnings": [
+    "Skill directory missing: skill.sp.brainstorming",
+    "Skill directory missing: skill.sp.executing-plans",
+    "Skill directory missing: skill.sp.finishing-a-development-branch",
+    "Skill directory missing: skill.sp.writing-plans",
+    "[overwrite] .cursor/vibe-coding/devkit/sync-summary.json replaced (previous content differed)."
+  ]
+}

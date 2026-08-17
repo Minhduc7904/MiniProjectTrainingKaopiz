@@ -1,0 +1,24 @@
+{
+  "id": "default.compact.bare",
+  "version": "1.0.0",
+  "kind": "composite",
+  "title": "Vibe Coding — Task execution (compact, bare)",
+  "description": "Fewest flat steps while keeping plan validation + user approval and post-green compliance: one atomic phase (2 rows) plus optional Deliver. Use when velocity beats per-slice approve granularity; prefer task_compact for stricter step boundaries. (Router task_compact_min points here.)",
+  "steps": [
+    {
+      "id": "task_core",
+      "title": "Plan → build → verify",
+      "sub_workflow_id": "phase.task.minimal",
+      "skill_id": "phase.plan.write-plan",
+      "notes": "Sub-manifest has 2 flat steps (plan gate, then implement+verify). For ingest-first work use task_compact_with_ingest or full with-ingest workflows."
+    },
+    {
+      "id": "deliver",
+      "title": "Deliver",
+      "sub_workflow_id": "phase.deliver.compact",
+      "optional": true,
+      "skill_id": "phase.deliver.final",
+      "notes": "Same optional handoff as other compact variants."
+    }
+  ]
+}

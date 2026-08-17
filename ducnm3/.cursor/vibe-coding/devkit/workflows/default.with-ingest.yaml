@@ -1,0 +1,53 @@
+# DevKit workflow manifest (canonical YAML; same schema as setup/workflows/*.json)
+# id: default.with-ingest
+
+id: default.with-ingest
+version: 1.0.0
+kind: composite
+title: Vibe Coding — Task execution (with Ingest)
+description: Same as default but runs Ingest (read sources + lock scope) before Plan. Use when
+  requirements need discovery before PLAN.md.
+steps:
+  - id: ingest
+    title: Ingest spec
+    sub_workflow_id: phase.ingest
+    skill_id: phase.ingest.read-sources
+    notes: "Research and scope only — no PLAN.md in this phase. Output: .vibe/research/<task>.md"
+  - id: plan
+    title: Plan
+    sub_workflow_id: phase.plan.post-ingest
+    variants:
+      - workflow_id: phase.plan.detailed.post-ingest
+        label: Detailed plan
+        description: More micro-steps for large tasks (skips duplicate load-spec; ingest already ran).
+    skill_id: phase.plan.write-plan
+    notes: "Build PLAN.md from .vibe/research/<task-id>.md; contract:
+      packages/devkit-hub/docs/technical/PLAN-POST-INGEST-SKILL-REFACTOR.md. Default sub_workflow:
+      phase.plan.post-ingest (no duplicate task_context after ingest)."
+  - id: review_plan
+    title: Review plan
+    sub_workflow_id: phase.review
+    skill_id: phase.review.plan-approval
+    notes: "Atomic phase phase.review: (1) validate_and_present → phase.review.validate-plan +
+      validate_plan; (2) approval_and_outcome → phase.review.plan-approval (Approve / Revise /
+      Cancelled / Blocked). For code review after implementation use phase.review.code-request."
+  - id: execute
+    title: Execute
+    sub_workflow_id: phase.execute
+    skill_id: dev.tdd
+    notes: Follow approved PLAN.md; fetch_knowhow per domain; TDD then two-layer review per slice;
+      optional chunk tidy.
+  - id: test_compliance
+    title: Test & compliance
+    sub_workflow_id: phase.verify
+    skill_id: phase.verify.run-tests
+    notes: "Loop: minor failure → Execute again; wrong spec → Plan/Review. See on_failure in child
+      manifests."
+  - id: deliver
+    title: Deliver
+    sub_workflow_id: phase.deliver
+    optional: true
+    skill_id: phase.deliver.final
+    notes: "PR/docs/ticket after green verify. Update docs/specs/; optional kaopiz-devkit archive.
+      optional=true is engine-only: team may still require PR/handoff — document in CONTRIBUTING or
+      devkit.workflow-profile.json (PLAN-VERIFY-DELIVER §1.3)."
