@@ -49,7 +49,7 @@ API docs/Postman và `docs/tests` có evidence.
 | Thuộc tính | Giá trị |
 | --- | --- |
 | Est | 5 giờ |
-| Ticket | `Chưa tạo` |
+| Ticket | `ERBUL26-2978` |
 | Loại | Existing/hardening |
 | Dependency | P5-03, P5-14 |
 | Baseline | F14, TC-NOTI-F14-001..003 |

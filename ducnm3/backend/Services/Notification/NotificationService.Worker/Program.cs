@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.Worker/Program.cs
+// Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
+
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
 using NotificationService.Application;

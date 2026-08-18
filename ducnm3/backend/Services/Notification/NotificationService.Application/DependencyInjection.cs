@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.Application/DependencyInjection.cs
+// Mục đích: Đăng ký dependency injection cho layer hoặc service tương ứng.
+
 using Microsoft.Extensions.DependencyInjection;
 using NotificationService.Application.Features.Batches.Create;
 using NotificationService.Application.Features.Batches.Dispatch;

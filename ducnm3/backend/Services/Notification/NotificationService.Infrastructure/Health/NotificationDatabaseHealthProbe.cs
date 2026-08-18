@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.Infrastructure/Health/NotificationDatabaseHealthProbe.cs
+// Mục đích: Kiểm tra kết nối database của Notification Service để health endpoint phát hiện dependency không sẵn sàng.
+
 using BuildingBlocks.Contracts.Health;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;

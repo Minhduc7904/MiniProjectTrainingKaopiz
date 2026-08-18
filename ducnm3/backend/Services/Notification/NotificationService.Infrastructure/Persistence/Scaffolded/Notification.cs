@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.Infrastructure/Persistence/Scaffolded/Notification.cs
+// Mục đích: Entity EF scaffolded Notification ánh xạ bảng database hiện có; phục vụ persistence và không chứa nghiệp vụ use case.
+
 ﻿using System;
 using System.Collections.Generic;
 

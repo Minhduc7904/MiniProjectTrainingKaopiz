@@ -67,7 +67,7 @@ khi toàn bộ dependency của từng task đã Done.
 | 13 | Hoàn thiện quản lý Media usage | F11 | Existing/hardening | 5 giờ | `Chưa tạo` | [Media](media.md#p5-13--f11-hoàn-thiện-quản-lý-media-usage) |
 | 14 | Hoàn thiện tạo thông báo đơn | F12 | Existing/hardening | 5 giờ | `Chưa tạo` | [Notification](notification.md#p5-14--f12-hoàn-thiện-tạo-thông-báo-đơn) |
 | 15 | Triển khai hộp thư đến và đánh dấu đã đọc | F13 | Planned | 8 giờ | `Chưa tạo` | [Notification](notification.md#p5-15--f13-triển-khai-hộp-thư-đến-và-đánh-dấu-đã-đọc) |
-| 16 | Hoàn thiện tạo Notification batch | F14 | Existing/hardening | 5 giờ | `Chưa tạo` | [Notification](notification.md#p5-16--f14-hoàn-thiện-tạo-notification-batch) |
+| 16 | Hoàn thiện tạo Notification batch | F14 | Existing/hardening | 5 giờ | `ERBUL26-2978` | [Notification](notification.md#p5-16--f14-hoàn-thiện-tạo-notification-batch) |
 | 17 | Hoàn thiện snapshot recipient batch | F15 | Existing/hardening | 6 giờ | `Chưa tạo` | [Notification](notification.md#p5-17--f15-hoàn-thiện-snapshot-recipient-batch) |
 | 18 | Hoàn thiện dispatch, retry và hiệu năng batch | F16 | Existing/hardening | 10 giờ | `Chưa tạo` | [Notification](notification.md#p5-18--f16-hoàn-thiện-dispatch-retry-và-hiệu-năng-batch) |
 | 19 | Hoàn thiện theo dõi Notification batch | F17 | Existing/hardening | 5 giờ | `Chưa tạo` | [Notification](notification.md#p5-19--f17-hoàn-thiện-theo-dõi-notification-batch) |

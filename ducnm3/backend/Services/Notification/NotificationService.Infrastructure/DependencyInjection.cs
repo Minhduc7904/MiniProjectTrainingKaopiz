@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.Infrastructure/DependencyInjection.cs
+// Mục đích: Đăng ký dependency injection cho layer hoặc service tương ứng.
+
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Http;

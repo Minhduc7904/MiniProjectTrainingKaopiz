@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.Infrastructure/Clients/Student/StudentRecipientClient.cs
+// Mục đích: Triển khai client tích hợp hệ thống ngoài cho StudentRecipientClient.
+
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.Json;

@@ -1,3 +1,6 @@
+// File: backend/Services/Notification/NotificationService.IntegrationTests/Persistence/NotificationBatchLeaseIntegrationTests.cs
+// Mục đích: Kiểm thử integration thực tế cho boundary NotificationBatchLeaseIntegrationTests.
+
 using BuildingBlocks.DatabaseMigration;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Abstractions;
