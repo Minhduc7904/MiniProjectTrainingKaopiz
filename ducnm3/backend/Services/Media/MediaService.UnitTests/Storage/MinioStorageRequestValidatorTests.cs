@@ -1,5 +1,8 @@
-using MediaService.Application.Abstractions.Storage;
-using MediaService.Application.Features.Media;
+// File: backend/Services/Media/MediaService.UnitTests/Storage/MinioStorageRequestValidatorTests.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Services.Storage;
+using MediaService.Application.UseCases.Media.DirectUpload;
 using MediaService.Infrastructure.Storage.Minio;
 
 namespace MediaService.UnitTests.Storage;

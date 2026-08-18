@@ -113,6 +113,7 @@ services:
       MINIO_DOCUMENT_BUCKET: ${MINIO_DOCUMENT_BUCKET:-documents}
       MINIO_AUDIO_BUCKET: ${MINIO_AUDIO_BUCKET:-audios}
       MINIO_OTHER_BUCKET: ${MINIO_OTHER_BUCKET:-other}
+      MINIO_API_CORS_ALLOW_ORIGIN: ${MINIO_API_CORS_ALLOW_ORIGIN:-http://localhost:5173}
     volumes:
       - ./scripts/storage/minio/init-media-storage.sh:/bootstrap/init-media-storage.sh:ro
     entrypoint: ["/bin/sh", "/bootstrap/init-media-storage.sh"]
@@ -183,9 +184,12 @@ services:
       Swagger__Enabled: ${Swagger__Enabled:-true}
       ConnectionStrings__Database: ${MEDIA_DB_CONNECTION_STRING:?MEDIA_DB_CONNECTION_STRING must be set}
       Storage__Minio__Endpoint: minio:9000
+      Storage__Minio__PublicEndpoint: ${MINIO_PUBLIC_ENDPOINT:-localhost:9000}
       Storage__Minio__AccessKey: ${MINIO_APP_ACCESS_KEY:?MINIO_APP_ACCESS_KEY must be set}
       Storage__Minio__SecretKey: ${MINIO_APP_SECRET_KEY:?MINIO_APP_SECRET_KEY must be set}
       Storage__Minio__UseSsl: ${MINIO_USE_SSL:-false}
+      Storage__Minio__PublicUseSsl: ${MINIO_PUBLIC_USE_SSL:-false}
+      Storage__Minio__UploadPresignExpirySeconds: ${MEDIA_UPLOAD_PRESIGN_EXPIRY_SECONDS:-900}
       Storage__Minio__ImageBucket: ${MINIO_IMAGE_BUCKET:-images}
       Storage__Minio__VideoBucket: ${MINIO_VIDEO_BUCKET:-videos}
       Storage__Minio__DocumentBucket: ${MINIO_DOCUMENT_BUCKET:-documents}
@@ -221,9 +225,12 @@ services:
       DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ConnectionStrings__Database: ${MEDIA_DB_CONNECTION_STRING:?MEDIA_DB_CONNECTION_STRING must be set}
       Storage__Minio__Endpoint: minio:9000
+      Storage__Minio__PublicEndpoint: ${MINIO_PUBLIC_ENDPOINT:-localhost:9000}
       Storage__Minio__AccessKey: ${MINIO_APP_ACCESS_KEY:?MINIO_APP_ACCESS_KEY must be set}
       Storage__Minio__SecretKey: ${MINIO_APP_SECRET_KEY:?MINIO_APP_SECRET_KEY must be set}
       Storage__Minio__UseSsl: ${MINIO_USE_SSL:-false}
+      Storage__Minio__PublicUseSsl: ${MINIO_PUBLIC_USE_SSL:-false}
+      Storage__Minio__UploadPresignExpirySeconds: ${MEDIA_UPLOAD_PRESIGN_EXPIRY_SECONDS:-900}
       Storage__Minio__ImageBucket: ${MINIO_IMAGE_BUCKET:-images}
       Storage__Minio__VideoBucket: ${MINIO_VIDEO_BUCKET:-videos}
       Storage__Minio__DocumentBucket: ${MINIO_DOCUMENT_BUCKET:-documents}

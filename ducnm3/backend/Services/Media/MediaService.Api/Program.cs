@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Api/Program.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
@@ -5,9 +8,9 @@ using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Endpoints;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
-using MediaService.Application.Features.Media.Upload;
+using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Infrastructure;
-using MediaService.Infrastructure.Persistence;
+using MediaService.Infrastructure.Persistence.Context;
 using MassTransit;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -82,6 +85,8 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 app.MapServiceInfoEndpoint(ServiceNames.Media);
 app.MapMediaHealthEndpoint();
 app.MapUploadMedia();
+app.MapCreateUploadIntent();
+app.MapCompleteDirectUpload();
 app.MapCreateMediaUsage();
 app.MapGetMediaUsageUrl();
 app.MapGetMediaUsageUrls();

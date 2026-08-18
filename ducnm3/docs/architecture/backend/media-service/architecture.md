@@ -6,7 +6,8 @@ Media Service sở hữu media objects, media usages, derivation job và toàn b
 
 ~~~mermaid
 flowchart LR
-  Gateway --> Api[Media API] --> App[Application] --> Domain
+  Browser -->|signed POST| MinIO
+  Browser --> Gateway --> Api[Media API] --> App[Application] --> Domain
   App --> Infra[Infrastructure]
   Infra --> Db[(Media database)]
   Infra --> MinIO
@@ -15,10 +16,16 @@ flowchart LR
 
 ## Các tầng
 
-- **Domain:** media, usage và actor policy.
-- **Application:** upload, content, URL, usage và storage/URL abstraction.
-- **Infrastructure:** EF Core, MinIO adapter, Student query client, health probe, Outbox.
-- **API/Worker:** multipart/content endpoint; thumbnail và notification-media consumer.
+- **Domain:** entity, value object, hằng số và policy; không phụ thuộc framework.
+- **Application:** các vertical `UseCases` cho Media, MediaUsage và MediaDerivation; repository/service port thuộc tầng này.
+- **Infrastructure:** EF Core, mapper persistence, repository, transaction finalizer, MinIO, thumbnail, URL adapter, Student client, health probe và Outbox.
+- **API/Worker:** Minimal API endpoint theo use case và consumer theo nghiệp vụ; không chứa business rule.
+
+## Quy ước source
+
+Mọi file C# trong Media Service và test bắt đầu bằng hai comment tiếng Việt: đường
+dẫn repo-relative và một câu mô tả mục đích. Test kiến trúc tự động kiểm tra quy
+ước này; file `Persistence/Scaffolded` ghi rõ đó là model sinh từ database.
 
 ## Tài liệu chi tiết
 
@@ -32,8 +39,13 @@ flowchart LR
 
 ## Đã triển khai hiện tại
 
-API map upload, usage, content URL/content stream và thumbnail endpoint. Worker đăng ký thumbnail và notification media usage consumer; API/Worker dùng Entity Framework Outbox. Xem [API docs](../../../api/media-service/README.md).
+API map multipart/direct upload, usage, content URL/content stream và thumbnail
+endpoint. Direct browser upload dùng public MinIO endpoint/CORS; API/Worker vẫn
+dùng internal endpoint cho server-side storage. Worker đăng ký thumbnail và
+notification media usage consumer; API/Worker dùng Entity Framework Outbox.
+Xem [API docs](../../../api/media-service/README.md).
 
 ## Định hướng/chưa triển khai
 
-Stale PENDING cleanup bởi Scheduler là định hướng, không phải job đang chạy.
+P5-13 usage-driven draft transition và P5-20 stale/orphan cleanup là định hướng,
+không phải hành vi/job đang chạy.

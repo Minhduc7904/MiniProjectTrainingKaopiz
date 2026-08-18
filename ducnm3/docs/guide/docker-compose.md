@@ -51,6 +51,8 @@ Các command Media đã triển khai dùng:
 - upload công khai `POST /media/api/media` → service path `POST /api/media`;
 - tạo avatar usage công khai `POST /media/api/media/usages` → service path
   `POST /api/media/usages`.
+- direct intent `POST /media/api/media/upload-intents` và complete
+  `POST /media/api/media/{mediaId}/upload-complete`; bytes đi browser → MinIO.
 
 Gateway giữ nguyên multipart body khi bỏ tiền tố `/media`.
 
@@ -72,7 +74,8 @@ Gateway chuyển tiếp từng tài liệu qua cùng một origin:
 - `/notification/swagger/v1/swagger.json`
 - `/scheduler/swagger/v1/swagger.json`
 
-Không cần cấu hình CORS từ trình duyệt đến dịch vụ vì giao diện và tài liệu đều được cung cấp qua Gateway.
+Swagger/API qua Gateway không cần service CORS. Direct upload đi từ browser tới
+MinIO nên MinIO API CORS là bắt buộc; local default là `http://localhost:5173`.
 
 ## Cấu hình môi trường
 
@@ -89,6 +92,9 @@ MINIO_ROOT_USER=minio-root-user
 MINIO_ROOT_PASSWORD=replace-with-a-long-root-secret
 MINIO_APP_ACCESS_KEY=media-storage-app
 MINIO_APP_SECRET_KEY=replace-with-a-long-app-secret
+MINIO_PUBLIC_ENDPOINT=localhost:9000
+MINIO_PUBLIC_USE_SSL=false
+MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:5173
 MINIO_IMAGE_BUCKET=images
 MINIO_VIDEO_BUCKET=videos
 MINIO_DOCUMENT_BUCKET=documents
@@ -100,6 +106,7 @@ MEDIA_UPLOAD_DOCUMENT_MAX_BYTES=52428800
 MEDIA_UPLOAD_AUDIO_MAX_BYTES=104857600
 MEDIA_UPLOAD_OTHER_MAX_BYTES=26214400
 MEDIA_UPLOAD_REQUEST_MAX_BYTES=550502400
+MEDIA_UPLOAD_PRESIGN_EXPIRY_SECONDS=900
 RABBITMQ_USER=lms_app
 RABBITMQ_PASSWORD=replace-with-a-long-rabbitmq-secret
 RABBITMQ_VHOST=/
@@ -113,8 +120,17 @@ hãy dùng kho lưu trữ bí mật của hệ thống triển khai bên ngoài 
 
 `minio` lưu dữ liệu đối tượng trong volume bền vững `minio-data`. `minio-init`
 đợi điểm cuối sức khỏe của MinIO, tạo năm bucket của Media Service và cấp phát
-người dùng ứng dụng theo nguyên tắc đặc quyền tối thiểu. Có thể chạy lại tập lệnh
-khởi tạo một cách an toàn và Media Service sẽ đợi tập lệnh hoàn tất.
+người dùng ứng dụng theo nguyên tắc đặc quyền tối thiểu. Script còn đặt CORS và
+restart MinIO để áp dụng. Có thể chạy lại an toàn và Media Service đợi hoàn tất.
+
+```mermaid
+flowchart LR
+  API[Media API/Worker] -->|Endpoint=minio:9000| MinIO
+  Browser -->|PublicEndpoint=localhost:9000 + CORS| MinIO
+```
+
+Không dùng `minio:9000` trong URL browser. Expiry mặc định 900 giây; public SSL
+và endpoint phải khớp URL thực tế.
 
 Upload ghi database `PENDING` trước khi gọi MinIO, tính checksum SHA-256 trong
 stream rồi chuyển `READY`; lỗi được compensation bằng xóa object và chuyển
@@ -204,3 +220,9 @@ Dựng lại một dịch vụ:
 docker compose build media-service
 docker compose up -d media-service
 ```
+
+- CORS lỗi: kiểm tra origin gồm scheme/port rồi chạy lại `minio-init`.
+- Upload URL không mở được: kiểm tra `MINIO_PUBLIC_ENDPOINT`/
+  `MINIO_PUBLIC_USE_SSL`, không đổi internal endpoint.
+- Signature expired/mismatch: tạo intent mới; không log/chỉnh signed fields.
+- Complete `409`: staging object hoặc size/MIME/checksum metadata/ETag không khớp.

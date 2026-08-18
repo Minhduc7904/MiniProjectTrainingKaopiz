@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.UnitTests/Clients/StudentLookupClientTests.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Net;
 using System.Net.Http.Json;
 using BuildingBlocks.Contracts.Api;
@@ -5,6 +8,8 @@ using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.Presentation.Api;
 using MediaService.Application;
 using MediaService.Infrastructure.Clients.Student;
+
+using MediaService.Application.Common.Errors;
 
 namespace MediaService.UnitTests.Clients;
 

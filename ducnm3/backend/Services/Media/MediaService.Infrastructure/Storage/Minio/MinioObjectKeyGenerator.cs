@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioObjectKeyGenerator.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Globalization;
 
 namespace MediaService.Infrastructure.Storage.Minio;

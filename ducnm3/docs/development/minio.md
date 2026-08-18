@@ -11,6 +11,16 @@ khởi tạo tài nguyên, kiểm tra trạng thái và kiểm thử. Endpoint u
 được triển khai tại Gateway `POST /media/api/media` và service path
 `POST /api/media`; endpoint tạo avatar usage là
 `POST /media/api/media/usages` qua Gateway.
+Direct upload dùng upload-intent qua Gateway, browser POST thẳng MinIO, rồi gọi
+upload-complete; browser vì vậy cần public endpoint và MinIO CORS.
+
+```mermaid
+flowchart LR
+  API[Media API] -->|internal minio:9000| MinIO
+  API -->|ký PublicEndpoint| Browser
+  Browser -->|CORS + signed POST| MinIO
+  Worker -->|internal endpoint| MinIO
+```
 
 ## Bucket và object key
 
@@ -52,6 +62,9 @@ MINIO_ROOT_PASSWORD=replace-with-a-long-root-secret
 MINIO_APP_ACCESS_KEY=media-storage-app
 MINIO_APP_SECRET_KEY=replace-with-a-long-app-secret
 MINIO_USE_SSL=false
+MINIO_PUBLIC_ENDPOINT=localhost:9000
+MINIO_PUBLIC_USE_SSL=false
+MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:5173
 MINIO_HEALTH_TIMEOUT_SECONDS=3
 MINIO_IMAGE_BUCKET=images
 MINIO_VIDEO_BUCKET=videos
@@ -64,14 +77,17 @@ MEDIA_UPLOAD_DOCUMENT_MAX_BYTES=52428800
 MEDIA_UPLOAD_AUDIO_MAX_BYTES=104857600
 MEDIA_UPLOAD_OTHER_MAX_BYTES=26214400
 MEDIA_UPLOAD_REQUEST_MAX_BYTES=550502400
+MEDIA_UPLOAD_PRESIGN_EXPIRY_SECONDS=900
 MEDIA_THUMBNAIL_MAX_WIDTH=640
 MEDIA_THUMBNAIL_MAX_HEIGHT=640
 MEDIA_THUMBNAIL_WEBP_QUALITY=80
 MEDIA_THUMBNAIL_PROCESS_TIMEOUT_SECONDS=120
 ```
 
-Docker Compose ánh xạ các giá trị này sang cấu hình `Storage__Minio__*` cho
-Media Service. Không bao giờ commit `.env` hoặc thông tin xác thực của môi trường sản xuất.
+Docker Compose ánh xạ sang `Storage__Minio__*`. `Endpoint=minio:9000` dành cho
+API/Worker; `PublicEndpoint=localhost:9000` dành cho browser và phải khớp
+`PublicUseSsl`. Policy mặc định hết hạn sau 900 giây. Không commit `.env` hoặc
+credential production.
 
 ## Khởi tạo tài nguyên và khởi động
 
@@ -82,8 +98,8 @@ docker compose up -d minio minio-init
 ```
 
 `minio-init` chờ MinIO đạt trạng thái `healthy`, tạo đủ năm bucket theo cách
-idempotent, tạo một người dùng ứng dụng chuyên biệt và gắn policy chỉ giới hạn
-trong các bucket đó. Media Service không tạo bucket trong thời gian chạy và sẽ khởi động
+idempotent, tạo user ứng dụng, gắn policy và cấu hình CORS từ
+`MINIO_API_CORS_ALLOW_ORIGIN`; MinIO được restart để áp dụng. Media Service không tạo bucket trong thời gian chạy và sẽ khởi động
 thất bại nếu thiếu cấu hình MinIO hoặc cấu hình không hợp lệ.
 
 MinIO API hoạt động tại `http://localhost:9000`; console phát triển hoạt động
@@ -119,6 +135,12 @@ service cố gắng xóa object rồi đánh dấu bản ghi `FAILED`. Cả hai 
 compensation là best effort. Bản ghi `PENDING` stale do process dừng đột ngột
 được để cho Scheduler cleanup trong tương lai; hiện chưa có job quét tự động.
 
+Direct intent là draft `PENDING`; policy 15 phút ràng buộc exact key, MIME,
+length và checksum metadata. Complete HEAD object rồi copy sang unique final key
+chỉ khi ETag còn khớp, sau đó atomically chuyển `READY`. Checksum do frontend
+khai báo và được policy ký, không phải byte hash server tự tính lại. P5-20 chỉ
+xóa staging/loser/orphan sau reference recheck.
+
 Không dùng MinIO console để sửa/xóa object của một media active vì database là
 nguồn trạng thái của workflow, còn bucket/object key là chi tiết nội bộ.
 
@@ -144,3 +166,12 @@ Chạy kiểm thử integration cô lập. Dự án này dùng MinIO Testcontain
 ```bash
 dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.IntegrationTests.csproj
 ```
+
+## Troubleshooting direct upload
+
+| Hiện tượng | Cách xử lý |
+| --- | --- |
+| Browser báo CORS | Kiểm tra exact origin trong `MINIO_API_CORS_ALLOW_ORIGIN`, chạy lại `minio-init`. |
+| `uploadUrl` dùng hostname `minio` | Đặt `MINIO_PUBLIC_ENDPOINT=localhost:9000`; giữ internal endpoint cho container. |
+| Signature/policy expired | Kiểm tra public host/SSL/clock và tạo intent mới; không sửa signed fields. |
+| Worker fail options validation | Worker bind cùng options nên Compose truyền public fields dù worker không ký policy. |

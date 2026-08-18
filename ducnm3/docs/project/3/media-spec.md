@@ -15,12 +15,17 @@
 | --- | --- |
 | Purpose / Actor | Client upload media; hệ thống lưu object/metadata và tạo thumbnail khi phù hợp. |
 | Preconditions | Actor tồn tại; MIME, extension, kích thước và loại media hợp lệ. |
-| Input / Output | Multipart file và metadata / media gốc, content URL, trạng thái thumbnail. |
-| Main flow | Validate actor/file → tạo metadata `PENDING` → stream object → `READY` → enqueue thumbnail nếu hỗ trợ. |
+| Input / Output | Multipart file hoặc direct-upload metadata/SHA-256 / draft media, signed POST ngắn hạn, content URL, trạng thái thumbnail. |
+| Main flow | Multipart baseline hoặc direct: checksum → intent draft `PENDING` → browser POST MinIO → verify/promote → `READY` draft → enqueue thumbnail nếu hỗ trợ. |
 | Alternative flow | Loại media không cần thumbnail kết thúc khi media gốc `READY`; nếu thumbnail thất bại thì media gốc vẫn truy cập được và thumbnail có thể retry. |
 | Error cases | File/actor sai; vượt giới hạn; Student/MinIO không sẵn sàng; upload media gốc thất bại. |
-| AC | Given file hợp lệ, when upload thành công, then media gốc `READY` và response không lộ storage key; when thumbnail lỗi, then media gốc vẫn truy cập được và có thể retry. |
-| Cases | Happy: upload ảnh. Boundary: kích thước tối đa, loại cần thumbnail. Negative: MIME giả, quá cỡ, actor không tồn tại, storage lỗi. |
+| AC | Given file hợp lệ, when multipart/direct upload thành công, then media gốc `READY`, `isDraft=true` và response thường không lộ storage key; signed intent hết hạn 15 phút và không được log. Reload direct page không restore transfer. |
+| Cases | Happy: multipart/direct ảnh. Boundary: 500 MiB, policy 15 phút, concurrent complete. Negative: MIME giả, quá cỡ, actor không tồn tại, CORS/storage lỗi, checksum metadata/ETag stale. |
+
+Direct-upload checksum là metadata SHA-256 frontend khai báo và được signed
+policy ràng buộc; finalize không đọc toàn bộ bytes để tự băm. Complete retry
+idempotent; intent creation không idempotent. P5-13 sở hữu draft transition theo
+usage và P5-20 sở hữu cleanup có reference recheck.
 
 ## F10 — Truy cập Media an toàn
 

@@ -23,18 +23,35 @@ dùng InnoDB, UUID `CHAR(36)` ASCII và timestamp `DATETIME(6)` UTC.
 | `checksum_sha256` | `CHAR(64)`, `NULL` | SHA-256; có khi object `READY`. |
 | `uploaded_by` / `uploaded_by_type` | `CHAR(36)` / `VARCHAR(32)`, `NOT NULL` | Actor logical reference và loại actor đã validate. |
 | `status` | `VARCHAR(20)`, `NOT NULL`, `PENDING` | `PENDING`, `READY`, `FAILED`. |
+| `is_draft` | `TINYINT(1)`, `NOT NULL`, mặc định `1` | `1` khi chưa có usage active. |
 | `failure_reason` | `VARCHAR(500)`, `NULL` | Lỗi an toàn khi thất bại, không trả chi tiết nội bộ. |
 | `completed_at` | `DATETIME(6)`, `NULL` | Lúc thành `READY`. |
+| `drafted_at` | `DATETIME(6)`, `NULL` | Thời điểm bắt đầu draft; null với media non-draft. |
 | `created_at` / `updated_at` | `DATETIME(6)`, `NOT NULL` | Lúc tạo / lần thay đổi cuối. |
 | `deleted_at` | `DATETIME(6)`, `NULL` | Soft-delete; null là active. |
 
 Ràng buộc: `uq_media_objects_bucket_object_key(bucket, object_key)`, check
 `media_type`, `status`, và check source/derivation phải cùng null hoặc derivative
 phải là `THUMBNAIL`. Chỉ mục: `(uploaded_by, created_at DESC)`,
-`(status, created_at)`, `(source_media_id, derivation_type)`.
+`(status, created_at)`, `(source_media_id, derivation_type)` và
+`ix_media_objects_draft_cleanup(is_draft, status, deleted_at, drafted_at)`.
+
+Migration `V005__add_media_draft_state.sql` backfill deterministic: media có ít
+nhất một `media_usages.deleted_at IS NULL` thành `is_draft=0,
+drafted_at=NULL`; mọi media còn lại thành draft với
+`drafted_at=COALESCE(completed_at, created_at)`. Upload multipart và direct mới
+đều draft; direct intent `PENDING` có `drafted_at=NULL`, lúc complete đặt bằng
+completion time.
+
+P5-13 sở hữu việc bỏ draft (`0/NULL`) khi tạo active usage đầu tiên và khôi phục
+draft (`1/current UTC`) sau khi xóa usage active cuối. P5-20 sở hữu cleanup theo
+lịch nhưng phải recheck active usage và reference database ngay trước xóa.
+Loser final object, staging object, PENDING intent và orphan từ commit mơ hồ đều
+được giữ cho cleanup tham chiếu-an-toàn; ticket này không chạy cleanup.
 
 Upload là database-first: tạo `PENDING`, stream MinIO đồng thời tính checksum,
 chuyển `READY` khi hoàn tất; lỗi thì xóa object best effort và đánh dấu `FAILED`.
+Direct flow dùng staging object, kiểm tra ETag rồi promotion sang unique final key.
 
 ## `media_derivation_jobs`
 

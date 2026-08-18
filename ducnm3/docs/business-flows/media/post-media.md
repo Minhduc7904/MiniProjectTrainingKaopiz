@@ -5,7 +5,8 @@ API contract: [`post-media.md`](../../api/media-service/endpoints/post-media.md)
 ## Mục tiêu
 
 Học viên upload file qua Gateway; Media Service lưu metadata và object, sau đó
-trả media `READY` cùng content URL công khai.
+trả media `READY` ở trạng thái draft cùng content URL công khai. Đây là flow
+multipart hiện hữu; direct flow nằm tại [post-media-direct.md](post-media-direct.md).
 
 ## Actor và thành phần
 
@@ -42,7 +43,7 @@ sequenceDiagram
     API->>DB: Insert source media PENDING
     API->>Storage: Stream upload + SHA-256
     Storage-->>API: Upload complete
-    API->>DB: Mark source READY; create thumbnail job/outbox if supported
+    API->>DB: Mark source READY + draft; create thumbnail job/outbox if supported
     API-->>Gateway: 201 source media + thumbnail QUEUED
     Gateway-->>Client: Created response
     Outbox->>MQ: Publish GenerateMediaThumbnail
@@ -57,7 +58,8 @@ sequenceDiagram
 2. Media Service validate request và tra cứu actor qua Student Service.
 3. Application cấp phát storage location và ghi `media_objects=PENDING`.
 4. MinIO adapter stream object và tính SHA-256.
-5. Repository cập nhật media gốc `READY`. Với ảnh, video và PDF, cùng
+5. Repository cập nhật media gốc `READY`, `isDraft=true` và
+   `draftedAtUtc=completedAtUtc`. Với ảnh, video và PDF, cùng
    transaction tạo thumbnail media `PENDING`, derivation job `QUEUED` và
    Outbox command.
 6. API trả `201`, `Location`, Gateway `contentUrl` và trạng thái thumbnail;
@@ -78,7 +80,7 @@ sequenceDiagram
 
 ## Dữ liệu và side effects
 
-- Tạo một media gốc; với type hỗ trợ còn tạo media dẫn xuất và derivation job.
+- Tạo một media gốc draft; với type hỗ trợ còn tạo media dẫn xuất và derivation job.
 - Tạo object MinIO trong bucket theo media category.
 - Tạo Outbox/Inbox state để delivery và consumer idempotent.
 - Không thay đổi database Student.

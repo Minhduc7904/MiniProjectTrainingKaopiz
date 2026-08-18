@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Persistence/Scaffolded/MediaUsage.cs
+// Mục đích: Mô hình EF Core sinh từ database; chỉ phản ánh schema và không chứa business logic viết tay.
+
 ﻿using System;
 using System.Collections.Generic;
 

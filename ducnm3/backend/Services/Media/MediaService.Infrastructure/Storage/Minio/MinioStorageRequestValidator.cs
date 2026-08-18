@@ -1,7 +1,12 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageRequestValidator.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Text.RegularExpressions;
 using MediaService.Application;
-using MediaService.Application.Abstractions.Storage;
-using MediaService.Application.Features.Media;
+using MediaService.Application.Services.Storage;
+using MediaService.Application.UseCases.Media.DirectUpload;
+
+using MediaService.Application.Common.Errors;
 
 namespace MediaService.Infrastructure.Storage.Minio;
 

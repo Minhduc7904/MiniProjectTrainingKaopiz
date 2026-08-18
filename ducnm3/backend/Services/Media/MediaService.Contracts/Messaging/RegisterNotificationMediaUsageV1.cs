@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Contracts/Messaging/RegisterNotificationMediaUsageV1.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using BuildingBlocks.Messaging.Abstractions;
 
 namespace MediaService.Contracts.Messaging;

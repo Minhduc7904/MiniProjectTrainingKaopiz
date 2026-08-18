@@ -62,7 +62,7 @@ khi toàn bộ dependency của từng task đã Done.
 | 8 | Triển khai ghi danh Khóa học idempotent | F04 | Planned | 8 giờ | `Chưa tạo` | [Course](course.md#p5-08--f04-triển-khai-ghi-danh-khóa-học-idempotent) |
 | 9 | Triển khai cập nhật tiến độ Bài học | F05 | Planned | 6 giờ | `Chưa tạo` | [Course](course.md#p5-09--f05-triển-khai-cập-nhật-tiến-độ-bài-học) |
 | 10 | Triển khai CSV streaming cho Khóa học | F06 | Planned | 8 giờ | `Chưa tạo` | [Course](course.md#p5-10--f06-triển-khai-csv-streaming-cho-khóa-học) |
-| 11 | Hoàn thiện upload và xử lý Media | F09 | Existing/hardening | 6 giờ | `Chưa tạo` | [Media](media.md#p5-11--f09-hoàn-thiện-upload-và-xử-lý-media) |
+| 11 | Triển khai direct upload và trạng thái draft ban đầu | F09 | Extension | 16 giờ | `ERBUL26-2914` | [Media](media.md#p5-11--f09-triển-khai-direct-upload-và-trạng-thái-draft-ban-đầu) |
 | 12 | Hoàn thiện truy cập Media an toàn | F10 | Existing/hardening | 5 giờ | `Chưa tạo` | [Media](media.md#p5-12--f10-hoàn-thiện-truy-cập-media-an-toàn) |
 | 13 | Hoàn thiện quản lý Media usage | F11 | Existing/hardening | 5 giờ | `Chưa tạo` | [Media](media.md#p5-13--f11-hoàn-thiện-quản-lý-media-usage) |
 | 14 | Hoàn thiện tạo thông báo đơn | F12 | Existing/hardening | 5 giờ | `Chưa tạo` | [Notification](notification.md#p5-14--f12-hoàn-thiện-tạo-thông-báo-đơn) |
@@ -73,7 +73,7 @@ khi toàn bộ dependency của từng task đã Done.
 | 19 | Hoàn thiện theo dõi Notification batch | F17 | Existing/hardening | 5 giờ | `Chưa tạo` | [Notification](notification.md#p5-19--f17-hoàn-thiện-theo-dõi-notification-batch) |
 | 20 | Triển khai Scheduler dọn dẹp Media | F18 | Planned | 12 giờ | `Chưa tạo` | [Scheduler](scheduler.md#p5-20--f18-triển-khai-scheduler-dọn-dẹp-media) |
 | 21 | Hoàn thiện README và evidence handoff G4 | Toàn hệ thống | Handoff | 4 giờ | `Chưa tạo` | [Handoff](handoff.md#p5-21--hoàn-thiện-readme-và-evidence-handoff-g4) |
-|  | **Tổng** |  |  | **137 giờ** |  |  |
+|  | **Tổng** |  |  | **147 giờ** |  |  |
 
 ## Gate chung của từng task
 

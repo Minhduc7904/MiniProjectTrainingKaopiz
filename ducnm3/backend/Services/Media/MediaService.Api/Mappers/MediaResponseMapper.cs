@@ -1,9 +1,12 @@
+// File: backend/Services/Media/MediaService.Api/Mappers/MediaResponseMapper.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using BuildingBlocks.Contracts.Api;
 using MediaService.Api.Contracts.Responses;
-using MediaService.Application.Features.Media.Upload;
-using MediaService.Application.Features.Derivations;
-using MediaService.Application.Features.Usages.Create;
-using MediaService.Application.Features.Usages.GetUrls;
+using MediaService.Application.UseCases.Media.Upload;
+using MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
+using MediaService.Application.UseCases.MediaUsages.Create;
+using MediaService.Application.UseCases.MediaUsages.GetUrls;
 
 namespace MediaService.Api.Mappers;
 
@@ -16,6 +19,8 @@ public static class MediaResponseMapper
             result.ContentType,
             result.SizeBytes,
             result.Status,
+            result.IsDraft,
+            result.DraftedAtUtc,
             ApiRoutes.Media.ContentPublicPath(result.Id),
             result.ThumbnailStatus,
             result.ThumbnailMediaId,

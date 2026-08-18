@@ -1,7 +1,10 @@
-using MediaService.Application.Abstractions.Derivation;
-using MediaService.Application.Features.Derivations;
-using MediaService.Domain.Media;
-using MediaService.Infrastructure.Derivation;
+// File: backend/Services/Media/MediaService.UnitTests/Derivation/MediaThumbnailGeneratorTests.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Services.Derivation;
+using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;
+using MediaService.Domain.Constants;
+using MediaService.Infrastructure.Services.Thumbnail;
 using SkiaSharp;
 
 namespace MediaService.UnitTests.Derivation;

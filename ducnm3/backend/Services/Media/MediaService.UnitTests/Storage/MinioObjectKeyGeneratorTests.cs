@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.UnitTests/Storage/MinioObjectKeyGeneratorTests.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Text.RegularExpressions;
 using MediaService.Infrastructure.Storage.Minio;
 

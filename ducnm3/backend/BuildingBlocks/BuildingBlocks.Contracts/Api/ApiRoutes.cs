@@ -7,6 +7,8 @@ public static class ApiRoutes
     public static class Media
     {
         public const string Upload = "/api/media";
+        public const string UploadIntents = "/api/media/upload-intents";
+        public const string UploadCompleteTemplate = "/api/media/{mediaId}/upload-complete";
         public const string Usages = "/api/media/usages";
         public const string UsageUrlTemplate = "/api/media/usages/{usageId}/url";
         public const string UsageUrls = "/api/media/usages/urls";
@@ -15,6 +17,15 @@ public static class ApiRoutes
             "/api/media/{mediaId}/thumbnail";
         public const string ThumbnailRetryTemplate =
             "/api/media/{mediaId}/thumbnail/retry";
+
+        public static string ResourcePublicPath(Guid mediaId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Media,
+                $"{Upload}/{mediaId:D}");
+
+        public static string UploadCompleteServicePath(Guid mediaId) =>
+            BuildServicePath(
+                FormatGuidRoute(UploadCompleteTemplate, "mediaId", mediaId));
 
         public static string ContentServicePath(Guid mediaId) =>
             BuildServicePath(FormatGuidRoute(ContentTemplate, "mediaId", mediaId));

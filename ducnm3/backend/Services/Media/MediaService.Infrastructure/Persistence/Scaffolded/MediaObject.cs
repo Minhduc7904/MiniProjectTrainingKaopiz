@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Persistence/Scaffolded/MediaObject.cs
+// Mục đích: Mô hình EF Core sinh từ database; chỉ phản ánh schema và không chứa business logic viết tay.
+
 ﻿using System;
 using System.Collections.Generic;
 
@@ -71,6 +74,11 @@ public partial class MediaObject
     public string Status { get; set; } = null!;
 
     /// <summary>
+    /// Media chưa được gắn với usage active
+    /// </summary>
+    public bool IsDraft { get; set; }
+
+    /// <summary>
     /// Lỗi an toàn nội bộ khi upload FAILED; không trả cho client
     /// </summary>
     public string? FailureReason { get; set; }
@@ -79,6 +87,11 @@ public partial class MediaObject
     /// Thời điểm upload chuyển READY, UTC
     /// </summary>
     public DateTime? CompletedAt { get; set; }
+
+    /// <summary>
+    /// Thời điểm media bắt đầu ở trạng thái draft, UTC
+    /// </summary>
+    public DateTime? DraftedAt { get; set; }
 
     /// <summary>
     /// Thời điểm media record cập nhật gần nhất, UTC

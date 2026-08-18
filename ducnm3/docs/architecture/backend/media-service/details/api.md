@@ -2,13 +2,13 @@
 
 ## Mục đích
 
-API là multipart/content HTTP boundary cho Media Service qua Gateway.
+API là multipart/direct-upload/content HTTP boundary cho Media Service qua Gateway.
 
 ## Kiến trúc
 
 ```mermaid
 flowchart LR
-  Gateway --> Endpoints[Upload / Usage / Content / Thumbnail]
+  Gateway --> Endpoints[Multipart / Upload intent / Complete / Usage / Content / Thumbnail]
   Endpoints --> App[Application]
 ```
 
@@ -18,7 +18,9 @@ Endpoint parse request, map response DTO và gọi handler; không trả bucket/
 
 ## Đã triển khai hiện tại
 
-Có upload, usage, URL/content, thumbnail status/retry endpoint và Media health.
+Có multipart upload, upload-intent, idempotent upload-complete, usage,
+URL/content, thumbnail status/retry endpoint và Media health. Signed fields chỉ
+được trả cho intent caller và phải được redacted khỏi log.
 
 ## Định hướng/chưa triển khai
 
@@ -29,3 +31,4 @@ Policy auth/authorization chỉ được coi là chạy khi endpoint source ch�
 | Hiện tượng | Cách xử lý |
 | --- | --- |
 | Upload 413 | Kiểm tra payload limit và `ApiException` mapping. |
+| Direct upload CORS | Kiểm tra public MinIO endpoint và allowed frontend origin. |

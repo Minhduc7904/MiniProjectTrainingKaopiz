@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Worker/Program.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
 using MassTransit;
@@ -5,7 +8,7 @@ using MediaService.Application;
 using MediaService.Application.Contracts.Messaging;
 using MediaService.Contracts.Messaging;
 using MediaService.Infrastructure;
-using MediaService.Infrastructure.Persistence;
+using MediaService.Infrastructure.Persistence.Context;
 using MediaService.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;

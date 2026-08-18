@@ -2,8 +2,9 @@
 
 ## Mục đích
 
-Tải một tệp lên Media Service, lưu metadata trong database do service sở hữu và
-lưu dữ liệu nhị phân trong MinIO. Đường dẫn công khai qua Gateway là
+Tải một tệp theo multipart flow hiện hữu lên Media Service, lưu metadata trong
+database do service sở hữu và lưu dữ liệu nhị phân trong MinIO. Flow này vẫn
+được hỗ trợ song song với [direct upload](post-media-upload-intents.md). Đường dẫn công khai qua Gateway là
 `POST /media/api/media`; đường dẫn trực tiếp tại Media Service là
 `POST /api/media`.
 
@@ -63,6 +64,8 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
     "contentType": "image/png",
     "sizeBytes": 24576,
     "status": "READY",
+    "isDraft": true,
+    "draftedAtUtc": "2026-08-18T09:02:11Z",
     "contentUrl": "/media/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/content",
     "thumbnailStatus": "QUEUED",
     "thumbnailMediaId": "7b920767-6924-42b1-889f-5e59d3e8f69f",
@@ -75,6 +78,8 @@ Location: /api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c
 }
 ```
 
+Media mới luôn là draft: `isDraft=true` và `draftedAtUtc` là thời điểm hoàn tất
+upload. P5-13 mới sở hữu transition khi usage đầu tiên/cuối cùng thay đổi.
 `Location`, `data.contentUrl` và `data.thumbnailStatusUrl` là public Gateway
 path có tiền tố `/media`. `201` xác nhận media gốc đã `READY`; thumbnail vẫn có
 thể đang `QUEUED`. Với `AUDIO`, `OTHER` và document không phải PDF,
@@ -104,7 +109,8 @@ thể đang `QUEUED`. Với `AUDIO`, `OTHER` và document không phải PDF,
 1. Media Service xác minh actor, cấp phát bucket/object key nội bộ và ghi
    `media_objects` với trạng thái `PENDING` trước khi gọi MinIO.
 2. MinIO nhận stream và tính checksum SHA-256 trong lúc upload.
-3. Khi thành công, media gốc được cập nhật `READY`. Với ảnh, video và PDF,
+3. Khi thành công, media gốc được cập nhật `READY`, `is_draft=1` và
+   `drafted_at=completed_at`. Với ảnh, video và PDF,
    transaction đồng thời tạo media WebP `PENDING`, derivation job `QUEUED` và
    MassTransit Outbox message; chỉ lúc đó API mới trả `201`.
 4. Khi upload bị hủy/lỗi, thiếu checksum hoặc bước hoàn tất database lỗi, service

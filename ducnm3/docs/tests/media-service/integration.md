@@ -38,6 +38,8 @@ stub trong bộ nhớ để test không phụ thuộc Student Service qua mạng
 | `StorageLifecycleWorksForEachMediaCategory` — OTHER | Cùng vòng đời với `application/octet-stream`, phần mở rộng `bin`. | Bucket `other`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
 | `HealthProbeIsHealthyWhenAllBucketsExist` | Gọi `IStorageHealthProbe.CheckAsync` sau khi bộ kiểm thử tạo đủ năm bucket. | `IsHealthy = true`. |
 | `UploadPersistsReadyChecksumAndUsageReplacesStudentAvatar` | Upload ảnh A và B bằng handler thật; gán avatar A → B → A trên MySQL đã áp dụng V003, rồi gửi lại A khi A đang active. | Media là `READY`; checksum đúng; có ba usage history nhưng chỉ một active trỏ lại A; soft-deleted reference được tái sử dụng; duplicate active trả `MEDIA_USAGE_CONFLICT`. |
+| `V005BackfillsExistingMediaDraftStateAndCreatesIndex` | Chèn legacy media trước V005: có active usage, không usage và PENDING; apply migration thật. | Active usage non-draft/null; còn lại draft với timestamp deterministic; `ix_media_objects_draft_cleanup` tồn tại. |
+| `PromoteAsyncSourceChangesAfterHeadRejectsStaleEtag` | Upload source lên real MinIO, stat ETag, thay source rồi promote với ETag cũ. | Real MinIO từ chối copy theo stale ETag; final object không được coi là committed. |
 
 Các kiểm thử vòng đời dùng `MinioStorageLocationAllocator` để reserve
 bucket/object key trước khi gọi storage adapter. Điều này bảo vệ ánh xạ loại →
@@ -46,4 +48,6 @@ bucket và hợp đồng DB-first của flow.
 Flow integration bảo vệ database-first upload ở kết quả bền vững, checksum thật
 và transaction thay avatar/active uniqueness. Nhánh lỗi/compensation được kiểm
 tra bằng unit test; Media endpoint được kiểm tra qua `TestServer`. Gateway
-pass-through và cleanup `PENDING` stale chưa có automated test.
+pass-through và cleanup `PENDING` stale chưa có automated test. Hiện chưa có
+combined real MySQL+MinIO concurrency test cho direct complete; không suy diễn
+coverage này từ unit/component test.

@@ -1,0 +1,38 @@
+// File: backend/Services/Media/MediaService.Application/UseCases/MediaDerivations/RetryThumbnail/RetryMediaThumbnailHandler.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Repositories;
+using MediaService.Application.Services.Actors;
+using MediaService.Domain.ValueObjects;
+
+using MediaService.Domain.Constants;
+
+using MediaService.Application.Common.Errors;
+using MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
+
+namespace MediaService.Application.UseCases.MediaDerivations.RetryThumbnail;
+
+public sealed class RetryMediaThumbnailHandler(
+    IMediaDerivationRepository repository,
+    IActorValidationService actorValidationService)
+{
+    public async Task<MediaThumbnailStatusResult> HandleAsync(
+        Guid sourceMediaId,
+        ActorReference actor,
+        CancellationToken cancellationToken)
+    {
+        if (sourceMediaId == Guid.Empty)
+        {
+            throw MediaErrors.ThumbnailNotFound();
+        }
+
+        var validatedActor = await actorValidationService.ValidateAsync(
+            actor,
+            cancellationToken);
+        var status = await repository.RetryAsync(
+            sourceMediaId,
+            validatedActor,
+            cancellationToken);
+        return MediaThumbnailStatusResult.FromRecord(status);
+    }
+}

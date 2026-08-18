@@ -1,10 +1,14 @@
-using MediaService.Application.Abstractions.Persistence;
-using MediaService.Domain.Media;
+// File: backend/Services/Media/MediaService.UnitTests/TestDoubles/StubMediaRepository.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Repositories;
+using MediaService.Domain.Entities;
+using MediaService.Domain.Constants;
 
 namespace MediaService.UnitTests.TestDoubles;
 
 public sealed class StubMediaRepository(List<string>? sharedEvents = null)
-    : IMediaRepository
+    : IMediaRepository, IMediaUsageRepository
 {
     public List<string> Events { get; } = sharedEvents ?? [];
 
@@ -45,7 +49,9 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
             media.SizeBytes,
             MediaObjectStatuses.Pending,
             DateTime.UtcNow,
-            null);
+            null,
+            IsDraft: media.IsDraft,
+            DraftedAtUtc: media.DraftedAtUtc);
         return Task.CompletedTask;
     }
 
@@ -59,6 +65,8 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
         ExistingMedia = ExistingMedia! with
         {
             Status = MediaObjectStatuses.Ready,
+            IsDraft = true,
+            DraftedAtUtc = completedAtUtc,
         };
         return Task.CompletedTask;
     }
@@ -99,22 +107,22 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
         return Task.FromResult(UsageUrls);
     }
 
-    public Task<MediaUsageRecord> ReplaceStudentAvatarAsync(
+    public Task<MediaUsage> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)
         => ReplaceUsageAsync(usage);
 
-    public Task<MediaUsageRecord> ReplaceMediaThumbnailAsync(
+    public Task<MediaUsage> ReplaceMediaThumbnailAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)
         => ReplaceUsageAsync(usage);
 
-    private Task<MediaUsageRecord> ReplaceUsageAsync(
+    private Task<MediaUsage> ReplaceUsageAsync(
         CreateMediaUsageRecord usage)
     {
         CreatedUsage = usage;
         return Task.FromResult(
-            new MediaUsageRecord(
+            new MediaUsage(
                 usage.Id,
                 usage.MediaId,
                 usage.OwnerService,
@@ -122,6 +130,7 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
                 usage.OwnerId,
                 usage.UsageType,
                 usage.DisplayOrder,
+                usage.CreatedBy,
                 DateTime.UtcNow));
     }
 }

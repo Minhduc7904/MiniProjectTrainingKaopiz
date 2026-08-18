@@ -1,4 +1,7 @@
-using MediaService.Application.Abstractions.Storage;
+// File: backend/Services/Media/MediaService.UnitTests/TestDoubles/StubStorage.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Services.Storage;
 
 namespace MediaService.UnitTests.TestDoubles;
 
@@ -11,6 +14,24 @@ public sealed class StubStorage(List<string>? sharedEvents = null) : IStorage
     public bool FailDownload { get; set; }
 
     public byte[] Content { get; set; } = [1, 2, 3];
+
+    public StorageObjectInfo? Metadata { get; set; }
+
+    public Exception? MetadataException { get; set; }
+
+    public int DownloadCallCount { get; private set; }
+
+    public int MetadataCallCount { get; private set; }
+
+    public int PromoteCallCount { get; private set; }
+
+    public int DeleteCallCount { get; private set; }
+
+    public StoragePromotionRequest? LastPromotion { get; private set; }
+
+    public Exception? PromotionException { get; set; }
+
+    public List<StorageObjectLocation> DeletedLocations { get; } = [];
 
     public Task<StorageObjectInfo> UploadAsync(
         StorageUploadRequest request,
@@ -39,6 +60,7 @@ public sealed class StubStorage(List<string>? sharedEvents = null) : IStorage
         CancellationToken cancellationToken)
     {
         Events.Add("download");
+        DownloadCallCount++;
         if (FailDownload)
         {
             throw new StorageOperationException(
@@ -57,8 +79,37 @@ public sealed class StubStorage(List<string>? sharedEvents = null) : IStorage
 
     public Task<StorageObjectInfo> GetMetadataAsync(
         StorageObjectLocation location,
-        CancellationToken cancellationToken) =>
-        throw new NotSupportedException();
+        CancellationToken cancellationToken)
+    {
+        MetadataCallCount++;
+        if (MetadataException is not null)
+        {
+            throw MetadataException;
+        }
+        return Metadata is null
+            ? throw new StorageOperationException(
+                "Expected missing object.",
+                new InvalidOperationException())
+            : Task.FromResult(Metadata);
+    }
+
+    public Task<StorageObjectInfo> PromoteAsync(
+        StoragePromotionRequest request,
+        CancellationToken cancellationToken)
+    {
+        PromoteCallCount++;
+        LastPromotion = request;
+        if (PromotionException is not null)
+        {
+            throw PromotionException;
+        }
+        var source = Metadata ?? throw new StorageObjectNotFoundException("Missing staging object.");
+        return Task.FromResult(source with
+        {
+            Bucket = request.Destination.Bucket,
+            ObjectKey = request.Destination.ObjectKey,
+        });
+    }
 
     public Task<bool> ExistsAsync(
         StorageObjectLocation location,
@@ -70,6 +121,8 @@ public sealed class StubStorage(List<string>? sharedEvents = null) : IStorage
         CancellationToken cancellationToken)
     {
         Events.Add("delete");
+        DeleteCallCount++;
+        DeletedLocations.Add(location);
         return Task.CompletedTask;
     }
 }

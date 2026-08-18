@@ -1,9 +1,14 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Clients/Student/StudentLookupClient.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Net;
 using System.Net.Http.Json;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Students;
 using MediaService.Application;
-using MediaService.Application.Abstractions.Clients;
+using MediaService.Application.Services.Students;
+
+using MediaService.Application.Common.Errors;
 
 namespace MediaService.Infrastructure.Clients.Student;
 

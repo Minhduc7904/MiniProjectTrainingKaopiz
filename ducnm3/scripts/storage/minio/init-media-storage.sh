@@ -73,3 +73,11 @@ mc admin policy attach \
   "$alias_name" \
   "$policy_name" \
   --user "$MINIO_APP_ACCESS_KEY"
+
+# Direct browser uploads target MinIO rather than Gateway, so MinIO must allow
+# the frontend origin. Applying this server setting requires a MinIO restart.
+mc admin config set \
+  "$alias_name" \
+  api \
+  "cors_allow_origin=$MINIO_API_CORS_ALLOW_ORIGIN"
+mc admin service restart --json "$alias_name"

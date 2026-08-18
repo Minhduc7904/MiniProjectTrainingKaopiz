@@ -1,4 +1,7 @@
-using MediaService.Application.Abstractions.Storage;
+// File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageService.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Services.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -9,10 +12,11 @@ using Minio.Exceptions;
 namespace MediaService.Infrastructure.Storage.Minio;
 
 public sealed partial class MinioStorageService(
-    IMinioClient client,
+    MinioInternalClient internalClient,
     IOptions<MinioStorageOptions> options,
     ILogger<MinioStorageService> logger) : IStorage, IStorageHealthProbe
 {
+    private readonly IMinioClient client = internalClient.Client;
     private readonly MinioStorageOptions storageOptions = options.Value;
 
     public async Task<StorageObjectInfo> UploadAsync(
@@ -103,9 +107,62 @@ public sealed partial class MinioStorageService(
         {
             throw;
         }
+        catch (ObjectNotFoundException exception)
+        {
+            throw new StorageObjectNotFoundException(exception.Message);
+        }
         catch (Exception exception)
         {
             throw CreateOperationException("read metadata for", exception);
+        }
+    }
+
+    public async Task<StorageObjectInfo> PromoteAsync(
+        StoragePromotionRequest request,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        MinioStorageRequestValidator.ValidateLocation(request.Source, storageOptions.GetBuckets());
+        MinioStorageRequestValidator.ValidateLocation(request.Destination, storageOptions.GetBuckets());
+        try
+        {
+            var conditions = new CopyConditions();
+            conditions.SetMatchETag(request.SourceETag);
+            await client.CopyObjectAsync(
+                new CopyObjectArgs()
+                    .WithBucket(request.Destination.Bucket)
+                    .WithObject(request.Destination.ObjectKey)
+                    .WithCopyObjectSource(
+                        new CopySourceObjectArgs()
+                            .WithBucket(request.Source.Bucket)
+                            .WithObject(request.Source.ObjectKey)
+                            .WithCopyConditions(conditions)),
+                cancellationToken);
+            return await GetMetadataAsync(request.Destination, cancellationToken);
+        }
+        catch (StorageObjectNotFoundException)
+        {
+            throw;
+        }
+        catch (ObjectNotFoundException exception)
+        {
+            throw new StorageObjectNotFoundException(exception.Message);
+        }
+        catch (PreconditionFailedException)
+        {
+            throw new StorageObjectNotFoundException(
+                "The staging object changed before promotion.");
+        }
+        catch (MinioException exception) when (
+            exception.Message.Contains("precondition", StringComparison.OrdinalIgnoreCase) ||
+            exception.Message.Contains("412", StringComparison.Ordinal))
+        {
+            throw new StorageObjectNotFoundException(
+                "The staging object changed before promotion.");
+        }
+        catch (Exception exception)
+        {
+            throw CreateOperationException("promote", exception);
         }
     }
 
@@ -201,13 +258,25 @@ public sealed partial class MinioStorageService(
 
     private static StorageObjectInfo MapObjectInfo(
         StorageObjectLocation location,
-        ObjectStat result) =>
-        new(
+        ObjectStat result)
+    {
+        var metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var pair in result.MetaData)
+        {
+            var key = pair.Key.StartsWith("x-amz-meta-", StringComparison.OrdinalIgnoreCase)
+                ? pair.Key[11..]
+                : pair.Key;
+            metadata[key.ToLowerInvariant()] = pair.Value;
+        }
+
+        return new(
             location.Bucket,
             location.ObjectKey,
             result.ContentType,
             result.Size,
-            result.ETag);
+            result.ETag,
+            Metadata: metadata);
+    }
 
     private static StorageOperationException CreateOperationException(
         string operation,

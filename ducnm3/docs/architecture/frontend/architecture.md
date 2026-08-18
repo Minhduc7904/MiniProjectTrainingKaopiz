@@ -18,11 +18,17 @@ flowchart LR
 - **API:** Axios client, route, envelope mapping và interceptor.
 - **UI/layout:** chỉ nhận props, không biết Redux/API.
 
+Với result Media, `useMediaThumbnail` sở hữu vòng đời polling ngắn hạn và hủy
+timer/request khi media đổi, Reset hoặc unmount. API layer đọc `thumbnailStatusUrl`
+do backend trả về và gọi retry bằng `mediaId`; `MediaImagePreview` lấy binary
+qua `GET contentUrl` của `httpClient`, tạo object URL tạm thời và thu hồi khi
+unmount. Component chỉ nhận state để hiển thị preview, metadata và thumbnail
+status.
+
 ## Đã triển khai hiện tại
 
-Vite + React, Tailwind, React Router, Redux Toolkit, Axios, toast interceptor, trang Student, Media và Notification Batch. Xem [Backend overview](../backend/overview.md).
+Vite + React, Tailwind, React Router, Redux Toolkit, Axios, toast interceptor, trang Student, Media và Notification Batch. Hai trang Media dùng chung preview ảnh và polling/retry thumbnail; trang direct upload hiển thị progress XHR ở Output panel. Xem [Backend overview](../backend/overview.md).
 
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.
-

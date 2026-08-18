@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/Sha256ReadStream.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Security.Cryptography;
 
 namespace MediaService.Infrastructure.Storage.Minio;

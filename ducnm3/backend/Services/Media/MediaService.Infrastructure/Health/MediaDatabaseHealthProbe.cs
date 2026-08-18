@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Health/MediaDatabaseHealthProbe.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using BuildingBlocks.Contracts.Health;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;

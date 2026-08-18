@@ -6,7 +6,8 @@ Dự án legacy: `backend/Services/Media/MediaService.UnitTests` với
 `Endpoints/MediaHealthEndpointTests.cs` và `Endpoints/MediaCommandEndpointTests.cs`.
 
 Dự án URL usage: `backend/Services/Media/MediaService.ComponentTests`
-với `Endpoints/GetMediaUsageUrlEndpointsComponentTests.cs`.
+với `Endpoints/GetMediaUsageUrlEndpointsComponentTests.cs` và
+`Endpoints/DirectMediaUploadEndpointsComponentTests.cs`.
 Thành phần phụ thuộc: ASP.NET Core `TestServer`; các trình kiểm tra cơ sở dữ liệu và lưu
 trữ đều là đối tượng giả trong bộ nhớ.
 
@@ -48,3 +49,6 @@ MinIO và transaction thay active avatar được bao phủ trong
 | `GetUsageExistsReturnsOkEnvelope` | `GET /api/media/usages/{usageId}/url` | `200`, JSON envelope và URL do provider giả sinh. |
 | `GetOwnerUsagesReturnsEveryUrlInEnvelope` | `GET /api/media/usages/urls` với owner query | `200` và mảng URL có đúng thứ tự `displayOrder`. |
 | `GetUsageMissingReturnsNotFoundEnvelope` | Usage không tồn tại | `404 MEDIA_USAGE_NOT_FOUND` trong envelope an toàn. |
+| `CreateIntentReturnsCreatedEnvelopeAndCanonicalLocation` | JSON metadata direct upload hợp lệ | `201`, `Location=/media/api/media/{id}`, PENDING draft và signed response qua envelope. |
+| `CompleteReturnsReadyDraftAndIsRetrySafe` | Media PENDING/READY với storage/finalizer doubles | `200` READY draft; replay giữ established result và không nhân side effect. |
+| Direct errors | actor/media/object invalid | `400/404/409` trong envelope an toàn; không lộ storage routing/signed fields. |

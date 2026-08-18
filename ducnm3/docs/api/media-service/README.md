@@ -1,6 +1,8 @@
 # API của Media Service
 
 - [Tải phương tiện lên](endpoints/post-media.md)
+- [Tạo direct-upload intent](endpoints/post-media-upload-intents.md)
+- [Hoàn tất direct upload](endpoints/post-media-upload-complete.md)
 - [Lấy siêu dữ liệu của phương tiện](endpoints/get-media-by-id.md)
 - [Lấy nội dung phương tiện](endpoints/get-media-content.md)
 - [Lấy trạng thái thumbnail](endpoints/get-media-thumbnail.md)

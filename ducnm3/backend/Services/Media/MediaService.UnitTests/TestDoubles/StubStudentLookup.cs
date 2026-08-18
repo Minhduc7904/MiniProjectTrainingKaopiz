@@ -1,5 +1,8 @@
+// File: backend/Services/Media/MediaService.UnitTests/TestDoubles/StubStudentLookup.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using BuildingBlocks.Contracts.Students;
-using MediaService.Application.Abstractions.Clients;
+using MediaService.Application.Services.Students;
 
 namespace MediaService.UnitTests.TestDoubles;
 

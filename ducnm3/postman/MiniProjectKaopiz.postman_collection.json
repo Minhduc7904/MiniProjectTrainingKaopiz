@@ -259,6 +259,88 @@
           "response": []
         },
         {
+          "name": "POST Create media upload intent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Created\", function () { pm.response.to.have.status(201); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Returns pending draft\", function () {",
+                  "  pm.expect(payload.data.status).to.eql(\"PENDING\");",
+                  "  pm.expect(payload.data.isDraft).to.eql(true);",
+                  "});",
+                  "pm.collectionVariables.set(\"mediaId\", payload.data.mediaId);",
+                  "pm.test(\"Canonical Location\", function () {",
+                  "  pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/media/api/media/\" + payload.data.mediaId);",
+                  "});",
+                  "// Do not persist uploadUrl/formFields: they contain short-lived signed material."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"originalFileName\": \"avatar.png\",\n  \"mediaType\": \"IMAGE\",\n  \"contentType\": \"image/png\",\n  \"sizeBytes\": 24576,\n  \"checksumSha256\": \"b2c2f3f0524c01c0bb9f65fd20b50c0f3bce923fb3f010e7badd7a50180dbeab\",\n  \"uploadedBy\": \"{{studentId}}\",\n  \"uploadedByType\": \"STUDENT\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/upload-intents",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "upload-intents"]
+            },
+            "description": "Business flow: docs/business-flows/media/post-media-direct.md. Upload to MinIO is manual: choose a real file, calculate exact size/SHA-256, then submit every returned signed field plus the file directly to uploadUrl. Never save policy/signature/form fields in the collection or environment. Intent creation is non-idempotent."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Complete direct media upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Returns ready draft\", function () {",
+                  "  pm.expect(payload.data.id).to.eql(pm.collectionVariables.get(\"mediaId\"));",
+                  "  pm.expect(payload.data.status).to.eql(\"READY\");",
+                  "  pm.expect(payload.data.isDraft).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uploadedBy\": \"{{studentId}}\",\n  \"uploadedByType\": \"STUDENT\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/{{mediaId}}/upload-complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "{{mediaId}}", "upload-complete"]
+            },
+            "description": "Business flow: docs/business-flows/media/post-media-direct.md. Run only after the manual signed MinIO POST succeeds. This request is safe to retry with the same mediaId."
+          },
+          "response": []
+        },
+        {
           "name": "POST Create media usage",
           "event": [
             {

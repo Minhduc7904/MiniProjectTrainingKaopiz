@@ -1,31 +1,46 @@
+// File: backend/Services/Media/MediaService.IntegrationTests/Flows/MediaUploadUsageFlowTests.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using System.Globalization;
 using System.Security.Cryptography;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.DatabaseMigration;
 using MediaService.Application;
-using MediaService.Application.Abstractions.Clients;
-using MediaService.Application.Abstractions.Storage;
-using MediaService.Application.Actors;
-using MediaService.Application.Features.Media.Upload;
-using MediaService.Application.Features.Usages.Create;
-using MediaService.Domain.Actors;
-using MediaService.Domain.Media;
-using MediaService.Domain.Usages;
+using MediaService.Application.Services.Students;
+using MediaService.Application.Services.Storage;
+using MediaService.Application.Services.Actors;
+using MediaService.Application.UseCases.Media.Upload;
+using MediaService.Application.UseCases.MediaUsages.Create;
+using MediaService.Domain.ValueObjects;
+using MediaService.Domain.Constants;
 using MediaService.Infrastructure.Persistence;
+using MediaService.Infrastructure.Persistence.Context;
+using MediaService.Infrastructure.Persistence.Repositories;
+using MediaService.Infrastructure.Persistence.Transactions;
 using MediaService.Infrastructure.Storage.Minio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using MySqlConnector;
 using Testcontainers.Minio;
 using Testcontainers.MySql;
+
+using MediaService.Application.Common.Errors;
 
 namespace MediaService.IntegrationTests.Flows;
 
 [NonParallelizable]
 public sealed class MediaUploadUsageFlowTests
 {
+    private static readonly Guid LegacyUsedMediaId =
+        Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private static readonly Guid LegacyUnusedMediaId =
+        Guid.Parse("22222222-2222-2222-2222-222222222222");
+    private static readonly Guid LegacyPendingMediaId =
+        Guid.Parse("55555555-5555-5555-5555-555555555555");
     private readonly MySqlContainer mysql = new MySqlBuilder("mysql:8.4")
         .WithDatabase("media_flow_tests")
         .WithUsername("media_test")
@@ -42,15 +57,7 @@ public sealed class MediaUploadUsageFlowTests
     {
         await mysql.StartAsync();
         await minio.StartAsync();
-        await SqlMigrationRunner.ApplyAsync(
-            new SqlMigrationRunnerOptions(
-                "media-flow-tests",
-                mysql.GetConnectionString(),
-                Path.Combine(
-                    TestContext.CurrentContext.TestDirectory,
-                    "Database",
-                    "Migrations")),
-            TestContext.Progress.WriteLine);
+        await ApplyMigrationsWithLegacyDraftBackfillDataAsync();
 
         var endpoint = new Uri(minio.GetConnectionString());
         var options = CreateStorageOptions(endpoint.Authority);
@@ -71,9 +78,63 @@ public sealed class MediaUploadUsageFlowTests
             wrappedOptions,
             keyGenerator);
         storage = new MinioStorageService(
-            minioClient,
+            new MinioInternalClient(minioClient),
             wrappedOptions,
             NullLogger<MinioStorageService>.Instance);
+    }
+
+    [Test]
+    public async Task V005BackfillsExistingMediaDraftStateAndCreatesIndex()
+    {
+        var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                mysql.GetConnectionString(),
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        await using var dbContext = new MediaDbContext(dbOptions);
+        var media = await dbContext.MediaObjects
+            .AsNoTracking()
+            .Where(item =>
+                item.Id == LegacyUsedMediaId ||
+                item.Id == LegacyUnusedMediaId ||
+                item.Id == LegacyPendingMediaId)
+            .OrderBy(item => item.Id)
+            .ToListAsync();
+
+        await using var connection = new MySqlConnection(mysql.GetConnectionString());
+        await connection.OpenAsync();
+        await using var indexCommand = new MySqlCommand(
+            """
+            SELECT COUNT(*)
+            FROM information_schema.statistics
+            WHERE table_schema = DATABASE()
+              AND table_name = 'media_objects'
+              AND index_name = 'ix_media_objects_draft_cleanup';
+            """,
+            connection);
+        var indexColumnCount = Convert.ToInt32(
+            await indexCommand.ExecuteScalarAsync(),
+            CultureInfo.InvariantCulture);
+
+        var used = media.Single(item => item.Id == LegacyUsedMediaId);
+        var unused = media.Single(item => item.Id == LegacyUnusedMediaId);
+        var pending = media.Single(item => item.Id == LegacyPendingMediaId);
+        Assert.Multiple(() =>
+        {
+            Assert.That(used.IsDraft, Is.False);
+            Assert.That(used.DraftedAt, Is.Null);
+            Assert.That(unused.IsDraft, Is.True);
+            Assert.That(
+                unused.DraftedAt,
+                Is.EqualTo(new DateTime(2026, 8, 17, 2, 0, 0, DateTimeKind.Utc)));
+            Assert.That(pending.Status, Is.EqualTo(MediaObjectStatuses.Pending));
+            Assert.That(pending.CompletedAt, Is.Null);
+            Assert.That(pending.IsDraft, Is.True);
+            Assert.That(
+                pending.DraftedAt,
+                Is.EqualTo(new DateTime(2026, 8, 16, 4, 0, 0, DateTimeKind.Utc)));
+            Assert.That(indexColumnCount, Is.EqualTo(4));
+        });
     }
 
     [OneTimeTearDown]
@@ -94,6 +155,7 @@ public sealed class MediaUploadUsageFlowTests
             .Options;
         await using var dbContext = new MediaDbContext(dbOptions);
         var repository = new EfMediaRepository(dbContext, TimeProvider.System);
+        var mediaUsageRepository = new EfMediaUsageRepository(dbContext, TimeProvider.System);
         var uploadFinalizer = new EfMediaUploadFinalizer(
             dbContext,
             new StubCommandSender());
@@ -124,6 +186,12 @@ public sealed class MediaUploadUsageFlowTests
         Assert.Multiple(() =>
         {
             Assert.That(storedMedia.Status, Is.EqualTo(MediaObjectStatuses.Ready));
+            Assert.That(storedMedia.IsDraft, Is.True);
+            Assert.That(storedMedia.DraftedAt, Is.EqualTo(storedMedia.CompletedAt));
+            Assert.That(firstMedia.IsDraft, Is.True);
+            Assert.That(
+                firstMedia.DraftedAtUtc,
+                Is.EqualTo(storedMedia.CompletedAt).Within(TimeSpan.FromMilliseconds(1)));
             Assert.That(
                 storedMedia.ChecksumSha256,
                 Is.EqualTo(Convert.ToHexString(SHA256.HashData(firstBytes)).ToLowerInvariant()));
@@ -141,6 +209,7 @@ public sealed class MediaUploadUsageFlowTests
         var derivationRepository = new EfMediaDerivationRepository(
             dbContext,
             new StubCommandSender(),
+            mediaUsageRepository,
             TimeProvider.System);
         var work = await derivationRepository.BeginAsync(
             derivationJob.Id,
@@ -177,7 +246,8 @@ public sealed class MediaUploadUsageFlowTests
         var usageHandler = new CreateMediaUsageHandler(
             actorValidation,
             studentLookup,
-            repository);
+            repository,
+            mediaUsageRepository);
         var ownerId = actorId;
         await usageHandler.HandleAsync(
             CreateUsageCommand(firstMedia.Id, ownerId, actorId),
@@ -263,6 +333,94 @@ public sealed class MediaUploadUsageFlowTests
             content,
             content.Length,
             new ActorReference(ActorTypes.Student, actorId));
+
+    private async Task ApplyMigrationsWithLegacyDraftBackfillDataAsync()
+    {
+        var migrationsDirectory = Path.Combine(
+            TestContext.CurrentContext.TestDirectory,
+            "Database",
+            "Migrations");
+        var preDraftMigrationsDirectory = Directory.CreateTempSubdirectory(
+            "media-pre-draft-migrations-").FullName;
+        try
+        {
+            foreach (var migration in Directory
+                         .EnumerateFiles(migrationsDirectory, "V*.sql")
+                         .Where(path =>
+                             Path.GetFileName(path) is { } fileName &&
+                             (fileName.StartsWith("V001__", StringComparison.Ordinal) ||
+                              fileName.StartsWith("V002__", StringComparison.Ordinal) ||
+                              fileName.StartsWith("V003__", StringComparison.Ordinal) ||
+                              fileName.StartsWith("V004__", StringComparison.Ordinal))))
+            {
+                File.Copy(
+                    migration,
+                    Path.Combine(
+                        preDraftMigrationsDirectory,
+                        Path.GetFileName(migration)));
+            }
+
+            await SqlMigrationRunner.ApplyAsync(
+                new SqlMigrationRunnerOptions(
+                    "media-flow-tests-pre-draft",
+                    mysql.GetConnectionString(),
+                    preDraftMigrationsDirectory),
+                TestContext.Progress.WriteLine);
+            await InsertLegacyDraftBackfillDataAsync();
+            await SqlMigrationRunner.ApplyAsync(
+                new SqlMigrationRunnerOptions(
+                    "media-flow-tests",
+                    mysql.GetConnectionString(),
+                    migrationsDirectory),
+                TestContext.Progress.WriteLine);
+        }
+        finally
+        {
+            Directory.Delete(preDraftMigrationsDirectory, recursive: true);
+        }
+    }
+
+    private async Task InsertLegacyDraftBackfillDataAsync()
+    {
+        await using var connection = new MySqlConnection(mysql.GetConnectionString());
+        await connection.OpenAsync();
+        await using var command = new MySqlCommand(
+            """
+            INSERT INTO media_objects (
+                id, bucket, object_key, media_type, content_type,
+                original_file_name, size_bytes, checksum_sha256,
+                uploaded_by, uploaded_by_type, status, completed_at,
+                updated_at, created_at)
+            VALUES
+                (@usedMediaId, 'images', 'legacy/used.png', 'IMAGE', 'image/png',
+                 'used.png', 1, @checksum, @actorId, 'STUDENT', 'READY',
+                 '2026-08-17 01:00:00.000000', '2026-08-17 01:00:00.000000',
+                 '2026-08-16 01:00:00.000000'),
+                (@unusedMediaId, 'images', 'legacy/unused.png', 'IMAGE', 'image/png',
+                 'unused.png', 1, @checksum, @actorId, 'STUDENT', 'READY',
+                 '2026-08-17 02:00:00.000000', '2026-08-17 02:00:00.000000',
+                 '2026-08-16 02:00:00.000000'),
+                (@pendingMediaId, 'images', 'legacy/pending.png', 'IMAGE', 'image/png',
+                 'pending.png', 1, NULL, @actorId, 'STUDENT', 'PENDING',
+                 NULL, '2026-08-16 04:00:00.000000',
+                 '2026-08-16 04:00:00.000000');
+
+            INSERT INTO media_usages (
+                id, media_id, owner_service, owner_type, owner_id, usage_type,
+                display_order, created_by, created_by_type, created_at)
+            VALUES (
+                @usageId, @usedMediaId, 'STUDENT', 'STUDENT_AVATAR', @actorId,
+                'AVATAR', 0, @actorId, 'STUDENT', '2026-08-17 03:00:00.000000');
+            """,
+            connection);
+        command.Parameters.AddWithValue("@usedMediaId", LegacyUsedMediaId);
+        command.Parameters.AddWithValue("@unusedMediaId", LegacyUnusedMediaId);
+        command.Parameters.AddWithValue("@pendingMediaId", LegacyPendingMediaId);
+        command.Parameters.AddWithValue("@usageId", Guid.Parse("33333333-3333-3333-3333-333333333333"));
+        command.Parameters.AddWithValue("@actorId", Guid.Parse("44444444-4444-4444-4444-444444444444"));
+        command.Parameters.AddWithValue("@checksum", new string('a', 64));
+        await command.ExecuteNonQueryAsync();
+    }
 
     private static CreateMediaUsageCommand CreateUsageCommand(
         Guid mediaId,

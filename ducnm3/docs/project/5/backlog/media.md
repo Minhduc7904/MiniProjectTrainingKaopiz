@@ -1,25 +1,28 @@
 # Media Service Tasks — Phase 5
 
-## P5-11 — F09 Hoàn thiện upload và xử lý Media
+## P5-11 — F09 Triển khai direct upload và trạng thái draft ban đầu
 
 | Thuộc tính | Giá trị |
 | --- | --- |
-| Est | 6 giờ |
-| Ticket | `Chưa tạo` |
-| Loại | Existing/hardening |
+| Est | 16 giờ |
+| Ticket | `ERBUL26-2914` |
+| Loại | Extension |
 | Dependency | P5-02 |
 | Baseline | F09, TC-MEDIA-F09-001..003 |
 
-**Phạm vi:** Audit upload API, MinIO stream, metadata lifecycle
-`PENDING → READY/FAILED`, thumbnail command/worker và compensation khi DB,
-storage hoặc message thất bại.
+**Phạm vi:** Giữ nguyên multipart/thumbnail baseline đã hoàn thành; thêm browser
+direct upload qua presigned POST, progress không persist, idempotent complete và
+initial draft state/backfill V005. P5-13 xử lý draft theo usage; P5-20 xử lý
+cleanup sau reference recheck.
 
-**Code/test chính:** Media API Upload endpoint, Application Upload/Derivations,
-Infrastructure MinIO/Persistence, Worker và Unit/Integration tests hiện có.
+**Code/test chính:** upload-intent/complete endpoints, Application direct-upload,
+MinIO signing/promotion, persistence V005, `/media/upload-direct`, Unit/
+Component/Integration/frontend tests và canonical docs.
 
-**Hoàn thành khi:** validation không tạo side effect; object/metadata không bị
-mồ côi trong các failure path; thumbnail retry idempotent; không lộ object key;
-testcase F09 pass với MySQL/MinIO/RabbitMQ boundary cần thiết.
+**Hoàn thành khi:** browser upload không đi qua API; policy exact size/type/key/
+checksum hết hạn 15 phút; complete retry an toàn và không nhân thumbnail work;
+multipart/direct media đều draft; active usage legacy được backfill non-draft;
+signed material không lộ trong log/normal API.
 
 ## P5-12 — F10 Hoàn thiện truy cập Media an toàn
 

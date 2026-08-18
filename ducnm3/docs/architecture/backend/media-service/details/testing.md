@@ -23,7 +23,11 @@ dotnet test backend/Services/Media/MediaService.IntegrationTests
 
 ## Đã triển khai hiện tại
 
-Các test project và `MediaUploadUsageFlowTests`/`MinioStorageServiceTests` tồn tại.
+Các test project, direct-upload unit/component suites và
+`MediaUploadUsageFlowTests`/`MinioStorageServiceTests` tồn tại. Real MinIO test
+bảo vệ ETag stale khi promotion; V005 backfill và multipart draft persistence
+dùng real MySQL. Chưa có một test kết hợp real MySQL + MinIO cho concurrent
+complete; concurrency/finalizer hiện được chứng minh ở unit/component boundary.
 
 ## Định hướng/chưa triển khai
 

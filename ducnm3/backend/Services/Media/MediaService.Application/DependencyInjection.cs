@@ -1,12 +1,18 @@
-using MediaService.Application.Actors;
-using MediaService.Application.Features.Derivations;
-using MediaService.Application.Features.Media.GetContent;
-using MediaService.Application.Features.Media.Upload;
-using MediaService.Application.Features.Usages.Create;
-using MediaService.Application.Features.Usages.GetUrls;
-using MediaService.Application.Features.Usages.RegisterNotification;
-using MediaService.Application.Abstractions.Urls;
-using MediaService.Application.Urls;
+// File: backend/Services/Media/MediaService.Application/DependencyInjection.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Services.Actors;
+using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;
+using MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
+using MediaService.Application.UseCases.MediaDerivations.RetryThumbnail;
+using MediaService.Application.UseCases.Media.GetContent;
+using MediaService.Application.UseCases.Media.Upload;
+using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
+using MediaService.Application.UseCases.Media.DirectUpload.Complete;
+using MediaService.Application.UseCases.MediaUsages.Create;
+using MediaService.Application.UseCases.MediaUsages.GetUrl;
+using MediaService.Application.UseCases.MediaUsages.GetUrls;
+using MediaService.Application.UseCases.MediaUsages.RegisterNotification;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,12 +42,13 @@ public static class DependencyInjection
         services.AddScoped<IActorValidator, StudentActorValidator>();
         services.AddScoped<IActorValidationService, ActorValidationService>();
         services.AddScoped<UploadMediaHandler>();
+        services.AddScoped<CreateUploadIntentHandler>();
+        services.AddScoped<CompleteDirectUploadHandler>();
         services.AddScoped<GetMediaContentHandler>();
         services.AddScoped<CreateMediaUsageHandler>();
         services.AddScoped<GetMediaUsageUrlHandler>();
         services.AddScoped<GetMediaUsageUrlsHandler>();
         services.AddScoped<RegisterNotificationMediaUsagesHandler>();
-        services.AddSingleton<IMediaUrlProvider, ContentEndpointMediaUrlProvider>();
         services.AddScoped<GenerateMediaThumbnailHandler>();
         services.AddScoped<GetMediaThumbnailStatusHandler>();
         services.AddScoped<RetryMediaThumbnailHandler>();

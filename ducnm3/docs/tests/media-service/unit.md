@@ -9,6 +9,8 @@ Mã nguồn: `Application/MediaCommandHandlerTests.cs`,
 `Clients/StudentLookupClientTests.cs`,
 `Endpoints/MediaRequestParserTests.cs`,
 `Health/MediaDatabaseHealthProbeTests.cs` và `Storage/*.cs`
+; direct upload còn có `CreateUploadIntentHandlerTests`,
+`CompleteDirectUploadHandlerTests` và `MinioUploadPolicyProviderTests`.
 Thành phần phụ thuộc: không gọi MinIO, MySQL, mạng hoặc Docker.
 
 Chạy:
@@ -40,6 +42,9 @@ dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests
 | URL handler | active/missing/non-image usage | `GetMediaUsageUrlHandlerTests` và `GetMediaUsageUrlsHandlerTests` dùng repository/provider giả trong memory. | Một usage trả URL, usage thiếu trả `MEDIA_USAGE_NOT_FOUND`, owner trả URL cho mọi usage và input owner sai trả `INVALID_MEDIA`. |
 | Multipart limit | `MultipartLengthLimitReturnsPayloadTooLarge` | Parse multipart vượt `MultipartBodyLengthLimit`. | Trả `413 PAYLOAD_TOO_LARGE`. |
 | Student client | route/200/404/503 | Gọi client qua stub HTTP handler. | Dùng shared route/contract; deserialize `200`, `404 -> null`, dependency failure -> safe `503`. |
+| Direct intent | validation/policy/draft | Tên file, type, size, lowercase SHA-256 và actor hợp lệ/lỗi. | Chỉ input hợp lệ tạo PENDING draft và policy exact key/type/size/checksum, trả `Content-Type` form field bắt buộc, expiry 900 giây. |
+| Direct complete | verify/idempotency/concurrency | Metadata matching/mismatch, READY replay, concurrent loser và ambiguous commit. | Chỉ verified object được promotion; ETag được truyền; loser không xóa winner; replay không nhân thumbnail job. |
+| Persistence mapper | `MediaPersistenceMapperTests` | Dựng `Scaffolded.MediaObject` và `Scaffolded.MediaUsage` trong memory. | Mapper tạo đúng domain entities `Media`/`MediaUsage`, gồm metadata, actor và trạng thái draft. |
 
 Các tổ hợp sức khỏe HTTP của Media được chạy qua `TestServer`, vì vậy được ghi trong
 [`component.md`](component.md), không lặp lại ở đây.

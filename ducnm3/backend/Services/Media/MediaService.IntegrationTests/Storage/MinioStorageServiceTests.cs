@@ -1,5 +1,8 @@
+// File: backend/Services/Media/MediaService.IntegrationTests/Storage/MinioStorageServiceTests.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Text;
-using MediaService.Application.Abstractions.Storage;
+using MediaService.Application.Services.Storage;
 using MediaService.Infrastructure.Storage.Minio;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -41,7 +44,7 @@ public sealed class MinioStorageServiceTests
             Options.Create(options),
             objectKeyGenerator);
         storage = new MinioStorageService(
-            client,
+            new MinioInternalClient(client),
             Options.Create(options),
             NullLogger<MinioStorageService>.Instance);
     }
@@ -117,6 +120,35 @@ public sealed class MinioStorageServiceTests
         var result = await storage.CheckAsync(CancellationToken.None);
 
         Assert.That(result.IsHealthy, Is.True);
+    }
+
+    [Test]
+    public async Task PromoteAsyncSourceChangesAfterHeadRejectsStaleEtag()
+    {
+        var source = locationAllocator.Allocate(StorageMediaCategory.Image, "png");
+        var destination = locationAllocator.Allocate(StorageMediaCategory.Image, "png");
+        await using (var initial = new MemoryStream(Encoding.UTF8.GetBytes("initial")))
+        {
+            await storage.UploadAsync(
+                new StorageUploadRequest(source, "image/png", initial, initial.Length),
+                CancellationToken.None);
+        }
+
+        var verified = await storage.GetMetadataAsync(source, CancellationToken.None);
+        await using (var overwritten = new MemoryStream(Encoding.UTF8.GetBytes("overwritten")))
+        {
+            await storage.UploadAsync(
+                new StorageUploadRequest(source, "image/png", overwritten, overwritten.Length),
+                CancellationToken.None);
+        }
+
+        Assert.ThrowsAsync<StorageObjectNotFoundException>(() =>
+            storage.PromoteAsync(
+                new StoragePromotionRequest(source, destination, verified.ETag!),
+                CancellationToken.None));
+        Assert.That(
+            await storage.ExistsAsync(destination, CancellationToken.None),
+            Is.False);
     }
 
     private MinioStorageOptions CreateOptions(string endpoint) =>

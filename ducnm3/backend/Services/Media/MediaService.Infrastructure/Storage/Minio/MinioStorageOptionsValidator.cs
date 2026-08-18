@@ -1,3 +1,6 @@
+// File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageOptionsValidator.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 
@@ -27,6 +30,24 @@ public sealed partial class MinioStorageOptionsValidator : IValidateOptions<Mini
         if (string.IsNullOrWhiteSpace(options.AccessKey))
         {
             failures.Add("Storage:Minio:AccessKey is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(options.PublicEndpoint))
+        {
+            failures.Add("Storage:Minio:PublicEndpoint is required.");
+        }
+        else
+        {
+            var publicScheme = options.PublicUseSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+            if (!Uri.TryCreate($"{publicScheme}://{options.PublicEndpoint}", UriKind.Absolute, out _))
+            {
+                failures.Add("Storage:Minio:PublicEndpoint must be a valid host with an optional port.");
+            }
+        }
+
+        if (options.UploadPresignExpirySeconds is < 60 or > 3600)
+        {
+            failures.Add("Storage:Minio:UploadPresignExpirySeconds must be between 60 and 3600.");
         }
 
         if (string.IsNullOrWhiteSpace(options.SecretKey))

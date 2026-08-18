@@ -1,4 +1,7 @@
-using MediaService.Application.Abstractions.Storage;
+// File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageOptions.cs
+// Mục đích: Cung cấp thành phần phục vụ Media Service.
+
+using MediaService.Application.Services.Storage;
 
 namespace MediaService.Infrastructure.Storage.Minio;
 
@@ -13,6 +16,12 @@ public sealed class MinioStorageOptions
     public string SecretKey { get; init; } = string.Empty;
 
     public bool UseSsl { get; init; }
+
+    public string PublicEndpoint { get; init; } = "localhost:9000";
+
+    public bool PublicUseSsl { get; init; }
+
+    public int UploadPresignExpirySeconds { get; init; } = 900;
 
     public string ImageBucket { get; init; } = string.Empty;
 
