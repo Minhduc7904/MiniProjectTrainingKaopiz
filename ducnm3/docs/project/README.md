@@ -12,6 +12,7 @@ Phase 4.
 - [Requirement traceability Phase 0–2](2/traceability.md)
 - [Phase 3 — Requirements](3/README.md)
 - [Phase 4 — Basic Design + Testcase](4/README.md)
+- [Phase 5 — Development + Self-test](5/README.md)
 
 > [!NOTE]
 > Phase 3 mô tả hệ thống **phải làm gì**. API, database, sequence chi tiết và

@@ -38,6 +38,7 @@ flowchart TD
 - [Non-functional testcase](testcases/non-functional-testcases.md)
 - [Traceability](traceability.md)
 - [Q&A và design decisions](open-questions.md)
+- [Phase 5 handoff](phase-5-handoff.md)
 
 ## Nguyên tắc quản lý tài liệu
 
