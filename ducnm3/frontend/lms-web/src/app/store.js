@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { attachHttpInterceptors } from '@/api/httpInterceptors'
 import { mediaReducer, uploadMedia } from '@/features/media/mediaSlice'
+import { directUploadReducer } from '@/features/media/directUploadSlice'
+import { mediaThumbnailReducer } from '@/features/media/mediaThumbnailSlice'
 import { studentsReducer } from '@/features/students/studentsSlice'
 import { notificationBatchesReducer } from '@/features/notifications/notificationBatchesSlice'
 import { toastsReducer } from '@/features/toasts/toastsSlice'
@@ -9,6 +11,8 @@ export const store = configureStore({
   reducer: {
     students: studentsReducer,
     media: mediaReducer,
+    directUpload: directUploadReducer,
+    mediaThumbnail: mediaThumbnailReducer,
     notificationBatches: notificationBatchesReducer,
     toasts: toastsReducer,
   },

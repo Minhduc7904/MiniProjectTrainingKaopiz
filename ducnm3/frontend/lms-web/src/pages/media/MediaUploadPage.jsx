@@ -138,7 +138,7 @@ export function MediaUploadPage() {
               description={MEDIA_COPY.emptyHint}
             />
           ) : null}
-          {!error && data ? <MediaResult media={data} location={location} /> : null}
+          {!error && data ? <MediaResult media={data} location={location} query={query} /> : null}
         </OutputPanel>
       }
     />

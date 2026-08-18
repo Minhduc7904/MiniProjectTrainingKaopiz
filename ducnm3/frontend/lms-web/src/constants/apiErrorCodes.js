@@ -14,6 +14,9 @@ export const API_ERROR_CODES = {
   mediaUploadFailed: 'MEDIA_UPLOAD_FAILED',
   networkError: 'NETWORK_ERROR',
   requestTimeout: 'REQUEST_TIMEOUT',
+  directUploadFailed: 'DIRECT_UPLOAD_FAILED',
+  uploadCanceled: 'UPLOAD_CANCELED',
+  checksumFailed: 'CHECKSUM_FAILED',
 }
 
 export const AXIOS_ERROR_CODES = {

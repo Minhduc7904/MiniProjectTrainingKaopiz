@@ -2,8 +2,10 @@ import axios from 'axios'
 import { ENV } from '@/constants/env'
 import { HTTP_LOG_LABELS } from '@/constants/httpLog'
 import { TOAST_CONFIG_KEY } from '@/constants/toast'
+import { sanitizeSensitiveValue } from '@/utils/sanitizeSensitiveValue'
 
 export const HTTP_STARTED_AT_KEY = 'apiStartedAt'
+export const redactHttpLogValue = sanitizeSensitiveValue
 
 function fullUrl(config) {
   try {
@@ -47,13 +49,13 @@ export function logHttpRequest(config) {
   console.log('id', id)
   console.log('baseURL', config.baseURL)
   console.log('url', config.url)
-  console.log('params', config.params ?? null)
-  console.log('headers', snapshotHeaders(config.headers))
+  console.log('params', redactHttpLogValue(config.params ?? null))
+  console.log('headers', redactHttpLogValue(snapshotHeaders(config.headers)))
   console.log(
     'data',
     typeof FormData !== 'undefined' && config.data instanceof FormData
       ? [...config.data.keys()]
-      : (config.data ?? null),
+      : redactHttpLogValue(config.data ?? null),
   )
   console.groupEnd()
 }
@@ -75,8 +77,8 @@ export function logHttpResponse(response) {
   console.log('durationMs', durationMs(config))
   console.log('status', response.status)
   console.log('statusText', response.statusText)
-  console.log('headers', snapshotHeaders(response.headers))
-  console.log('data', response.data)
+  console.log('headers', redactHttpLogValue(snapshotHeaders(response.headers)))
+  console.log('data', redactHttpLogValue(response.data))
   console.groupEnd()
 }
 
@@ -99,8 +101,8 @@ export function logHttpError(error) {
   console.log('code', error.code ?? null)
   console.log('message', error.message)
   console.log('status', status)
-  console.log('headers', snapshotHeaders(error.response?.headers))
-  console.log('data', error.response?.data ?? null)
-  console.error(error)
+  console.log('headers', redactHttpLogValue(snapshotHeaders(error.response?.headers)))
+  console.log('data', redactHttpLogValue(error.response?.data ?? null))
+  console.error({ code: error.code ?? null, message: error.message, status })
   console.groupEnd()
 }

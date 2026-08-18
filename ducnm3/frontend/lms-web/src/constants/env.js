@@ -19,6 +19,9 @@ export const ENV = {
   appName: requiredEnv('VITE_APP_NAME'),
   apiBaseUrl: requiredEnv('VITE_API_BASE_URL').replace(/\/$/, ''),
   apiTimeoutMs: Number(import.meta.env.VITE_API_TIMEOUT_MS || 15000),
+  directUploadTimeoutMs: Number(
+    import.meta.env.VITE_DIRECT_UPLOAD_TIMEOUT_MS || 30 * 60 * 1000,
+  ),
   isDev: import.meta.env.DEV,
   httpLog: parseFlag(import.meta.env.VITE_HTTP_LOG, import.meta.env.DEV),
 }

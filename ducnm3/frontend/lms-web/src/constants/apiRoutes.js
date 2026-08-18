@@ -28,12 +28,19 @@ export const API_ROUTES = {
   },
   media: {
     upload: joinPath(GATEWAY_PREFIXES.media, '/api/media'),
+    uploadIntents: joinPath(GATEWAY_PREFIXES.media, '/api/media/upload-intents'),
+    uploadComplete: (mediaId) =>
+      joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'upload-complete'),
     usages: joinPath(GATEWAY_PREFIXES.media, '/api/media/usages'),
     usageUrl: (usageId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media/usages', usageId, 'url'),
     usageUrls: joinPath(GATEWAY_PREFIXES.media, '/api/media/usages/urls'),
     content: (mediaId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'content'),
+    thumbnail: (mediaId) =>
+      joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'thumbnail'),
+    retryThumbnail: (mediaId) =>
+      joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'thumbnail', 'retry'),
   },
   notifications: {
     batches: joinPath(GATEWAY_PREFIXES.notification, '/api/notification-batches'),

@@ -30,3 +30,22 @@ export async function uploadMediaRequest({
     location,
   }
 }
+
+export async function getMediaThumbnailRequest(thumbnailStatusUrl, { signal } = {}) {
+  const response = await httpClient.get(thumbnailStatusUrl, { signal })
+  return unwrapEnvelope(response)
+}
+
+export async function getMediaContentRequest(contentUrl, { signal } = {}) {
+  const response = await httpClient.get(contentUrl, { signal, responseType: 'blob' })
+  return response.data
+}
+
+export async function retryMediaThumbnailRequest(mediaId, actor, { signal } = {}) {
+  const response = await httpClient.post(
+    API_ROUTES.media.retryThumbnail(mediaId),
+    actor,
+    { signal },
+  )
+  return unwrapEnvelope(response)
+}

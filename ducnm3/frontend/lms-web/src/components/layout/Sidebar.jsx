@@ -10,6 +10,7 @@ import {
   Timer,
   Activity,
   Upload,
+  UploadCloud,
   Users,
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -38,6 +39,7 @@ const menuIcons = {
   students: Users,
   courses: Library,
   upload: Upload,
+  uploadDirect: UploadCloud,
   messages: Mail,
   send: Send,
   progress: Activity,
