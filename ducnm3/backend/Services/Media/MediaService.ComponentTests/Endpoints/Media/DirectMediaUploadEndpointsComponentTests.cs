@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.ComponentTests/Endpoints/Media/DirectMediaUploadEndpointsComponentTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử endpoint upload trực tiếp qua TestServer: intent, complete, route, envelope và các response lỗi.
 
 using System.Net;
 using System.Net.Http.Json;

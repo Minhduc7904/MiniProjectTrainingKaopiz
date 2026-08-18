@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Endpoints/Media/GetContent/GetMediaContentEndpoint.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo Minimal API endpoint GetMediaContentEndpoint, chuyển HTTP request thành use case và map response.
 
 using System.Net.Http.Headers;
 using BuildingBlocks.Contracts.Api;

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/Upload/MediaUploadOptions.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa options cấu hình được bind từ application configuration cho MediaUploadOptions.
 
 using MediaService.Application.Services.Storage;
 

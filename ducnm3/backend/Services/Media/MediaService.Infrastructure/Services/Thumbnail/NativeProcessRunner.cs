@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Services/Thumbnail/NativeProcessRunner.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Chạy process native như FFmpeg với timeout và thu thập lỗi, được MediaThumbnailGenerator dùng để trích thumbnail video.
 
 using System.Diagnostics;
 

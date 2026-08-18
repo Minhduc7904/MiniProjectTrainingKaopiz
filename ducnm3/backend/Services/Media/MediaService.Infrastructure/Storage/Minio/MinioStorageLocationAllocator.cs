@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageLocationAllocator.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Chọn bucket và sinh vị trí MinIO cho file Media theo category trước khi upload hoặc promote.
 
 using MediaService.Application.Services.Storage;
 using Microsoft.Extensions.Options;

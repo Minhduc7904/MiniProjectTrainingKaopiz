@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Common/Errors/MediaErrors.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Tập trung tạo các lỗi nghiệp vụ Media có mã, HTTP status và thông điệp thống nhất cho API.
 
 using BuildingBlocks.Contracts.Api;
 

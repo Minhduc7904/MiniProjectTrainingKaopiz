@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/StorageOperationException.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Biểu diễn lỗi vận hành storage như MinIO không sẵn sàng để API có thể trả trạng thái phù hợp.
 
 namespace MediaService.Application.Services.Storage;
 

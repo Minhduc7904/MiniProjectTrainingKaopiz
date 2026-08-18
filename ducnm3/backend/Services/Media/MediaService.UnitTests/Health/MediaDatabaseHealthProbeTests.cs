@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Health/MediaDatabaseHealthProbeTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử health probe database Media để bảo đảm lỗi dependency được nhận diện đúng.
 
 using MediaService.Infrastructure.Health;
 using Microsoft.Extensions.Logging.Abstractions;

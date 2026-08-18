@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Storage/MinioObjectKeyGeneratorTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử ràng buộc và hành vi adapter MinIO tương ứng, gồm policy, object key, validation hoặc options.
 
 using System.Text.RegularExpressions;
 using MediaService.Infrastructure.Storage.Minio;

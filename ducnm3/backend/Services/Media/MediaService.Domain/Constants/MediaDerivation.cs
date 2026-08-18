@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Constants/MediaDerivation.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo loại tác vụ derivation Media, hiện dùng cho sinh thumbnail sau khi file sẵn sàng.
 
 namespace MediaService.Domain.Constants;
 

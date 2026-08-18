@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioObjectKeyGenerator.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Sinh object key MinIO có namespace theo Media ID và category để tách file, tránh trùng đường dẫn và dễ dọn rác.
 
 using System.Globalization;
 

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Contracts/MediaUsages/GetUrls/MediaUsageUrlResponse.cs
-// Mục đích: Định nghĩa contract chia sẻ của Media Service.
+// Mục đích: Định nghĩa response contract HTTP cho MediaUsageUrlResponse.
 
 namespace MediaService.Api.Contracts.Responses;
 

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Persistence/Repositories/EfMediaRepository.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Triển khai repository EfMediaRepository bằng EF Core và persistence model.
 
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Storage;

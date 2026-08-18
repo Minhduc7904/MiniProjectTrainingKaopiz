@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.ComponentTests/Endpoints/MediaUsages/GetMediaUsageUrlEndpointsComponentTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử endpoint lấy URL Media Usage qua TestServer: route, envelope, phân quyền và response URL.
 
 using System.Net;
 using System.Net.Http.Json;

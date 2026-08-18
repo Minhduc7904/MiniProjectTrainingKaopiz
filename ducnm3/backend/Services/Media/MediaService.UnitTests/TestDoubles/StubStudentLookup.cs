@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/TestDoubles/StubStudentLookup.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Cung cấp test double StubStudentLookup để unit test cô lập use case khỏi dependency bên ngoài.
 
 using BuildingBlocks.Contracts.Students;
 using MediaService.Application.Services.Students;

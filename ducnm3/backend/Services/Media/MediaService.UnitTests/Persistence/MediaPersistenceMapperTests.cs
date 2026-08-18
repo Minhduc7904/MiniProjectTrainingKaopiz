@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Persistence/MediaPersistenceMapperTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử mapper chuyển entity EF Media sang dữ liệu Application mà không mất các trường lifecycle và ownership.
 
 using MediaService.Domain.Entities;
 using MediaService.Infrastructure.Persistence.Mappers;

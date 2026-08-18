@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.IntegrationTests/Flows/MediaUploadUsageFlowTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử flow tích hợp upload Media rồi gắn Media Usage với các dependency thực để bảo vệ vòng đời draft và ready.
 
 using System.Globalization;
 using System.Security.Cryptography;

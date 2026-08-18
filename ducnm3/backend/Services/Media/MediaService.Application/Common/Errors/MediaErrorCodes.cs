@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Common/Errors/MediaErrorCodes.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo mã lỗi nghiệp vụ Media để frontend và các service nhận diện lỗi ổn định.
 
 namespace MediaService.Application.Common.Errors;
 

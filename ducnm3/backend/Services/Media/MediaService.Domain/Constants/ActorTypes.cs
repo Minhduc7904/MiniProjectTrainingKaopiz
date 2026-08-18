@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Constants/ActorTypes.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo các loại actor thực hiện thao tác Media để kiểm tra quyền và audit.
 
 namespace MediaService.Domain.Constants;
 

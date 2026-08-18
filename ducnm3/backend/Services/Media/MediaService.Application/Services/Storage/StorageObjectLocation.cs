@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/StorageObjectLocation.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Đóng gói vị trí bucket và object key của media trong storage.
 
 namespace MediaService.Application.Services.Storage;
 

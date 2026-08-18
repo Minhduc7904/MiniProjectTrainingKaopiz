@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Api/Endpoints/Media/MediaCommandEndpointTests.cs
-// Mục đích: Khai báo Minimal API endpoint tại HTTP boundary của Media Service.
+// Mục đích: Kiểm thử HTTP contract, route và response của endpoint MediaCommandEndpointTests.
 
 using System.Net;
 using System.Net.Http.Json;

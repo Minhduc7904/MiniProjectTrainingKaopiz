@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/IStorageLocationAllocator.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port cấp bucket và object key riêng cho media upload, tránh use case tự tạo đường dẫn storage.
 
 namespace MediaService.Application.Services.Storage;
 

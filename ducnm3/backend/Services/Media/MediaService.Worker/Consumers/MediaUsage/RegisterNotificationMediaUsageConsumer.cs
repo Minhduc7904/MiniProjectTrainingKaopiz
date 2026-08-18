@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Worker/Consumers/MediaUsage/RegisterNotificationMediaUsageConsumer.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Tiêu thụ message nền và kích hoạt nghiệp vụ RegisterNotificationMediaUsageConsumer.
 
 using MassTransit;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;

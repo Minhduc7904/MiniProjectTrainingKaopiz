@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/DirectUpload/DirectUploadChecksum.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Chuẩn hóa và kiểm tra SHA-256 do client gửi trước khi tạo upload intent hoặc xác minh file.
 
 using System.Text.RegularExpressions;
 

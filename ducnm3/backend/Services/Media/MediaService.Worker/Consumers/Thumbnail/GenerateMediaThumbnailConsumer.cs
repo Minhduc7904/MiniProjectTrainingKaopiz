@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Worker/Consumers/Thumbnail/GenerateMediaThumbnailConsumer.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Tiêu thụ message nền và kích hoạt nghiệp vụ GenerateMediaThumbnailConsumer.
 
 using MassTransit;
 using MediaService.Application.Contracts.Messaging;

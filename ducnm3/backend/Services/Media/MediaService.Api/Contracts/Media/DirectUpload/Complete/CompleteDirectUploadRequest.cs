@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Contracts/Media/DirectUpload/Complete/CompleteDirectUploadRequest.cs
-// Mục đích: Định nghĩa contract chia sẻ của Media Service.
+// Mục đích: Định nghĩa request contract HTTP cho CompleteDirectUploadRequest.
 
 namespace MediaService.Api.Contracts.Requests;
 

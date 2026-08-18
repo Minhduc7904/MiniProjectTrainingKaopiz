@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Architecture/MediaSourceFileHeaderTests.cs
-// Mục đích: Kiểm thử mọi file C# của Media Service có comment đường dẫn và mục đích bằng tiếng Việt.
+// Mục đích: Kiểm thử mọi file C# của Media Service có header tiếng Việt mô tả đường dẫn và mục đích cụ thể.
 
 using NUnit.Framework;
 

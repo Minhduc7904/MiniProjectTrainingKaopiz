@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageService.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Adapter MinIO triển khai lưu, stat, promote và xóa Media object; phân biệt object thiếu với sự cố storage.
 
 using MediaService.Application.Services.Storage;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/DirectUpload/MediaContentTypeRules.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo quy tắc content type được hỗ trợ cho upload trực tiếp theo từng nhóm media.
 
 using System.Text.RegularExpressions;
 using MediaService.Application.Services.Storage;

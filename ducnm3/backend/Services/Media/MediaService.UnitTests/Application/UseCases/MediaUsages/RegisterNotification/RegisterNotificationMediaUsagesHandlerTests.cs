@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Application/UseCases/MediaUsages/RegisterNotification/RegisterNotificationMediaUsagesHandlerTests.cs
-// Mục đích: Triển khai use case nghiệp vụ của Media Service.
+// Mục đích: Kiểm thử handler RegisterNotificationMediaUsagesHandlerTests và các nhánh nghiệp vụ liên quan.
 
 using MediaService.Application;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;

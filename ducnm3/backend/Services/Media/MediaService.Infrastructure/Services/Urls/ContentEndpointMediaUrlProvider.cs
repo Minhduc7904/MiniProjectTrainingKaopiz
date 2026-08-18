@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Services/Urls/ContentEndpointMediaUrlProvider.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Tạo URL nội bộ trỏ đến endpoint đọc content Media thay vì phát lộ trực tiếp key hay presigned storage URL.
 
 using BuildingBlocks.Contracts.Api;
 using MediaService.Application.Services.Urls;

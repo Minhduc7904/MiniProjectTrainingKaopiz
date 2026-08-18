@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/DirectUpload/CreateIntent/CreateUploadIntentResult.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa dữ liệu đầu ra của use case CreateUploadIntentResult.
 
 namespace MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 

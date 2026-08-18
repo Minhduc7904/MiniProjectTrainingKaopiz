@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/IStorage.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port lưu trữ object cho upload, đọc metadata, xóa và promote file; Application không phụ thuộc MinIO.
 
 namespace MediaService.Application.Services.Storage;
 

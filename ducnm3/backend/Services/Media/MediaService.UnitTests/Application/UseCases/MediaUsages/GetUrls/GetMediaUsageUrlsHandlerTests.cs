@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Application/UseCases/MediaUsages/GetUrls/GetMediaUsageUrlsHandlerTests.cs
-// Mục đích: Triển khai use case nghiệp vụ của Media Service.
+// Mục đích: Kiểm thử handler GetMediaUsageUrlsHandlerTests và các nhánh nghiệp vụ liên quan.
 
 using MediaService.Application.Services.Urls;
 using MediaService.Application.UseCases.MediaUsages.GetUrls;

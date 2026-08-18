@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Endpoints/Media/Upload/MediaRequestParser.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Đọc multipart form upload Media, kiểm tra trường bắt buộc và tạo dữ liệu đầu vào hợp lệ cho use case Upload.
 
 using MediaService.Application;
 

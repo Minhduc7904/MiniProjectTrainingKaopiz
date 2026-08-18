@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Clients/StudentLookupClientTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử client tra cứu Student Service, gồm mapping response và xử lý lỗi dependency.
 
 using System.Net;
 using System.Net.Http.Json;

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Actors/IActorValidationService.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port kiểm tra actor có tồn tại và được phép thực hiện thao tác với media hay không.
 
 using MediaService.Domain.ValueObjects;
 

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Entities/MediaUsage.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Biểu diễn liên kết Media Usage giữa một Media và owner; quyết định Media còn được sử dụng hay trở lại draft.
 
 using MediaService.Domain.ValueObjects;
 

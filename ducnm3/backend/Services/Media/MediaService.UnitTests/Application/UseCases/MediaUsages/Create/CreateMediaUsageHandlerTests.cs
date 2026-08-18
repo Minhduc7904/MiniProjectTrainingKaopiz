@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Application/UseCases/MediaUsages/Create/CreateMediaUsageHandlerTests.cs
-// Mục đích: Triển khai use case nghiệp vụ của Media Service.
+// Mục đích: Kiểm thử handler CreateMediaUsageHandlerTests và các nhánh nghiệp vụ liên quan.
 
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Actors;

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Health/MediaDatabaseHealthProbe.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm tra khả năng kết nối database Media để health endpoint báo lỗi khi persistence không sẵn sàng.
 
 using BuildingBlocks.Contracts.Health;
 using Microsoft.Extensions.Logging;

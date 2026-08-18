@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Entities/Media.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Biểu diễn aggregate Media: metadata file, vị trí storage, trạng thái draft/ready và lifecycle upload.
 
 using MediaService.Domain.ValueObjects;
 

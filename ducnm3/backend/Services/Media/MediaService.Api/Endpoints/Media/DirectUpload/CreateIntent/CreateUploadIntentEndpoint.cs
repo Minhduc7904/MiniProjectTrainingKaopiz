@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Endpoints/Media/DirectUpload/CreateIntent/CreateUploadIntentEndpoint.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo Minimal API endpoint CreateUploadIntentEndpoint, chuyển HTTP request thành use case và map response.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;

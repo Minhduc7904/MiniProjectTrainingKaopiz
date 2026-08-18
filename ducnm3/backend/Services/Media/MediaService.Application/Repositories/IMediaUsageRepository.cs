@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Repositories/IMediaUsageRepository.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo port repository IMediaUsageRepository để use case truy cập dữ liệu mà không phụ thuộc EF Core.
 
 using MediaService.Domain.Entities;
 

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/IStorageHealthProbe.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port kiểm tra tình trạng storage để health check không phụ thuộc nhà cung cấp cụ thể.
 
 namespace MediaService.Application.Services.Storage;
 

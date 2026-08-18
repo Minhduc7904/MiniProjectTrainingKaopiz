@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/StorageUploadPolicyRequest.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa request contract HTTP cho StorageUploadPolicyRequest.
 
 namespace MediaService.Application.Services.Storage;
 

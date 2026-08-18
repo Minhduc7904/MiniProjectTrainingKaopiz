@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Persistence/Context/MediaDbContext.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Cấu hình EF Core DbContext và mapping database cho service.
 
 ﻿using System;
 using System.Collections.Generic;

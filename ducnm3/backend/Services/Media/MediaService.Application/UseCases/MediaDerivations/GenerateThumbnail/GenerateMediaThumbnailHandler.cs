@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/MediaDerivations/GenerateThumbnail/GenerateMediaThumbnailHandler.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Điều phối use case GenerateMediaThumbnailHandler: validate input, gọi port và trả kết quả nghiệp vụ.
 
 using MediaService.Application.Services.Derivation;
 using MediaService.Application.Repositories;

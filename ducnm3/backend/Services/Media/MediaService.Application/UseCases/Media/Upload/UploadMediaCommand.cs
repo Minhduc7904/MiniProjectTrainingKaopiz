@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/Upload/UploadMediaCommand.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa dữ liệu đầu vào cho use case UploadMediaCommand.
 
 using MediaService.Domain.ValueObjects;
 

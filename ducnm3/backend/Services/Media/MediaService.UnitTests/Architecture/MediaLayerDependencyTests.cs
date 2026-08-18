@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Architecture/MediaLayerDependencyTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử ranh giới dependency Clean Architecture, bảo đảm Domain không phụ thuộc Application, Infrastructure hoặc API.
 
 using MediaService.Domain.Entities;
 
