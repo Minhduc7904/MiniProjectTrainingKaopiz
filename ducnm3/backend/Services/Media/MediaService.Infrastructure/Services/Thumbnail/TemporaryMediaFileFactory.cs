@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Services/Thumbnail/TemporaryMediaFileFactory.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Tạo và dọn file tạm dùng khi Media Service tải source về để sinh thumbnail, tránh để lại file hệ thống.
 
 using MediaService.Application.Services.Derivation;
 

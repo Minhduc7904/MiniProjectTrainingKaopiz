@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Contracts/Messaging/GenerateMediaThumbnailV1.cs
-// Mục đích: Định nghĩa contract chia sẻ của Media Service.
+// Mục đích: Khai báo hợp đồng message GenerateMediaThumbnailV1 dùng để giao tiếp bất đồng bộ giữa các service.
 
 using BuildingBlocks.Messaging.Abstractions;
 

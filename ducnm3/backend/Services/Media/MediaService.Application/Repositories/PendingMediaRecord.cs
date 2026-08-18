@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Repositories/PendingMediaRecord.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Mô tả dữ liệu PendingMediaRecord được repository đọc hoặc ghi giữa Application và Persistence.
 
 using MediaService.Application.Services.Storage;
 using MediaService.Domain.ValueObjects;

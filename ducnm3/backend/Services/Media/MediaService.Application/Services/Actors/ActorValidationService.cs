@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Actors/ActorValidationService.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Triển khai kiểm tra actor và quyền sở hữu trước khi Application xử lý thao tác media.
 
 using MediaService.Domain.ValueObjects;
 

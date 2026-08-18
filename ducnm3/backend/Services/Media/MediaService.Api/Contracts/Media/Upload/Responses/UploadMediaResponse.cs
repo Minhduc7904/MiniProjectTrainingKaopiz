@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Contracts/Media/Upload/Responses/UploadMediaResponse.cs
-// Mục đích: Định nghĩa contract chia sẻ của Media Service.
+// Mục đích: Định nghĩa response contract HTTP cho UploadMediaResponse.
 
 namespace MediaService.Api.Contracts.Responses;
 

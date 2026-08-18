@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageRequestValidator.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm tra tính hợp lệ của dữ liệu đầu vào cho MinioStorageRequestValidator.
 
 using System.Text.RegularExpressions;
 using MediaService.Application;

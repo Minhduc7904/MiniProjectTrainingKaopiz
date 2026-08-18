@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Urls/IMediaUrlProvider.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port tạo URL truy cập nội dung media mà Application dùng nhưng không phụ thuộc HTTP endpoint cụ thể.
 
 using MediaService.Application.Repositories;
 

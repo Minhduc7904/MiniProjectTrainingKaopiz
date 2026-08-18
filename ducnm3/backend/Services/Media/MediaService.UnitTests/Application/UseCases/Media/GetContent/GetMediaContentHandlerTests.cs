@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Application/UseCases/Media/GetContent/GetMediaContentHandlerTests.cs
-// Mục đích: Triển khai use case nghiệp vụ của Media Service.
+// Mục đích: Kiểm thử handler GetMediaContentHandlerTests và các nhánh nghiệp vụ liên quan.
 
 using BuildingBlocks.Contracts.Api;
 using MediaService.Application;

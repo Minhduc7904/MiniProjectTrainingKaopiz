@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Constants/MediaTypes.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo các nhóm Media Type được chấp nhận để validate loại file và áp dụng quy tắc upload nhất quán.
 
 namespace MediaService.Domain.Constants;
 

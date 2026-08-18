@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Derivation/MediaThumbnailGeneratorTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử adapter tạo thumbnail để bảo đảm media derivation sinh đúng kết quả và quy đổi lỗi chính xác.
 
 using MediaService.Application.Services.Derivation;
 using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;

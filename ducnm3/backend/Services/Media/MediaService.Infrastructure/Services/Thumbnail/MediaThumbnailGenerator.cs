@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Services/Thumbnail/MediaThumbnailGenerator.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Adapter hạ tầng tạo thumbnail ảnh/video; tải source, gọi công cụ xử lý và trả metadata thumbnail đã tạo.
 
 using System.Globalization;
 using MediaService.Application.Services.Derivation;

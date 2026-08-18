@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/Sha256ReadStream.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Bọc stream đọc để tính SHA-256 khi truyền file qua storage, phục vụ xác minh tính toàn vẹn file.
 
 using System.Security.Cryptography;
 

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Persistence/Repositories/EfMediaDerivationRepository.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Triển khai repository EfMediaDerivationRepository bằng EF Core và persistence model.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;

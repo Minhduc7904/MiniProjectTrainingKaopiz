@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Endpoints/Health/MediaHealthEndpoint.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo Minimal API endpoint MediaHealthEndpoint, chuyển HTTP request thành use case và map response.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;

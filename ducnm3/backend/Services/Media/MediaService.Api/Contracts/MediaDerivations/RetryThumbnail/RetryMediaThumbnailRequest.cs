@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Contracts/MediaDerivations/RetryThumbnail/RetryMediaThumbnailRequest.cs
-// Mục đích: Định nghĩa contract chia sẻ của Media Service.
+// Mục đích: Định nghĩa request contract HTTP cho RetryMediaThumbnailRequest.
 
 namespace MediaService.Api.Contracts.Requests;
 

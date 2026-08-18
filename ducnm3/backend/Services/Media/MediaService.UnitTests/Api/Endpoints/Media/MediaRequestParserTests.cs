@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Api/Endpoints/Media/MediaRequestParserTests.cs
-// Mục đích: Khai báo Minimal API endpoint tại HTTP boundary của Media Service.
+// Mục đích: Khai báo các route HTTP của MediaRequestParserTests, chuyển request đến use case và chuẩn hóa HTTP response.
 
 using System.Text;
 using BuildingBlocks.Contracts.Api;

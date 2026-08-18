@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageOptions.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa options cấu hình được bind từ application configuration cho MinioStorageOptions.
 
 using MediaService.Application.Services.Storage;
 

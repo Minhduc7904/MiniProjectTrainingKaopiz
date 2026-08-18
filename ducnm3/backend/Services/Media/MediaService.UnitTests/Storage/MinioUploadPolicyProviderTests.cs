@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.UnitTests/Storage/MinioUploadPolicyProviderTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử ràng buộc và hành vi adapter MinIO tương ứng, gồm policy, object key, validation hoặc options.
 
 using System.Text;
 using MediaService.Application.Services.Storage;

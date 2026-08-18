@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.IntegrationTests/Storage/MinioStorageServiceTests.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Kiểm thử adapter MinIO với storage thật, gồm lưu object, metadata, promote và các quy đổi lỗi storage.
 
 using System.Text;
 using MediaService.Application.Services.Storage;

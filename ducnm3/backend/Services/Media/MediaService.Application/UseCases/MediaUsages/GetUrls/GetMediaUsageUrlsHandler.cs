@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/MediaUsages/GetUrls/GetMediaUsageUrlsHandler.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Điều phối use case GetMediaUsageUrlsHandler: validate input, gọi port và trả kết quả nghiệp vụ.
 
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Urls;

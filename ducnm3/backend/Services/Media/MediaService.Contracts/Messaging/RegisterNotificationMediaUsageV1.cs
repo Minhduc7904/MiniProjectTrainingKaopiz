@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Contracts/Messaging/RegisterNotificationMediaUsageV1.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo contract cho Notification Service đăng ký Media Usage, giúp media được đánh dấu đang sử dụng sau khi notification dùng file.
 
 using BuildingBlocks.Messaging.Abstractions;
 

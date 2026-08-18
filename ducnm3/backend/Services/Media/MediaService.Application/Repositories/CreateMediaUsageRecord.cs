@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Repositories/CreateMediaUsageRecord.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Mô tả dữ liệu CreateMediaUsageRecord được repository đọc hoặc ghi giữa Application và Persistence.
 
 using MediaService.Domain.ValueObjects;
 

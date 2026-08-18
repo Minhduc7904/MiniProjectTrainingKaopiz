@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Repositories/IMediaRepository.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo port repository IMediaRepository để use case truy cập dữ liệu mà không phụ thuộc EF Core.
 
 namespace MediaService.Application.Repositories;
 

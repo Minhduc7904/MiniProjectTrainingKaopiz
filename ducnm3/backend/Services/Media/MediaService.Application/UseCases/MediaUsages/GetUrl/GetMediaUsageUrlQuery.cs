@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/MediaUsages/GetUrl/GetMediaUsageUrlQuery.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa dữ liệu truy vấn cho use case GetMediaUsageUrlQuery.
 
 namespace MediaService.Application.UseCases.MediaUsages.GetUrl;
 

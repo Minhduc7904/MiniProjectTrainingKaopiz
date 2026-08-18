@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Repositories/MediaRecord.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Mô tả dữ liệu MediaRecord được repository đọc hoặc ghi giữa Application và Persistence.
 
 using MediaService.Application.Services.Storage;
 

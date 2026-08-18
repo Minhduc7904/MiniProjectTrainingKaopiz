@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Derivation/IThumbnailGenerator.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port tạo thumbnail cho media để use case không phụ thuộc công cụ xử lý ảnh hoặc video cụ thể.
 
 namespace MediaService.Application.Services.Derivation;
 

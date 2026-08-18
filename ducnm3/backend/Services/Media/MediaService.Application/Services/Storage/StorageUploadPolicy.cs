@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/StorageUploadPolicy.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa policy/rule nghiệp vụ dùng bởi StorageUploadPolicy.
 
 namespace MediaService.Application.Services.Storage;
 

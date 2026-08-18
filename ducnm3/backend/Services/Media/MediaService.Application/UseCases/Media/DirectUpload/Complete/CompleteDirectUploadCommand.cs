@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/DirectUpload/Complete/CompleteDirectUploadCommand.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa dữ liệu đầu vào cho use case CompleteDirectUploadCommand.
 
 using MediaService.Domain.ValueObjects;
 

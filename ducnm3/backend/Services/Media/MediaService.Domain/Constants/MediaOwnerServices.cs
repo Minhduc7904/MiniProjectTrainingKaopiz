@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Constants/MediaOwnerServices.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo service owner hợp lệ có thể tham chiếu Media khi tạo Media Usage.
 
 namespace MediaService.Domain.Constants;
 

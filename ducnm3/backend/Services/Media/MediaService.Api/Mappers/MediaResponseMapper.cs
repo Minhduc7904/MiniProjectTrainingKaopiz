@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Api/Mappers/MediaResponseMapper.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Chuyển kết quả use case Media thành API response, chỉ công khai các trường client cần và giữ chi tiết persistence nội bộ.
 
 using BuildingBlocks.Contracts.Api;
 using MediaService.Api.Contracts.Responses;

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Constants/MediaUsageTypes.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo các kiểu sử dụng Media để xác định ý nghĩa liên kết giữa media và owner.
 
 namespace MediaService.Domain.Constants;
 

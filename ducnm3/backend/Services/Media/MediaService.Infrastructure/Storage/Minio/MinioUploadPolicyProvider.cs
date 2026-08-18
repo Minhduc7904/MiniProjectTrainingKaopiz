@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioUploadPolicyProvider.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Tạo presigned POST policy MinIO bắt buộc đúng object key, MIME, kích thước và SHA-256 cho upload trực tiếp.
 
 using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.DirectUpload;

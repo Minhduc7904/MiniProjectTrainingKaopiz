@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Persistence/Transactions/EfMediaUploadFinalizer.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Dùng transaction EF để claim upload draft, cập nhật Media sang ready, tạo thumbnail job/outbox và trả kết quả cạnh tranh an toàn.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;

@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/StorageValidationException.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Biểu diễn lỗi metadata hoặc nội dung object không đáp ứng ràng buộc upload của storage.
 
 namespace MediaService.Application.Services.Storage;
 

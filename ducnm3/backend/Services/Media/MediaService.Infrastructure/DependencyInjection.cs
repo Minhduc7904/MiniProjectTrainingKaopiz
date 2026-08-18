@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/DependencyInjection.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Đăng ký dependency injection cho layer hoặc service tương ứng.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;

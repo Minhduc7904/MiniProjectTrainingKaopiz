@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Repositories/IMediaUploadFinalizer.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port hoàn tất upload trực tiếp một cách nguyên tử, gồm chuyển draft sang ready và tạo các tác vụ liên quan.
 
 using MediaService.Application.Services.Storage;
 using MediaService.Domain.ValueObjects;

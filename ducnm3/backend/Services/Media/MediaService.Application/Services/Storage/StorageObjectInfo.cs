@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Storage/StorageObjectInfo.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Mô tả metadata object đọc từ storage, gồm kích thước, content type, checksum và ETag để xác minh upload.
 
 namespace MediaService.Application.Services.Storage;
 

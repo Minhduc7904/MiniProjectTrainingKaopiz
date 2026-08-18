@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Clients/Student/StudentLookupClient.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Triển khai client tích hợp hệ thống ngoài cho StudentLookupClient.
 
 using System.Net;
 using System.Net.Http.Json;

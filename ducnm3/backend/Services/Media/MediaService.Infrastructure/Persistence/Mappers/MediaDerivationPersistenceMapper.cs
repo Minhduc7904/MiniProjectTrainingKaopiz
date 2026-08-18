@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Persistence/Mappers/MediaDerivationPersistenceMapper.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Chuyển đổi giữa persistence model EF Core và domain/application model cho MediaDerivationPersistenceMapper.
 
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Storage;

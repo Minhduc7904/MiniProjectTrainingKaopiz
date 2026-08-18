@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Worker/Program.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;

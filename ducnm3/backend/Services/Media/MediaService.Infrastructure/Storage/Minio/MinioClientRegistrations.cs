@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioClientRegistrations.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Đăng ký MinIO clients vào DI, tách client thao tác nội bộ với client tạo presigned upload policy.
 
 using Minio;
 

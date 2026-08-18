@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Application/Services/Students/IStudentLookup.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Định nghĩa port tra cứu học viên để xác thực owner thuộc Student Service trước khi tạo media usage.
 
 using BuildingBlocks.Contracts.Students;
 

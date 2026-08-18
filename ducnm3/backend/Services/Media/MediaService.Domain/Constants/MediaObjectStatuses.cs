@@ -1,5 +1,5 @@
 // File: backend/Services/Media/MediaService.Domain/Constants/MediaObjectStatuses.cs
-// Mục đích: Cung cấp thành phần phục vụ Media Service.
+// Mục đích: Khai báo trạng thái vòng đời object Media như pending, ready và failed để điều khiển flow upload.
 
 namespace MediaService.Domain.Constants;
 
