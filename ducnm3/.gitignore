@@ -1,4 +1,5 @@
 .env
+.vibe/
 **/bin/
 **/obj/
 !backend/Services/Scheduler/SchedulerService.Api/appsettings.json

@@ -4,8 +4,10 @@ using BuildingBlocks.Presentation.Api;
 
 namespace BuildingBlocks.Presentation.Extensions;
 
+/// <summary>Map các endpoint hạ tầng nhất quán cho service: thông tin service và readiness health check.</summary>
 public static class EndpointRouteBuilderExtensions
 {
+    /// <summary>Map <c>GET /</c>, trả service name và trạng thái healthy trong response envelope.</summary>
     public static RouteHandlerBuilder MapServiceInfoEndpoint(
         this IEndpointRouteBuilder endpoints,
         string serviceName)
@@ -21,6 +23,10 @@ public static class EndpointRouteBuilderExtensions
             .Produces<ApiResponse<ServiceInfoResponse>>(StatusCodes.Status200OK);
     }
 
+    /// <summary>
+    /// Map <c>GET /health</c>; gọi database và messaging probe song song rồi trả 200 hoặc 503 với error code chuẩn.
+    /// <paramref name="serviceName"/> được đưa vào response, name và OpenAPI tag của endpoint.
+    /// </summary>
     public static RouteHandlerBuilder MapDatabaseHealthEndpoint(
         this IEndpointRouteBuilder endpoints,
         string serviceName)
@@ -34,10 +40,12 @@ public static class EndpointRouteBuilderExtensions
                     IMessagingHealthProbe messagingHealthProbe,
                     CancellationToken cancellationToken) =>
                 {
+                    // Hai dependency độc lập nên được kiểm tra đồng thời để giảm thời gian readiness check.
                     var databaseTask = databaseHealthProbe.CheckAsync(cancellationToken);
                     var messagingTask = messagingHealthProbe.CheckAsync(cancellationToken);
                     await Task.WhenAll(databaseTask, messagingTask);
 
+                    // Chỉ database lỗi dùng DATABASE_UNAVAILABLE; messaging hoặc nhiều dependency lỗi dùng DEPENDENCY_UNAVAILABLE.
                     if (!databaseTask.Result.IsHealthy || !messagingTask.Result.IsHealthy)
                     {
                         var databaseUnavailable = !databaseTask.Result.IsHealthy;

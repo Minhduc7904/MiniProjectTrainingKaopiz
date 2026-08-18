@@ -3,8 +3,13 @@ using MassTransit;
 
 namespace BuildingBlocks.Messaging;
 
+/// <summary>
+/// Đăng ký MassTransit consumer theo convention endpoint chung.
+/// Dùng trong callback <c>AddLmsMessagingWithConsumers</c> để command có queue owner và event có queue subscriber riêng.
+/// </summary>
 public static class ConsumerRegistrationExtensions
 {
+    /// <summary>Đăng ký consumer command với queue được suy ra từ <paramref name="ownerService"/> và kiểu command.</summary>
     public static void AddCommandConsumer<TConsumer, TCommand>(
         this IBusRegistrationConfigurator registration,
         string ownerService)
@@ -21,6 +26,7 @@ public static class ConsumerRegistrationExtensions
             });
     }
 
+    /// <summary>Biến thể command consumer cho trường hợp cần <typeparamref name="TDefinition"/> cấu hình consumer riêng.</summary>
     public static void AddCommandConsumer<TConsumer, TCommand, TDefinition>(
         this IBusRegistrationConfigurator registration,
         string ownerService)
@@ -38,6 +44,7 @@ public static class ConsumerRegistrationExtensions
             });
     }
 
+    /// <summary>Đăng ký event consumer với queue riêng của subscriber để fan-out không làm các service chặn nhau.</summary>
     public static void AddEventConsumer<TConsumer, TEvent>(
         this IBusRegistrationConfigurator registration,
         string subscriberService)
