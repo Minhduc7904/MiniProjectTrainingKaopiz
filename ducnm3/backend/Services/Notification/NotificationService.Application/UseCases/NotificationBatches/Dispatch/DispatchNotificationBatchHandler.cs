@@ -1,19 +1,21 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/Dispatch/DispatchNotificationBatchHandler.cs
-// Mục đích: Điều phối use case DispatchNotificationBatchHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Claim một chunk có lease, gọi sender từng recipient, hoàn tất kết quả và phát command cho phần việc còn lại.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Contracts.Messaging;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Features.Batches;
-using NotificationService.Application.Content;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Services.Sending;
+using NotificationService.Application.UseCases.NotificationBatches;
+using NotificationService.Application.Services.Content;
 using NotificationService.Application.Contracts.Messaging;
 using System.Collections.Concurrent;
 
-namespace NotificationService.Application.Features.Batches.Dispatch;
+namespace NotificationService.Application.UseCases.NotificationBatches.Dispatch;
 
 public sealed class DispatchNotificationBatchHandler(
-    INotificationBatchRepository repository,
+    INotificationBatchDispatchRepository repository,
     INotificationSender sender,
     ICommandSender commandSender,
     NotificationMediaReferenceExtractor mediaReferenceExtractor,

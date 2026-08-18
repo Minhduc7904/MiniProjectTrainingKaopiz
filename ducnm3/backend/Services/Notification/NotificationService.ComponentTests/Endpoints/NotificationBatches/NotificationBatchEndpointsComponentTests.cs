@@ -1,5 +1,5 @@
-// File: backend/Services/Notification/NotificationService.UnitTests/Api/Endpoints/NotificationBatches/NotificationBatchEndpointTests.cs
-// Mục đích: Kiểm thử HTTP contract, route và response của endpoint NotificationBatchEndpointTests.
+// File: backend/Services/Notification/NotificationService.ComponentTests/Endpoints/NotificationBatches/NotificationBatchEndpointsComponentTests.cs
+// Mục đích: Kiểm thử các route Notification Batch qua TestServer, gồm 202 Location, GET detail và failed-items cursor envelope.
 
 #pragma warning disable CA1707
 
@@ -11,14 +11,17 @@ using BuildingBlocks.Presentation.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using NotificationService.Api.Contracts.Requests;
-using NotificationService.Api.Endpoints;
+using NotificationService.Api.Contracts.NotificationBatches.Requests;
+using NotificationService.Api.Endpoints.NotificationBatches.Create;
+using NotificationService.Api.Endpoints.NotificationBatches.GetById;
+using NotificationService.Api.Endpoints.NotificationBatches.GetFailedItems;
 using NotificationService.Application;
-using NotificationService.Application.Abstractions;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
 
-namespace NotificationService.UnitTests;
+namespace NotificationService.ComponentTests.Endpoints.NotificationBatches;
 
-public sealed class NotificationBatchEndpointTests
+public sealed class NotificationBatchEndpointsComponentTests
 {
     [Test]
     public async Task PostThenGet_ReturnsAcceptedLocationAndBatchSummary()
@@ -128,7 +131,9 @@ internal sealed class NotificationBatchApiFixture : IAsyncDisposable
 
         var app = builder.Build();
         app.UseSharedApiMiddleware();
-        app.MapNotificationBatchEndpoints();
+        app.MapCreateNotificationBatchEndpoint();
+        app.MapGetNotificationBatchByIdEndpoint();
+        app.MapGetNotificationBatchFailedItemsEndpoint();
         await app.StartAsync();
         return new NotificationBatchApiFixture(app, app.GetTestClient(), repository);
     }
@@ -200,17 +205,14 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
     public Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.CompletedTask;
 
-    public Task<NotificationBatchClaim?> ClaimChunkAsync(
-        Guid batchId,
-        CancellationToken cancellationToken) =>
-        Task.FromResult<NotificationBatchClaim?>(null);
+}
 
-    public Task<IReadOnlyList<NotificationSummary>> CompleteClaimAsync(
-        NotificationBatchClaim claim,
-        IReadOnlyList<NotificationBatchDeliveryResult> results,
-        CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<NotificationSummary>>([]);
-
-    public Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken) =>
-        Task.FromResult(false);
+internal sealed class StubCommandSender : ICommandSender
+{
+    public Task SendAsync<TCommand>(
+        string destinationService,
+        TCommand command,
+        CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand =>
+        Task.CompletedTask;
 }

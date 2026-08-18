@@ -1,12 +1,13 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Clients/Student/StudentRecipientClient.cs
-// Mục đích: Triển khai client tích hợp hệ thống ngoài cho StudentRecipientClient.
+// Mục đích: Gọi Student Service theo cursor để stream từng trang active StudentId cho bước snapshot recipient.
 
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using BuildingBlocks.Contracts.Api;
 using NotificationService.Application;
-using NotificationService.Application.Abstractions;
+using NotificationService.Application.Common.Errors;
+using NotificationService.Application.Services.Students;
 
 namespace NotificationService.Infrastructure.Clients.Student;
 

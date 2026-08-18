@@ -1,13 +1,15 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/Notifications/Create/CreateNotificationHandler.cs
-// Mục đích: Điều phối use case CreateNotificationHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Validate Notification trực tiếp, lưu bản ghi UNREAD và phát command đăng ký các Media Usage trong Markdown.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Contracts.Messaging;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Content;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Common.Errors;
+using NotificationService.Application.Services.Content;
 
-namespace NotificationService.Application.Features.Notifications.Create;
+namespace NotificationService.Application.UseCases.Notifications.Create;
 
 public sealed class CreateNotificationHandler(
     INotificationRepository repository,

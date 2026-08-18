@@ -15,13 +15,18 @@ flowchart LR
 
 ## Cách dùng
 
-API và Worker inject handler; repositories, `IStudentRecipientClient` và
-`INotificationSender` được Infrastructure hiện thực.
+API và Worker inject handler theo use case. Repository models nằm riêng trong
+`Application/Repositories/Models`; `INotificationBatchRepository` phục vụ create,
+snapshot và query, còn `INotificationBatchDispatchRepository` chỉ phục vụ claim,
+complete và finalize. `IStudentRecipientClient` và `INotificationSender` được
+Infrastructure hiện thực.
 
 ## Đã triển khai hiện tại
 
-Có create/get handlers, batch handlers, media reference extractor và command
-`SnapshotNotificationBatchV1`/`DispatchNotificationBatchV1`.
+Có `UseCases/Notifications/{Create,GetById}` và
+`UseCases/NotificationBatches/{Create,GetById,GetFailedItems,Snapshot,Dispatch}`,
+media reference extractor và command `SnapshotNotificationBatchV1` /
+`DispatchNotificationBatchV1`.
 
 ## Định hướng/chưa triển khai
 

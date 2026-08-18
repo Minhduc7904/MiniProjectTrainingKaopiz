@@ -1,28 +1,34 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Persistence/Repositories/EfNotificationBatchRepository.cs
-// Mục đích: Triển khai repository EfNotificationBatchRepository bằng EF Core và persistence model.
+// Mục đích: Lưu/đọc batch, snapshot recipient, claim chunk bằng lease và áp dụng Domain transition trong transaction EF Core.
 
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Features.Batches;
-using NotificationService.Domain.Notifications;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.UseCases.NotificationBatches;
+using NotificationService.Domain.Constants;
+using NotificationService.Domain.Entities;
+using NotificationService.Infrastructure.Persistence.Context;
+using NotificationService.Infrastructure.Persistence.Mappers;
 using NotificationService.Infrastructure.Persistence.Scaffolded;
 using System.Data;
 
-namespace NotificationService.Infrastructure.Persistence;
+namespace NotificationService.Infrastructure.Persistence.Repositories;
 
 public sealed class EfNotificationBatchRepository(
     NotificationDbContext dbContext,
     IDbContextFactory<NotificationDbContext> dbContextFactory,
     TimeProvider timeProvider,
-    NotificationBatchProcessingOptions processingOptions) : INotificationBatchRepository
+    NotificationBatchProcessingOptions processingOptions) :
+        INotificationBatchRepository,
+        INotificationBatchDispatchRepository
 {
     public Task<NotificationBatchSummary> CreateAsync(CreateNotificationBatchRecord record, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var batch = new NotificationBatch { Id = record.Id, Title = record.Title, BodyMarkdown = record.BodyMarkdown, TargetScope = NotificationTargetScopes.AllStudents, CreatedBy = record.CreatedBy, Status = NotificationBatchStatuses.Pending, TotalCount = 0, BatchSize = record.BatchSize, CreatedAt = record.CreatedAtUtc };
         dbContext.NotificationBatches.Add(batch);
-        return Task.FromResult(ToSummary(batch));
+        return Task.FromResult(NotificationBatchPersistenceMapper.ToSummary(batch));
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) =>
@@ -35,19 +41,20 @@ public sealed class EfNotificationBatchRepository(
         var batch = await dbContext.NotificationBatches.SingleOrDefaultAsync(
             x => x.Id == batchId,
             cancellationToken);
-        if (batch is null || batch.Status is NotificationBatchStatuses.Completed or NotificationBatchStatuses.PartialFailed or NotificationBatchStatuses.Failed)
+        if (batch is null)
         {
             return new NotificationSnapshotWork(false, false);
         }
-
-        if (batch.Status == NotificationBatchStatuses.SnapshotReady)
+        var state = NotificationBatchPersistenceMapper.ToDomain(batch);
+        var decision = state.PrepareSnapshot();
+        NotificationBatchPersistenceMapper.Apply(state, batch);
+        if (decision == NotificationSnapshotDecision.ReadRecipients)
         {
-            return new NotificationSnapshotWork(false, true);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
-
-        batch.Status = NotificationBatchStatuses.Snapshotting;
-        await dbContext.SaveChangesAsync(cancellationToken);
-        return new NotificationSnapshotWork(true, false);
+        return new NotificationSnapshotWork(
+            decision == NotificationSnapshotDecision.ReadRecipients,
+            decision == NotificationSnapshotDecision.Dispatch);
     }
 
     public async Task AppendSnapshotPageAsync(
@@ -91,36 +98,25 @@ public sealed class EfNotificationBatchRepository(
     public async Task<bool> CompleteSnapshotAsync(Guid batchId, CancellationToken cancellationToken)
     {
         var batch = await dbContext.NotificationBatches.SingleAsync(x => x.Id == batchId, cancellationToken);
-        if (batch.Status != NotificationBatchStatuses.Snapshotting)
-        {
-            return batch.Status == NotificationBatchStatuses.SnapshotReady;
-        }
-
-        batch.TotalCount = checked((uint)await dbContext.NotificationBatchItems
+        var totalCount = checked((uint)await dbContext.NotificationBatchItems
             .CountAsync(x => x.BatchId == batchId, cancellationToken));
-        if (batch.TotalCount == 0)
-        {
-            batch.Status = NotificationBatchStatuses.Failed;
-            batch.CompletedAt = DateTime.UtcNow;
-            await dbContext.SaveChangesAsync(cancellationToken);
-            return false;
-        }
-
-        batch.Status = NotificationBatchStatuses.SnapshotReady;
+        var state = NotificationBatchPersistenceMapper.ToDomain(batch);
+        var shouldDispatch = state.CompleteSnapshot(totalCount, DateTime.UtcNow);
+        NotificationBatchPersistenceMapper.Apply(state, batch);
         await dbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        return shouldDispatch;
     }
 
     public async Task MarkSnapshotFailedAsync(Guid batchId, CancellationToken cancellationToken)
     {
         var batch = await dbContext.NotificationBatches.SingleOrDefaultAsync(x => x.Id == batchId, cancellationToken);
-        if (batch is null || batch.Status is NotificationBatchStatuses.Completed or NotificationBatchStatuses.PartialFailed or NotificationBatchStatuses.Failed)
+        if (batch is null)
         {
             return;
         }
-
-        batch.Status = NotificationBatchStatuses.Failed;
-        batch.CompletedAt = DateTime.UtcNow;
+        var state = NotificationBatchPersistenceMapper.ToDomain(batch);
+        state.MarkSnapshotFailed(DateTime.UtcNow);
+        NotificationBatchPersistenceMapper.Apply(state, batch);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -197,8 +193,9 @@ public sealed class EfNotificationBatchRepository(
             return null;
         }
 
-        batch.Status = NotificationBatchStatuses.Processing;
-        batch.StartedAt ??= now;
+        var batchState = NotificationBatchPersistenceMapper.ToDomain(batch);
+        batchState.StartProcessing(now);
+        NotificationBatchPersistenceMapper.Apply(batchState, batch);
         var leaseExpiresAt = now.AddSeconds(processingOptions.ClaimLeaseSeconds);
         foreach (var item in items)
         {
@@ -276,10 +273,10 @@ public sealed class EfNotificationBatchRepository(
                     CreatedAt = now,
                 };
                 dbContext.Notifications.Add(notification);
-                item.Status = NotificationBatchItemStatuses.Success;
+                var successfulItemState = NotificationBatchItemPersistenceMapper.ToDomain(item);
+                successfulItemState.ApplyDeliveryResult(true, null, now);
+                NotificationBatchItemPersistenceMapper.Apply(successfulItemState, item);
                 item.NotificationId = notification.Id;
-                item.ErrorMessage = null;
-                item.ProcessedAt = now;
                 successCount++;
                 notifications.Add(new NotificationSummary(
                     notification.Id,
@@ -294,21 +291,17 @@ public sealed class EfNotificationBatchRepository(
                 continue;
             }
 
-            item.RetryCount++;
-            item.Status = item.RetryCount >= 2
-                ? NotificationBatchItemStatuses.Failed
-                : NotificationBatchItemStatuses.Retry;
-            item.ErrorMessage = result.ErrorMessage ?? "Notification sender failed.";
-            if (item.Status == NotificationBatchItemStatuses.Failed)
+            var itemState = NotificationBatchItemPersistenceMapper.ToDomain(item);
+            itemState.ApplyDeliveryResult(false, result.ErrorMessage, now);
+            NotificationBatchItemPersistenceMapper.Apply(itemState, item);
+            if (itemState.Status == NotificationBatchItemStatuses.Failed)
             {
-                item.ProcessedAt = now;
                 failedCount++;
             }
         }
-
-        batch.SuccessCount = checked(batch.SuccessCount + successCount);
-        batch.FailedCount = checked(batch.FailedCount + failedCount);
-        batch.ProcessedCount = checked(batch.ProcessedCount + successCount + failedCount);
+        var completedBatchState = NotificationBatchPersistenceMapper.ToDomain(batch);
+        completedBatchState.AddDeliveryCounts(successCount, failedCount);
+        NotificationBatchPersistenceMapper.Apply(completedBatchState, batch);
         await dbContext.SaveChangesAsync(cancellationToken);
         return notifications;
     }
@@ -335,11 +328,11 @@ public sealed class EfNotificationBatchRepository(
             return false;
         }
 
-        batch.Status = batch.FailedCount == 0 ? NotificationBatchStatuses.Completed : batch.SuccessCount == 0 ? NotificationBatchStatuses.Failed : NotificationBatchStatuses.PartialFailed;
-        batch.CompletedAt = timeProvider.GetUtcNow().UtcDateTime;
+        var state = NotificationBatchPersistenceMapper.ToDomain(batch);
+        var hasRemaining = state.FinalizeOrHasRemaining(
+            false, false, timeProvider.GetUtcNow().UtcDateTime);
+        NotificationBatchPersistenceMapper.Apply(state, batch);
         await dbContext.SaveChangesAsync(cancellationToken);
-        return false;
+        return hasRemaining;
     }
-
-    private static NotificationBatchSummary ToSummary(NotificationBatch x) => new(x.Id, x.Status, x.TotalCount, x.ProcessedCount, x.SuccessCount, x.FailedCount, x.BatchSize, x.CreatedAt, x.StartedAt, x.CompletedAt);
 }

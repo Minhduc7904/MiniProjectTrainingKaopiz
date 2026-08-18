@@ -1,11 +1,12 @@
 // File: backend/Services/Notification/NotificationService.Application/Services/Content/NotificationMediaReferenceExtractor.cs
-// Mục đích: Trích xuất dữ liệu tham chiếu từ nội dung notification cho NotificationMediaReferenceExtractor.
+// Mục đích: Quét Markdown để lấy MediaId và vị trí embed, phục vụ đăng ký Media Usage sau khi gửi thành công.
 
 using System.Text.RegularExpressions;
 using BuildingBlocks.Contracts.Api;
 using MediaService.Contracts.Messaging;
+using NotificationService.Application.Common.Errors;
 
-namespace NotificationService.Application.Content;
+namespace NotificationService.Application.Services.Content;
 
 public sealed partial class NotificationMediaReferenceExtractor
 {

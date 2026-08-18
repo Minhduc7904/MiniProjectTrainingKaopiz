@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Application/Services/Students/IStudentRecipientClient.cs
-// Mục đích: Triển khai client tích hợp hệ thống ngoài cho IStudentRecipientClient.
+// Mục đích: Định nghĩa port đọc recipient pages từ Student Service cho quá trình snapshot Notification Batch.
 
-namespace NotificationService.Application.Abstractions;
+namespace NotificationService.Application.Services.Students;
 
 public interface IStudentRecipientClient
 {

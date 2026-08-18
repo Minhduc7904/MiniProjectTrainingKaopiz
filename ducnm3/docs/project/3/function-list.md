@@ -13,9 +13,9 @@
 | F09 | Upload và xử lý Media | Media | Existing | `MapUploadMedia`, Media Worker | [Media](media-spec.md#f09--upload-và-xử-lý-media) |
 | F10 | Truy cập Media an toàn | Media | Existing | Content, thumbnail và usage URL endpoints | [Media](media-spec.md#f10--truy-cập-media-an-toàn) |
 | F11 | Quản lý Media usage | Media | Existing | `MapCreateMediaUsage`, Media Worker | [Media](media-spec.md#f11--quản-lý-media-usage) |
-| F12 | Tạo thông báo đơn | Notification | Existing | `NotificationEndpoints.MapPost` | [Notification](notification-spec.md#f12--tạo-thông-báo-đơn) |
+| F12 | Tạo thông báo đơn | Notification | Existing | `CreateNotificationEndpoint` | [Notification](notification-spec.md#f12--tạo-thông-báo-đơn) |
 | F13 | Quản lý hộp thư đến | Notification | Planned | Mới có lấy chi tiết; chưa có inbox/read/read-all | [Notification](notification-spec.md#f13--quản-lý-hộp-thư-đến) |
-| F14 | Tạo Notification batch | Notification | Existing | `NotificationBatchEndpoints.MapPost` | [Notification](notification-spec.md#f14--tạo-notification-batch) |
+| F14 | Tạo Notification batch | Notification | Existing | `CreateNotificationBatchEndpoint` | [Notification](notification-spec.md#f14--tạo-notification-batch) |
 | F15 | Snapshot recipient batch | Notification | Existing | `SnapshotNotificationBatchConsumer` | [Notification](notification-spec.md#f15--snapshot-recipient-batch) |
 | F16 | Dispatch và retry Notification batch | Notification | Existing | `DispatchNotificationBatchConsumer` | [Notification](notification-spec.md#f16--dispatch-và-retry-notification-batch) |
 | F17 | Theo dõi Notification batch | Notification | Existing | Batch detail/failed-item endpoints | [Notification](notification-spec.md#f17--theo-dõi-notification-batch) |

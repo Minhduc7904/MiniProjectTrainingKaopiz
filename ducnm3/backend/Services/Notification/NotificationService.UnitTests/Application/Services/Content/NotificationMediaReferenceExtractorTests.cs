@@ -1,11 +1,12 @@
-// File: backend/Services/Notification/NotificationService.UnitTests/Application/UseCases/Notifications/NotificationMediaReferenceExtractorTests.cs
+// File: backend/Services/Notification/NotificationService.UnitTests/Application/Services/Content/NotificationMediaReferenceExtractorTests.cs
 // Mục đích: Kiểm thử việc trích xuất MediaId từ notification content để đăng ký media usage đúng và không bỏ sót tham chiếu.
 
 using MediaService.Contracts.Messaging;
 using NotificationService.Application;
-using NotificationService.Application.Content;
+using NotificationService.Application.Services.Content;
+using NotificationService.Application.Common.Errors;
 
-namespace NotificationService.UnitTests;
+namespace NotificationService.UnitTests.Application.Services.Content;
 
 public sealed class NotificationMediaReferenceExtractorTests
 {

@@ -14,11 +14,14 @@ flowchart LR
 
 ## Cách dùng
 
-Handler Application áp dụng status/rule; recipient/content adapter nằm ngoài Domain.
+Application gọi `NotificationBatchState` và `NotificationBatchItemState` thông qua
+persistence mapper. Recipient/content adapter và EF entity nằm ngoài Domain.
 
 ## Đã triển khai hiện tại
 
 `NotificationTypes` khai báo source/status/batch/item/target scope constants.
+`NotificationBatchState` sở hữu snapshot, processing, counter và terminal transition;
+`NotificationBatchItemState` sở hữu success/retry/failed với tối đa hai lần thử.
 
 ## Định hướng/chưa triển khai
 

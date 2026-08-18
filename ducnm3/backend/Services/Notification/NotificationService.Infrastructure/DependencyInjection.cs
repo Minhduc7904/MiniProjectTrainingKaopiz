@@ -1,5 +1,5 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/DependencyInjection.cs
-// Mục đích: Đăng ký dependency injection cho layer hoặc service tương ứng.
+// Mục đích: Bind database/client options và nối các Application port với EF repository, Student client và sender adapter.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
@@ -8,12 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Features.Batches;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Services.Sending;
+using NotificationService.Application.Services.Students;
+using NotificationService.Application.UseCases.NotificationBatches;
 using NotificationService.Infrastructure.Clients.Student;
 using NotificationService.Infrastructure.Health;
-using NotificationService.Infrastructure.Persistence;
-using NotificationService.Infrastructure.Sending;
+using NotificationService.Infrastructure.Persistence.Context;
+using NotificationService.Infrastructure.Persistence.Repositories;
+using NotificationService.Infrastructure.Services.Sending;
 
 namespace NotificationService.Infrastructure;
 
@@ -28,7 +31,11 @@ public static class DependencyInjection
         batchProcessingOptions.Validate();
         services.AddSingleton(batchProcessingOptions);
         services.AddServiceQueryClient<IStudentRecipientClient, StudentRecipientClient>(configuration, ServiceNames.Student);
-        services.AddScoped<INotificationBatchRepository, EfNotificationBatchRepository>();
+        services.AddScoped<EfNotificationBatchRepository>();
+        services.AddScoped<INotificationBatchRepository>(provider =>
+            provider.GetRequiredService<EfNotificationBatchRepository>());
+        services.AddScoped<INotificationBatchDispatchRepository>(provider =>
+            provider.GetRequiredService<EfNotificationBatchRepository>());
         services.AddScoped<INotificationRepository, EfNotificationRepository>();
         services.AddSingleton<INotificationSender, FakeNotificationSender>();
         services.AddSingleton<IDatabaseHealthProbe>(serviceProvider => new NotificationDatabaseHealthProbe(connectionString, serviceProvider.GetRequiredService<ILogger<NotificationDatabaseHealthProbe>>()));

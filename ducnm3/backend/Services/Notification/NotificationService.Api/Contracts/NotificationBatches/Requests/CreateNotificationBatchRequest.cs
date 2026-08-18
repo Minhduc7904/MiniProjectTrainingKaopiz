@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Api/Contracts/NotificationBatches/Requests/CreateNotificationBatchRequest.cs
-// Mục đích: Định nghĩa request contract HTTP cho CreateNotificationBatchRequest.
+// Mục đích: Nhận title, Markdown, target scope, actor, batch size và idempotency key khi client tạo Notification Batch.
 
-namespace NotificationService.Api.Contracts.Requests;
+namespace NotificationService.Api.Contracts.NotificationBatches.Requests;
 
 public sealed record CreateNotificationBatchRequest(
     string Title,

@@ -1,5 +1,5 @@
 // File: backend/Services/Notification/NotificationService.Application/Contracts/Messaging/DispatchNotificationBatchV1.cs
-// Mục đích: Khai báo hợp đồng message DispatchNotificationBatchV1 dùng để giao tiếp bất đồng bộ giữa các service.
+// Mục đích: Mang BatchId đến Worker để claim và gửi chunk recipient tiếp theo của Notification Batch.
 
 using BuildingBlocks.Messaging.Abstractions;
 

@@ -3,7 +3,7 @@
 
 using BuildingBlocks.Contracts.Api;
 
-namespace NotificationService.Application;
+namespace NotificationService.Application.Common.Errors;
 
 public sealed class NotificationApplicationException(
     string errorCode,

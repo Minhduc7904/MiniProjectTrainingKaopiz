@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/Dispatch/NotificationBatchProcessingOptions.cs
-// Mục đích: Định nghĩa options cấu hình được bind từ application configuration cho NotificationBatchProcessingOptions.
+// Mục đích: Cấu hình lease claim và số command dispatch song song dùng chung giữa handler, repository và Worker.
 
-namespace NotificationService.Application.Features.Batches;
+namespace NotificationService.Application.UseCases.NotificationBatches;
 
 public sealed class NotificationBatchProcessingOptions
 {

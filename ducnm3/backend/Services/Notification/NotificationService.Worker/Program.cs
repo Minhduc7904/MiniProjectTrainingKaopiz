@@ -1,13 +1,13 @@
 // File: backend/Services/Notification/NotificationService.Worker/Program.cs
-// Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
+// Mục đích: Khởi động Notification Worker, đăng ký Application/Infrastructure và cấu hình MassTransit consumers.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
 using NotificationService.Application;
 using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Infrastructure;
-using NotificationService.Infrastructure.Persistence;
-using NotificationService.Worker;
+using NotificationService.Infrastructure.Persistence.Context;
+using NotificationService.Worker.Consumers.NotificationBatches;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;

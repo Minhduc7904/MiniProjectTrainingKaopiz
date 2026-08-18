@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Domain/Constants/NotificationTypes.cs
 // Mục đích: Khai báo các loại notification được hệ thống hỗ trợ để validate request và lưu dữ liệu nhất quán.
 
-namespace NotificationService.Domain.Notifications;
+namespace NotificationService.Domain.Constants;
 
 public static class NotificationSourceTypes
 {

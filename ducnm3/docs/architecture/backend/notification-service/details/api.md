@@ -14,12 +14,14 @@ flowchart LR
 
 ## Cách dùng
 
-Request/response DTO nằm `Api/Contracts`; endpoint map sang command/query handler.
+Request/response DTO nằm `Api/Contracts`; `NotificationResponseMapper` đổi Application
+summary sang HTTP response. Mỗi route có đúng một file trong
+`Api/Endpoints/<Resource>/<UseCase>/` và chỉ gọi handler tương ứng.
 
 ## Đã triển khai hiện tại
 
-Có `NotificationEndpoints` và `NotificationBatchEndpoints`, service info/health và
-Outbox setup trong host.
+Có endpoint riêng cho create/get Notification và create/get/failed-items Notification
+Batch. `Program.cs` map từng endpoint extension, service info/health và Outbox setup.
 
 ## Định hướng/chưa triển khai
 

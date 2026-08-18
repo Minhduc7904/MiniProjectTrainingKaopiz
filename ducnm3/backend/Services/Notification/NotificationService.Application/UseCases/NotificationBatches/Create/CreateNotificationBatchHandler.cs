@@ -1,14 +1,16 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/Create/CreateNotificationBatchHandler.cs
-// Mục đích: Điều phối use case CreateNotificationBatchHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Validate batch ALL_STUDENTS, lưu trạng thái PENDING và phát command snapshot recipient qua outbox.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Content;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Common.Errors;
+using NotificationService.Application.Services.Content;
 using NotificationService.Application.Contracts.Messaging;
-using NotificationService.Domain.Notifications;
+using NotificationService.Domain.Constants;
 
-namespace NotificationService.Application.Features.Batches.Create;
+namespace NotificationService.Application.UseCases.NotificationBatches.Create;
 
 public sealed class CreateNotificationBatchHandler(
     INotificationBatchRepository repository,

@@ -1,11 +1,11 @@
 // File: backend/Services/Notification/NotificationService.Worker/Consumers/NotificationBatches/SnapshotNotificationBatchConsumer.cs
-// Mục đích: Tiêu thụ message nền và kích hoạt nghiệp vụ SnapshotNotificationBatchConsumer.
+// Mục đích: Nhận SnapshotNotificationBatchV1 từ MassTransit và chuyển vào Snapshot handler để cố định recipient list.
 
 using MassTransit;
 using NotificationService.Application.Contracts.Messaging;
-using NotificationService.Application.Features.Batches.Snapshot;
+using NotificationService.Application.UseCases.NotificationBatches.Snapshot;
 
-namespace NotificationService.Worker;
+namespace NotificationService.Worker.Consumers.NotificationBatches;
 
 public sealed class SnapshotNotificationBatchConsumer(SnapshotNotificationBatchHandler handler)
     : IConsumer<SnapshotNotificationBatchV1>

@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Application/Services/Sending/INotificationSender.cs
-// Mục đích: Khai báo hoặc triển khai adapter gửi notification cho INotificationSender.
+// Mục đích: Định nghĩa port gửi Notification để Dispatch use case không phụ thuộc delivery provider cụ thể.
 
-namespace NotificationService.Application.Abstractions;
+namespace NotificationService.Application.Services.Sending;
 
 public interface INotificationSender
 {

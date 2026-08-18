@@ -1,12 +1,15 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Persistence/Repositories/EfNotificationRepository.cs
-// Mục đích: Triển khai repository EfNotificationRepository bằng EF Core và persistence model.
+// Mục đích: Lưu Notification trực tiếp và đọc projection theo ID qua EF Core, dùng mapper tại persistence boundary.
 
 using Microsoft.EntityFrameworkCore;
-using NotificationService.Application.Abstractions;
-using NotificationService.Domain.Notifications;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Domain.Constants;
+using NotificationService.Infrastructure.Persistence.Context;
+using NotificationService.Infrastructure.Persistence.Mappers;
 using NotificationService.Infrastructure.Persistence.Scaffolded;
 
-namespace NotificationService.Infrastructure.Persistence;
+namespace NotificationService.Infrastructure.Persistence.Repositories;
 
 public sealed class EfNotificationRepository(NotificationDbContext dbContext)
     : INotificationRepository
@@ -28,7 +31,7 @@ public sealed class EfNotificationRepository(NotificationDbContext dbContext)
             CreatedAt = record.CreatedAtUtc,
         };
         dbContext.Notifications.Add(entity);
-        return Task.FromResult(ToSummary(entity));
+        return Task.FromResult(NotificationPersistenceMapper.ToSummary(entity));
     }
 
     public async Task<NotificationSummary?> GetByIdAsync(
@@ -51,16 +54,4 @@ public sealed class EfNotificationRepository(NotificationDbContext dbContext)
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) =>
         dbContext.SaveChangesAsync(cancellationToken);
-
-    private static NotificationSummary ToSummary(Notification entity) =>
-        new(
-            entity.Id,
-            entity.RecipientStudentId,
-            entity.Title,
-            entity.BodyMarkdown,
-            entity.SourceType,
-            entity.Status,
-            entity.CreatedBy,
-            entity.CreatedAt,
-            entity.ReadAt);
 }

@@ -1,12 +1,13 @@
 // File: backend/Services/Notification/NotificationService.IntegrationTests/Persistence/NotificationBatchLeaseIntegrationTests.cs
-// Mục đích: Kiểm thử integration thực tế cho boundary NotificationBatchLeaseIntegrationTests.
+// Mục đích: Dùng MySQL Testcontainer để chứng minh nhiều worker claim chunk không trùng item và lease hết hạn được thu hồi.
 
 using BuildingBlocks.DatabaseMigration;
 using Microsoft.EntityFrameworkCore;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Features.Batches;
-using NotificationService.Domain.Notifications;
-using NotificationService.Infrastructure.Persistence;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.UseCases.NotificationBatches;
+using NotificationService.Domain.Constants;
+using NotificationService.Infrastructure.Persistence.Context;
+using NotificationService.Infrastructure.Persistence.Repositories;
 using NotificationService.Infrastructure.Persistence.Scaffolded;
 using Testcontainers.MySql;
 

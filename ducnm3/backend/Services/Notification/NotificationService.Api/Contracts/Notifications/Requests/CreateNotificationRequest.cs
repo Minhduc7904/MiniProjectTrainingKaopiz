@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Api/Contracts/Notifications/Requests/CreateNotificationRequest.cs
-// Mục đích: Định nghĩa request contract HTTP cho CreateNotificationRequest.
+// Mục đích: Nhận recipient, title, Markdown, source type và actor khi client tạo một Notification trực tiếp.
 
-namespace NotificationService.Api.Contracts.Requests;
+namespace NotificationService.Api.Contracts.Notifications.Requests;
 
 public sealed record CreateNotificationRequest(
     string StudentId,

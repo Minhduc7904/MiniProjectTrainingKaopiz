@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Api/Contracts/Notifications/Responses/NotificationResponse.cs
-// Mục đích: Định nghĩa response contract HTTP cho NotificationResponse.
+// Mục đích: Trả nội dung, nguồn, trạng thái đọc và các mốc thời gian của một Notification qua HTTP.
 
-namespace NotificationService.Api.Contracts.Responses;
+namespace NotificationService.Api.Contracts.Notifications.Responses;
 
 public sealed record NotificationResponse(
     Guid Id,

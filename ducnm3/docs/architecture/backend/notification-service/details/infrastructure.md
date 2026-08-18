@@ -19,8 +19,9 @@ API/Worker đăng ký Infrastructure tại host; chỉ layer này biết EF Core
 
 ## Đã triển khai hiện tại
 
-Có `EfNotificationRepository`, `EfNotificationBatchRepository`, `StudentRecipientClient`,
-`FakeNotificationSender`, DbContext Outbox và health probe.
+Có `EfNotificationRepository`, `EfNotificationBatchRepository`, ba persistence mapper,
+`StudentRecipientClient`, `FakeNotificationSender`, DbContext Outbox và health probe.
+EF scaffolded entity không đi ra ngoài Infrastructure.
 
 ## Định hướng/chưa triển khai
 

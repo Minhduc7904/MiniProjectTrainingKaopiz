@@ -1,9 +1,11 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/Notifications/GetById/GetNotificationByIdHandler.cs
-// Mục đích: Điều phối use case GetNotificationByIdHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Đọc Notification theo ID và trả lỗi not-found chuẩn khi bản ghi không tồn tại.
 
-using NotificationService.Application.Abstractions;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Common.Errors;
 
-namespace NotificationService.Application.Features.Notifications.GetById;
+namespace NotificationService.Application.UseCases.Notifications.GetById;
 
 public sealed class GetNotificationByIdHandler(INotificationRepository repository)
 {

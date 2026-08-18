@@ -1,9 +1,11 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/GetFailedItems/GetNotificationBatchFailedItemsHandler.cs
-// Mục đích: Điều phối use case GetNotificationBatchFailedItemsHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Kiểm tra batch tồn tại rồi đọc trang recipient FAILED theo cursor và page limit đã chuẩn hóa.
 
-using NotificationService.Application.Abstractions;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Common.Errors;
 
-namespace NotificationService.Application.Features.Batches.GetFailedItems;
+namespace NotificationService.Application.UseCases.NotificationBatches.GetFailedItems;
 
 public sealed class GetNotificationBatchFailedItemsHandler(INotificationBatchRepository repository)
 {

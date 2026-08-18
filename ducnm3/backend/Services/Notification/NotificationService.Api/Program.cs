@@ -1,5 +1,5 @@
 // File: backend/Services/Notification/NotificationService.Api/Program.cs
-// Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
+// Mục đích: Khởi động Notification API, đăng ký Application/Infrastructure và map từng endpoint HTTP cùng health check.
 
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
@@ -8,8 +8,12 @@ using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using NotificationService.Application;
 using NotificationService.Infrastructure;
-using NotificationService.Api.Endpoints;
-using NotificationService.Infrastructure.Persistence;
+using NotificationService.Api.Endpoints.NotificationBatches.Create;
+using NotificationService.Api.Endpoints.NotificationBatches.GetById;
+using NotificationService.Api.Endpoints.NotificationBatches.GetFailedItems;
+using NotificationService.Api.Endpoints.Notifications.Create;
+using NotificationService.Api.Endpoints.Notifications.GetById;
+using NotificationService.Infrastructure.Persistence.Context;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -76,7 +80,10 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Notification);
 app.MapDatabaseHealthEndpoint(ServiceNames.Notification);
-app.MapNotificationEndpoints();
-app.MapNotificationBatchEndpoints();
+app.MapCreateNotificationEndpoint();
+app.MapGetNotificationByIdEndpoint();
+app.MapCreateNotificationBatchEndpoint();
+app.MapGetNotificationBatchByIdEndpoint();
+app.MapGetNotificationBatchFailedItemsEndpoint();
 
 app.Run();

@@ -1,9 +1,11 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/GetById/GetNotificationBatchByIdHandler.cs
-// Mục đích: Điều phối use case GetNotificationBatchByIdHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Đọc summary Notification Batch theo ID và trả lỗi not-found chuẩn khi batch không tồn tại.
 
-using NotificationService.Application.Abstractions;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Common.Errors;
 
-namespace NotificationService.Application.Features.Batches.GetById;
+namespace NotificationService.Application.UseCases.NotificationBatches.GetById;
 
 public sealed class GetNotificationBatchByIdHandler(INotificationBatchRepository repository)
 {

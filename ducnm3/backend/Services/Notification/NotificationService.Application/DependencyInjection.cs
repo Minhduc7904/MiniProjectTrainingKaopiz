@@ -1,15 +1,15 @@
 // File: backend/Services/Notification/NotificationService.Application/DependencyInjection.cs
-// Mục đích: Đăng ký dependency injection cho layer hoặc service tương ứng.
+// Mục đích: Đăng ký toàn bộ handler, extractor và options thuộc Application để API/Worker gọi đúng use case.
 
 using Microsoft.Extensions.DependencyInjection;
-using NotificationService.Application.Features.Batches.Create;
-using NotificationService.Application.Features.Batches.Dispatch;
-using NotificationService.Application.Features.Batches.GetById;
-using NotificationService.Application.Features.Batches.GetFailedItems;
-using NotificationService.Application.Features.Batches.Snapshot;
-using NotificationService.Application.Content;
-using NotificationService.Application.Features.Notifications.Create;
-using NotificationService.Application.Features.Notifications.GetById;
+using NotificationService.Application.UseCases.NotificationBatches.Create;
+using NotificationService.Application.UseCases.NotificationBatches.Dispatch;
+using NotificationService.Application.UseCases.NotificationBatches.GetById;
+using NotificationService.Application.UseCases.NotificationBatches.GetFailedItems;
+using NotificationService.Application.UseCases.NotificationBatches.Snapshot;
+using NotificationService.Application.Services.Content;
+using NotificationService.Application.UseCases.Notifications.Create;
+using NotificationService.Application.UseCases.Notifications.GetById;
 
 namespace NotificationService.Application;
 

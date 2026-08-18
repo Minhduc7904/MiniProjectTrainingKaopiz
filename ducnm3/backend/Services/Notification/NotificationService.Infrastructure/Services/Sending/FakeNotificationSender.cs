@@ -1,9 +1,9 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Services/Sending/FakeNotificationSender.cs
-// Mục đích: Khai báo hoặc triển khai adapter gửi notification cho FakeNotificationSender.
+// Mục đích: Giả lập gửi Notification với quy tắc lỗi xác định theo student hash và attempt để kiểm thử retry cục bộ.
 
-using NotificationService.Application.Abstractions;
+using NotificationService.Application.Services.Sending;
 
-namespace NotificationService.Infrastructure.Sending;
+namespace NotificationService.Infrastructure.Services.Sending;
 
 public sealed class FakeNotificationSender : INotificationSender
 {

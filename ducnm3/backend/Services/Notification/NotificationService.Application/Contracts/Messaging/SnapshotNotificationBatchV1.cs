@@ -1,5 +1,5 @@
 // File: backend/Services/Notification/NotificationService.Application/Contracts/Messaging/SnapshotNotificationBatchV1.cs
-// Mục đích: Khai báo hợp đồng message SnapshotNotificationBatchV1 dùng để giao tiếp bất đồng bộ giữa các service.
+// Mục đích: Mang BatchId đến Worker để chụp danh sách student recipient trước khi bắt đầu dispatch.
 
 using BuildingBlocks.Messaging.Abstractions;
 

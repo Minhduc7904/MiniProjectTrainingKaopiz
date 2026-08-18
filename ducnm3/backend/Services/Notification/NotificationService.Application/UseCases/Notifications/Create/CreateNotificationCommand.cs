@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/Notifications/Create/CreateNotificationCommand.cs
-// Mục đích: Định nghĩa dữ liệu đầu vào cho use case CreateNotificationCommand.
+// Mục đích: Mang dữ liệu đã map từ POST Notification vào Application mà không phụ thuộc HTTP request model.
 
-namespace NotificationService.Application.Features.Notifications.Create;
+namespace NotificationService.Application.UseCases.Notifications.Create;
 
 public sealed record CreateNotificationCommand(
     Guid StudentId,

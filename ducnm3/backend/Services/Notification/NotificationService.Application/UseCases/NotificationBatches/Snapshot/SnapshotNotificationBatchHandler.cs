@@ -1,13 +1,16 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/Snapshot/SnapshotNotificationBatchHandler.cs
-// Mục đích: Điều phối use case SnapshotNotificationBatchHandler: validate input, gọi port và trả kết quả nghiệp vụ.
+// Mục đích: Đọc student theo page, lưu snapshot recipient idempotent và phát các command dispatch theo concurrency cấu hình.
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
-using NotificationService.Application.Abstractions;
-using NotificationService.Application.Features.Batches;
+using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Services.Students;
+using NotificationService.Application.Common.Errors;
+using NotificationService.Application.UseCases.NotificationBatches;
 using NotificationService.Application.Contracts.Messaging;
 
-namespace NotificationService.Application.Features.Batches.Snapshot;
+namespace NotificationService.Application.UseCases.NotificationBatches.Snapshot;
 
 public sealed class SnapshotNotificationBatchHandler(
     IStudentRecipientClient studentRecipientClient,
