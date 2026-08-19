@@ -67,6 +67,13 @@ Danh mục Student Service:
 - [`student-service/integration.md`](student-service/integration.md): MySQL
   filter, stable ordering và page boundaries với migration production.
 
+Danh mục Course Service:
+
+- [`course-service/unit.md`](course-service/unit.md): validation, pagination
+  handler, CSV encoder và keyset export contract.
+- [`course-service/component.md`](course-service/component.md): HTTP list và
+  CSV streaming contract qua TestServer.
+
 Danh mục Notification Service:
 
 - [`notification-service/unit.md`](notification-service/unit.md): batch create,

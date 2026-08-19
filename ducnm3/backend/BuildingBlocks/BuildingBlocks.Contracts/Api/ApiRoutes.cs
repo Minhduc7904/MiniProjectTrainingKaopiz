@@ -8,6 +8,25 @@ namespace BuildingBlocks.Contracts.Api;
 /// </summary>
 public static class ApiRoutes
 {
+    /// <summary>Route contract do Course Service sở hữu.</summary>
+    public static class Courses
+    {
+        public const string List = "/api/courses";
+        public const string Export = "/api/courses/export";
+
+        public static string ListServicePath() =>
+            BuildServicePath(List);
+
+        public static string ListPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, List);
+
+        public static string ExportServicePath() =>
+            BuildServicePath(Export);
+
+        public static string ExportPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, Export);
+    }
+
     /// <summary>Route contract do Media Service sở hữu.</summary>
     public static class Media
     {

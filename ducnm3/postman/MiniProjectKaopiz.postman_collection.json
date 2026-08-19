@@ -70,7 +70,57 @@
   "item": [
     {
       "name": "CourseService",
-      "item": []
+      "item": [
+        {
+          "name": "GET Export courses CSV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CSV export response\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.headers.get(\"Content-Type\")).to.contain(\"text/csv\");",
+                  "  pm.expect(pm.response.headers.get(\"Content-Disposition\")).to.contain(\"courses.csv\");",
+                  "  pm.expect(pm.response.text()).to.contain(\"id,name,status,createdAtUtc\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/course/api/courses/export?status=PUBLISHED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "course",
+                "api",
+                "courses",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PUBLISHED"
+                }
+              ]
+            },
+            "description": "Business flow: docs/business-flows/courses/get-courses-export.md"
+          },
+          "response": []
+        }
+      ]
     },
     {
       "name": "StudentService",

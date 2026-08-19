@@ -1,17 +1,37 @@
-# Liệt kê khóa học
+# `GET /course/api/courses`
 
-## Tiêu chuẩn phản hồi
+## Mục đích
 
-Phản hồi JSON thành công sử dụng cấu trúc bao dùng chung trong [`../shared/response-format.md`](../../shared/response-format.md). JSON cụ thể bên dưới là giá trị của `data`; thêm `meta` cho `traceId` và thông tin phân trang. Các điểm cuối truyền CSV và dữ liệu nhị phân theo luồng là ngoại lệ.
+Course Service trả danh sách Course theo offset pagination. Direct path là `GET /api/courses`; endpoint chỉ đọc, safe, idempotent và không có request body. Xem [luồng nghiệp vụ](../../../business-flows/courses/get-courses.md).
 
-`GET /api/courses?status=PUBLISHED&page=1&pageSize=20`
+## Yêu cầu
 
-Dữ liệu phản hồi thành công `200 OK`:
+| Query | Kiểu | Mặc định | Quy tắc |
+| --- | --- | --- | --- |
+| `status` | string | Không có | `DRAFT`, `PUBLISHED` hoặc `ARCHIVED`; trim và uppercase. |
+| `sortBy` | string | `createdAt` | Allowlist: `createdAt`, `name`. |
+| `sortDirection` | string | `desc` | `asc` hoặc `desc`. |
+| `page` | integer | `1` | Từ `1`. |
+| `pageSize` | integer | `20` | Từ `1` đến `100`. |
+
+Các filter kết hợp theo `AND`. List rỗng vẫn là `200`.
+
+## Phản hồi thành công
 
 ```json
-{"items":[{"id":"course-uuid","name":"Backend Fundamentals","status":"PUBLISHED"}],"page":1,"pageSize":20,"total":1}
+{
+  "data": [{ "id": "course-uuid", "name": "Backend Fundamentals", "status": "PUBLISHED", "createdAtUtc": "2026-08-19T01:00:00Z" }],
+  "meta": { "traceId": "01J...", "pagination": { "type": "offset", "page": 1, "pageSize": 20, "totalItems": 1, "totalPages": 1 } }
+}
 ```
 
-- Kiểm tra hợp lệ: `page >= 1`; `pageSize` trong khoảng 1–100; `status` là giá trị liệt kê hợp lệ và không bắt buộc.
-- Trạng thái: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`.
-- Phải ghi tài liệu về thứ tự sắp xếp khi bổ sung phần triển khai.
+## Sắp xếp và hiệu năng
+
+Total order là `created_at <direction>, id <direction>` hoặc `name <direction>, id <direction>`. `id` là tie-breaker duy nhất nên bản ghi trùng sort key không bị đảo thứ tự trong cùng snapshot dữ liệu. Offset có thể dịch chuyển khi Course được thêm/xóa giữa hai request. Repository có `GetPagedAsync` cho API và `GetAllAsync` chỉ phục vụ benchmark/CSV streaming sau này; endpoint không materialize toàn bộ Course.
+
+## Mã trạng thái và cache
+
+- `200`: kể cả trang rỗng.
+- `400 VALIDATION_FAILED`: filter, sort, direction, page hoặc pageSize không hợp lệ.
+
+Response đặt `Cache-Control: no-store` do danh sách thay đổi theo dữ liệu Course.

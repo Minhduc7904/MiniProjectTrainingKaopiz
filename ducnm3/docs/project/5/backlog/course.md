@@ -112,7 +112,7 @@ concurrency được test; DB state/`completedAt` đúng; testcase F05 và docs/
 | Thuộc tính | Giá trị |
 | --- | --- |
 | Est | 8 giờ |
-| Ticket | `Chưa tạo` |
+| Ticket | `ERBUL26-3019` |
 | Loại | Planned |
 | Dependency | P5-07 |
 | Baseline | F06, TC-COURSE-F06-001..003, NFR-CSV-01 |

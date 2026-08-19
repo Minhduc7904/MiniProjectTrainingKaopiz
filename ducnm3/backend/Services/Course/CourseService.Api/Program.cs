@@ -1,10 +1,15 @@
+// File: backend/Services/Course/CourseService.Api/Program.cs
+// Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
+
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
-using CourseService.Infrastructure.Health;
-using Microsoft.Extensions.Logging;
+using CourseService.Api.Endpoints.Courses.Export;
+using CourseService.Api.Endpoints.Courses.GetList;
+using CourseService.Application;
+using CourseService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
@@ -27,10 +32,11 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "ConnectionStrings__Database environment variable is required for Course Service.");
 }
 
-builder.Services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
-    new CourseDatabaseHealthProbe(
-        connectionString,
-        serviceProvider.GetRequiredService<ILogger<CourseDatabaseHealthProbe>>()));
+if (!migrationsRunOnly)
+{
+    builder.Services.AddCourseApplication();
+    builder.Services.AddCourseInfrastructure(connectionString);
+}
 
 var app = builder.Build();
 var logMigration = LoggerMessage.Define<string>(
@@ -60,5 +66,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 
 app.MapServiceInfoEndpoint(ServiceNames.Course);
 app.MapDatabaseHealthEndpoint(ServiceNames.Course);
+app.MapGetCourses();
+app.MapExportCourses();
 
 app.Run();
