@@ -12,9 +12,18 @@ using MediaService.Infrastructure.Persistence.Context;
 using MediaService.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+// Ẩn SQL query EF Core chạy thành công.
+// Warning và Error vẫn được giữ lại.
+builder.Logging.AddFilter(
+    "Microsoft.EntityFrameworkCore.Database.Command",
+    LogLevel.Warning);
+
 var connectionString = builder.Configuration.GetConnectionString("Database");
+
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException(
@@ -22,9 +31,11 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddMediaApplication(builder.Configuration);
+
 builder.Services.AddMediaInfrastructure(
     builder.Configuration,
     connectionString);
+
 builder.Services.AddLmsMessagingWithConsumers(
     builder.Configuration,
     ServiceNames.Media,
@@ -32,36 +43,44 @@ builder.Services.AddLmsMessagingWithConsumers(
     {
         registration.AddEntityFrameworkOutbox<MediaDbContext>(outbox =>
             outbox.UseMySql());
+
         registration
             .AddCommandConsumer<
                 GenerateMediaThumbnailConsumer,
                 GenerateMediaThumbnailV1,
                 GenerateMediaThumbnailConsumerDefinition>(
                 ServiceNames.Media);
+
         registration
             .AddCommandConsumer<
                 RegisterNotificationMediaUsageConsumer,
                 RegisterNotificationMediaUsageV1,
                 RegisterNotificationMediaUsageConsumerDefinition>(
                 ServiceNames.Media);
+
         registration
             .AddCommandConsumer<
                 RegisterNotificationMediaUsageBatchConsumer,
                 RegisterNotificationMediaUsageBatchV1,
                 RegisterNotificationMediaUsageBatchConsumerDefinition>(
                 ServiceNames.Media);
+
         registration
             .AddCommandConsumer<
                 StartNotificationMediaUsageJobConsumer,
                 StartNotificationMediaUsageJobV1,
-                NotificationMediaUsageJobCommandConsumerDefinition<StartNotificationMediaUsageJobConsumer>>(
+                NotificationMediaUsageJobCommandConsumerDefinition<
+                    StartNotificationMediaUsageJobConsumer>>(
                 ServiceNames.Media);
+
         registration
             .AddCommandConsumer<
                 CompleteNotificationMediaUsageJobConsumer,
                 CompleteNotificationMediaUsageJobV1,
-                NotificationMediaUsageJobCommandConsumerDefinition<CompleteNotificationMediaUsageJobConsumer>>(
+                NotificationMediaUsageJobCommandConsumerDefinition<
+                    CompleteNotificationMediaUsageJobConsumer>>(
                 ServiceNames.Media);
+
         registration
             .AddConsumer<
                 GenerateMediaThumbnailFaultConsumer,
@@ -71,6 +90,7 @@ builder.Services.AddLmsMessagingWithConsumers(
                 endpoint.Name =
                     "media-service--generate-media-thumbnail-v1-fault";
             });
+
         registration
             .AddConsumer<
                 RegisterNotificationMediaUsageFaultConsumer,
@@ -83,4 +103,5 @@ builder.Services.AddLmsMessagingWithConsumers(
     });
 
 var host = builder.Build();
+
 await host.RunAsync();
