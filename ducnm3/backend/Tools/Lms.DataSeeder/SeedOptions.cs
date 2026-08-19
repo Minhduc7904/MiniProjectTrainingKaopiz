@@ -19,6 +19,7 @@ public sealed record SeedOptions(
 {
     public const int DefaultStudentCount = 100_000;
     public const int DefaultCourseCount = 100_000;
+    public const int MaximumCourseCount = 300_000;
     public const int DefaultRandomSeed = 20_260_813;
     public const int DefaultBatchSize = 1_000;
 
@@ -37,7 +38,7 @@ public sealed record SeedOptions(
         }
 
         ValidateRange(StudentCount, 1, DefaultStudentCount, nameof(StudentCount));
-        ValidateRange(CourseCount, 1, DefaultCourseCount, nameof(CourseCount));
+        ValidateRange(CourseCount, 1, MaximumCourseCount, nameof(CourseCount));
         ValidateRange(MinLessonsPerCourse, 1, 5, nameof(MinLessonsPerCourse));
         ValidateRange(MaxLessonsPerCourse, MinLessonsPerCourse, 5, nameof(MaxLessonsPerCourse));
         ValidateRange(MinCoursesPerStudent, 1, 10, nameof(MinCoursesPerStudent));

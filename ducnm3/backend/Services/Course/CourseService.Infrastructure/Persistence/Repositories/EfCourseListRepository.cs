@@ -59,6 +59,24 @@ public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseL
             DateTime.SpecifyKind(row.CreatedAt, DateTimeKind.Utc))).ToArray());
     }
 
+    public async Task<IReadOnlyList<CourseExportRow>> ReadAllExportRowsAsync(
+        ExportCoursesQuery query,
+        CancellationToken cancellationToken)
+    {
+        var source = dbContext.Courses.AsNoTracking();
+        if (query.Status is not null) source = source.Where(course => course.Status == query.Status);
+
+        var rows = await source
+            .OrderByDescending(course => course.CreatedAt)
+            .ThenByDescending(course => course.Id)
+            .Select(course => new CourseExportRowProjection(
+                course.Id, course.Name, course.Status, course.CreatedAt))
+            .ToListAsync(cancellationToken);
+        return rows.Select(row => new CourseExportRow(
+            row.Id, row.Name, row.Status,
+            DateTime.SpecifyKind(row.CreatedAt, DateTimeKind.Utc))).ToArray();
+    }
+
     private static IOrderedQueryable<Course> ApplyStableOrder(IQueryable<Course> source, CourseSortField sortBy, bool descending) =>
         (sortBy, descending) switch
         {

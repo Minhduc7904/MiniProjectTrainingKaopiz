@@ -50,5 +50,10 @@ public sealed class GetCoursesHandlerTests
 
         public Task<CourseExportChunk> ReadExportChunkAsync(ExportCoursesQuery query, CourseExportPosition? position, CancellationToken cancellationToken) =>
             Task.FromResult(new CourseExportChunk([]));
+
+        public Task<IReadOnlyList<CourseExportRow>> ReadAllExportRowsAsync(
+            ExportCoursesQuery query,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CourseExportRow>>([]);
     }
 }

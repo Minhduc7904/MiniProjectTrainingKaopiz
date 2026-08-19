@@ -59,6 +59,28 @@ public class SeedOptionsTests
         Assert.That(exception!.Message, Does.Contain("lms_course_db"));
     }
 
+    [Test]
+    public void ValidateCourseCountAtBenchmarkMaximumAcceptsConfiguration()
+    {
+        var options = CreateValidOptions() with { CourseCount = 300_000 };
+
+        Assert.DoesNotThrow(() => options.Validate("Development"));
+    }
+
+    [Test]
+    public void ValidateCourseCountAboveBenchmarkMaximumRejectsConfiguration()
+    {
+        var options = CreateValidOptions() with { CourseCount = 300_001 };
+
+        Assert.Throws<SeedValidationException>(() => options.Validate("Development"));
+    }
+
+    [Test]
+    public void DefaultCourseCountRemainsOneHundredThousand()
+    {
+        Assert.That(SeedOptions.DefaultCourseCount, Is.EqualTo(100_000));
+    }
+
     [TestCase(0, 10)]
     [TestCase(11, 10)]
     public void ValidateRejectsInvalidCourseAssignmentRange(

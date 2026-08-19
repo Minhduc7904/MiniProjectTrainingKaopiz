@@ -30,6 +30,7 @@ Thư mục này chứa kế hoạch về các vi dịch vụ LMS, được sắp
 
 - `development/`: các hướng dẫn về ngăn xếp công nghệ, MinIO, Docker, hiệu năng, bàn giao và chuẩn bị.
 - `guide/`: các hướng dẫn thiết lập và vận hành thực tế, bao gồm Docker Compose và Swagger dùng chung.
+- [`performance/README.md`](performance/README.md): cách chuẩn bị dataset và chạy benchmark Batch Notification/CSV.
 - `guide/DEVKIT_GUIDE.md`: cách dùng DevKit CLI, task session, task runner và MCP tools trong Cursor, Claude và Codex.
 - `runbooks/notification-batch.md`: xử lý theo lô, thử lại, tính lũy đẳng và xử lý lỗi.
 - `runbooks/demo-script.md`: quy trình trình diễn trong 30 phút.

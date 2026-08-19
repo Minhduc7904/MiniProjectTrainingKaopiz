@@ -19,4 +19,8 @@ public interface ICourseListRepository
         CourseExportPosition? position,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<CourseExportRow>> ReadAllExportRowsAsync(
+        ExportCoursesQuery query,
+        CancellationToken cancellationToken);
+
 }

@@ -14,6 +14,7 @@ public static class DependencyInjection
     {
         services.AddScoped<GetCoursesHandler>();
         services.AddScoped<ExportCoursesHandler>();
+        services.AddScoped<BufferedCourseExportHandler>();
         services.AddScoped<GetCourseDetailsHandler>();
         return services;
     }

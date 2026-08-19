@@ -10,6 +10,7 @@ using BuildingBlocks.Observability.Logging;
 using CourseService.Api.Endpoints.Courses.Export;
 using CourseService.Api.Endpoints.Courses.GetDetails;
 using CourseService.Api.Endpoints.Courses.GetList;
+using CourseService.Api.Endpoints.Performance;
 using CourseService.Application;
 using CourseService.Infrastructure;
 
@@ -73,5 +74,9 @@ app.MapDatabaseHealthEndpoint(ServiceNames.Course);
 app.MapGetCourses();
 app.MapGetCourseDetails();
 app.MapExportCourses();
+if (app.Environment.IsDevelopment())
+{
+    app.MapBufferedCourseExportBenchmark();
+}
 
 app.Run();

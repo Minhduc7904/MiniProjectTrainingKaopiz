@@ -234,7 +234,7 @@ public static class Program
                   --resume                          Resume the same deterministic dataset
                   --dry-run                         Validate schema and show planned counts only
                   --students <1..100000>            Default: 100000
-                  --courses <1..100000>             Default: 100000
+                  --courses <1..300000>             Default: 100000
                   --min-lessons <1..5>              Default: 1
                   --max-lessons <1..5>              Default: 5
                   --min-courses-per-student <1..10> Default: 1

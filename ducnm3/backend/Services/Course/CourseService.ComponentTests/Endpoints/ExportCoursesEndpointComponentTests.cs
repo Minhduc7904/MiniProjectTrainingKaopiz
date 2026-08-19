@@ -4,7 +4,7 @@ using System.Text;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Extensions;
 using CourseService.Api.Endpoints.Courses.Export;
-using CourseService.Application;
+using CourseService.Api.Endpoints.Performance;
 using CourseService.Application.Repositories;
 using CourseService.Application.UseCases.Courses.Export;
 using CourseService.Application.UseCases.Courses.GetList;
@@ -12,6 +12,7 @@ using CourseService.Domain.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 #pragma warning disable CA1707
 
@@ -24,16 +25,59 @@ public sealed class ExportCoursesEndpointComponentTests
     private StubCourseListRepository repository = null!;
 
     [SetUp]
-    public async Task SetUpAsync()
+    public async Task SetUpAsync() => await StartAsync(Environments.Development);
+
+    [Test]
+    public async Task BufferedExportDevelopmentRouteReturnsSameCsvContract()
+    {
+        using var response = await client.GetAsync(
+            string.Concat(ApiRoutes.Courses.BufferedExportBenchmarkServicePath(), "?status=published"),
+            TestContext.CurrentContext.CancellationToken);
+        var bytes = await response.Content.ReadAsByteArrayAsync(TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo("text/csv"));
+            Assert.That(response.Content.Headers.ContentDisposition?.FileName, Is.EqualTo("courses.csv"));
+            Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(bytes.Take(3), Is.EqualTo(Encoding.UTF8.GetPreamble()));
+            Assert.That(repository.BufferedExportCallCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task BufferedExportProductionRouteReturnsNotFound()
+    {
+        await app.DisposeAsync();
+        client.Dispose();
+        await StartAsync(Environments.Production);
+
+        using var response = await client.GetAsync(
+            ApiRoutes.Courses.BufferedExportBenchmarkServicePath(),
+            TestContext.CurrentContext.CancellationToken);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
+    private async Task StartAsync(string environmentName)
     {
         repository = new StubCourseListRepository();
-        var builder = WebApplication.CreateBuilder();
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            EnvironmentName = environmentName,
+        });
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<ICourseListRepository>(repository);
-        builder.Services.AddCourseApplication();
+        builder.Services.AddScoped<ExportCoursesHandler>();
+        builder.Services.AddScoped<BufferedCourseExportHandler>();
         app = builder.Build();
         app.UseSharedApiMiddleware();
         app.MapExportCourses();
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapBufferedCourseExportBenchmark();
+        }
         await app.StartAsync();
         client = app.GetTestClient();
     }
@@ -94,6 +138,7 @@ public sealed class ExportCoursesEndpointComponentTests
 
         public int ExportCallCount { get; private set; }
         public ExportCoursesQuery? LastQuery { get; private set; }
+        public int BufferedExportCallCount { get; private set; }
 
         public Task<IReadOnlyList<CourseListItemRecord>> GetAllAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<CourseListItemRecord>>([]);
@@ -111,6 +156,15 @@ public sealed class ExportCoursesEndpointComponentTests
             return Task.FromResult(position is null
                 ? new CourseExportChunk([row])
                 : new CourseExportChunk([]));
+        }
+
+        public Task<IReadOnlyList<CourseExportRow>> ReadAllExportRowsAsync(
+            ExportCoursesQuery query,
+            CancellationToken cancellationToken)
+        {
+            BufferedExportCallCount++;
+            LastQuery = query;
+            return Task.FromResult<IReadOnlyList<CourseExportRow>>([row]);
         }
 
     }

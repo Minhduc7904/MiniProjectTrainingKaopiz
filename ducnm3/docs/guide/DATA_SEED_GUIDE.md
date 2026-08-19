@@ -60,7 +60,7 @@ scripts/seed/run-development-seed.sh \
 
 Giới hạn:
 
-- Học viên/Khóa học: `1-100,000`.
+- Học viên: `1-100,000`; Khóa học: `1-300,000` (mặc định vẫn là `100,000`).
 - Bài học/Khóa học: `1-5`.
 - Khóa học/Học viên: `1-10` và không lớn hơn tổng số khóa học.
 - Kích thước lô: `1-2,000`.

@@ -1,0 +1,24 @@
+{
+  "timestampUtc": "2026-08-19T10:14:26.8884873+00:00",
+  "options": {
+    "command": "Csv",
+    "recipientCounts": [],
+    "recordCounts": [
+      10000,
+      100000,
+      300000
+    ],
+    "approach": "Both",
+    "gatewayUrl": "http://localhost:5100",
+    "outputDirectory": "performance/results",
+    "warmupRuns": 1,
+    "measuredRuns": 3,
+    "pollIntervalMilliseconds": 500,
+    "memorySampleIntervalMilliseconds": 1000,
+    "timeout": "00:10:00",
+    "prepareData": false,
+    "confirmReset": false,
+    "plainOutput": true
+  },
+  "note": "Raw benchmark results only; preparation and container samples are not included yet."
+}

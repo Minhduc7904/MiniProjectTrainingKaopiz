@@ -1,0 +1,450 @@
+[
+  {
+    "datasetCount": 10000,
+    "run": 1,
+    "result": {
+      "batchId": "d22d3012-7a53-46d0-ae8a-41ec520dc877",
+      "postLatency": "00:00:00.0151843",
+      "totalDuration": "00:00:17.1243203",
+      "snapshotDuration": "00:00:14.5867419",
+      "snapshotTimingErrorMilliseconds": 500,
+      "dispatchDurationMilliseconds": 2505,
+      "finalStatus": "COMPLETED",
+      "totalCount": 10000,
+      "processedCount": 10000,
+      "successCount": 10000,
+      "failedCount": 0,
+      "endToEndThroughput": 583.9648621334876,
+      "dispatchThroughput": 3992.0159680638726
+    },
+    "memory": {
+      "baselineBytes": 121949388,
+      "peakBytes": 126982553,
+      "averageBytes": 123275087.78571428,
+      "deltaBytes": 5033165,
+      "sampleCount": 14,
+      "baselineMegabytes": 116.29999923706055,
+      "peakMegabytes": 121.09999942779541,
+      "averageMegabytes": 117.56428507396153,
+      "deltaMegabytes": 4.800000190734863
+    },
+    "samples": [
+      {
+        "timestampUtc": "2026-08-19T10:09:39.379524+00:00",
+        "elapsed": "00:00:00.0000006",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 121949388,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:41.4049371+00:00",
+        "elapsed": "00:00:02.0293306",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 121949388,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:43.4279813+00:00",
+        "elapsed": "00:00:04.0546618",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 121949388,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:45.4751114+00:00",
+        "elapsed": "00:00:06.0777297",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 121949388,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:47.5089065+00:00",
+        "elapsed": "00:00:08.1249512",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 121949388,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:49.521892+00:00",
+        "elapsed": "00:00:10.1584678",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 122997964,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:51.5386261+00:00",
+        "elapsed": "00:00:12.1716797",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124046540,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:53.5500636+00:00",
+        "elapsed": "00:00:14.1882033",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 123836825,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:55.563303+00:00",
+        "elapsed": "00:00:16.1997097",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124361113,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:57.5762499+00:00",
+        "elapsed": "00:00:18.2123589",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124046540,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:09:59.5896255+00:00",
+        "elapsed": "00:00:20.2260210",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 123941683,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:01.6036817+00:00",
+        "elapsed": "00:00:22.2394983",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 123627110,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:03.6253838+00:00",
+        "elapsed": "00:00:24.2532627",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 122263961,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:06.6648551+00:00",
+        "elapsed": "00:00:26.2838453",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 126982553,
+        "cpuPercent": null
+      }
+    ]
+  },
+  {
+    "datasetCount": 10000,
+    "run": 2,
+    "result": {
+      "batchId": "18f08849-6175-4e2c-94b5-030694c3b5bf",
+      "postLatency": "00:00:00.0180144",
+      "totalDuration": "00:00:17.1388619",
+      "snapshotDuration": "00:00:15.0982654",
+      "snapshotTimingErrorMilliseconds": 500,
+      "dispatchDurationMilliseconds": 2459,
+      "finalStatus": "COMPLETED",
+      "totalCount": 10000,
+      "processedCount": 10000,
+      "successCount": 10000,
+      "failedCount": 0,
+      "endToEndThroughput": 583.4693925609846,
+      "dispatchThroughput": 4066.6937779585196
+    },
+    "memory": {
+      "baselineBytes": 126982553,
+      "peakBytes": 131806003,
+      "averageBytes": 128720193.42857143,
+      "deltaBytes": 4823450,
+      "sampleCount": 14,
+      "baselineMegabytes": 121.09999942779541,
+      "peakMegabytes": 125.69999980926514,
+      "averageMegabytes": 122.75714247567313,
+      "deltaMegabytes": 4.600000381469727
+    },
+    "samples": [
+      {
+        "timestampUtc": "2026-08-19T10:10:08.6712235+00:00",
+        "elapsed": "00:00:00.0000006",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 126982553,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:10.7063666+00:00",
+        "elapsed": "00:00:02.8664864",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 126982553,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:12.7268553+00:00",
+        "elapsed": "00:00:04.9021533",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 126982553,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:14.753532+00:00",
+        "elapsed": "00:00:06.9226957",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 126982553,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:16.7891874+00:00",
+        "elapsed": "00:00:08.9493467",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 126982553,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:18.8026551+00:00",
+        "elapsed": "00:00:10.9851303",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 128345702,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:20.8162235+00:00",
+        "elapsed": "00:00:12.9984869",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 128135987,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:22.8288974+00:00",
+        "elapsed": "00:00:15.0114773",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 129289420,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:24.8420155+00:00",
+        "elapsed": "00:00:17.0249887",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 129394278,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:26.8573616+00:00",
+        "elapsed": "00:00:19.0375596",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 129394278,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:28.8726999+00:00",
+        "elapsed": "00:00:21.0527640",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 130757427,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:30.8908289+00:00",
+        "elapsed": "00:00:23.0688164",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 131072000,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:32.9199559+00:00",
+        "elapsed": "00:00:25.0871818",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 131806003,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:34.9719404+00:00",
+        "elapsed": "00:00:27.1253733",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 128974848,
+        "cpuPercent": null
+      }
+    ]
+  },
+  {
+    "datasetCount": 10000,
+    "run": 3,
+    "result": {
+      "batchId": "762282fc-8b07-4059-a462-8f2cfd694bfe",
+      "postLatency": "00:00:00.0166217",
+      "totalDuration": "00:00:21.1779114",
+      "snapshotDuration": "00:00:18.6464437",
+      "snapshotTimingErrorMilliseconds": 500,
+      "dispatchDurationMilliseconds": 2636,
+      "finalStatus": "COMPLETED",
+      "totalCount": 10000,
+      "processedCount": 10000,
+      "successCount": 10000,
+      "failedCount": 0,
+      "endToEndThroughput": 472.1901821509042,
+      "dispatchThroughput": 3793.626707132018
+    },
+    "memory": {
+      "baselineBytes": 124570828,
+      "peakBytes": 125304832,
+      "averageBytes": 122689945.125,
+      "deltaBytes": 734004,
+      "sampleCount": 16,
+      "baselineMegabytes": 118.79999923706055,
+      "peakMegabytes": 119.5,
+      "averageMegabytes": 117.0062495470047,
+      "deltaMegabytes": 0.7000007629394531
+    },
+    "samples": [
+      {
+        "timestampUtc": "2026-08-19T10:10:36.9788023+00:00",
+        "elapsed": "00:00:00.0000003",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124675686,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:39.0123206+00:00",
+        "elapsed": "00:00:02.7165943",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124570828,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:41.0577241+00:00",
+        "elapsed": "00:00:04.7508742",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124570828,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:43.0958759+00:00",
+        "elapsed": "00:00:06.7954802",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124570828,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:45.1241019+00:00",
+        "elapsed": "00:00:08.8335830",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124570828,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:47.1404536+00:00",
+        "elapsed": "00:00:10.8620096",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 125304832,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:49.1572925+00:00",
+        "elapsed": "00:00:12.8779854",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 125304832,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:51.1721804+00:00",
+        "elapsed": "00:00:14.8941810",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124780544,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:53.1913097+00:00",
+        "elapsed": "00:00:16.9100480",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 124885401,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:55.2144155+00:00",
+        "elapsed": "00:00:18.9285420",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 116916224,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:57.2346147+00:00",
+        "elapsed": "00:00:20.9512876",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 119642521,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:10:59.2595405+00:00",
+        "elapsed": "00:00:22.9731752",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 119223091,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:11:01.2753955+00:00",
+        "elapsed": "00:00:24.9978161",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 119327948,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:11:03.2869066+00:00",
+        "elapsed": "00:00:27.0121445",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 119327948,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:11:05.3052538+00:00",
+        "elapsed": "00:00:29.0244840",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 123312537,
+        "cpuPercent": null
+      },
+      {
+        "timestampUtc": "2026-08-19T10:11:07.3372307+00:00",
+        "elapsed": "00:00:31.0399397",
+        "service": "notification-worker",
+        "containerId": "501b7001629a",
+        "memoryBytes": 122054246,
+        "cpuPercent": null
+      }
+    ]
+  }
+]

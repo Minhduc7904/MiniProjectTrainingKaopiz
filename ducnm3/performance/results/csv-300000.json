@@ -1,0 +1,146 @@
+[
+  {
+    "datasetCount": 300000,
+    "run": 1,
+    "measurements": [
+      {
+        "approach": "buffered",
+        "responseHeadersTime": "00:00:01.0574394",
+        "ttfb": "00:00:01.0575345",
+        "totalDownloadTime": "00:00:01.1672402",
+        "responseBytes": 31500032,
+        "rowsReceived": 300000,
+        "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
+      },
+      {
+        "approach": "streaming",
+        "responseHeadersTime": "00:00:00.0011995",
+        "ttfb": "00:00:00.0012474",
+        "totalDownloadTime": "00:00:36.1972788",
+        "responseBytes": 31500032,
+        "rowsReceived": 300000,
+        "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
+      }
+    ],
+    "memory": [
+      {
+        "baselineBytes": 502582476,
+        "peakBytes": 514536243,
+        "averageBytes": 504557294.3333333,
+        "deltaBytes": 11953767,
+        "sampleCount": 6,
+        "baselineMegabytes": 479.29999923706055,
+        "peakMegabytes": 490.69999980926514,
+        "averageMegabytes": 481.1833327611287,
+        "deltaMegabytes": 11.40000057220459
+      },
+      {
+        "baselineBytes": 514431385,
+        "peakBytes": 514850816,
+        "averageBytes": 393874272.3333333,
+        "deltaBytes": 419431,
+        "sampleCount": 18,
+        "baselineMegabytes": 490.5999994277954,
+        "peakMegabytes": 491,
+        "averageMegabytes": 375.6277774175008,
+        "deltaMegabytes": 0.40000057220458984
+      }
+    ]
+  },
+  {
+    "datasetCount": 300000,
+    "run": 2,
+    "measurements": [
+      {
+        "approach": "buffered",
+        "responseHeadersTime": "00:00:01.0662367",
+        "ttfb": "00:00:01.0663233",
+        "totalDownloadTime": "00:00:01.1868603",
+        "responseBytes": 31500032,
+        "rowsReceived": 300000,
+        "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
+      },
+      {
+        "approach": "streaming",
+        "responseHeadersTime": "00:00:00.0019043",
+        "ttfb": "00:00:00.0019580",
+        "totalDownloadTime": "00:00:34.7100020",
+        "responseBytes": 31500032,
+        "rowsReceived": 300000,
+        "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
+      }
+    ],
+    "memory": [
+      {
+        "baselineBytes": 329567436,
+        "peakBytes": 436522188,
+        "averageBytes": 347445657.1666667,
+        "deltaBytes": 106954752,
+        "sampleCount": 6,
+        "baselineMegabytes": 314.29999923706055,
+        "peakMegabytes": 416.29999923706055,
+        "averageMegabytes": 331.34999958674115,
+        "deltaMegabytes": 102
+      },
+      {
+        "baselineBytes": 436417331,
+        "peakBytes": 456340275,
+        "averageBytes": 363602979.8235294,
+        "deltaBytes": 19922944,
+        "sampleCount": 17,
+        "baselineMegabytes": 416.19999980926514,
+        "peakMegabytes": 435.19999980926514,
+        "averageMegabytes": 346.75882322647993,
+        "deltaMegabytes": 19
+      }
+    ]
+  },
+  {
+    "datasetCount": 300000,
+    "run": 3,
+    "measurements": [
+      {
+        "approach": "buffered",
+        "responseHeadersTime": "00:00:04.5473948",
+        "ttfb": "00:00:04.5474984",
+        "totalDownloadTime": "00:00:04.6593095",
+        "responseBytes": 31500032,
+        "rowsReceived": 300000,
+        "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
+      },
+      {
+        "approach": "streaming",
+        "responseHeadersTime": "00:00:00.0050144",
+        "ttfb": "00:00:00.0050920",
+        "totalDownloadTime": "00:00:45.1757944",
+        "responseBytes": 31500032,
+        "rowsReceived": 300000,
+        "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
+      }
+    ],
+    "memory": [
+      {
+        "baselineBytes": 241487052,
+        "peakBytes": 440821350,
+        "averageBytes": 269963380.28571427,
+        "deltaBytes": 199334298,
+        "sampleCount": 7,
+        "baselineMegabytes": 230.29999923706055,
+        "peakMegabytes": 420.3999996185303,
+        "averageMegabytes": 257.45714214869906,
+        "deltaMegabytes": 190.10000038146973
+      },
+      {
+        "baselineBytes": 440716492,
+        "peakBytes": 488321843,
+        "averageBytes": 377437427.38095236,
+        "deltaBytes": 47605351,
+        "sampleCount": 21,
+        "baselineMegabytes": 420.29999923706055,
+        "peakMegabytes": 465.69999980926514,
+        "averageMegabytes": 359.95238054366337,
+        "deltaMegabytes": 45.40000057220459
+      }
+    ]
+  }
+]

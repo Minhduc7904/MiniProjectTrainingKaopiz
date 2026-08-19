@@ -77,6 +77,26 @@ public class DeterministicSeedDataTests
         });
     }
 
+    [Test]
+    public void CalculatePlanWithMaximumCourseCountUsesLongTotals()
+    {
+        var generator = new DeterministicSeedData(CreateOptions(randomSeed: 123) with
+        {
+            CourseCount = SeedOptions.MaximumCourseCount,
+            MinLessonsPerCourse = 5,
+            MaxLessonsPerCourse = 5,
+        });
+
+        var plan = generator.CalculatePlan();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(plan.Courses, Is.EqualTo(SeedOptions.MaximumCourseCount));
+            Assert.That(plan.Lessons, Is.EqualTo(1_500_000L));
+            Assert.That(plan.TotalRows, Is.GreaterThan(SeedOptions.MaximumCourseCount));
+        });
+    }
+
     private static SeedOptions CreateOptions(int randomSeed) =>
         new(
             "Server=localhost;Database=lms_student_db;User ID=test;Password=test;",

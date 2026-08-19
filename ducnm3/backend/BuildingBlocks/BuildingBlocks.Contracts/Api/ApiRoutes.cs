@@ -13,6 +13,7 @@ public static class ApiRoutes
     {
         public const string List = "/api/courses";
         public const string Export = "/api/courses/export";
+        public const string BufferedExportBenchmark = "/api/performance/courses/export-buffered";
         public const string DetailsTemplate = "/api/courses/{courseId}/details";
 
         public static string ListServicePath() =>
@@ -26,6 +27,12 @@ public static class ApiRoutes
 
         public static string ExportPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Course, Export);
+
+        public static string BufferedExportBenchmarkServicePath() =>
+            BuildServicePath(BufferedExportBenchmark);
+
+        public static string BufferedExportBenchmarkPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, BufferedExportBenchmark);
     }
 
     /// <summary>Route contract do Media Service sở hữu.</summary>
@@ -151,6 +158,9 @@ public static class ApiRoutes
         public const string BatchRetryFailedTemplate = "/api/notification-batches/{batchId}/retry-failed";
         public const string BatchSnapshotStatusTemplate = "/api/notification-batches/{batchId}/snapshot-status";
         public const string BatchDeliveryStatusTemplate = "/api/notification-batches/{batchId}/delivery-status";
+
+        public static string BatchesPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Notification, Batches);
 
         /// <summary>Trả path nội bộ của một notification batch.</summary>
         public static string BatchByIdServicePath(Guid batchId) =>
