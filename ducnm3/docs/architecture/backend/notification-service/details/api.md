@@ -20,8 +20,8 @@ summary sang HTTP response. Mỗi route có đúng một file trong
 
 ## Đã triển khai hiện tại
 
-Có endpoint riêng cho create/get Notification và create/get/failed-items Notification
-Batch. `Program.cs` map từng endpoint extension, service info/health và Outbox setup.
+Có endpoint riêng cho create/get Notification và create/list/get/failed-items/retry-failed
+Notification Batch. `Program.cs` map từng endpoint extension, service info/health và Outbox setup.
 
 ## Định hướng/chưa triển khai
 

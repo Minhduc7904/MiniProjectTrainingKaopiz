@@ -12,6 +12,7 @@ import {
 } from '@/constants/media'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
 import { ui } from '@/theme'
+import { preventParentBatchSubmit } from './notificationMarkdownSubmission'
 
 const MEDIA_USAGE = {
   embed: 'EMBED',
@@ -61,7 +62,7 @@ function MediaInsertDialog({
   }
 
   const submit = async (event) => {
-    event.preventDefault()
+    preventParentBatchSubmit(event)
     if (!file) return
     const inserted = await onInsert({ file, usage, label, uploadQuery })
     if (inserted) close()

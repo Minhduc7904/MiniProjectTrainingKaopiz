@@ -62,10 +62,12 @@ DbContext hoặc EF entity.
 
 ## Đã triển khai hiện tại
 
-API map năm route đã triển khai bằng năm endpoint riêng; Worker đăng ký snapshot và
+API map bảy route đã triển khai bằng bảy endpoint riêng; Worker đăng ký snapshot và
 dispatch consumer; API/Worker cấu hình Entity Framework Outbox. Batch repository đọc
 và ghi qua persistence mapper, còn retry/status transition nằm trong Domain entity.
 Xem [API docs](../../../api/notification-service/README.md).
+
+Status API tuân theo ownership: Notification Service cung cấp snapshot và delivery status; Media Usage từ Markdown dùng Batch ID để correlation nhưng status do Media Service cung cấp. Notification không đọc chéo Media DB.
 
 ## Định hướng/chưa triển khai
 

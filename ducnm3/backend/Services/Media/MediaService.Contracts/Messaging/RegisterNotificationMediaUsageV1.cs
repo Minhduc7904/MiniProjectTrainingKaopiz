@@ -11,9 +11,16 @@ public sealed record RegisterNotificationMediaUsageV1(
     IReadOnlyList<NotificationMediaUsageReferenceV1> References) : ICommand;
 
 public sealed record RegisterNotificationMediaUsageBatchV1(
+    Guid JobId,
     IReadOnlyList<Guid> NotificationIds,
     Guid CreatedBy,
     IReadOnlyList<NotificationMediaUsageReferenceV1> References) : ICommand;
+
+public sealed record StartNotificationMediaUsageJobV1(Guid JobId) : ICommand;
+
+public sealed record CompleteNotificationMediaUsageJobV1(
+    Guid JobId,
+    uint ExpectedUsageCount) : ICommand;
 
 public sealed record NotificationMediaUsageReferenceV1(
     Guid MediaId,

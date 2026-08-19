@@ -24,7 +24,7 @@ Infrastructure hiện thực.
 ## Đã triển khai hiện tại
 
 Có `UseCases/Notifications/{Create,GetById}` và
-`UseCases/NotificationBatches/{Create,GetById,GetFailedItems,Snapshot,Dispatch}`,
+`UseCases/NotificationBatches/{Create,GetList,GetById,GetFailedItems,RetryFailed,Snapshot,Dispatch}`,
 media reference extractor và command `SnapshotNotificationBatchV1` /
 `DispatchNotificationBatchV1`.
 

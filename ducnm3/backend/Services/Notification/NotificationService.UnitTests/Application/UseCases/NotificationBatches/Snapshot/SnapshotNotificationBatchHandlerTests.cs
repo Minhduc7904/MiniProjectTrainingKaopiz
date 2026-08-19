@@ -81,4 +81,54 @@ public sealed class SnapshotNotificationBatchHandlerTests
 
         Assert.That(repository.SnapshotMarkedFailed, Is.True);
     }
+
+    [Test]
+    public async Task HandleAsync_RequestedCountReached_StopsSnapshotWithoutReadingLaterRecipients()
+    {
+        var repository = new StubBatchRepository
+        {
+            SnapshotWork = new NotificationSnapshotWork(true, false, 3, null),
+            SnapshotCompleted = true,
+        };
+        var handler = new SnapshotNotificationBatchHandler(
+            new StubStudentRecipientClient(
+                [Guid.NewGuid(), Guid.NewGuid()],
+                [Guid.NewGuid(), Guid.NewGuid()],
+                [Guid.NewGuid()]),
+            repository,
+            new StubCommandSender(),
+            new NotificationBatchProcessingOptions());
+
+        await handler.HandleAsync(new SnapshotNotificationBatchV1(Guid.NewGuid()), CancellationToken.None);
+
+        Assert.That(repository.SnapshotPages.SelectMany(page => page).ToArray(), Has.Length.EqualTo(3));
+    }
+
+    [Test]
+    public async Task HandleAsync_PartiallySnapshottedBatch_OnlyFillsRemainingRequestedRecipients()
+    {
+        var repository = new StubBatchRepository
+        {
+            SnapshotWork = new NotificationSnapshotWork(true, false, 3, null, 2),
+            SnapshotCompleted = true,
+        };
+        repository.SnapshotInsertedCounts.Enqueue(0);
+        repository.SnapshotInsertedCounts.Enqueue(1);
+        var handler = new SnapshotNotificationBatchHandler(
+            new StubStudentRecipientClient(
+                [Guid.NewGuid(), Guid.NewGuid()],
+                [Guid.NewGuid()],
+                [Guid.NewGuid(), Guid.NewGuid()]),
+            repository,
+            new StubCommandSender(),
+            new NotificationBatchProcessingOptions());
+
+        await handler.HandleAsync(new SnapshotNotificationBatchV1(Guid.NewGuid()), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(repository.SnapshotPages, Has.Count.EqualTo(2));
+            Assert.That(repository.SnapshotPages.SelectMany(page => page).ToArray(), Has.Length.EqualTo(2));
+        });
+    }
 }

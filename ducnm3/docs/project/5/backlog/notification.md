@@ -48,19 +48,20 @@ API docs/Postman và `docs/tests` có evidence.
 
 | Thuộc tính | Giá trị |
 | --- | --- |
-| Est | 5 giờ |
+| Est | 16 giờ |
 | Ticket | `ERBUL26-2978` |
 | Loại | Existing/hardening |
 | Dependency | P5-03, P5-14 |
 | Baseline | F14, TC-NOTI-F14-001..003 |
 
-**Phạm vi:** Audit POST batch, validate filter/content/media, tạo batch
-`PENDING` và Outbox snapshot command atomic; trả `202 Accepted` cùng canonical
-`Location`, không hiểu accepted là dispatch xong.
+**Phạm vi:** Hoàn thiện POST batch với `requestedCount` null/`1..100000`, snapshot
+có giới hạn; thêm GET list offset, duration, trang FE quản lý/progress theo URL và
+POST retry tạo batch con chỉ từ item `FAILED`. Tạo batch trả `202 Accepted` cùng
+canonical `Location`, không hiểu accepted là dispatch xong.
 
-**Hoàn thành khi:** invalid request không tạo batch/message; success có đúng
-batch/outbox; duplicate/replay theo contract an toàn; endpoint/unit/integration
-test và testcase F14 pass.
+**Hoàn thành khi:** invalid request không tạo batch/message; requested count không
+tải quá giới hạn; list/duration đúng; retry không gửi lại SUCCESS và replay cùng
+nguồn trả cùng child; backend/frontend/unit/component/integration test pass.
 
 ## P5-17 — F15 Hoàn thiện snapshot recipient batch
 

@@ -322,6 +322,44 @@ public sealed class MediaUploadUsageFlowTests
         });
     }
 
+    [Test]
+    public async Task V006TracksNotificationMediaUsageJobUntilExpectedCountCompletes()
+    {
+        var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                mysql.GetConnectionString(),
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        var jobId = Guid.Parse("99999999-9999-9999-9999-999999999999");
+        await using (var firstContext = new MediaDbContext(dbOptions))
+        {
+            var repository = new EfNotificationMediaUsageJobRepository(firstContext);
+            await repository.StartAsync(jobId, CancellationToken.None);
+            await repository.RecordSuccessAsync(jobId, 40, CancellationToken.None);
+            await repository.CompleteSourceAsync(jobId, 100, CancellationToken.None);
+            var processing = await repository.GetByIdAsync(jobId, CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(processing?.Status, Is.EqualTo(NotificationMediaUsageJobStatuses.Processing));
+                Assert.That(processing?.ProcessedUsageCount, Is.EqualTo(40));
+                Assert.That(processing?.ExpectedUsageCount, Is.EqualTo(100));
+            });
+        }
+
+        await using (var secondContext = new MediaDbContext(dbOptions))
+        {
+            var repository = new EfNotificationMediaUsageJobRepository(secondContext);
+            await repository.RecordSuccessAsync(jobId, 60, CancellationToken.None);
+            var completed = await repository.GetByIdAsync(jobId, CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(completed?.Status, Is.EqualTo(NotificationMediaUsageJobStatuses.Completed));
+                Assert.That(completed?.ProcessedUsageCount, Is.EqualTo(100));
+                Assert.That(completed?.CompletedAtUtc, Is.Not.Null);
+            });
+        }
+    }
+
     private static UploadMediaCommand CreateUploadCommand(
         Stream content,
         Guid actorId,

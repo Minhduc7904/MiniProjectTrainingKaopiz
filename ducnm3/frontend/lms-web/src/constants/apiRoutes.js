@@ -41,6 +41,8 @@ export const API_ROUTES = {
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'thumbnail'),
     retryThumbnail: (mediaId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'thumbnail', 'retry'),
+    notificationMediaUsageJobStatus: (jobId) =>
+      joinPath(GATEWAY_PREFIXES.media, '/api/media/usage-jobs', jobId, 'status'),
   },
   notifications: {
     batches: joinPath(GATEWAY_PREFIXES.notification, '/api/notification-batches'),
@@ -52,6 +54,27 @@ export const API_ROUTES = {
         '/api/notification-batches',
         batchId,
         'failed-items',
+      ),
+    retryBatchFailures: (batchId) =>
+      joinPath(
+        GATEWAY_PREFIXES.notification,
+        '/api/notification-batches',
+        batchId,
+        'retry-failed',
+      ),
+    batchSnapshotStatus: (batchId) =>
+      joinPath(
+        GATEWAY_PREFIXES.notification,
+        '/api/notification-batches',
+        batchId,
+        'snapshot-status',
+      ),
+    batchDeliveryStatus: (batchId) =>
+      joinPath(
+        GATEWAY_PREFIXES.notification,
+        '/api/notification-batches',
+        batchId,
+        'delivery-status',
       ),
   },
 }

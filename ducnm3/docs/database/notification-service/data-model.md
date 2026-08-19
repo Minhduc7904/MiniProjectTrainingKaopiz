@@ -16,15 +16,17 @@ Mọi bảng dùng InnoDB, UUID `CHAR(36)` ASCII và timestamp `DATETIME(6)` UTC
 | `course_id` | `CHAR(36)`, `NULL` | Logical Course reference; null nếu scope không theo Course. |
 | `title` | `VARCHAR(200)`, `NOT NULL` | Tiêu đề chung. |
 | `body_markdown` | `MEDIUMTEXT`, `NOT NULL` | Markdown gốc chung; media dùng URL Media Service. |
-| `target_scope` | `VARCHAR(20)`, `NOT NULL` | `COURSE_ENROLLED`, `STUDENT_IDS`, `ALL_STUDENTS`. |
+| `target_scope` | `VARCHAR(20)`, `NOT NULL` | Thêm `FAILED_RECIPIENTS` cho batch retry. |
 | `created_by` | `CHAR(36)`, `NOT NULL` | Logical admin/system actor. |
 | `status` | `VARCHAR(20)`, `NOT NULL` | `PENDING`, `SNAPSHOTTING`, `SNAPSHOT_READY`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED`, `FAILED`. |
 | `total_count`, `processed_count`, `success_count`, `failed_count` | `INT UNSIGNED`, `NOT NULL`, `0` | Counter snapshot/terminal; cập nhật theo chunk, không `COUNT(*)` lại. |
 | `batch_size` | `INT UNSIGNED`, `NOT NULL` | Số recipient tối đa/chunk, phải > 0. |
+| `requested_count` | `INT UNSIGNED`, `NULL` | `1..100000`; null nghĩa là toàn bộ active Student. |
+| `source_batch_id` | `CHAR(36)`, `NULL`, self-FK unique | Batch nguồn; mỗi nguồn có tối đa một retry trực tiếp. |
 | `started_at`, `completed_at` | `DATETIME(6)`, `NULL` | Mốc worker bắt đầu/kết thúc. |
 | `created_at` | `DATETIME(6)`, `NOT NULL`, `CURRENT_TIMESTAMP(6)` | Lúc API tạo batch. |
 
-Check scope/status/counts bảo đảm `processed_count <= total_count` và
+Check scope/status/counts/requested count bảo đảm `processed_count <= total_count` và
 `success_count + failed_count <= processed_count`. Index `(status, created_at
 DESC)` phục vụ worker/operation. Vòng đời là `PENDING -> SNAPSHOTTING ->
 SNAPSHOT_READY -> PROCESSING -> COMPLETED | PARTIAL_FAILED | FAILED`.
@@ -127,7 +129,7 @@ item hay notification vì cleanup hạ tầng.
 ## Migration và quan hệ service
 
 `V001` tạo ba bảng nghiệp vụ, `V002` thêm snapshot state cùng MassTransit,
-`V003` thêm lease claim/index. Student chỉ được query HTTP; Notification chỉ gửi
-media usage command cho item `SUCCESS` sang Media qua outbox. Xem
+`V003` thêm lease claim/index; `V004` thêm requested count, retry lineage và index list `(created_at DESC, id DESC)`. Student chỉ được query HTTP; Notification chỉ gửi
+media usage command cho item `SUCCESS` sang Media qua outbox. Batch ID đồng thời là Media Usage job ID; Notification gửi start marker lúc tạo batch và completion marker sau delivery terminal, nhưng job/counter do Media Service sở hữu. Xem
 [Media Service](../media-service/data-model.md) và
 [Student Service](../student-service/data-model.md).

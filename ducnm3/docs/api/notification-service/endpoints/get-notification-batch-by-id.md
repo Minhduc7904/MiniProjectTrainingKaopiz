@@ -23,15 +23,19 @@ MVP hiện chưa có auth. Khi auth được bổ sung, endpoint phải giới h
 {
   "data": {
     "id": "4c40bcf9-675e-435c-93bd-17cde82d1670",
+    "title": "Course update",
     "status": "PROCESSING",
     "totalCount": 3000,
     "processedCount": 1500,
     "successCount": 1490,
     "failedCount": 10,
     "batchSize": 500,
+    "requestedCount": 3000,
+    "sourceBatchId": null,
     "createdAtUtc": "2026-08-14T01:00:00Z",
     "startedAtUtc": "2026-08-14T01:00:02Z",
-    "completedAtUtc": null
+    "completedAtUtc": null,
+    "durationMs": 12500
   },
   "meta": {
     "traceId": "01J..."
@@ -48,4 +52,4 @@ MVP hiện chưa có auth. Khi auth được bổ sung, endpoint phải giới h
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Chỉ đọc `notification_batches` và không thay đổi trạng thái. Các bộ đếm mô tả việc gửi theo nghiệp vụ Notification, không phải lịch sử chạy Scheduler chung.
+Chỉ đọc `notification_batches` và không thay đổi trạng thái. `durationMs` là null trước khi bắt đầu, bằng `now-startedAtUtc` khi đang chạy và `completedAtUtc-startedAtUtc` khi terminal.

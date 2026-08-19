@@ -610,6 +610,21 @@
             "description": "Only succeeds after the thumbnail job reaches FAILED. API contract: docs/api/media-service/endpoints/post-media-thumbnail-retry.md"
           },
           "response": []
+        },
+        {
+          "name": "GET Notification Media Usage Job Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/usage-jobs/{{notificationBatchId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "usage-jobs", "{{notificationBatchId}}", "status"]
+            },
+            "description": "API contract: docs/api/media-service/endpoints/get-notification-media-usage-job-status.md"
+          }
         }
       ]
     },
@@ -750,7 +765,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Maintenance notice\",\n  \"bodyMarkdown\": \"The system will be updated tonight.\",\n  \"targetScope\": \"ALL_STUDENTS\",\n  \"createdBy\": \"{{notificationCreatedBy}}\",\n  \"batchSize\": 500\n}"
+              "raw": "{\n  \"title\": \"Maintenance notice\",\n  \"bodyMarkdown\": \"The system will be updated tonight.\",\n  \"targetScope\": \"ALL_STUDENTS\",\n  \"createdBy\": \"{{notificationCreatedBy}}\",\n  \"batchSize\": 500,\n  \"requestedCount\": 3000\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/notification/api/notification-batches",
@@ -804,6 +819,79 @@
                 "{{notificationBatchId}}"
               ]
             }
+          }
+        },
+        {
+          "name": "GET Notification Batches - Offset",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notification-batches?page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["notification", "api", "notification-batches"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            },
+            "description": "API contract: docs/api/notification-service/endpoints/get-notification-batches.md"
+          }
+        },
+        {
+          "name": "POST Notification Batch - Retry Failed",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"createdBy\": \"{{notificationCreatedBy}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notification-batches/{{notificationBatchId}}/retry-failed",
+              "host": ["{{baseUrl}}"],
+              "path": ["notification", "api", "notification-batches", "{{notificationBatchId}}", "retry-failed"]
+            },
+            "description": "API contract: docs/api/notification-service/endpoints/post-notification-batch-retry-failed.md"
+          }
+        },
+        {
+          "name": "GET Notification Batch Snapshot Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notification-batches/{{notificationBatchId}}/snapshot-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["notification", "api", "notification-batches", "{{notificationBatchId}}", "snapshot-status"]
+            },
+            "description": "API contract: docs/api/notification-service/endpoints/get-notification-batch-snapshot-status.md"
+          }
+        },
+        {
+          "name": "GET Notification Batch Delivery Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/api/notification-batches/{{notificationBatchId}}/delivery-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["notification", "api", "notification-batches", "{{notificationBatchId}}", "delivery-status"]
+            },
+            "description": "API contract: docs/api/notification-service/endpoints/get-notification-batch-delivery-status.md"
           }
         }
       ]

@@ -7,11 +7,15 @@ using NotificationService.Application.Common.Errors;
 
 namespace NotificationService.Application.UseCases.NotificationBatches.GetById;
 
-public sealed class GetNotificationBatchByIdHandler(INotificationBatchRepository repository)
+public sealed class GetNotificationBatchByIdHandler(
+    INotificationBatchRepository repository,
+    TimeProvider timeProvider)
 {
     public async Task<NotificationBatchSummary> HandleAsync(Guid batchId, CancellationToken cancellationToken)
     {
         if (batchId == Guid.Empty) throw NotificationErrors.Validation("batchId must be a valid UUID.");
-        return await repository.GetByIdAsync(batchId, cancellationToken) ?? throw NotificationErrors.BatchNotFound();
+        var result = await repository.GetByIdAsync(batchId, cancellationToken)
+            ?? throw NotificationErrors.BatchNotFound();
+        return NotificationBatchDuration.Calculate(result, timeProvider.GetUtcNow().UtcDateTime);
     }
 }

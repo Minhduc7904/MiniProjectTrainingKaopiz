@@ -22,6 +22,8 @@ public static class ApiRoutes
             "/api/media/{mediaId}/thumbnail";
         public const string ThumbnailRetryTemplate =
             "/api/media/{mediaId}/thumbnail/retry";
+        public const string NotificationMediaUsageJobStatusTemplate =
+            "/api/media/usage-jobs/{jobId}/status";
 
         public static string ResourcePublicPath(Guid mediaId) =>
             BuildPublicPath(
@@ -81,6 +83,15 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Media,
                 FormatGuidRoute(ThumbnailRetryTemplate, "mediaId", mediaId));
+
+        public static string NotificationMediaUsageJobStatusServicePath(Guid jobId) =>
+            BuildServicePath(
+                FormatGuidRoute(NotificationMediaUsageJobStatusTemplate, "jobId", jobId));
+
+        public static string NotificationMediaUsageJobStatusPublicPath(Guid jobId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Media,
+                FormatGuidRoute(NotificationMediaUsageJobStatusTemplate, "jobId", jobId));
     }
 
     /// <summary>Route contract do Student Service sở hữu.</summary>
@@ -117,6 +128,9 @@ public static class ApiRoutes
         public const string Batches = "/api/notification-batches";
         public const string BatchByIdTemplate = "/api/notification-batches/{batchId}";
         public const string BatchFailedItemsTemplate = "/api/notification-batches/{batchId}/failed-items";
+        public const string BatchRetryFailedTemplate = "/api/notification-batches/{batchId}/retry-failed";
+        public const string BatchSnapshotStatusTemplate = "/api/notification-batches/{batchId}/snapshot-status";
+        public const string BatchDeliveryStatusTemplate = "/api/notification-batches/{batchId}/delivery-status";
 
         /// <summary>Trả path nội bộ của một notification batch.</summary>
         public static string BatchByIdServicePath(Guid batchId) =>
@@ -132,6 +146,24 @@ public static class ApiRoutes
         public static string BatchFailedItemsServicePath(Guid batchId) =>
             BuildServicePath(
                 FormatGuidRoute(BatchFailedItemsTemplate, "batchId", batchId));
+
+        /// <summary>Trả path nội bộ để retry riêng các recipient thất bại của batch.</summary>
+        public static string BatchRetryFailedServicePath(Guid batchId) =>
+            BuildServicePath(FormatGuidRoute(BatchRetryFailedTemplate, "batchId", batchId));
+
+        public static string BatchSnapshotStatusServicePath(Guid batchId) =>
+            BuildServicePath(FormatGuidRoute(BatchSnapshotStatusTemplate, "batchId", batchId));
+
+        public static string BatchSnapshotStatusPublicPath(Guid batchId) =>
+            BuildPublicPath(GatewayRoutePrefixes.Notification,
+                FormatGuidRoute(BatchSnapshotStatusTemplate, "batchId", batchId));
+
+        public static string BatchDeliveryStatusServicePath(Guid batchId) =>
+            BuildServicePath(FormatGuidRoute(BatchDeliveryStatusTemplate, "batchId", batchId));
+
+        public static string BatchDeliveryStatusPublicPath(Guid batchId) =>
+            BuildPublicPath(GatewayRoutePrefixes.Notification,
+                FormatGuidRoute(BatchDeliveryStatusTemplate, "batchId", batchId));
 
         /// <summary>Trả path nội bộ của một notification.</summary>
         public static string ItemByIdServicePath(Guid notificationId) =>

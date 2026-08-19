@@ -69,6 +69,16 @@ public partial class NotificationBatch
     public uint BatchSize { get; set; }
 
     /// <summary>
+    /// Số recipient người dùng yêu cầu; null nghĩa là toàn bộ
+    /// </summary>
+    public uint? RequestedCount { get; set; }
+
+    /// <summary>
+    /// Batch nguồn khi retry riêng các recipient FAILED
+    /// </summary>
+    public Guid? SourceBatchId { get; set; }
+
+    /// <summary>
     /// Thời điểm bắt đầu xử lý batch, UTC
     /// </summary>
     public DateTime? StartedAt { get; set; }
@@ -85,5 +95,9 @@ public partial class NotificationBatch
 
     public virtual ICollection<NotificationBatchItem> NotificationBatchItems { get; set; } = new List<NotificationBatchItem>();
 
+    public virtual ICollection<NotificationBatch> InverseSourceBatch { get; set; } = new List<NotificationBatch>();
+
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual NotificationBatch? SourceBatch { get; set; }
 }

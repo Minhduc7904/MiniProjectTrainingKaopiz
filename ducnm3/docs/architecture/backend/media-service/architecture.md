@@ -45,6 +45,8 @@ dùng internal endpoint cho server-side storage. Worker đăng ký thumbnail và
 notification media usage consumer; API/Worker dùng Entity Framework Outbox.
 Xem [API docs](../../../api/media-service/README.md).
 
+Media Worker sở hữu `notification_media_usage_jobs` và GET status tương ứng. Start/register/complete command dùng Notification Batch ID làm correlation; completion marker không đóng job trước khi counter chunk đạt expected count.
+
 ## Định hướng/chưa triển khai
 
 P5-13 usage-driven draft transition và P5-20 stale/orphan cleanup là định hướng,

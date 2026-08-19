@@ -8,6 +8,7 @@ using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Services.Content;
 using NotificationService.Application.UseCases.NotificationBatches.Create;
 using NotificationService.UnitTests.Application.UseCases.NotificationBatches.TestDoubles;
+using MediaService.Contracts.Messaging;
 
 namespace NotificationService.UnitTests.Application.UseCases.NotificationBatches.Create;
 
@@ -29,6 +30,7 @@ public sealed class CreateNotificationBatchHandlerTests
                     "Body",
                     "COURSE_ENROLLED",
                     Guid.NewGuid(),
+                    null,
                     null,
                     null),
                 CancellationToken.None));
@@ -54,6 +56,7 @@ public sealed class CreateNotificationBatchHandlerTests
                 "ALL_STUDENTS",
                 Guid.NewGuid(),
                 null,
+                10,
                 null),
             CancellationToken.None);
 
@@ -61,9 +64,30 @@ public sealed class CreateNotificationBatchHandlerTests
         {
             Assert.That(repository.CreatedRecord, Is.Not.Null);
             Assert.That(repository.CreatedRecord!.BatchSize, Is.EqualTo(500));
-            Assert.That(commandSender.Commands, Has.Count.EqualTo(1));
-            Assert.That(commandSender.Commands[0], Is.TypeOf<SnapshotNotificationBatchV1>());
-            Assert.That(((SnapshotNotificationBatchV1)commandSender.Commands[0]).BatchId, Is.EqualTo(result.Id));
+            Assert.That(repository.CreatedRecord.RequestedCount, Is.EqualTo(10));
+            Assert.That(commandSender.Commands, Has.Count.EqualTo(2));
+            Assert.That(commandSender.Commands.OfType<SnapshotNotificationBatchV1>().Single().BatchId, Is.EqualTo(result.Id));
+            Assert.That(commandSender.Commands.OfType<StartNotificationMediaUsageJobV1>().Single().JobId, Is.EqualTo(result.Id));
         });
+    }
+
+    [TestCase(0u)]
+    [TestCase(100001u)]
+    public void HandleAsync_RequestedCountOutsideSupportedRange_IsRejected(uint requestedCount)
+    {
+        var handler = new CreateNotificationBatchHandler(
+            new StubBatchRepository(),
+            new StubCommandSender(),
+            new NotificationMediaReferenceExtractor(),
+            TimeProvider.System);
+
+        var exception = Assert.ThrowsAsync<NotificationApplicationException>(() =>
+            handler.HandleAsync(
+                new CreateNotificationBatchCommand(
+                    "Title", "Body", "ALL_STUDENTS", Guid.NewGuid(), null,
+                    requestedCount, null),
+                CancellationToken.None));
+
+        Assert.That(exception!.StatusCode, Is.EqualTo(400));
     }
 }

@@ -7,6 +7,7 @@ import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage'
 import { StudentsPage } from '@/pages/students/StudentsPage'
 import { NotificationBatchCreatePage } from '@/pages/notifications/NotificationBatchCreatePage'
 import { NotificationBatchProgressPage } from '@/pages/notifications/NotificationBatchProgressPage'
+import { NotificationBatchListPage } from '@/pages/notifications/NotificationBatchListPage'
 
 export function AppRouter() {
   return (
@@ -21,7 +22,9 @@ export function AppRouter() {
         <Route path={APP_ROUTES.mediaUpload} element={<MediaUploadPage />} />
         <Route path={APP_ROUTES.mediaUploadDirect} element={<MediaDirectUploadPage />} />
         <Route path={APP_ROUTES.notificationSend} element={<NotificationBatchCreatePage />} />
+        <Route path={APP_ROUTES.notificationBatches} element={<NotificationBatchListPage />} />
         <Route path={APP_ROUTES.notificationProgress} element={<NotificationBatchProgressPage />} />
+        <Route path={APP_ROUTES.notificationProgressDetail} element={<NotificationBatchProgressPage />} />
         <Route path={APP_ROUTES.schedulerJobs} element={<PlaceholderPage />} />
       </Route>
     </Routes>

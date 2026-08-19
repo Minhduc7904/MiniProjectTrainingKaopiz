@@ -3,4 +3,18 @@
 
 namespace NotificationService.Api.Contracts.NotificationBatches.Responses;
 
-public sealed record NotificationBatchResponse(Guid Id, string Status, uint TotalCount, uint ProcessedCount, uint SuccessCount, uint FailedCount, uint BatchSize, DateTime CreatedAtUtc, DateTime? StartedAtUtc, DateTime? CompletedAtUtc);
+public sealed record NotificationBatchResponse(
+    Guid Id,
+    string Title,
+    string Status,
+    uint TotalCount,
+    uint ProcessedCount,
+    uint SuccessCount,
+    uint FailedCount,
+    uint BatchSize,
+    uint? RequestedCount,
+    Guid? SourceBatchId,
+    DateTime CreatedAtUtc,
+    DateTime? StartedAtUtc,
+    DateTime? CompletedAtUtc,
+    long? DurationMs);

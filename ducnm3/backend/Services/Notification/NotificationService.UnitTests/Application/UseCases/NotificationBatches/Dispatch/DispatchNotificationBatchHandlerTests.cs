@@ -48,8 +48,10 @@ public sealed class DispatchNotificationBatchHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(repository.SuccessItems, Has.Count.EqualTo(2));
-            Assert.That(commandSender.Commands, Has.One.TypeOf<RegisterNotificationMediaUsageBatchV1>());
-            var command = (RegisterNotificationMediaUsageBatchV1)commandSender.Commands[0];
+            Assert.That(commandSender.Commands.OfType<RegisterNotificationMediaUsageBatchV1>().Count(), Is.EqualTo(1));
+            Assert.That(commandSender.Commands.OfType<CompleteNotificationMediaUsageJobV1>().Count(), Is.EqualTo(1));
+            var command = commandSender.Commands.OfType<RegisterNotificationMediaUsageBatchV1>().Single();
+            Assert.That(command.JobId, Is.EqualTo(batchId));
             Assert.That(command.NotificationIds, Has.Count.EqualTo(2));
             Assert.That(command.References, Has.One.EqualTo(
                 new NotificationMediaUsageReferenceV1(mediaId, NotificationMediaUsageTypes.Embed, 0)));

@@ -51,6 +51,18 @@ builder.Services.AddLmsMessagingWithConsumers(
                 RegisterNotificationMediaUsageBatchConsumerDefinition>(
                 ServiceNames.Media);
         registration
+            .AddCommandConsumer<
+                StartNotificationMediaUsageJobConsumer,
+                StartNotificationMediaUsageJobV1,
+                NotificationMediaUsageJobCommandConsumerDefinition<StartNotificationMediaUsageJobConsumer>>(
+                ServiceNames.Media);
+        registration
+            .AddCommandConsumer<
+                CompleteNotificationMediaUsageJobConsumer,
+                CompleteNotificationMediaUsageJobV1,
+                NotificationMediaUsageJobCommandConsumerDefinition<CompleteNotificationMediaUsageJobConsumer>>(
+                ServiceNames.Media);
+        registration
             .AddConsumer<
                 GenerateMediaThumbnailFaultConsumer,
                 GenerateMediaThumbnailFaultConsumerDefinition>()
@@ -58,6 +70,15 @@ builder.Services.AddLmsMessagingWithConsumers(
             {
                 endpoint.Name =
                     "media-service--generate-media-thumbnail-v1-fault";
+            });
+        registration
+            .AddConsumer<
+                RegisterNotificationMediaUsageFaultConsumer,
+                RegisterNotificationMediaUsageFaultConsumerDefinition>()
+            .Endpoint(endpoint =>
+            {
+                endpoint.Name =
+                    "media-service--register-notification-media-usage-v1-fault";
             });
     });
 

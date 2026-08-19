@@ -29,7 +29,10 @@ có kiểm thử tích hợp MySQL hoặc RabbitMQ trong dự án này.
 | `HandleAsync_RecipientsStreamed_PersistsPagesAndQueuesDispatch` | Snapshot handler dùng Student client giả trả hai trang. | Lưu từng trang và phát `DispatchNotificationBatchV1` sau khi snapshot hoàn tất. |
 | `HandleAsync_ConcurrentDispatchConfigured_QueuesOneCommandPerSlot` | Snapshot hoàn tất với `DispatchChunkConcurrency=3`. | Phát đúng ba dispatch command để duy trì ba slot chunk. |
 | `HandleAsync_StudentServiceUnavailable_MarksBatchFailed` | Student client giả ném `STUDENT_SERVICE_UNAVAILABLE`. | Batch được đánh dấu `FAILED`, không phát dispatch command. |
+| `HandleAsync_PartiallySnapshottedBatch_OnlyFillsRemainingRequestedRecipients` | Snapshot handler nhận batch đã có 2 recipient trong requested count 3; trang redelivery không thêm recipient và trang sau có recipient mới. | Chỉ đọc đến khi thêm đủ 1 recipient còn thiếu; không đọc trang tiếp theo để vượt requested count. |
 | `FakeNotificationSenderTests` | Sinh UUID có hash thỏa từng rule. | Lần một/lần hai thất bại đúng điều kiện `% 20`/`% 100`. |
+| `SuccessfulNotificationSenderTests` | Gọi sender mặc định với UUID cố định. | Hoàn tất không exception và không phụ thuộc recipient hoặc attempt. |
+| `NotificationInfrastructureDependencyInjectionTests` | Khởi tạo Infrastructure DI với configuration Student hợp lệ. | `INotificationSender` resolve thành `SuccessfulNotificationSender`, không phải `FakeNotificationSender`. |
 | `HandleAsync_FirstBusinessFailureMarksItemForRetryAndRequeues` | Sender giả ném lỗi ở lần gửi đầu. | Item được đánh dấu thất bại nghiệp vụ và command được phát lại. |
 | `HandleAsyncSuccessfulChunkQueuesOneMediaUsageBatchCommand` | Hai item cùng bodyMarkdown media được gửi thành công trong một chunk. | Phát đúng một `RegisterNotificationMediaUsageBatchV1` chứa hai notification IDs; không phát command theo từng item. |
 | `ExtractEmbeddedAndAttachedContentUrlsReturnsDistinctReferences` | Parse image và link Markdown dùng Media `contentUrl`. | Sinh lần lượt `EMBED`/`ATTACHMENT` và bỏ cặp trùng. |
@@ -37,6 +40,8 @@ có kiểm thử tích hợp MySQL hoặc RabbitMQ trong dự án này.
 | `NotificationBatchStateTests` | Áp dụng snapshot, counter, retry và finalize trên Domain entity thuần. | Status/counter đúng hợp đồng hiện tại, không cần EF Core. |
 | `NotificationArchitectureTests` | Quét namespace, assembly reference và cây endpoint. | Không quay lại namespace cũ hoặc dependency ngược layer; mỗi route vẫn có file riêng. |
 | `NotificationSourceFileHeaderTests` | Quét toàn bộ source C# của Notification Service. | Mỗi file có đúng path và mô tả trách nhiệm tiếng Việt ở hai dòng đầu. |
+| `GetNotificationBatchSnapshotStatusHandlerTests` | Repository giả trả batch đang snapshot cùng count/requested count. | Map `RUNNING`, target và phần trăm đúng; trạng thái sau snapshot map `COMPLETED`. |
+| `GetNotificationBatchDeliveryStatusHandlerTests` | Clock cố định và counter batch đang xử lý. | Trả remaining, success/failed, progress và duration deterministic. |
 
 TestServer endpoint coverage đã được chuyển sang project
 `NotificationService.ComponentTests`; xem tài liệu kiến trúc testing để chạy riêng.

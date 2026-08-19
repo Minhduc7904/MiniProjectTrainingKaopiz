@@ -93,6 +93,21 @@ sau soft-delete. Ba generated owner columns có unique index nên mỗi Course c
 có một thumbnail, mỗi Student một avatar, mỗi media source một thumbnail active.
 Index `(owner_service, owner_type, owner_id, display_order)` phục vụ render.
 
+## `notification_media_usage_jobs`
+
+Migration `V006__add_notification_media_usage_jobs.sql` tạo job theo dõi phần xử lý Markdown do Media Service sở hữu.
+
+| Cột | Kiểu / null / mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `id` | `CHAR(36)`, PK | Cùng UUID với Notification Batch; logical reference, không có cross-service FK. |
+| `status` | `VARCHAR(20)`, `PENDING` | `PENDING`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED`, `FAILED`. |
+| `expected_usage_count` | `INT UNSIGNED`, null | Notification Service chốt khi delivery terminal. |
+| `processed_usage_count`, `failed_usage_count` | `INT UNSIGNED`, `0` | Counter Worker cập nhật nguyên tử theo command. |
+| `last_error` | `VARCHAR(500)`, null | Lỗi an toàn cuối cùng sau khi hết transport retry. |
+| `created_at`, `started_at`, `completed_at`, `updated_at` | `DATETIME(6)` | Mốc vòng đời job. |
+
+Job chỉ terminal khi tổng processed và failed đạt `expected_usage_count`. Completion marker đến trước chunk cuối không đóng job sớm. Index `(status, updated_at)` phục vụ vận hành.
+
 ## MassTransit persistence: đã có từ `V004`
 
 Media vừa gửi `GenerateMediaThumbnailV1` cùng transaction tạo/retry derivation,

@@ -13,6 +13,12 @@ public static class NotificationErrors
     public static NotificationApplicationException BatchNotFound() =>
         new("NOTIFICATION_BATCH_NOT_FOUND", "Notification batch was not found.", 404);
 
+    public static NotificationApplicationException BatchNotTerminal() =>
+        new("NOTIFICATION_BATCH_NOT_TERMINAL", "Notification batch is not terminal yet.", 409);
+
+    public static NotificationApplicationException BatchHasNoFailedItems() =>
+        new("NOTIFICATION_BATCH_HAS_NO_FAILED_ITEMS", "Notification batch has no failed recipient to retry.", 409);
+
     public static NotificationApplicationException NotificationNotFound() =>
         new("NOTIFICATION_NOT_FOUND", "Notification was not found.", 404);
 

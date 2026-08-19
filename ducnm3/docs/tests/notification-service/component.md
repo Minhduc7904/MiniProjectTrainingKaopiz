@@ -20,6 +20,7 @@ dotnet test backend/Services/Notification/NotificationService.ComponentTests/Not
 | `POST /api/notifications` và `GET /api/notifications/{id}` | POST trả `201` cùng public `Location`; GET trả `200`, `UNREAD` và `Cache-Control: no-store`; UUID sai trả `400`. |
 | `POST /api/notification-batches` và `GET /api/notification-batches/{id}` | POST trả `202` cùng public `Location`; GET trả summary `PENDING`; target scope chưa hỗ trợ trả `400`. |
 | `GET /api/notification-batches/{id}/failed-items` | Trả envelope cursor, `items` và `Cache-Control: no-store` đúng contract. |
+| Snapshot/delivery status | Hai route status trả `200`, `no-store`, snapshot count và delivery remaining qua TestServer. |
 
 Mỗi route được map bởi một endpoint file riêng. Component tests khóa lại HTTP status,
 header và envelope trong khi unit tests tập trung Domain/Application behavior.

@@ -55,6 +55,12 @@ public static class MediaErrors
             "The media usage was not found.",
             404);
 
+    public static MediaApplicationException NotificationMediaUsageJobNotFound() =>
+        new(
+            MediaErrorCodes.NotificationMediaUsageJobNotFound,
+            "The notification media usage job was not found.",
+            404);
+
     public static MediaApplicationException ThumbnailNotFound() =>
         new(
             MediaErrorCodes.ThumbnailNotFound,

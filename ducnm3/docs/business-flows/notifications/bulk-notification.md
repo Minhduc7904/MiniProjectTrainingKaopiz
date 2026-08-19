@@ -12,6 +12,7 @@ Quản trị viên; Notification API; Student Service; MySQL Notification; Rabbi
 
 - `targetScope` là `ALL_STUDENTS`.
 - `createdBy`, `title` và `bodyMarkdown` hợp lệ.
+- `requestedCount` bỏ trống hoặc nằm trong `1..100000`; bỏ trống nghĩa là toàn bộ.
 - Notification database và MassTransit outbox sẵn sàng nhận batch command.
 
 ## UML luồng chạy
@@ -66,7 +67,7 @@ sequenceDiagram
 
     Bus->>Worker: SnapshotNotificationBatchV1(batchId)
     Worker->>DB: PENDING -> SNAPSHOTTING
-    loop từng trang Student Service
+    loop từng trang Student Service đến requestedCount
         Worker->>Student: GET /api/students?status=ACTIVE&pageSize=100
         Student-->>Worker: student ids + totalPages
         Worker->>DB: UPSERT notification_batch_items
@@ -99,6 +100,7 @@ sequenceDiagram
         Worker->>Bus: DispatchNotificationBatchV1(batchId)
     else Đã xong
         Worker->>DB: COMPLETED / PARTIAL_FAILED / FAILED
+        Worker->>Media: CompleteNotificationMediaUsageJobV1(expectedUsageCount)
     end
 ```
 
@@ -112,6 +114,8 @@ sequenceDiagram
 6. Item `SUCCESS` không được xử lý lại. Unique `(batch_id, student_id)` và `(notification_batch_id, recipient_student_id)` bảo vệ dữ liệu nghiệp vụ khỏi trùng lặp.
 7. Khi không còn item claim được hay item `PROCESSING` active: không có lỗi là `COMPLETED`; chỉ lỗi là `FAILED`; có cả thành công và lỗi là `PARTIAL_FAILED`.
 8. Markdown media được kiểm tra ngay khi tạo batch. Sau một dispatch chunk, các `notificationId` thành công cùng bodyMarkdown được gom thành `RegisterNotificationMediaUsageBatchV1`; command chứa tối đa 500 owner IDs và tối đa 1,000 usage rows. Media Worker kiểm tra mỗi media `READY` một lần rồi tạo idempotent usage `NOTIFICATION/NOTIFICATION_BODY/EMBED|ATTACHMENT` cho từng notification ID. Item lỗi không có usage.
+9. Retry tạo batch con, copy riêng item `FAILED` từ nguồn và không gọi Student Service; unique `source_batch_id` làm replay trực tiếp idempotent.
+10. UI polling tuần tự: snapshot status tại Notification Service; snapshot hoàn tất mới gọi delivery status; delivery terminal mới gọi Media Usage job status tại Media Service.
 
 ## Dữ liệu thay đổi
 

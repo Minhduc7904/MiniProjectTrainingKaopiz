@@ -10,7 +10,9 @@ using MediaService.Application.Common.Errors;
 
 namespace MediaService.Application.UseCases.MediaUsages.RegisterNotification;
 
-public sealed class RegisterNotificationMediaUsagesHandler(IMediaUsageRepository mediaUsageRepository)
+public sealed class RegisterNotificationMediaUsagesHandler(
+    IMediaUsageRepository mediaUsageRepository,
+    INotificationMediaUsageJobRepository jobRepository)
 {
     public Task HandleAsync(
         RegisterNotificationMediaUsageV1 command,
@@ -24,16 +26,23 @@ public sealed class RegisterNotificationMediaUsagesHandler(IMediaUsageRepository
             cancellationToken);
     }
 
-    public Task HandleAsync(
+    public async Task HandleAsync(
         RegisterNotificationMediaUsageBatchV1 command,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
-        return HandleAsync(
+        if (command.JobId == Guid.Empty)
+        {
+            throw MediaErrors.InvalidMedia("Notification media usage jobId is invalid.");
+        }
+        await HandleAsync(
             command.NotificationIds,
             command.CreatedBy,
             command.References,
             cancellationToken);
+        var usageCount = checked((uint)(
+            command.NotificationIds.Distinct().Count() * command.References.Count));
+        await jobRepository.RecordSuccessAsync(command.JobId, usageCount, cancellationToken);
     }
 
     private Task HandleAsync(

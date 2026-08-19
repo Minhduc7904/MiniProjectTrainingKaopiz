@@ -99,7 +99,11 @@ public partial class NotificationDbContext : DbContext
 
             entity.ToTable("notification_batches");
 
-            entity.HasIndex(e => new { e.Status, e.CreatedAt }, "ix_notification_batches_status_created_at").IsDescending(false, true);
+            entity.HasIndex(e => new { e.CreatedAt, e.Id }, "ix_notification_batches_created_at_id").IsDescending(true, true);
+
+            entity.HasIndex(e => e.SourceBatchId, "uq_notification_batches_source_batch_id").IsUnique();
+
+            entity.HasIndex(e => new { e.Status, e.CreatedAt, e.Id }, "ix_notification_batches_status_created_at_id").IsDescending(false, true, true);
 
             entity.Property(e => e.Id)
                 .HasComment("UUID định danh yêu cầu gửi notification hàng loạt")
@@ -138,6 +142,14 @@ public partial class NotificationDbContext : DbContext
             entity.Property(e => e.ProcessedCount)
                 .HasComment("Số recipient đã được xử lý")
                 .HasColumnName("processed_count");
+            entity.Property(e => e.RequestedCount)
+                .HasComment("Số recipient người dùng yêu cầu; null nghĩa là toàn bộ")
+                .HasColumnName("requested_count");
+            entity.Property(e => e.SourceBatchId)
+                .HasComment("Batch nguồn khi retry riêng các recipient FAILED")
+                .HasColumnName("source_batch_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
             entity.Property(e => e.StartedAt)
                 .HasMaxLength(6)
                 .HasComment("Thời điểm bắt đầu xử lý batch, UTC")
@@ -164,6 +176,11 @@ public partial class NotificationDbContext : DbContext
             entity.Property(e => e.TotalCount)
                 .HasComment("Tổng recipient đã snapshot khi tạo batch")
                 .HasColumnName("total_count");
+
+            entity.HasOne(d => d.SourceBatch).WithMany(p => p.InverseSourceBatch)
+                .HasForeignKey(d => d.SourceBatchId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_notification_batches_source_batch_id");
         });
 
         modelBuilder.Entity<NotificationBatchItem>(entity =>

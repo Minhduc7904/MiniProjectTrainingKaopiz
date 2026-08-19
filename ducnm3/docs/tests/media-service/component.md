@@ -52,3 +52,4 @@ MinIO và transaction thay active avatar được bao phủ trong
 | `CreateIntentReturnsCreatedEnvelopeAndCanonicalLocation` | JSON metadata direct upload hợp lệ | `201`, `Location=/media/api/media/{id}`, PENDING draft và signed response qua envelope. |
 | `CompleteReturnsReadyDraftAndIsRetrySafe` | Media PENDING/READY với storage/finalizer doubles | `200` READY draft; replay giữ established result và không nhân side effect. |
 | Direct errors | actor/media/object invalid | `400/404/409` trong envelope an toàn; không lộ storage routing/signed fields. |
+| `GetNotificationMediaUsageJobStatusEndpointComponentTests` | GET job status qua route Media-owned. | Trả `200`, progress/remaining đúng và `Cache-Control: no-store`. |

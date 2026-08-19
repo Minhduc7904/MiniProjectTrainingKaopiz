@@ -40,6 +40,7 @@ stub trong bộ nhớ để test không phụ thuộc Student Service qua mạng
 | `UploadPersistsReadyChecksumAndUsageReplacesStudentAvatar` | Upload ảnh A và B bằng handler thật; gán avatar A → B → A trên MySQL đã áp dụng V003, rồi gửi lại A khi A đang active. | Media là `READY`; checksum đúng; có ba usage history nhưng chỉ một active trỏ lại A; soft-deleted reference được tái sử dụng; duplicate active trả `MEDIA_USAGE_CONFLICT`. |
 | `V005BackfillsExistingMediaDraftStateAndCreatesIndex` | Chèn legacy media trước V005: có active usage, không usage và PENDING; apply migration thật. | Active usage non-draft/null; còn lại draft với timestamp deterministic; `ix_media_objects_draft_cleanup` tồn tại. |
 | `PromoteAsyncSourceChangesAfterHeadRejectsStaleEtag` | Upload source lên real MinIO, stat ETag, thay source rồi promote với ETag cũ. | Real MinIO từ chối copy theo stale ETag; final object không được coi là committed. |
+| `V006TracksNotificationMediaUsageJobUntilExpectedCountCompletes` | Apply migration thật; start job, ghi 40/100 rồi ghi thêm 60. | Job giữ `PROCESSING` khi chưa đủ expected count và chuyển `COMPLETED` khi đạt 100. |
 
 Các kiểm thử vòng đời dùng `MinioStorageLocationAllocator` để reserve
 bucket/object key trước khi gọi storage adapter. Điều này bảo vệ ánh xạ loại →

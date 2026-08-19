@@ -55,9 +55,15 @@ internal sealed class StubBatchRepository :
     public List<Guid> FailedItems { get; } = [];
     public List<Guid> SuccessItems { get; } = [];
     public List<IReadOnlyList<Guid>> SnapshotPages { get; } = [];
+    public Queue<int> SnapshotInsertedCounts { get; } = [];
     public NotificationSnapshotWork SnapshotWork { get; set; } = new(false, false);
     public bool SnapshotCompleted { get; set; }
     public bool SnapshotMarkedFailed { get; private set; }
+    public NotificationBatchSummary? BatchSummary { get; set; }
+    public NotificationBatchSnapshotProgress? SnapshotProgress { get; set; }
+    public NotificationBatchListPage? BatchListPage { get; set; }
+    public NotificationBatchSummary? RetrySummary { get; set; }
+    public bool RetryIsNew { get; set; } = true;
 
     public Task<NotificationBatchSummary> CreateAsync(
         CreateNotificationBatchRecord record,
@@ -66,19 +72,43 @@ internal sealed class StubBatchRepository :
         CreatedRecord = record;
         return Task.FromResult(new NotificationBatchSummary(
             record.Id,
+            record.Title,
             "PENDING",
             0,
             0,
             0,
             0,
             record.BatchSize,
+            record.RequestedCount,
+            record.SourceBatchId,
             record.CreatedAtUtc,
             null,
             null));
     }
 
+    public Task<NotificationBatchRetryCreation> PrepareRetryAsync(
+        Guid sourceBatchId,
+        Guid createdBy,
+        DateTime createdAtUtc,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationBatchRetryCreation(
+            RetrySummary ?? new NotificationBatchSummary(
+                Guid.NewGuid(), "Retry", "PENDING", 0, 0, 0, 0, 500,
+                1, sourceBatchId, createdAtUtc, null, null),
+            RetryIsNew));
+
+    public Task<NotificationBatchSummary> CommitRetryAsync(
+        Guid sourceBatchId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(RetrySummary!);
+
     public Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken) =>
-        Task.FromResult<NotificationBatchSummary?>(null);
+        Task.FromResult(BatchSummary?.Id == batchId ? BatchSummary : null);
+
+    public Task<NotificationBatchSnapshotProgress?> GetSnapshotProgressAsync(
+        Guid batchId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(SnapshotProgress?.BatchId == batchId ? SnapshotProgress : null);
 
     public Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(
         Guid batchId,
@@ -87,19 +117,34 @@ internal sealed class StubBatchRepository :
         CancellationToken cancellationToken) =>
         Task.FromResult(new NotificationBatchFailedItemsPage([], null, false));
 
+    public Task<NotificationBatchListPage> ListAsync(
+        string? status,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(BatchListPage ?? new NotificationBatchListPage([], page, pageSize, 0));
+
     public Task SaveChangesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public Task<NotificationSnapshotWork> PrepareSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult(SnapshotWork);
 
-    public Task AppendSnapshotPageAsync(
+    public Task<int> AppendSnapshotPageAsync(
         Guid batchId,
         IReadOnlyList<Guid> studentIds,
         CancellationToken cancellationToken)
     {
         SnapshotPages.Add(studentIds);
-        return Task.CompletedTask;
+        return Task.FromResult(
+            SnapshotInsertedCounts.TryDequeue(out var insertedCount)
+                ? insertedCount
+                : studentIds.Count);
     }
+
+    public Task CopyFailedRecipientsAsync(
+        Guid batchId,
+        Guid sourceBatchId,
+        CancellationToken cancellationToken) => Task.CompletedTask;
 
     public Task<bool> CompleteSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult(SnapshotCompleted);
@@ -148,8 +193,14 @@ internal sealed class StubBatchRepository :
         return Task.FromResult<IReadOnlyList<NotificationSummary>>(notifications);
     }
 
-    public Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken) =>
-        Task.FromResult(hasRemaining);
+    public Task<NotificationBatchContinuation> FinalizeOrHasRemainingAsync(
+        Guid batchId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationBatchContinuation(
+            hasRemaining,
+            !hasRemaining,
+            checked((uint)SuccessItems.Count),
+            items is { Count: > 0 } ? items[0].BodyMarkdown : "Body"));
 }
 
 internal sealed class StubCommandSender : ICommandSender

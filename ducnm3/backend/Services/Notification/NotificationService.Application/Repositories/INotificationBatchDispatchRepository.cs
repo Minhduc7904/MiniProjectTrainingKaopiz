@@ -14,5 +14,5 @@ public interface INotificationBatchDispatchRepository
         IReadOnlyList<NotificationBatchDeliveryResult> results,
         CancellationToken cancellationToken);
 
-    Task<bool> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken);
+    Task<NotificationBatchContinuation> FinalizeOrHasRemainingAsync(Guid batchId, CancellationToken cancellationToken);
 }

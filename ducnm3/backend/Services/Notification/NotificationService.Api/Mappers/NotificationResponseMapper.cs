@@ -10,8 +10,9 @@ namespace NotificationService.Api.Mappers;
 public static class NotificationResponseMapper
 {
     public static NotificationBatchResponse ToResponse(NotificationBatchSummary item) =>
-        new(item.Id, item.Status, item.TotalCount, item.ProcessedCount, item.SuccessCount,
-            item.FailedCount, item.BatchSize, item.CreatedAtUtc, item.StartedAtUtc, item.CompletedAtUtc);
+        new(item.Id, item.Title, item.Status, item.TotalCount, item.ProcessedCount, item.SuccessCount,
+            item.FailedCount, item.BatchSize, item.RequestedCount, item.SourceBatchId,
+            item.CreatedAtUtc, item.StartedAtUtc, item.CompletedAtUtc, item.DurationMs);
 
     public static NotificationResponse ToResponse(NotificationSummary item) =>
         new(item.Id, item.RecipientStudentId, item.Title, item.BodyMarkdown, item.SourceType,

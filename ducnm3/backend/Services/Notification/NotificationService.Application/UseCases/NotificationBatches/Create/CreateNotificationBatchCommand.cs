@@ -3,4 +3,11 @@
 
 namespace NotificationService.Application.UseCases.NotificationBatches.Create;
 
-public sealed record CreateNotificationBatchCommand(string Title, string BodyMarkdown, string TargetScope, Guid CreatedBy, uint? BatchSize, Guid? CourseId);
+public sealed record CreateNotificationBatchCommand(
+    string Title,
+    string BodyMarkdown,
+    string TargetScope,
+    Guid CreatedBy,
+    uint? BatchSize,
+    uint? RequestedCount,
+    Guid? CourseId);

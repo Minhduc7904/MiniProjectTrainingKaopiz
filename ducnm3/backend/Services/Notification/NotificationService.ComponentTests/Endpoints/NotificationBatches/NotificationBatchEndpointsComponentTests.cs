@@ -15,6 +15,10 @@ using NotificationService.Api.Contracts.NotificationBatches.Requests;
 using NotificationService.Api.Endpoints.NotificationBatches.Create;
 using NotificationService.Api.Endpoints.NotificationBatches.GetById;
 using NotificationService.Api.Endpoints.NotificationBatches.GetFailedItems;
+using NotificationService.Api.Endpoints.NotificationBatches.GetList;
+using NotificationService.Api.Endpoints.NotificationBatches.RetryFailed;
+using NotificationService.Api.Endpoints.NotificationBatches.GetSnapshotStatus;
+using NotificationService.Api.Endpoints.NotificationBatches.GetDeliveryStatus;
 using NotificationService.Application;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
@@ -37,6 +41,7 @@ public sealed class NotificationBatchEndpointsComponentTests
                 "ALL_STUDENTS",
                 createdBy.ToString(),
                 500,
+                3000,
                 null));
 
         Assert.Multiple(() =>
@@ -75,6 +80,7 @@ public sealed class NotificationBatchEndpointsComponentTests
                 "STUDENT_IDS",
                 Guid.NewGuid().ToString(),
                 null,
+                null,
                 null));
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -98,6 +104,70 @@ public sealed class NotificationBatchEndpointsComponentTests
             Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
             Assert.That(body, Does.Contain("\"items\":[]"));
             Assert.That(body, Does.Contain("\"type\":\"cursor\""));
+        });
+    }
+
+    [Test]
+    public async Task GetList_ReturnsOffsetEnvelopeAndDuration()
+    {
+        await using var fixture = await NotificationBatchApiFixture.CreateAsync();
+        fixture.Repository.SetSummary(Guid.NewGuid());
+
+        using var response = await fixture.Client.GetAsync(
+            "/api/notification-batches?page=1&pageSize=20&status=PARTIAL_FAILED");
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(body, Does.Contain("\"type\":\"offset\""));
+            Assert.That(body, Does.Contain("\"durationMs\":0"));
+        });
+    }
+
+    [Test]
+    public async Task RetryFailed_TerminalBatch_ReturnsAcceptedChildLocation()
+    {
+        await using var fixture = await NotificationBatchApiFixture.CreateAsync();
+        var sourceId = Guid.NewGuid();
+        fixture.Repository.SetSummary(sourceId);
+
+        using var response = await fixture.Client.PostAsJsonAsync(
+            ApiRoutes.Notifications.BatchRetryFailedServicePath(sourceId),
+            new RetryFailedNotificationBatchRequest(Guid.NewGuid().ToString()));
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
+            Assert.That(response.Headers.Location?.ToString(), Does.StartWith(
+                "/notification/api/notification-batches/"));
+            Assert.That(body, Does.Contain(sourceId.ToString()));
+        });
+    }
+
+    [Test]
+    public async Task GetStepStatuses_ReturnsSnapshotThenDeliveryContracts()
+    {
+        await using var fixture = await NotificationBatchApiFixture.CreateAsync();
+        var batchId = Guid.NewGuid();
+        fixture.Repository.SetSummary(batchId);
+
+        using var snapshot = await fixture.Client.GetAsync(
+            ApiRoutes.Notifications.BatchSnapshotStatusServicePath(batchId));
+        using var delivery = await fixture.Client.GetAsync(
+            ApiRoutes.Notifications.BatchDeliveryStatusServicePath(batchId));
+        var snapshotBody = await snapshot.Content.ReadAsStringAsync();
+        var deliveryBody = await delivery.Content.ReadAsStringAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(snapshot.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(snapshotBody, Does.Contain("\"snapshotCount\":1"));
+            Assert.That(delivery.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(deliveryBody, Does.Contain("\"remainingCount\":0"));
         });
     }
 }
@@ -134,6 +204,10 @@ internal sealed class NotificationBatchApiFixture : IAsyncDisposable
         app.MapCreateNotificationBatchEndpoint();
         app.MapGetNotificationBatchByIdEndpoint();
         app.MapGetNotificationBatchFailedItemsEndpoint();
+        app.MapGetNotificationBatchesEndpoint();
+        app.MapRetryFailedNotificationBatchEndpoint();
+        app.MapGetNotificationBatchSnapshotStatusEndpoint();
+        app.MapGetNotificationBatchDeliveryStatusEndpoint();
         await app.StartAsync();
         return new NotificationBatchApiFixture(app, app.GetTestClient(), repository);
     }
@@ -156,12 +230,15 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
     {
         summary = new NotificationBatchSummary(
             record.Id,
+            record.Title,
             "PENDING",
             0,
             0,
             0,
             0,
             record.BatchSize,
+            record.RequestedCount,
+            record.SourceBatchId,
             record.CreatedAtUtc,
             null,
             null);
@@ -171,18 +248,65 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
     public void SetSummary(Guid batchId) =>
         summary = new NotificationBatchSummary(
             batchId,
+            "Batch",
             "PARTIAL_FAILED",
             1,
             1,
             0,
             1,
             500,
+            1,
+            null,
             DateTime.UnixEpoch,
             DateTime.UnixEpoch,
             DateTime.UnixEpoch);
 
     public Task<NotificationBatchSummary?> GetByIdAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult(summary?.Id == batchId ? summary : null);
+
+    public Task<NotificationBatchSnapshotProgress?> GetSnapshotProgressAsync(
+        Guid batchId,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(summary?.Id == batchId
+            ? new NotificationBatchSnapshotProgress(
+                batchId, summary.Status, summary.RequestedCount,
+                summary.TotalCount, summary.TotalCount)
+            : null);
+
+    public Task<NotificationBatchRetryCreation> PrepareRetryAsync(
+        Guid sourceBatchId,
+        Guid createdBy,
+        DateTime createdAtUtc,
+        CancellationToken cancellationToken)
+    {
+        var source = summary!;
+        summary = source with
+        {
+            Id = Guid.NewGuid(),
+            Status = "PENDING",
+            TotalCount = 0,
+            ProcessedCount = 0,
+            SuccessCount = 0,
+            FailedCount = 0,
+            SourceBatchId = sourceBatchId,
+            CreatedAtUtc = createdAtUtc,
+            StartedAtUtc = null,
+            CompletedAtUtc = null,
+        };
+        return Task.FromResult(new NotificationBatchRetryCreation(summary, true));
+    }
+
+    public Task<NotificationBatchSummary> CommitRetryAsync(
+        Guid sourceBatchId,
+        CancellationToken cancellationToken) => Task.FromResult(summary!);
+
+    public Task<NotificationBatchListPage> ListAsync(
+        string? status,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new NotificationBatchListPage(
+            summary is null ? [] : [summary], page, pageSize, summary is null ? 0 : 1));
 
     public Task<NotificationBatchFailedItemsPage> GetFailedItemsAsync(
         Guid batchId,
@@ -196,7 +320,10 @@ internal sealed class EndpointBatchRepository : INotificationBatchRepository
     public Task<NotificationSnapshotWork> PrepareSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>
         Task.FromResult(new NotificationSnapshotWork(false, false));
 
-    public Task AppendSnapshotPageAsync(Guid batchId, IReadOnlyList<Guid> studentIds, CancellationToken cancellationToken) =>
+    public Task<int> AppendSnapshotPageAsync(Guid batchId, IReadOnlyList<Guid> studentIds, CancellationToken cancellationToken) =>
+        Task.FromResult(studentIds.Count);
+
+    public Task CopyFailedRecipientsAsync(Guid batchId, Guid sourceBatchId, CancellationToken cancellationToken) =>
         Task.CompletedTask;
 
     public Task<bool> CompleteSnapshotAsync(Guid batchId, CancellationToken cancellationToken) =>

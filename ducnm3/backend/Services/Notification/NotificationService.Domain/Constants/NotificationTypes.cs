@@ -35,7 +35,16 @@ public static class NotificationBatchItemStatuses
     public const string Success = "SUCCESS";
 }
 
+public static class NotificationBatchStepStatuses
+{
+    public const string Pending = "PENDING";
+    public const string Running = "RUNNING";
+    public const string Completed = "COMPLETED";
+    public const string Failed = "FAILED";
+}
+
 public static class NotificationTargetScopes
 {
     public const string AllStudents = "ALL_STUDENTS";
+    public const string FailedRecipients = "FAILED_RECIPIENTS";
 }

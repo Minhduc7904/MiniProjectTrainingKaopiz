@@ -25,7 +25,7 @@ public static class NotificationBatchPersistenceMapper
     }
 
     public static NotificationBatchSummary ToSummary(NotificationBatchEntity entity) =>
-        new(entity.Id, entity.Status, entity.TotalCount, entity.ProcessedCount,
-            entity.SuccessCount, entity.FailedCount, entity.BatchSize, entity.CreatedAt,
-            entity.StartedAt, entity.CompletedAt);
+        new(entity.Id, entity.Title, entity.Status, entity.TotalCount, entity.ProcessedCount,
+            entity.SuccessCount, entity.FailedCount, entity.BatchSize, entity.RequestedCount,
+            entity.SourceBatchId, entity.CreatedAt, entity.StartedAt, entity.CompletedAt);
 }

@@ -27,7 +27,7 @@ status.
 
 ## Đã triển khai hiện tại
 
-Vite + React, Tailwind, React Router, Redux Toolkit, Axios, toast interceptor, trang Student, Media và Notification Batch. Hai trang Media dùng chung preview ảnh và polling/retry thumbnail; trang direct upload hiển thị progress XHR ở Output panel. Xem [Backend overview](../backend/overview.md).
+Vite + React, Tailwind, React Router, Redux Toolkit, Axios, toast interceptor, trang Student, Media và Notification Batch. Notification có ba menu tách biệt: tạo batch, quản lý list offset có action retry failed và tiến trình theo URL chứa `batchId`. Trang tiến trình polling tuần tự snapshot status, delivery status rồi Media Usage job status; bước sau không request trước khi bước trước terminal. Hai trang Media dùng chung preview ảnh và polling/retry thumbnail; trang direct upload hiển thị progress XHR ở Output panel. Xem [Backend overview](../backend/overview.md).
 
 ## Định hướng/chưa triển khai
 

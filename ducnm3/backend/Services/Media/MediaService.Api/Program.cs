@@ -7,6 +7,7 @@ using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Endpoints;
 using MediaService.Api.Endpoints.Media;
+using MediaService.Api.Endpoints.MediaUsageJobs.GetStatus;
 using MediaService.Application;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Infrastructure;
@@ -93,5 +94,6 @@ app.MapGetMediaUsageUrls();
 app.MapGetMediaContent();
 app.MapGetMediaThumbnailStatus();
 app.MapRetryMediaThumbnail();
+app.MapGetNotificationMediaUsageJobStatus();
 
 app.Run();

@@ -4,6 +4,7 @@
 using BuildingBlocks.DatabaseMigration;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Repositories;
+using NotificationService.Application.Repositories.Models;
 using NotificationService.Application.UseCases.NotificationBatches;
 using NotificationService.Domain.Constants;
 using NotificationService.Infrastructure.Persistence.Context;
@@ -126,6 +127,141 @@ public sealed class NotificationBatchLeaseIntegrationTests
                 item.LeaseToken is not null &&
                 item.LeaseExpiresAt > DateTime.UtcNow),
             Is.True);
+    }
+
+    [Test]
+    public async Task RetryBatch_CopiesOnlyFailedRecipients_AndReusesExistingChild()
+    {
+        var sourceId = Guid.NewGuid();
+        var failedStudentId = Guid.NewGuid();
+        var successfulStudentId = Guid.NewGuid();
+        var dbOptions = CreateDbOptions();
+        await using (var seedContext = new NotificationDbContext(dbOptions))
+        {
+            seedContext.NotificationBatches.Add(new NotificationBatch
+            {
+                Id = sourceId,
+                Title = "Retry source",
+                BodyMarkdown = "Body",
+                TargetScope = NotificationTargetScopes.AllStudents,
+                CreatedBy = Guid.NewGuid(),
+                Status = NotificationBatchStatuses.PartialFailed,
+                TotalCount = 2,
+                ProcessedCount = 2,
+                SuccessCount = 1,
+                FailedCount = 1,
+                BatchSize = 500,
+                CreatedAt = DateTime.UtcNow,
+                StartedAt = DateTime.UtcNow,
+                CompletedAt = DateTime.UtcNow,
+            });
+            seedContext.NotificationBatchItems.AddRange(
+                new NotificationBatchItem
+                {
+                    Id = Guid.NewGuid(), BatchId = sourceId, StudentId = failedStudentId,
+                    Status = NotificationBatchItemStatuses.Failed, RetryCount = 3,
+                },
+                new NotificationBatchItem
+                {
+                    Id = Guid.NewGuid(), BatchId = sourceId, StudentId = successfulStudentId,
+                    Status = NotificationBatchItemStatuses.Success, RetryCount = 0,
+                });
+            await seedContext.SaveChangesAsync();
+        }
+
+        await using var context = new NotificationDbContext(dbOptions);
+        var repository = new EfNotificationBatchRepository(
+            context,
+            new TestNotificationDbContextFactory(dbOptions),
+            TimeProvider.System,
+            new NotificationBatchProcessingOptions());
+        var firstCreation = await repository.PrepareRetryAsync(
+            sourceId, Guid.NewGuid(), DateTime.UtcNow, CancellationToken.None);
+        var first = await repository.CommitRetryAsync(sourceId, CancellationToken.None);
+        var replayCreation = await repository.PrepareRetryAsync(
+            sourceId, Guid.NewGuid(), DateTime.UtcNow, CancellationToken.None);
+        var replay = replayCreation.Batch;
+        var work = await repository.PrepareSnapshotAsync(first.Id, CancellationToken.None);
+        await repository.CopyFailedRecipientsAsync(first.Id, sourceId, CancellationToken.None);
+        await repository.CompleteSnapshotAsync(first.Id, CancellationToken.None);
+
+        await using var verifyContext = new NotificationDbContext(dbOptions);
+        var retryStudents = await verifyContext.NotificationBatchItems.AsNoTracking()
+            .Where(item => item.BatchId == first.Id)
+            .Select(item => item.StudentId)
+            .ToArrayAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(firstCreation.IsNew, Is.True);
+            Assert.That(replayCreation.IsNew, Is.False);
+            Assert.That(replay.Id, Is.EqualTo(first.Id));
+            Assert.That(work.SourceBatchId, Is.EqualTo(sourceId));
+            Assert.That(retryStudents, Is.EqualTo(new[] { failedStudentId }));
+        });
+    }
+
+    [Test]
+    public async Task CompleteClaimAsync_ClaimedItem_StoresNotificationAndUpdatesCounters()
+    {
+        var batchId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var itemId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        var leaseToken = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+        var studentId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+        var dbOptions = CreateDbOptions();
+        await using (var seedContext = new NotificationDbContext(dbOptions))
+        {
+            seedContext.NotificationBatches.Add(new NotificationBatch
+            {
+                Id = batchId,
+                Title = "Dispatch batch",
+                BodyMarkdown = "Body",
+                TargetScope = NotificationTargetScopes.AllStudents,
+                CreatedBy = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
+                Status = NotificationBatchStatuses.Processing,
+                TotalCount = 1,
+                BatchSize = 500,
+                CreatedAt = DateTime.UtcNow,
+                StartedAt = DateTime.UtcNow,
+            });
+            seedContext.NotificationBatchItems.Add(new NotificationBatchItem
+            {
+                Id = itemId,
+                BatchId = batchId,
+                StudentId = studentId,
+                Status = NotificationBatchItemStatuses.Processing,
+                LeaseToken = leaseToken,
+                LeaseExpiresAt = DateTime.UtcNow.AddMinutes(2),
+            });
+            await seedContext.SaveChangesAsync();
+        }
+
+        await using var context = new NotificationDbContext(dbOptions);
+        var repository = new EfNotificationBatchRepository(
+            context,
+            new TestNotificationDbContextFactory(dbOptions),
+            TimeProvider.System,
+            new NotificationBatchProcessingOptions());
+        var claim = new NotificationBatchClaim(
+            batchId,
+            leaseToken,
+            [new NotificationBatchWorkItem(itemId, batchId, studentId, 0, "Dispatch batch", "Body", Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"))]);
+
+        var notifications = await repository.CompleteClaimAsync(
+            claim,
+            [new NotificationBatchDeliveryResult(itemId, true, null)],
+            CancellationToken.None);
+
+        await using var verifyContext = new NotificationDbContext(dbOptions);
+        var item = await verifyContext.NotificationBatchItems.SingleAsync(candidate => candidate.Id == itemId);
+        var batch = await verifyContext.NotificationBatches.SingleAsync(candidate => candidate.Id == batchId);
+        Assert.Multiple(() =>
+        {
+            Assert.That(notifications, Has.Count.EqualTo(1));
+            Assert.That(item.Status, Is.EqualTo(NotificationBatchItemStatuses.Success));
+            Assert.That(item.LeaseToken, Is.Null);
+            Assert.That(batch.ProcessedCount, Is.EqualTo(1));
+            Assert.That(batch.SuccessCount, Is.EqualTo(1));
+        });
     }
 
     [OneTimeTearDown]

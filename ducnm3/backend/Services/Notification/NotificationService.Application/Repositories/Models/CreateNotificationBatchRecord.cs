@@ -3,5 +3,13 @@
 
 namespace NotificationService.Application.Repositories.Models;
 
-public sealed record CreateNotificationBatchRecord(Guid Id, string Title, string BodyMarkdown,
-    Guid CreatedBy, uint BatchSize, DateTime CreatedAtUtc);
+public sealed record CreateNotificationBatchRecord(
+    Guid Id,
+    string Title,
+    string BodyMarkdown,
+    string TargetScope,
+    Guid CreatedBy,
+    uint BatchSize,
+    uint? RequestedCount,
+    Guid? SourceBatchId,
+    DateTime CreatedAtUtc);

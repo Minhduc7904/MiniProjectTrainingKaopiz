@@ -37,7 +37,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationBatchDispatchRepository>(provider =>
             provider.GetRequiredService<EfNotificationBatchRepository>());
         services.AddScoped<INotificationRepository, EfNotificationRepository>();
-        services.AddSingleton<INotificationSender, FakeNotificationSender>();
+        services.AddSingleton<INotificationSender, SuccessfulNotificationSender>();
         services.AddSingleton<IDatabaseHealthProbe>(serviceProvider => new NotificationDatabaseHealthProbe(connectionString, serviceProvider.GetRequiredService<ILogger<NotificationDatabaseHealthProbe>>()));
         return services;
     }

@@ -27,14 +27,41 @@ public sealed class SnapshotNotificationBatchHandler(
         {
             try
             {
-                await foreach (var page in studentRecipientClient
-                    .GetActiveStudentIdPagesAsync(cancellationToken)
-                    .WithCancellation(cancellationToken))
+                if (work.SourceBatchId is not null)
                 {
-                    await repository.AppendSnapshotPageAsync(
-                        command.BatchId,
-                        page.Distinct().ToArray(),
-                        cancellationToken);
+                    await repository.CopyFailedRecipientsAsync(
+                        command.BatchId, work.SourceBatchId.Value, cancellationToken);
+                }
+                else
+                {
+                    uint? remaining = work.RequestedCount is { } requestedCount
+                        ? requestedCount > work.ExistingRecipientCount
+                            ? requestedCount - work.ExistingRecipientCount
+                            : 0
+                        : null;
+                    await foreach (var page in studentRecipientClient
+                        .GetActiveStudentIdPagesAsync(cancellationToken)
+                        .WithCancellation(cancellationToken))
+                    {
+                        if (remaining == 0)
+                        {
+                            break;
+                        }
+
+                        var candidates = page.Distinct().ToArray();
+                        if (remaining is not null)
+                        {
+                            candidates = candidates.Take(checked((int)remaining.Value)).ToArray();
+                        }
+                        var inserted = await repository.AppendSnapshotPageAsync(
+                            command.BatchId,
+                            candidates,
+                            cancellationToken);
+                        if (remaining is not null)
+                        {
+                            remaining -= checked((uint)inserted);
+                        }
+                    }
                 }
 
                 if (!await repository.CompleteSnapshotAsync(command.BatchId, cancellationToken))

@@ -24,10 +24,13 @@ public sealed class RegisterNotificationMediaUsagesHandlerTests
         var mediaId = Guid.Parse("33333333-3333-3333-3333-333333333333");
         var createdBy = Guid.Parse("44444444-4444-4444-4444-444444444444");
         var repository = new StubMediaRepository();
-        var sut = new RegisterNotificationMediaUsagesHandler(repository);
+        var jobRepository = new StubNotificationMediaUsageJobRepository();
+        var sut = new RegisterNotificationMediaUsagesHandler(repository, jobRepository);
+        var jobId = Guid.Parse("55555555-5555-5555-5555-555555555555");
 
         await sut.HandleAsync(
             new RegisterNotificationMediaUsageBatchV1(
+                jobId,
                 [firstNotificationId, secondNotificationId],
                 createdBy,
                 [
@@ -52,6 +55,8 @@ public sealed class RegisterNotificationMediaUsagesHandlerTests
                     usage.UsageType == NotificationMediaUsageTypes.Embed &&
                     usage.CreatedBy == new ActorReference(ActorTypes.Admin, createdBy)),
                 Is.True);
+            Assert.That(jobRepository.SuccessfulJobId, Is.EqualTo(jobId));
+            Assert.That(jobRepository.SuccessfulUsageCount, Is.EqualTo(2));
         });
     }
 
@@ -64,11 +69,13 @@ public sealed class RegisterNotificationMediaUsagesHandlerTests
             .Select(_ => Guid.NewGuid())
             .ToArray();
         var sut = new RegisterNotificationMediaUsagesHandler(
-            new StubMediaRepository());
+            new StubMediaRepository(),
+            new StubNotificationMediaUsageJobRepository());
 
         var exception = Assert.ThrowsAsync<MediaApplicationException>(
             () => sut.HandleAsync(
                 new RegisterNotificationMediaUsageBatchV1(
+                    Guid.NewGuid(),
                     notificationIds,
                     Guid.NewGuid(),
                     [

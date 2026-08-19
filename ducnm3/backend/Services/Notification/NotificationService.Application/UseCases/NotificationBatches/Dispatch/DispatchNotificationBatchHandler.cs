@@ -75,6 +75,7 @@ public sealed class DispatchNotificationBatchHandler(
                     await commandSender.SendAsync(
                         ServiceNames.Media,
                         new RegisterNotificationMediaUsageBatchV1(
+                            command.BatchId,
                             notificationIds,
                             successfulNotifications[0].CreatedBy,
                             references),
@@ -83,9 +84,21 @@ public sealed class DispatchNotificationBatchHandler(
             }
         }
 
-        if (await repository.FinalizeOrHasRemainingAsync(command.BatchId, cancellationToken))
+        var continuation = await repository.FinalizeOrHasRemainingAsync(
+            command.BatchId,
+            cancellationToken);
+        if (continuation.ShouldDispatch)
         {
             await commandSender.SendAsync(ServiceNames.Notification, command, cancellationToken);
+        }
+        else if (continuation.IsTerminal)
+        {
+            var referenceCount = mediaReferenceExtractor.Extract(continuation.BodyMarkdown).Count;
+            var expectedUsageCount = checked(continuation.SuccessCount * (uint)referenceCount);
+            await commandSender.SendAsync(
+                ServiceNames.Media,
+                new CompleteNotificationMediaUsageJobV1(command.BatchId, expectedUsageCount),
+                cancellationToken);
         }
     }
 }

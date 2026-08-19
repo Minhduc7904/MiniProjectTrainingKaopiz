@@ -48,7 +48,7 @@ public static class CreateNotificationBatchEndpoint
 
         var result = await handler.HandleAsync(
             new CreateNotificationBatchCommand(request.Title, request.BodyMarkdown,
-                request.TargetScope, createdBy, request.BatchSize, courseId),
+                request.TargetScope, createdBy, request.BatchSize, request.RequestedCount, courseId),
             cancellationToken);
         context.Response.Headers.Location = ApiRoutes.Notifications.BatchByIdPublicPath(result.Id);
         return Results.Json(

@@ -5,6 +5,7 @@ import {
   GraduationCap,
   Images,
   Library,
+  ListTodo,
   Mail,
   Send,
   Timer,
@@ -23,6 +24,7 @@ import {
   SERVICES,
   getServiceById,
   getServiceByPath,
+  getMenuByPath,
 } from '@/constants/appRoutes'
 import { UI_LABELS } from '@/constants/ui'
 import { ui } from '@/theme'
@@ -43,6 +45,7 @@ const menuIcons = {
   messages: Mail,
   send: Send,
   progress: Activity,
+  batches: ListTodo,
   jobs: Timer,
 }
 
@@ -50,6 +53,7 @@ export function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const activeService = getServiceByPath(location.pathname)
+  const activeMenu = getMenuByPath(location.pathname)
 
   return (
     <aside
@@ -103,10 +107,10 @@ export function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
-              className={({ isActive }) =>
+              className={() =>
                 [
                   'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-[14px] font-medium',
-                  isActive ? ui.navActive : ui.navIdle,
+                  activeMenu.to === item.to ? ui.navActive : ui.navIdle,
                 ].join(' ')
               }
             >

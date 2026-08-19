@@ -21,6 +21,8 @@ public partial class MediaDbContext : DbContext
 
     public virtual DbSet<MediaUsage> MediaUsages { get; set; }
 
+    public virtual DbSet<NotificationMediaUsageJob> NotificationMediaUsageJobs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -103,6 +105,50 @@ public partial class MediaDbContext : DbContext
                 .HasForeignKey(d => d.SourceMediaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_media_derivation_jobs_source");
+        });
+
+        modelBuilder.Entity<NotificationMediaUsageJob>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.ToTable("notification_media_usage_jobs");
+            entity.HasIndex(e => new { e.Status, e.UpdatedAt }, "ix_notification_media_usage_jobs_status_updated_at");
+
+            entity.Property(e => e.Id)
+                .HasComment("UUID job; dùng cùng UUID với Notification Batch nguồn")
+                .HasColumnName("id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValueSql("'PENDING'")
+                .HasComment("PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED")
+                .HasColumnName("status")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ExpectedUsageCount)
+                .HasComment("Tổng usage Notification Service chốt sau khi delivery terminal")
+                .HasColumnName("expected_usage_count");
+            entity.Property(e => e.ProcessedUsageCount)
+                .HasComment("Số usage đã được Media Worker đăng ký thành công")
+                .HasColumnName("processed_usage_count");
+            entity.Property(e => e.FailedUsageCount)
+                .HasComment("Số usage thuộc command đã hết retry và thất bại")
+                .HasColumnName("failed_usage_count");
+            entity.Property(e => e.LastError)
+                .HasMaxLength(500)
+                .HasComment("Lỗi an toàn gần nhất; không chứa stack trace hoặc dữ liệu bí mật")
+                .HasColumnName("last_error");
+            entity.Property(e => e.CreatedAt)
+                .HasMaxLength(6)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasColumnName("created_at");
+            entity.Property(e => e.StartedAt).HasMaxLength(6).HasColumnName("started_at");
+            entity.Property(e => e.CompletedAt).HasMaxLength(6).HasColumnName("completed_at");
+            entity.Property(e => e.UpdatedAt)
+                .HasMaxLength(6)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasColumnName("updated_at");
         });
 
         modelBuilder.Entity<MediaObject>(entity =>

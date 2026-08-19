@@ -18,7 +18,8 @@ Không có tham số đường dẫn hoặc truy vấn.
   "bodyMarkdown": "New material is available.",
   "targetScope": "ALL_STUDENTS",
   "createdBy": "2e71fdd3-a599-46d5-93e8-041e3b25b2b2",
-  "batchSize": 500
+  "batchSize": 500,
+  "requestedCount": 10000
 }
 ```
 
@@ -27,6 +28,7 @@ Không có tham số đường dẫn hoặc truy vấn.
 - `targetScope`: MVP chỉ nhận chính xác `ALL_STUDENTS`.
 - `createdBy`: UUID bắt buộc.
 - `batchSize`: số nguyên từ 1 đến 1000; mặc định `500`.
+- `requestedCount`: bỏ qua/null nghĩa là toàn bộ; nếu có phải từ 1 đến 100000. Khi số học viên active ít hơn yêu cầu, `totalCount` là số thực tế.
 - Không gửi `courseId`; các scope `COURSE_ENROLLED` và `STUDENT_IDS` chưa thuộc MVP.
 
 ## Phản hồi thành công
@@ -40,13 +42,17 @@ Location: /notification/api/notification-batches/4c40bcf9-675e-435c-93bd-17cde82
 {
   "data": {
     "id": "4c40bcf9-675e-435c-93bd-17cde82d1670",
+    "title": "Course update",
     "status": "PENDING",
     "totalCount": 0,
     "processedCount": 0,
     "successCount": 0,
     "failedCount": 0,
     "batchSize": 500,
-    "createdAtUtc": "2026-08-14T01:00:00Z"
+    "requestedCount": 10000,
+    "sourceBatchId": null,
+    "createdAtUtc": "2026-08-14T01:00:00Z",
+    "durationMs": null
   },
   "meta": {
     "traceId": "01J..."
@@ -59,7 +65,7 @@ Poll `GET /api/notification-batches/{batchId}` qua gateway tại URL trong `Loca
 ## Mã trạng thái HTTP
 
 - `202`: batch và durable snapshot command đã được chấp nhận. `totalCount` là `0` cho tới khi Worker hoàn tất snapshot.
-- `400 VALIDATION_FAILED`: body không hợp lệ, scope khác `ALL_STUDENTS`, có `courseId`, hoặc snapshot rỗng.
+- `400 VALIDATION_FAILED`: body không hợp lệ, scope khác `ALL_STUDENTS`, có `courseId`, hoặc `requestedCount` ngoài `1..100000`.
 - `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
 ## Điều kiện nghiệp vụ và tác động phụ
@@ -68,4 +74,4 @@ API tạo một hàng `notification_batches` `PENDING` và ghi `SnapshotNotifica
 
 Các trạng thái polling gồm `PENDING`, `SNAPSHOTTING`, `SNAPSHOT_READY`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED` và `FAILED`. Nếu snapshot không lấy được Student Service hoặc không có recipient, Worker kết thúc batch ở `FAILED`; client tạo request mới khi dependency đã khôi phục.
 
-Notification Worker nhận command, mỗi lượt chỉ claim tối đa `batchSize` item `PENDING` hoặc `RETRY`, rồi tạo inbox `source_type=BULK`, `status=UNREAD`. Fake sender thử đúng một lần lại: thất bại lần đầu chuyển `RETRY`; thất bại lần hai chuyển `FAILED` và lưu lỗi. Nếu còn item, Worker tự gửi lại cùng command; không dùng Scheduler hay `background_jobs`.
+Notification Worker nhận command, mỗi lượt chỉ claim tối đa `batchSize` item `PENDING` hoặc `RETRY`, rồi tạo inbox `source_type=BULK`, `status=UNREAD`. Sender mặc định hoàn tất thành công sau khi inbox được ghi, nên item chuyển `SUCCESS`. `FakeNotificationSender` chỉ được giữ để test riêng nhánh retry/fail; khi có email hoặc SMS, thay DI binding bằng provider adapter mà không đổi Worker flow. Nếu còn item, Worker tự gửi lại cùng command; không dùng Scheduler hay `background_jobs`.
