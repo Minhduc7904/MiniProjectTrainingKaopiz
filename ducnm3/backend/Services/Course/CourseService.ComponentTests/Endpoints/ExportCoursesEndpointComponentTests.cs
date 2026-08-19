@@ -8,6 +8,7 @@ using CourseService.Application;
 using CourseService.Application.Repositories;
 using CourseService.Application.UseCases.Courses.Export;
 using CourseService.Application.UseCases.Courses.GetList;
+using CourseService.Domain.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +55,7 @@ public sealed class ExportCoursesEndpointComponentTests
             Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
             Assert.That(bytes.Take(3), Is.EqualTo(Encoding.UTF8.GetPreamble()));
             Assert.That(repository.ExportCallCount, Is.EqualTo(1));
-            Assert.That(repository.LastQuery?.Status, Is.EqualTo("PUBLISHED"));
+            Assert.That(repository.LastQuery?.Status, Is.EqualTo(CourseStatuses.Published));
             Assert.That(csv, Does.Contain("id,name,status,createdAtUtc\r\n"));
             Assert.That(csv, Does.Contain("\"Backend, \"\"Fundamentals\"\"\""));
         });
@@ -88,7 +89,7 @@ public sealed class ExportCoursesEndpointComponentTests
         private readonly CourseExportRow row = new(
             Guid.Parse("11111111-1111-1111-1111-111111111111"),
             "Backend, \"Fundamentals\"",
-            "PUBLISHED",
+            CourseStatuses.Published,
             new DateTime(2026, 8, 19, 7, 30, 0, DateTimeKind.Utc));
 
         public int ExportCallCount { get; private set; }
@@ -111,5 +112,6 @@ public sealed class ExportCoursesEndpointComponentTests
                 ? new CourseExportChunk([row])
                 : new CourseExportChunk([]));
         }
+
     }
 }

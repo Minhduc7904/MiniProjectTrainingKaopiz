@@ -1,5 +1,6 @@
 using System.Text;
 using CourseService.Application.UseCases.Courses.Export;
+using CourseService.Domain.Constants;
 
 #pragma warning disable CA1707
 
@@ -14,7 +15,7 @@ public sealed class CsvRowWriterTests
         var row = new CourseExportRow(
             Guid.Parse("11111111-1111-1111-1111-111111111111"),
             "Backend, \"Fundamentals\"\r\nPart 1",
-            "PUBLISHED",
+            CourseStatuses.Published,
             new DateTime(2026, 8, 19, 7, 30, 0, DateTimeKind.Utc));
 
         await CsvRowWriter.WritePreambleAsync(stream, CancellationToken.None);

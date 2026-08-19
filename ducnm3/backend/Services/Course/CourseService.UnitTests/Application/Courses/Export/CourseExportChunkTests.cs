@@ -1,4 +1,5 @@
 using CourseService.Application.UseCases.Courses.Export;
+using CourseService.Domain.Constants;
 
 #pragma warning disable CA1707
 
@@ -37,6 +38,6 @@ public sealed class CourseExportChunkTests
         new(
             new Guid(index, 0, 0, new byte[8]),
             $"Course {index}",
-            "PUBLISHED",
+            CourseStatuses.Published,
             new DateTime(2026, 8, 19, 0, 0, 0, DateTimeKind.Utc).AddMinutes(index));
 }

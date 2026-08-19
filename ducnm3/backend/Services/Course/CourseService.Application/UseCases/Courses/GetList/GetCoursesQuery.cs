@@ -2,6 +2,8 @@
 // Mục đích: Normalize và validate filter, sort, offset pagination trước khi query Course.
 
 using BuildingBlocks.Contracts.Api;
+using CourseService.Application.Common.Errors;
+using CourseService.Domain.Constants;
 
 namespace CourseService.Application.UseCases.Courses.GetList;
 
@@ -31,7 +33,7 @@ public sealed record GetCoursesQuery
         if (normalizedPage < 1) details.Add(new ApiErrorDetail("page", "Page must be greater than or equal to 1."));
         if (normalizedPageSize is < 1 or > MaximumPageSize) details.Add(new ApiErrorDetail("pageSize", $"Page size must be between 1 and {MaximumPageSize}."));
         if (((long)normalizedPage - 1) * normalizedPageSize > int.MaxValue) details.Add(new ApiErrorDetail("page", "The requested page is outside the supported range."));
-        if (details.Count > 0) throw new CourseListValidationException(details);
+        if (details.Count > 0) throw CourseErrors.ValidationFailed(details);
         return new GetCoursesQuery(normalizedStatus, normalizedSort, descending, normalizedPage, normalizedPageSize);
     }
 
@@ -39,8 +41,8 @@ public sealed record GetCoursesQuery
     {
         if (string.IsNullOrWhiteSpace(status)) return null;
         var normalized = status.Trim().ToUpperInvariant();
-        if (normalized is "DRAFT" or "PUBLISHED" or "ARCHIVED") return normalized;
-        details.Add(new ApiErrorDetail("status", "Status must be DRAFT, PUBLISHED, or ARCHIVED."));
+        if (CourseStatuses.IsSupported(normalized)) return normalized;
+        details.Add(new ApiErrorDetail("status", $"Status must be {CourseStatuses.Draft}, {CourseStatuses.Published}, or {CourseStatuses.Archived}."));
         return null;
     }
 

@@ -21,6 +21,10 @@ function joinPath(...parts) {
 }
 
 export const API_ROUTES = {
+  courses: {
+    list: joinPath(GATEWAY_PREFIXES.course, '/api/courses'),
+    export: joinPath(GATEWAY_PREFIXES.course, '/api/courses/export'),
+  },
   students: {
     list: joinPath(GATEWAY_PREFIXES.student, '/api/students'),
     detail: (studentId) =>

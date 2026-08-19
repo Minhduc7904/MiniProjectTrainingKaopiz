@@ -2,7 +2,8 @@
 // Mục đích: Normalize và validate filter cho luồng xuất Course.
 
 using BuildingBlocks.Contracts.Api;
-using CourseService.Application.UseCases.Courses.GetList;
+using CourseService.Application.Common.Errors;
+using CourseService.Domain.Constants;
 
 namespace CourseService.Application.UseCases.Courses.Export;
 
@@ -19,12 +20,12 @@ public sealed record ExportCoursesQuery
         if (string.IsNullOrWhiteSpace(status)) return new ExportCoursesQuery((string?)null);
 
         var normalizedStatus = status.Trim().ToUpperInvariant();
-        if (normalizedStatus is "DRAFT" or "PUBLISHED" or "ARCHIVED")
+        if (CourseStatuses.IsSupported(normalizedStatus))
         {
             return new ExportCoursesQuery(normalizedStatus);
         }
 
-        throw new CourseListValidationException(
-            [new ApiErrorDetail("status", "Status must be DRAFT, PUBLISHED, or ARCHIVED.")]);
+        throw CourseErrors.ValidationFailed(
+            [new ApiErrorDetail("status", $"Status must be {CourseStatuses.Draft}, {CourseStatuses.Published}, or {CourseStatuses.Archived}.")]);
     }
 }

@@ -18,4 +18,5 @@ public interface ICourseListRepository
         ExportCoursesQuery query,
         CourseExportPosition? position,
         CancellationToken cancellationToken);
+
 }

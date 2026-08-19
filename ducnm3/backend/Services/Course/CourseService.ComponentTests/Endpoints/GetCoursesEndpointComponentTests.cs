@@ -8,6 +8,7 @@ using CourseService.Application;
 using CourseService.Application.Repositories;
 using CourseService.Application.UseCases.Courses.GetList;
 using CourseService.Application.UseCases.Courses.Export;
+using CourseService.Domain.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +28,7 @@ public sealed class GetCoursesEndpointComponentTests
             [new CourseListItemRecord(
                 Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 "Backend Fundamentals",
-                "PUBLISHED",
+                CourseStatuses.Published,
                 new DateTime(2026, 8, 19, 1, 0, 0, DateTimeKind.Utc))],
             1,
             1));
@@ -99,5 +100,6 @@ public sealed class GetCoursesEndpointComponentTests
 
         public Task<CourseExportChunk> ReadExportChunkAsync(ExportCoursesQuery query, CourseExportPosition? position, CancellationToken cancellationToken) =>
             Task.FromResult(new CourseExportChunk([]));
+
     }
 }

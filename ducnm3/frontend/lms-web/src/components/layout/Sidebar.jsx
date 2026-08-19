@@ -12,6 +12,7 @@ import {
   Activity,
   Upload,
   UploadCloud,
+  Download,
   Users,
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -40,6 +41,7 @@ const serviceIcons = {
 const menuIcons = {
   students: Users,
   courses: Library,
+  courseExport: Download,
   upload: Upload,
   uploadDirect: UploadCloud,
   messages: Mail,

@@ -1,5 +1,6 @@
 using CourseService.Application.Repositories;
 using CourseService.Application.UseCases.Courses.GetList;
+using CourseService.Domain.Constants;
 using CourseService.Application.UseCases.Courses.Export;
 
 #pragma warning disable CA1707
@@ -19,7 +20,7 @@ public sealed class GetCoursesHandlerTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(query.Status, Is.EqualTo("PUBLISHED"));
+            Assert.That(query.Status, Is.EqualTo(CourseStatuses.Published));
             Assert.That(query.SortBy, Is.EqualTo(CourseSortField.CreatedAt));
             Assert.That(query.Descending, Is.True);
             Assert.That(query.Page, Is.EqualTo(1));
@@ -45,6 +46,7 @@ public sealed class GetCoursesHandlerTests
             PagedCallCount++;
             return Task.FromResult(new GetCoursesResult([], 0, 0));
         }
+
 
         public Task<CourseExportChunk> ReadExportChunkAsync(ExportCoursesQuery query, CourseExportPosition? position, CancellationToken cancellationToken) =>
             Task.FromResult(new CourseExportChunk([]));
