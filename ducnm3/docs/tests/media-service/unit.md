@@ -46,6 +46,7 @@ dotnet test backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests
 | Direct intent | validation/policy/draft | Tên file, type, size, lowercase SHA-256 và actor hợp lệ/lỗi. | Chỉ input hợp lệ tạo PENDING draft và policy exact key/type/size/checksum, trả `Content-Type` form field bắt buộc, expiry 900 giây. |
 | Direct complete | verify/idempotency/concurrency | Metadata matching/mismatch, READY replay, concurrent loser và ambiguous commit. | Chỉ verified object được promotion; ETag được truyền; loser không xóa winner; replay không nhân thumbnail job. |
 | Persistence mapper | `MediaPersistenceMapperTests` | Dựng `Scaffolded.MediaObject` và `Scaffolded.MediaUsage` trong memory. | Mapper tạo đúng domain entities `Media`/`MediaUsage`, gồm metadata, actor và trạng thái draft. |
+| EF mapping `is_draft` | `MediaObjectIsDraftDatabaseDefaultIsTrueUsesTrueAsSentinel` | Dựng `MediaDbContext` chỉ để đọc metadata model, không mở kết nối database. | DB default và sentinel đều là `true`; khi insert `IsDraft=false`, EF gửi rõ giá trị `false` thay vì để `DEFAULT 1` ghi đè. |
 
 Các tổ hợp sức khỏe HTTP của Media được chạy qua `TestServer`, vì vậy được ghi trong
 [`component.md`](component.md), không lặp lại ở đây.

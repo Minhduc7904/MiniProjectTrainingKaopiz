@@ -2,7 +2,10 @@
 // Mục đích: Kiểm thử mapper chuyển entity EF Media sang dữ liệu Application mà không mất các trường lifecycle và ownership.
 
 using MediaService.Domain.Entities;
+using MediaService.Infrastructure.Persistence.Context;
 using MediaService.Infrastructure.Persistence.Mappers;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using DatabaseMediaObject = MediaService.Infrastructure.Persistence.Scaffolded.MediaObject;
 using DatabaseMediaUsage = MediaService.Infrastructure.Persistence.Scaffolded.MediaUsage;
 
@@ -10,6 +13,30 @@ namespace MediaService.UnitTests.Persistence;
 
 public sealed class MediaPersistenceMapperTests
 {
+    [Test]
+    public void MediaObjectIsDraftDatabaseDefaultIsTrueUsesTrueAsSentinel()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                "Server=localhost;Database=media_test;User=root;Password=not-used;",
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        using var dbContext = new MediaDbContext(options);
+
+        // Act
+        var property = dbContext.Model
+            .FindEntityType(typeof(DatabaseMediaObject))!
+            .FindProperty(nameof(DatabaseMediaObject.IsDraft))!;
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(property.GetDefaultValueSql(), Is.EqualTo("'1'"));
+            Assert.That(property.Sentinel, Is.True);
+        });
+    }
+
     [Test]
     public void ToDomainScaffoldedMediaObjectMapsMediaEntity()
     {
