@@ -13,14 +13,12 @@ using MediaService.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using BuildingBlocks.Observability.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Ẩn SQL query EF Core chạy thành công.
-// Warning và Error vẫn được giữ lại.
-builder.Logging.AddFilter(
-    "Microsoft.EntityFrameworkCore.Database.Command",
-    LogLevel.Warning);
+builder.AddLmsSerilog(
+    ServiceNames.Media);
 
 var connectionString = builder.Configuration.GetConnectionString("Database");
 

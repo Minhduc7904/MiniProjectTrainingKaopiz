@@ -1,10 +1,12 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
 using BuildingBlocks.Presentation.Extensions;
+using BuildingBlocks.Observability.Logging;
 using NSwag.AspNetCore;
 using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLmsSerilog(ServiceNames.Gateway);
 var proxyMaxRequestBodySize = builder.Configuration.GetValue<long>(
     "Proxy:MaxRequestBodySize",
     525L * 1024 * 1024);
@@ -25,6 +27,7 @@ var app = builder.Build();
 
 app.UseLmsCors();
 app.UseSharedApiMiddleware();
+app.UseLmsHttpLogging();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {

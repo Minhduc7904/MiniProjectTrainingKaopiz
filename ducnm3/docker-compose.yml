@@ -17,6 +17,9 @@ x-http-query-environment: &http-query-environment
   Communication__HttpQuery__RetryCount: ${HTTP_QUERY_RETRY_COUNT:-3}
   Communication__HttpQuery__RetryDelayMilliseconds: ${HTTP_QUERY_RETRY_DELAY_MILLISECONDS:-200}
 
+x-observability-environment: &observability-environment
+  Observability__Seq__ServerUrl: http://seq:5341
+
 services:
   mysql:
     image: mysql:8.4
@@ -79,6 +82,17 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
+  seq:
+    image: datalust/seq:2025.2
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+    ports:
+      - "5341:5341"
+      - "${OBSERVABILITY_SEQ_UI_PORT:-8081}:80"
+    volumes:
+      - seq-data:/data
+
   minio:
     image: quay.io/minio/minio:latest
     command: server /data --console-address ":9001"
@@ -132,7 +146,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: [*messaging-environment, *http-query-environment]
+      <<: [*messaging-environment, *http-query-environment, *observability-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -155,7 +169,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: *messaging-environment
+      <<: [*messaging-environment, *observability-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -178,7 +192,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: [*messaging-environment, *http-query-environment]
+      <<: [*messaging-environment, *http-query-environment, *observability-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -221,7 +235,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: [*messaging-environment, *http-query-environment]
+      <<: [*messaging-environment, *http-query-environment, *observability-environment]
       DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ConnectionStrings__Database: ${MEDIA_DB_CONNECTION_STRING:?MEDIA_DB_CONNECTION_STRING must be set}
       Storage__Minio__Endpoint: minio:9000
@@ -263,7 +277,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: [*messaging-environment, *http-query-environment]
+      <<: [*messaging-environment, *http-query-environment, *observability-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -286,7 +300,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: [*messaging-environment, *http-query-environment]
+      <<: [*messaging-environment, *http-query-environment, *observability-environment]
       DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ConnectionStrings__Database: ${NOTIFICATION_DB_CONNECTION_STRING:?NOTIFICATION_DB_CONNECTION_STRING must be set}
       ServiceEndpoints__student-service: http://student-service:8080/
@@ -309,7 +323,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: *messaging-environment
+      <<: [*messaging-environment, *observability-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -328,7 +342,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      <<: [*messaging-environment, *http-query-environment]
+      <<: [*messaging-environment, *http-query-environment, *observability-environment]
       DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ServiceEndpoints__notification-service: http://notification-service:8080/
       ServiceEndpoints__media-service: http://media-service:8080/
@@ -358,6 +372,7 @@ services:
         PROJECT_PATH: Gateway/Lms.ApiGateway/Lms.ApiGateway.csproj
     command: Lms.ApiGateway.dll
     environment:
+      <<: *observability-environment
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       Swagger__Enabled: ${Swagger__Enabled:-true}
@@ -374,3 +389,4 @@ volumes:
   mysql-data:
   minio-data:
   rabbitmq-data:
+  seq-data:

@@ -3,10 +3,12 @@ using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
+using BuildingBlocks.Observability.Logging;
 using Microsoft.Extensions.Logging;
 using SchedulerService.Infrastructure.Health;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLmsSerilog(ServiceNames.Scheduler);
 builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
@@ -51,6 +53,7 @@ if (migrationsRunOnly)
 }
 
 app.UseSharedApiMiddleware();
+app.UseLmsHttpLogging();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {

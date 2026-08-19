@@ -5,6 +5,7 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
+using BuildingBlocks.Observability.Logging;
 using MassTransit;
 using MediaService.Api.Endpoints;
 using MediaService.Api.Endpoints.Media;
@@ -16,6 +17,7 @@ using MediaService.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLmsSerilog(ServiceNames.Media);
 var mediaRequestMaxBytes = builder.Configuration.GetValue<long>(
     $"{MediaUploadOptions.SectionName}:RequestMaxBytes",
     525L * 1024 * 1024);
@@ -76,6 +78,7 @@ if (migrationsRunOnly)
 }
 
 app.UseSharedApiMiddleware();
+app.UseLmsHttpLogging();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {

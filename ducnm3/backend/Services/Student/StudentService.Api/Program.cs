@@ -2,12 +2,14 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
+using BuildingBlocks.Observability.Logging;
 using Microsoft.Extensions.Logging;
 using StudentService.Api.Endpoints;
 using StudentService.Application;
 using StudentService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLmsSerilog(ServiceNames.Student);
 builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
@@ -51,6 +53,7 @@ if (migrationsRunOnly)
 }
 
 app.UseSharedApiMiddleware();
+app.UseLmsHttpLogging();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {

@@ -85,6 +85,7 @@ MinIO nên MinIO API CORS là bắt buộc; local default là `http://localhost:
 ASPNETCORE_ENVIRONMENT=Development
 ASPNETCORE_URLS=http://+:8080
 Swagger__Enabled=true
+OBSERVABILITY_SEQ_UI_PORT=8081
 SCHEDULER_DB_NAME=lms_scheduler_db
 SCHEDULER_DB_USER=scheduler_app
 SCHEDULER_DB_PASSWORD=replace-with-a-local-secret

@@ -6,6 +6,7 @@ using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
+using BuildingBlocks.Observability.Logging;
 using CourseService.Api.Endpoints.Courses.Export;
 using CourseService.Api.Endpoints.Courses.GetDetails;
 using CourseService.Api.Endpoints.Courses.GetList;
@@ -13,6 +14,7 @@ using CourseService.Application;
 using CourseService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLmsSerilog(ServiceNames.Course);
 builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
@@ -58,6 +60,7 @@ if (migrationsRunOnly)
 }
 
 app.UseSharedApiMiddleware();
+app.UseLmsHttpLogging();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {

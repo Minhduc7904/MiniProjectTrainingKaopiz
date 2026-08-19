@@ -7,7 +7,7 @@ using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using MassTransit;
-using Microsoft.Extensions.Logging;
+using BuildingBlocks.Observability.Logging;
 using NotificationService.Api.Endpoints.NotificationBatches.Create;
 using NotificationService.Api.Endpoints.NotificationBatches.GetById;
 using NotificationService.Api.Endpoints.NotificationBatches.GetDeliveryStatus;
@@ -22,6 +22,8 @@ using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLmsSerilog(
+    ServiceNames.Notification);
 builder.Services.AddHealthChecks();
 var migrationsRunOnly = builder.Configuration.GetValue<bool>("Migrations:RunOnly");
 if (!migrationsRunOnly)
@@ -57,6 +59,8 @@ if (!migrationsRunOnly)
 }
 
 var app = builder.Build();
+
+
 var logMigration = LoggerMessage.Define<string>(
     LogLevel.Information,
     new EventId(1000, "SqlMigration"),
@@ -75,13 +79,13 @@ if (migrationsRunOnly)
 }
 
 app.UseSharedApiMiddleware();
+app.UseLmsHttpLogging();
 
 if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     app.UseOpenApi();
     app.UseSwaggerUi(settings => settings.Path = "/swagger");
 }
-
 app.MapServiceInfoEndpoint(ServiceNames.Notification);
 app.MapDatabaseHealthEndpoint(ServiceNames.Notification);
 app.MapCreateNotificationEndpoint();

@@ -6,20 +6,17 @@ using BuildingBlocks.Messaging;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NotificationService.Application;
 using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.Persistence.Context;
 using NotificationService.Worker.Consumers.NotificationBatches;
+using BuildingBlocks.Observability.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Ẩn các SQL query EF Core chạy thành công.
-// Warning / Error vẫn được giữ lại.
-builder.Logging.AddFilter(
-    "Microsoft.EntityFrameworkCore.Database.Command",
-    LogLevel.Warning);
+builder.AddLmsSerilog(
+    ServiceNames.Notification);
 
 var connectionString =
     builder.Configuration.GetConnectionString("Database")

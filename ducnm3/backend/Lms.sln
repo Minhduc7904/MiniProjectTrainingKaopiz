@@ -119,6 +119,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Compone
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourseService.ComponentTests", "Services\Course\CourseService.ComponentTests\CourseService.ComponentTests.csproj", "{7DAB17BD-FF27-4DD2-97CC-B6944226F7A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Observability", "BuildingBlocks\BuildingBlocks.Observability\BuildingBlocks.Observability.csproj", "{4A6A9291-02CB-49AF-9BF6-78AC7833109A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -717,6 +719,18 @@ Global
 		{7DAB17BD-FF27-4DD2-97CC-B6944226F7A9}.Release|x64.Build.0 = Release|Any CPU
 		{7DAB17BD-FF27-4DD2-97CC-B6944226F7A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{7DAB17BD-FF27-4DD2-97CC-B6944226F7A9}.Release|x86.Build.0 = Release|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Debug|x64.Build.0 = Debug|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Release|x64.ActiveCfg = Release|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Release|x64.Build.0 = Release|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -776,5 +790,6 @@ Global
 		{29D79542-CF41-4049-AC25-748AFEBBAAB5} = {06470F13-D646-4954-ED4A-FA216054436A}
 		{1F979AB7-0BED-4AA7-A8C8-7D8FF5B65F0E} = {06470F13-D646-4954-ED4A-FA216054436A}
 		{7DAB17BD-FF27-4DD2-97CC-B6944226F7A9} = {65BE17F0-9624-72A3-2B03-BE2C43DC0EEF}
+		{4A6A9291-02CB-49AF-9BF6-78AC7833109A} = {7266C4A9-E384-DC00-0EB6-47F6002CFBA7}
 	EndGlobalSection
 EndGlobal

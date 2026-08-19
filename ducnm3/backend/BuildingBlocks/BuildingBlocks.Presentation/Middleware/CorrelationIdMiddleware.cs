@@ -3,24 +3,31 @@ using BuildingBlocks.Contracts.Api;
 namespace BuildingBlocks.Presentation.Middleware;
 
 /// <summary>
-/// Đảm bảo mỗi request có correlation ID: dùng header client gửi nếu có, nếu không tạo GUID mới.
-/// Giá trị được lưu vào <see cref="HttpContext.TraceIdentifier"/> và echo trong response để truy vết end-to-end.
+/// Đảm bảo mỗi request có correlation ID:
+/// dùng header client gửi nếu có, nếu không tạo GUID mới.
+/// Correlation ID được lưu vào HttpContext.TraceIdentifier
+/// và echo lại trong response.
 /// </summary>
 public sealed class CorrelationIdMiddleware(RequestDelegate next)
 {
-    /// <summary>Chuẩn hóa correlation ID trước khi gọi middleware kế tiếp; không trả giá trị riêng.</summary>
     public async Task InvokeAsync(HttpContext context)
     {
-        // Ghi cả request lẫn response header để typed HTTP client và người gọi đều tiếp tục được cùng trace.
-        var traceId = context.Request.Headers[ApiHeaderNames.CorrelationId].FirstOrDefault();
-        if (string.IsNullOrWhiteSpace(traceId))
+        var correlationId =
+            context.Request.Headers[ApiHeaderNames.CorrelationId]
+                .FirstOrDefault();
+
+        if (string.IsNullOrWhiteSpace(correlationId))
         {
-            traceId = Guid.NewGuid().ToString("N");
+            correlationId = Guid.NewGuid().ToString("N");
         }
 
-        context.TraceIdentifier = traceId;
-        context.Request.Headers[ApiHeaderNames.CorrelationId] = traceId;
-        context.Response.Headers[ApiHeaderNames.CorrelationId] = traceId;
+        context.TraceIdentifier = correlationId;
+
+        context.Request.Headers[
+            ApiHeaderNames.CorrelationId] = correlationId;
+
+        context.Response.Headers[
+            ApiHeaderNames.CorrelationId] = correlationId;
 
         await next(context);
     }
