@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace StudentService.Infrastructure.Persistence.Scaffolded;

@@ -2,19 +2,19 @@
 // Mục đích: Đăng ký dependency injection cho layer hoặc service tương ứng.
 
 using MediaService.Application.Services.Actors;
+using MediaService.Application.UseCases.Media.DirectUpload.Complete;
+using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
+using MediaService.Application.UseCases.Media.GetContent;
+using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;
 using MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
 using MediaService.Application.UseCases.MediaDerivations.RetryThumbnail;
-using MediaService.Application.UseCases.Media.GetContent;
-using MediaService.Application.UseCases.Media.Upload;
-using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
-using MediaService.Application.UseCases.Media.DirectUpload.Complete;
+using MediaService.Application.UseCases.MediaUsageJobs.GetStatus;
+using MediaService.Application.UseCases.MediaUsageJobs.Process;
 using MediaService.Application.UseCases.MediaUsages.Create;
 using MediaService.Application.UseCases.MediaUsages.GetUrl;
 using MediaService.Application.UseCases.MediaUsages.GetUrls;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;
-using MediaService.Application.UseCases.MediaUsageJobs.GetStatus;
-using MediaService.Application.UseCases.MediaUsageJobs.Process;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

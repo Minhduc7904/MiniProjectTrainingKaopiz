@@ -3,10 +3,9 @@
 
 using System.Text.RegularExpressions;
 using MediaService.Application;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.DirectUpload;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.Infrastructure.Storage.Minio;
 

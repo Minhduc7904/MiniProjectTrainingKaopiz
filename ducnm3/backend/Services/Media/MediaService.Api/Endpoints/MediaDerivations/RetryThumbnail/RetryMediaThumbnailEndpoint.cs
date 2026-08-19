@@ -7,9 +7,8 @@ using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
 using MediaService.Application.UseCases.MediaDerivations.RetryThumbnail;
-using MediaService.Domain.ValueObjects;
-
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Api.Endpoints.Media;
 

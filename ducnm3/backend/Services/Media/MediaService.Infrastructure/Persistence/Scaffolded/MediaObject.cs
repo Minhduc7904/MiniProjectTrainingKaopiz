@@ -1,7 +1,7 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Persistence/Scaffolded/MediaObject.cs
 // Mục đích: Entity EF scaffolded MediaObject ánh xạ bảng database hiện có; phục vụ persistence và không chứa nghiệp vụ use case.
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace MediaService.Infrastructure.Persistence.Scaffolded;

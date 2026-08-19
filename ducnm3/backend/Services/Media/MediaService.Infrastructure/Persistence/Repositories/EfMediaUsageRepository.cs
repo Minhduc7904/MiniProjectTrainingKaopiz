@@ -3,18 +3,17 @@
 
 using System.Data;
 using MediaService.Application;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Storage;
 using MediaService.Domain.Constants;
-using MediaService.Infrastructure.Persistence.Mappers;
 using MediaService.Infrastructure.Persistence.Context;
+using MediaService.Infrastructure.Persistence.Mappers;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using DatabaseMediaObject = MediaService.Infrastructure.Persistence.Scaffolded.MediaObject;
 using DatabaseMediaUsage = MediaService.Infrastructure.Persistence.Scaffolded.MediaUsage;
 using DomainMediaUsage = MediaService.Domain.Entities.MediaUsage;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.Infrastructure.Persistence.Repositories;
 

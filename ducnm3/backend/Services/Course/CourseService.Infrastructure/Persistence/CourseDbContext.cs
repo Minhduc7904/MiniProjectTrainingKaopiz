@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CourseService.Infrastructure.Persistence.Scaffolded;
 using Microsoft.EntityFrameworkCore;

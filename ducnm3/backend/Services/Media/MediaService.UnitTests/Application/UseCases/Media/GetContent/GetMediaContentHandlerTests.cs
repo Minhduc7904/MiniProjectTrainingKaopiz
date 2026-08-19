@@ -3,13 +3,12 @@
 
 using BuildingBlocks.Contracts.Api;
 using MediaService.Application;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.GetContent;
 using MediaService.Domain.Constants;
 using MediaService.UnitTests.TestDoubles;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.UnitTests.Application.UseCases.Media.GetContent;
 

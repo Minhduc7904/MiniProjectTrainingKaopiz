@@ -9,17 +9,16 @@ using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
-using MediaService.Application.Services.Storage;
 using MediaService.Application.Services.Actors;
+using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.Upload;
-using MediaService.Domain.ValueObjects;
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.ComponentTests.Endpoints;
 

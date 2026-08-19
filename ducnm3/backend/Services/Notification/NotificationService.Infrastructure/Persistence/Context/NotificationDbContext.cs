@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Persistence/Context/NotificationDbContext.cs
 // Mục đích: Quản lý EF DbSet và mapping scaffolded cho notifications, batches và batch items trong MySQL.
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Infrastructure.Persistence.Scaffolded;

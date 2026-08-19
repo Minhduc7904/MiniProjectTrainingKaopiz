@@ -339,8 +339,14 @@ Các endpoint cần benchmark tối thiểu:
 GET /courses
 GET /courses/details
 GET /courses/export
+GET /courses/{courseId}/details
 POST /notification-batches
 ```
+
+Với `GET /courses/{courseId}/details`, đo riêng hai repository path bằng cùng
+`courseId`: path production thực hiện tối đa ba query (Course, Lessons,
+Progresses theo `IN`); path benchmark thực hiện thêm một query Progress cho mỗi
+Lesson. Không dùng Lazy Loading và không dùng path N+1 trong HTTP endpoint.
 
 Công cụ có thể sử dụng:
 

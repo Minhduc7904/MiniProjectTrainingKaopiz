@@ -1,5 +1,5 @@
-using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.Contracts.Api;
+using BuildingBlocks.Contracts.Students;
 
 namespace StudentService.Application.Features.Students.GetById;
 

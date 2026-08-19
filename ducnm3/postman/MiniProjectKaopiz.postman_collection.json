@@ -27,6 +27,11 @@
       "type": "string"
     },
     {
+      "key": "courseId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
       "key": "studentStatus",
       "value": "ACTIVE",
       "type": "string"
@@ -71,6 +76,12 @@
     {
       "name": "CourseService",
       "item": [
+        {
+          "name": "GET Course details",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Course details OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data.lessons).to.be.an(\"array\"); pm.expect(body.meta.traceId).to.be.a(\"string\"); });"] } }],
+          "request": { "method": "GET", "header": [{ "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/courses/{{courseId}}/details", "host": ["{{baseUrl}}"], "path": ["course","api","courses","{{courseId}}","details"] }, "description": "Business flow: docs/business-flows/courses/get-course-details.md" },
+          "response": []
+        },
         {
           "name": "GET Export courses CSV",
           "event": [

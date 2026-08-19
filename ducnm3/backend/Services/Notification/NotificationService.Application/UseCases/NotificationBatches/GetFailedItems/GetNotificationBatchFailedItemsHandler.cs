@@ -1,9 +1,9 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/GetFailedItems/GetNotificationBatchFailedItemsHandler.cs
 // Mục đích: Kiểm tra batch tồn tại rồi đọc trang recipient FAILED theo cursor và page limit đã chuẩn hóa.
 
+using NotificationService.Application.Common.Errors;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
-using NotificationService.Application.Common.Errors;
 
 namespace NotificationService.Application.UseCases.NotificationBatches.GetFailedItems;
 

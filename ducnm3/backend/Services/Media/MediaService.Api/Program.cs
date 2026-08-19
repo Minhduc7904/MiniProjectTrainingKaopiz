@@ -1,10 +1,11 @@
 // File: backend/Services/Media/MediaService.Api/Program.cs
 // Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
 
-using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
+using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
+using MassTransit;
 using MediaService.Api.Endpoints;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Api.Endpoints.MediaUsageJobs.GetStatus;
@@ -12,7 +13,6 @@ using MediaService.Application;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Infrastructure;
 using MediaService.Infrastructure.Persistence.Context;
-using MassTransit;
 using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);

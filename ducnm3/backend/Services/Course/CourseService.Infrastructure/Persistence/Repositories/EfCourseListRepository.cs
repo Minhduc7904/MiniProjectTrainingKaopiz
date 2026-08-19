@@ -2,8 +2,8 @@
 // Mục đích: Đọc Course qua EF Core theo đường toàn bộ hoặc offset pagination tách biệt.
 
 using CourseService.Application.Repositories;
-using CourseService.Application.UseCases.Courses.GetList;
 using CourseService.Application.UseCases.Courses.Export;
+using CourseService.Application.UseCases.Courses.GetList;
 using CourseService.Infrastructure.Persistence.Scaffolded;
 using Microsoft.EntityFrameworkCore;
 

@@ -6,9 +6,8 @@ using BuildingBlocks.Presentation.Api;
 using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
-using MediaService.Domain.ValueObjects;
-
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Api.Endpoints.Media;
 

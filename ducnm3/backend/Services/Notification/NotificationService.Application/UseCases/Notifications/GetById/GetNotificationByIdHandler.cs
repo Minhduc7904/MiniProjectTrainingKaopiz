@@ -1,9 +1,9 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/Notifications/GetById/GetNotificationByIdHandler.cs
 // Mục đích: Đọc Notification theo ID và trả lỗi not-found chuẩn khi bản ghi không tồn tại.
 
+using NotificationService.Application.Common.Errors;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
-using NotificationService.Application.Common.Errors;
 
 namespace NotificationService.Application.UseCases.Notifications.GetById;
 

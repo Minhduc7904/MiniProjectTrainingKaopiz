@@ -8,18 +8,17 @@ using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
-using MediaService.Application.Services.Students;
-using MediaService.Application.Services.Derivation;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
+using MediaService.Application.Services.Derivation;
 using MediaService.Application.Services.Storage;
-using MediaService.Domain.ValueObjects;
+using MediaService.Application.Services.Students;
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 using MediaService.UnitTests.TestDoubles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.UnitTests.Endpoints;
 

@@ -3,12 +3,12 @@
 
 #pragma warning disable CA1707
 
+using MediaService.Contracts.Messaging;
 using NotificationService.Application.Common.Errors;
 using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Services.Content;
 using NotificationService.Application.UseCases.NotificationBatches.Create;
 using NotificationService.UnitTests.Application.UseCases.NotificationBatches.TestDoubles;
-using MediaService.Contracts.Messaging;
 
 namespace NotificationService.UnitTests.Application.UseCases.NotificationBatches.Create;
 

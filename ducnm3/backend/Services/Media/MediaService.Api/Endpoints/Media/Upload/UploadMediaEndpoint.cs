@@ -7,12 +7,10 @@ using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
 using MediaService.Application;
-using MediaService.Application.UseCases.Media.Upload;
-using MediaService.Domain.ValueObjects;
-
-using MediaService.Domain.Constants;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Application.UseCases.Media.Upload;
+using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Api.Endpoints.Media;
 

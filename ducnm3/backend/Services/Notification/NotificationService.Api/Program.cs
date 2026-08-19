@@ -1,25 +1,25 @@
 // File: backend/Services/Notification/NotificationService.Api/Program.cs
 // Mục đích: Khởi động Notification API, đăng ký Application/Infrastructure và map từng endpoint HTTP cùng health check.
 
-using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
+using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
-using NotificationService.Application;
-using NotificationService.Infrastructure;
-using NotificationService.Api.Endpoints.NotificationBatches.Create;
-using NotificationService.Api.Endpoints.NotificationBatches.GetById;
-using NotificationService.Api.Endpoints.NotificationBatches.GetFailedItems;
-using NotificationService.Api.Endpoints.NotificationBatches.GetList;
-using NotificationService.Api.Endpoints.NotificationBatches.RetryFailed;
-using NotificationService.Api.Endpoints.NotificationBatches.GetSnapshotStatus;
-using NotificationService.Api.Endpoints.NotificationBatches.GetDeliveryStatus;
-using NotificationService.Api.Endpoints.Notifications.Create;
-using NotificationService.Api.Endpoints.Notifications.GetById;
-using NotificationService.Infrastructure.Persistence.Context;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using NotificationService.Api.Endpoints.NotificationBatches.Create;
+using NotificationService.Api.Endpoints.NotificationBatches.GetById;
+using NotificationService.Api.Endpoints.NotificationBatches.GetDeliveryStatus;
+using NotificationService.Api.Endpoints.NotificationBatches.GetFailedItems;
+using NotificationService.Api.Endpoints.NotificationBatches.GetList;
+using NotificationService.Api.Endpoints.NotificationBatches.GetSnapshotStatus;
+using NotificationService.Api.Endpoints.NotificationBatches.RetryFailed;
+using NotificationService.Api.Endpoints.Notifications.Create;
+using NotificationService.Api.Endpoints.Notifications.GetById;
+using NotificationService.Application;
+using NotificationService.Infrastructure;
+using NotificationService.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();

@@ -1,11 +1,9 @@
 // File: backend/Services/Media/MediaService.Application/Services/Actors/ActorValidationService.cs
 // Mục đích: Triển khai kiểm tra actor và quyền sở hữu trước khi Application xử lý thao tác media.
 
-using MediaService.Domain.ValueObjects;
-
-using MediaService.Domain.Constants;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Application.Services.Actors;
 

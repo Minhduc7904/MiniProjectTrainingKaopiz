@@ -2,9 +2,8 @@
 // Mục đích: Định nghĩa port hoàn tất upload trực tiếp một cách nguyên tử, gồm chuyển draft sang ready và tạo các tác vụ liên quan.
 
 using MediaService.Application.Services.Storage;
-using MediaService.Domain.ValueObjects;
-
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Application.Repositories;
 

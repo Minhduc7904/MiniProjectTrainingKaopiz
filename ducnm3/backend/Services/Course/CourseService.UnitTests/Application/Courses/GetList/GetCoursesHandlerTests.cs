@@ -1,7 +1,7 @@
 using CourseService.Application.Repositories;
+using CourseService.Application.UseCases.Courses.Export;
 using CourseService.Application.UseCases.Courses.GetList;
 using CourseService.Domain.Constants;
-using CourseService.Application.UseCases.Courses.Export;
 
 #pragma warning disable CA1707
 

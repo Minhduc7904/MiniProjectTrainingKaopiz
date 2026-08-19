@@ -2,10 +2,10 @@
 // Mục đích: Tiêu thụ message nền và kích hoạt nghiệp vụ RegisterNotificationMediaUsageConsumer.
 
 using MassTransit;
+using MediaService.Application.UseCases.MediaUsageJobs.Process;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;
 using MediaService.Contracts.Messaging;
 using MediaService.Infrastructure.Persistence.Context;
-using MediaService.Application.UseCases.MediaUsageJobs.Process;
 
 namespace MediaService.Worker;
 

@@ -1,5 +1,5 @@
-using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Contracts.Health;
+using BuildingBlocks.Messaging.Abstractions;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

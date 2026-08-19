@@ -3,8 +3,8 @@
 
 using MediaService.Contracts.Messaging;
 using NotificationService.Application;
-using NotificationService.Application.Services.Content;
 using NotificationService.Application.Common.Errors;
+using NotificationService.Application.Services.Content;
 
 namespace NotificationService.UnitTests.Application.Services.Content;
 

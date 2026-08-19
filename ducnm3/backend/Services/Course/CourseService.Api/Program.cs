@@ -1,12 +1,13 @@
 // File: backend/Services/Course/CourseService.Api/Program.cs
 // Mục đích: Composition root khởi tạo host, đăng ký dependency và map transport của service.
 
-using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
+using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using CourseService.Api.Endpoints.Courses.Export;
+using CourseService.Api.Endpoints.Courses.GetDetails;
 using CourseService.Api.Endpoints.Courses.GetList;
 using CourseService.Application;
 using CourseService.Infrastructure;
@@ -67,6 +68,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 app.MapServiceInfoEndpoint(ServiceNames.Course);
 app.MapDatabaseHealthEndpoint(ServiceNames.Course);
 app.MapGetCourses();
+app.MapGetCourseDetails();
 app.MapExportCourses();
 
 app.Run();

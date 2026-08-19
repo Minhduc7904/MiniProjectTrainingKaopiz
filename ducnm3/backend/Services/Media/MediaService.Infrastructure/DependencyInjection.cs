@@ -4,11 +4,11 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Http;
+using MediaService.Application.Repositories;
 using MediaService.Application.Services.Derivation;
+using MediaService.Application.Services.Storage;
 using MediaService.Application.Services.Students;
 using MediaService.Application.Services.Urls;
-using MediaService.Application.Repositories;
-using MediaService.Application.Services.Storage;
 using MediaService.Infrastructure.Clients.Student;
 using MediaService.Infrastructure.Health;
 using MediaService.Infrastructure.Persistence;

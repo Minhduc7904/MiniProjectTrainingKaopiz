@@ -4,14 +4,13 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Application;
-using MediaService.Application.Repositories;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Contracts.Messaging;
+using MediaService.Application.Repositories;
 using MediaService.Domain.Constants;
 using MediaService.Infrastructure.Persistence.Context;
 using MediaService.Infrastructure.Persistence.Scaffolded;
 using Microsoft.EntityFrameworkCore;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.Infrastructure.Persistence.Transactions;
 

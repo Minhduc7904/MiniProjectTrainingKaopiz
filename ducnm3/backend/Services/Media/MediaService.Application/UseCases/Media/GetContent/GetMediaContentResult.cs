@@ -1,9 +1,8 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/Media/GetContent/GetMediaContentResult.cs
 // Mục đích: Định nghĩa dữ liệu đầu ra của use case GetMediaContentResult.
 
-using MediaService.Application.Services.Storage;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Application.Services.Storage;
 
 namespace MediaService.Application.UseCases.Media.GetContent;
 

@@ -20,6 +20,7 @@ public static class DependencyInjection
             options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 4, 0))));
         services.AddScoped<EfCourseListRepository>();
         services.AddScoped<ICourseListRepository>(provider => provider.GetRequiredService<EfCourseListRepository>());
+        services.AddScoped<ICourseDetailsRepository, EfCourseDetailsRepository>();
         services.AddSingleton<IDatabaseHealthProbe>(provider => new CourseDatabaseHealthProbe(connectionString, provider.GetRequiredService<ILogger<CourseDatabaseHealthProbe>>()));
         return services;
     }

@@ -2,13 +2,12 @@
 // Mục đích: Kiểm thử handler RegisterNotificationMediaUsagesHandlerTests và các nhánh nghiệp vụ liên quan.
 
 using MediaService.Application;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;
 using MediaService.Contracts.Messaging;
-using MediaService.Domain.ValueObjects;
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 using MediaService.UnitTests.TestDoubles;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.UnitTests.Application.UseCases.MediaUsages.RegisterNotification;
 

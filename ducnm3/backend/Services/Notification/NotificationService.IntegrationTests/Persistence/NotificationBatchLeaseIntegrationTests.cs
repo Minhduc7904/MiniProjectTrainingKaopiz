@@ -158,13 +158,19 @@ public sealed class NotificationBatchLeaseIntegrationTests
             seedContext.NotificationBatchItems.AddRange(
                 new NotificationBatchItem
                 {
-                    Id = Guid.NewGuid(), BatchId = sourceId, StudentId = failedStudentId,
-                    Status = NotificationBatchItemStatuses.Failed, RetryCount = 3,
+                    Id = Guid.NewGuid(),
+                    BatchId = sourceId,
+                    StudentId = failedStudentId,
+                    Status = NotificationBatchItemStatuses.Failed,
+                    RetryCount = 3,
                 },
                 new NotificationBatchItem
                 {
-                    Id = Guid.NewGuid(), BatchId = sourceId, StudentId = successfulStudentId,
-                    Status = NotificationBatchItemStatuses.Success, RetryCount = 0,
+                    Id = Guid.NewGuid(),
+                    BatchId = sourceId,
+                    StudentId = successfulStudentId,
+                    Status = NotificationBatchItemStatuses.Success,
+                    RetryCount = 0,
                 });
             await seedContext.SaveChangesAsync();
         }

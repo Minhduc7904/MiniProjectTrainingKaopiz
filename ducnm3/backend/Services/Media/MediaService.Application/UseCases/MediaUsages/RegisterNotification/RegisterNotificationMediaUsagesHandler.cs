@@ -1,12 +1,11 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/MediaUsages/RegisterNotification/RegisterNotificationMediaUsagesHandler.cs
 // Mục đích: Điều phối use case RegisterNotificationMediaUsagesHandler: validate input, gọi port và trả kết quả nghiệp vụ.
 
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Contracts.Messaging;
-using MediaService.Domain.ValueObjects;
 using MediaService.Domain.Constants;
-
-using MediaService.Application.Common.Errors;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Application.UseCases.MediaUsages.RegisterNotification;
 

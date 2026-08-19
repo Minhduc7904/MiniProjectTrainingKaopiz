@@ -1,12 +1,10 @@
 // File: backend/Services/Media/MediaService.Application/Services/Actors/StudentActorValidator.cs
 // Mục đích: Kiểm tra tính hợp lệ của dữ liệu đầu vào cho StudentActorValidator.
 
-using MediaService.Application.Services.Students;
-using MediaService.Domain.ValueObjects;
-
-using MediaService.Domain.Constants;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Application.Services.Students;
+using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Application.Services.Actors;
 

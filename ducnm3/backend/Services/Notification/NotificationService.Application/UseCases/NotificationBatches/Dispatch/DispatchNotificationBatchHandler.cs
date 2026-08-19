@@ -1,16 +1,16 @@
 // File: backend/Services/Notification/NotificationService.Application/UseCases/NotificationBatches/Dispatch/DispatchNotificationBatchHandler.cs
 // Mục đích: Claim một chunk có lease, gọi sender từng recipient, hoàn tất kết quả và phát command cho phần việc còn lại.
 
+using System.Collections.Concurrent;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Contracts.Messaging;
+using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
+using NotificationService.Application.Services.Content;
 using NotificationService.Application.Services.Sending;
 using NotificationService.Application.UseCases.NotificationBatches;
-using NotificationService.Application.Services.Content;
-using NotificationService.Application.Contracts.Messaging;
-using System.Collections.Concurrent;
 
 namespace NotificationService.Application.UseCases.NotificationBatches.Dispatch;
 

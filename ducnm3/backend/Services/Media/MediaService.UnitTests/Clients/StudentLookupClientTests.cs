@@ -7,9 +7,8 @@ using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.Presentation.Api;
 using MediaService.Application;
-using MediaService.Infrastructure.Clients.Student;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Infrastructure.Clients.Student;
 
 namespace MediaService.UnitTests.Clients;
 

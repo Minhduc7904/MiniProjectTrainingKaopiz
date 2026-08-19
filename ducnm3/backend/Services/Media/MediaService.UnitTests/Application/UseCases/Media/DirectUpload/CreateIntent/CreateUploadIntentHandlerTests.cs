@@ -1,17 +1,15 @@
 // File: backend/Services/Media/MediaService.UnitTests/Application/UseCases/Media/DirectUpload/CreateIntent/CreateUploadIntentHandlerTests.cs
 // Mục đích: Kiểm thử handler CreateUploadIntentHandlerTests và các nhánh nghiệp vụ liên quan.
 
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
+using MediaService.Application.Services.Actors;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 using MediaService.Application.UseCases.Media.Upload;
-using MediaService.Application.Services.Actors;
+using MediaService.Domain.Constants;
 using MediaService.Domain.ValueObjects;
 using MediaService.UnitTests.TestDoubles;
-
-using MediaService.Domain.Constants;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.UnitTests.Application.UseCases.Media.DirectUpload.CreateIntent;
 

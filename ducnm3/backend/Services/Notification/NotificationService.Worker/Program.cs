@@ -3,14 +3,14 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
+using MassTransit;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using NotificationService.Application;
 using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.Persistence.Context;
 using NotificationService.Worker.Consumers.NotificationBatches;
-using MassTransit;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Database") ?? throw new InvalidOperationException("ConnectionStrings__Database is required for Notification Service Worker.");

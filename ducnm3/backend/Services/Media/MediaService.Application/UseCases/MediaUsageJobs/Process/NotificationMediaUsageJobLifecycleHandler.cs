@@ -1,9 +1,9 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/MediaUsageJobs/Process/NotificationMediaUsageJobLifecycleHandler.cs
 // Mục đích: Xử lý các command mở, đóng và ghi lỗi job Media Usage mà Worker nhận từ RabbitMQ.
 
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Contracts.Messaging;
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.Application.UseCases.MediaUsageJobs.Process;
 

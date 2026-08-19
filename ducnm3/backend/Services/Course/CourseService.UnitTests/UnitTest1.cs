@@ -1,4 +1,4 @@
-﻿using CourseService.Infrastructure.Health;
+using CourseService.Infrastructure.Health;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CourseService.UnitTests;

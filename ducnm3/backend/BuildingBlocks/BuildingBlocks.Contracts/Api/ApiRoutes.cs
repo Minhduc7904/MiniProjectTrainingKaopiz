@@ -13,6 +13,7 @@ public static class ApiRoutes
     {
         public const string List = "/api/courses";
         public const string Export = "/api/courses/export";
+        public const string DetailsTemplate = "/api/courses/{courseId}/details";
 
         public static string ListServicePath() =>
             BuildServicePath(List);

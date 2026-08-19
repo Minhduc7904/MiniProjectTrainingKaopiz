@@ -1,5 +1,5 @@
-using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Contracts.Api;
+using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using Microsoft.Extensions.Logging;

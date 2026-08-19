@@ -1,6 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Persistence/Repositories/EfNotificationBatchRepository.cs
 // Mục đích: Lưu/đọc batch, snapshot recipient, claim chunk bằng lease và áp dụng Domain transition trong transaction EF Core.
 
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using NotificationService.Application.Repositories;
@@ -11,7 +12,6 @@ using NotificationService.Domain.Entities;
 using NotificationService.Infrastructure.Persistence.Context;
 using NotificationService.Infrastructure.Persistence.Mappers;
 using NotificationService.Infrastructure.Persistence.Scaffolded;
-using System.Data;
 
 namespace NotificationService.Infrastructure.Persistence.Repositories;
 

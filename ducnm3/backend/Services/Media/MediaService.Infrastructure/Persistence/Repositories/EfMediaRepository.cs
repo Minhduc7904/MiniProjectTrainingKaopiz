@@ -3,10 +3,10 @@
 
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Storage;
-using MediaService.Domain.ValueObjects;
 using MediaService.Domain.Constants;
-using MediaService.Infrastructure.Persistence.Scaffolded;
+using MediaService.Domain.ValueObjects;
 using MediaService.Infrastructure.Persistence.Context;
+using MediaService.Infrastructure.Persistence.Scaffolded;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaService.Infrastructure.Persistence.Repositories;

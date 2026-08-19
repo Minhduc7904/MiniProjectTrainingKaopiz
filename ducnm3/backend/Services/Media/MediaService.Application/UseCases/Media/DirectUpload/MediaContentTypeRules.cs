@@ -2,9 +2,8 @@
 // Mục đích: Khai báo quy tắc content type được hỗ trợ cho upload trực tiếp theo từng nhóm media.
 
 using System.Text.RegularExpressions;
-using MediaService.Application.Services.Storage;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Application.Services.Storage;
 
 namespace MediaService.Application.UseCases.Media.DirectUpload;
 

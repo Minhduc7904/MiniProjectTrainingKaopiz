@@ -4,9 +4,9 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Contracts.Messaging;
+using NotificationService.Application.Common.Errors;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
-using NotificationService.Application.Common.Errors;
 using NotificationService.Application.Services.Content;
 
 namespace NotificationService.Application.UseCases.Notifications.Create;

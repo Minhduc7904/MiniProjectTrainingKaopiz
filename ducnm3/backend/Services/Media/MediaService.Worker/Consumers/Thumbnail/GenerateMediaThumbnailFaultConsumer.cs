@@ -2,8 +2,8 @@
 // Mục đích: Tiêu thụ message nền và kích hoạt nghiệp vụ GenerateMediaThumbnailFaultConsumer.
 
 using MassTransit;
-using MediaService.Application.Repositories;
 using MediaService.Application.Contracts.Messaging;
+using MediaService.Application.Repositories;
 using MediaService.Infrastructure.Persistence.Context;
 
 namespace MediaService.Worker;

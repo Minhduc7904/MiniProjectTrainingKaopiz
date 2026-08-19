@@ -1,9 +1,8 @@
 // File: backend/Services/Media/MediaService.Domain/Entities/Media.cs
 // Mục đích: Biểu diễn aggregate Media: metadata file, vị trí storage, trạng thái draft/ready và lifecycle upload.
 
-using MediaService.Domain.ValueObjects;
-
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Domain.Entities;
 

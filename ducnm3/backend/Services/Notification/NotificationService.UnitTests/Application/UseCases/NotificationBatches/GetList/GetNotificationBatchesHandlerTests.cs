@@ -3,8 +3,8 @@
 
 #pragma warning disable CA1707
 
-using NotificationService.Application.Repositories.Models;
 using NotificationService.Application.Common.Errors;
+using NotificationService.Application.Repositories.Models;
 using NotificationService.Application.UseCases.NotificationBatches.GetList;
 using NotificationService.UnitTests.Application.UseCases.NotificationBatches.TestDoubles;
 

@@ -3,12 +3,12 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
+using NotificationService.Application.Common.Errors;
+using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
 using NotificationService.Application.Services.Students;
-using NotificationService.Application.Common.Errors;
 using NotificationService.Application.UseCases.NotificationBatches;
-using NotificationService.Application.Contracts.Messaging;
 
 namespace NotificationService.Application.UseCases.NotificationBatches.Snapshot;
 

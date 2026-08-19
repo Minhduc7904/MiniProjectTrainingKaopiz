@@ -6,9 +6,8 @@ using System.Net.Http.Json;
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Contracts.Students;
 using MediaService.Application;
-using MediaService.Application.Services.Students;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Application.Services.Students;
 
 namespace MediaService.Infrastructure.Clients.Student;
 

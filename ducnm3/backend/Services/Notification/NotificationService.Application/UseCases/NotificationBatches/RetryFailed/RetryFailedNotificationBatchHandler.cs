@@ -3,12 +3,12 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging.Abstractions;
+using MediaService.Contracts.Messaging;
 using NotificationService.Application.Common.Errors;
 using NotificationService.Application.Contracts.Messaging;
 using NotificationService.Application.Repositories;
 using NotificationService.Application.Repositories.Models;
 using NotificationService.Domain.Constants;
-using MediaService.Contracts.Messaging;
 
 namespace NotificationService.Application.UseCases.NotificationBatches.RetryFailed;
 

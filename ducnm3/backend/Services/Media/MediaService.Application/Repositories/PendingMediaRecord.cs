@@ -2,9 +2,8 @@
 // Mục đích: Mô tả dữ liệu PendingMediaRecord được repository đọc hoặc ghi giữa Application và Persistence.
 
 using MediaService.Application.Services.Storage;
-using MediaService.Domain.ValueObjects;
-
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Application.Repositories;
 

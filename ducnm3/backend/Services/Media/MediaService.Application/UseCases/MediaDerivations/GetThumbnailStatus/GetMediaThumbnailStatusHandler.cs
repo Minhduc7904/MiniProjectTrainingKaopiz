@@ -1,9 +1,8 @@
 // File: backend/Services/Media/MediaService.Application/UseCases/MediaDerivations/GetThumbnailStatus/GetMediaThumbnailStatusHandler.cs
 // Mục đích: Điều phối use case GetMediaThumbnailStatusHandler: validate input, gọi port và trả kết quả nghiệp vụ.
 
-using MediaService.Application.Repositories;
-
 using MediaService.Application.Common.Errors;
+using MediaService.Application.Repositories;
 
 namespace MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
 

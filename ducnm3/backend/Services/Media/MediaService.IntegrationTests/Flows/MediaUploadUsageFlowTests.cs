@@ -3,17 +3,18 @@
 
 using System.Globalization;
 using System.Security.Cryptography;
-using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.DatabaseMigration;
+using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Application;
-using MediaService.Application.Services.Students;
-using MediaService.Application.Services.Storage;
+using MediaService.Application.Common.Errors;
 using MediaService.Application.Services.Actors;
+using MediaService.Application.Services.Storage;
+using MediaService.Application.Services.Students;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Application.UseCases.MediaUsages.Create;
-using MediaService.Domain.ValueObjects;
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 using MediaService.Infrastructure.Persistence;
 using MediaService.Infrastructure.Persistence.Context;
 using MediaService.Infrastructure.Persistence.Repositories;
@@ -27,8 +28,6 @@ using Minio.DataModel.Args;
 using MySqlConnector;
 using Testcontainers.Minio;
 using Testcontainers.MySql;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.IntegrationTests.Flows;
 

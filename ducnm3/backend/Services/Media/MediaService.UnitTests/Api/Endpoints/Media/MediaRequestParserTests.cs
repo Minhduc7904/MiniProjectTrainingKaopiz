@@ -5,10 +5,9 @@ using System.Text;
 using BuildingBlocks.Contracts.Api;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application;
+using MediaService.Application.Common.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-
-using MediaService.Application.Common.Errors;
 
 namespace MediaService.UnitTests.Endpoints;
 

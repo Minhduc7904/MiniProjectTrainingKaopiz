@@ -1,7 +1,7 @@
 // File: backend/Services/Notification/NotificationService.Infrastructure/Persistence/Scaffolded/NotificationBatchItem.cs
 // Mục đích: Entity EF scaffolded NotificationBatchItem ánh xạ bảng database hiện có; phục vụ persistence và không chứa nghiệp vụ use case.
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace NotificationService.Infrastructure.Persistence.Scaffolded;
