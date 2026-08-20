@@ -44,6 +44,10 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
         return Task.CompletedTask;
     }
 
+    public Task EnsureCourseLessonMediaAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
+        CancellationToken cancellationToken) => EnsureMediaUsagesAsync(usages, cancellationToken);
+
     public Task RemoveCourseContentMediaAsync(
         IReadOnlyList<CourseContentMediaUsageRemoval> removals,
         CancellationToken cancellationToken)

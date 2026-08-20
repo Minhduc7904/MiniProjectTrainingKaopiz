@@ -5,4 +5,6 @@ namespace MediaService.Application.Services.Storage;
 
 public sealed record StorageDownloadRequest(
     StorageObjectLocation Location,
-    Stream Destination);
+    Stream Destination,
+    long Offset = 0,
+    long? Length = null);

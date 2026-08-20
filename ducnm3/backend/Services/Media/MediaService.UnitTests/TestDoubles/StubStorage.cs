@@ -68,7 +68,13 @@ public sealed class StubStorage(List<string>? sharedEvents = null) : IStorage
                 new InvalidOperationException());
         }
 
-        await request.Destination.WriteAsync(Content, cancellationToken);
+        var offset = checked((int)request.Offset);
+        var length = request.Length is null
+            ? Content.Length - offset
+            : checked((int)request.Length.Value);
+        await request.Destination.WriteAsync(
+            Content.AsMemory(offset, length),
+            cancellationToken);
         return new StorageObjectInfo(
             request.Location.Bucket,
             request.Location.ObjectKey,

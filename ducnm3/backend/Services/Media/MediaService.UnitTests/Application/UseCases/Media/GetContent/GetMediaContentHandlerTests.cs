@@ -40,6 +40,24 @@ public class GetMediaContentHandlerTests
     }
 
     [Test]
+    public async Task ReadyMediaStreamsRequestedByteRange()
+    {
+        var media = CreateMedia(MediaObjectStatuses.Ready) with { SizeBytes = 5 };
+        var storage = new StubStorage { Content = [10, 20, 30, 40, 50] };
+        var handler = new GetMediaContentHandler(
+            new StubMediaRepository { ExistingMedia = media },
+            storage);
+        var result = await handler.HandleAsync(
+            new GetMediaContentQuery(media.Id),
+            CancellationToken.None);
+        await using var destination = new MemoryStream();
+
+        await result.CopyToAsync(destination, 1, 3, CancellationToken.None);
+
+        Assert.That(destination.ToArray(), Is.EqualTo(new byte[] { 20, 30, 40 }));
+    }
+
+    [Test]
     public void MissingMediaReturnsNotFound()
     {
         var handler = new GetMediaContentHandler(

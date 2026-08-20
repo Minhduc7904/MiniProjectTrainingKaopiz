@@ -36,6 +36,9 @@ GET /media/api/media/7e673b57-e0af-40ee-a141-91421c3a0101/content
 
 `200 OK` trả binary stream, không bọc trong JSON envelope.
 
+Không gửi `Range` trả `200 OK` và toàn bộ object. Gửi một HTTP byte range hợp lệ
+trả `206 Partial Content`; dùng cho video seek và PDF.js tải từng phần.
+
 Headers:
 
 ```text
@@ -43,6 +46,8 @@ Content-Type        // MIME đã validate khi upload
 Content-Length      // Kích thước object đã lưu
 Content-Disposition // inline; filename*=UTF-8''...
 Cache-Control       // no-store
+Accept-Ranges       // bytes
+Content-Range       // bytes <start>-<end>/<total>, chỉ có khi 206
 ```
 
 Response được stream trực tiếp, không buffer toàn bộ file trong memory.
@@ -61,6 +66,8 @@ Response được stream trực tiếp, không buffer toàn bộ file trong memo
 - `409 MEDIA_NOT_READY`: media chưa `READY`.
 - `503 STORAGE_UNAVAILABLE`: không thể đọc object từ MinIO trước khi response
   bắt đầu.
+- `416 Range Not Satisfiable`: header `Range` không hợp lệ, nhiều range, hoặc nằm
+  ngoài kích thước object. Response có `Content-Range: bytes */<total>`.
 
 Error response trước khi binary response bắt đầu sử dụng envelope tại
 [`../../shared/error-format.md`](../../shared/error-format.md).
@@ -68,7 +75,8 @@ Error response trước khi binary response bắt đầu sử dụng envelope t�
 ## Giới hạn hiện tại
 
 - Chưa có authentication/authorization.
-- Chưa hỗ trợ HTTP range request, resume download hoặc presigned URL.
+- Hỗ trợ một HTTP byte range theo RFC 7233 (`bytes=<start>-<end>`,
+  `bytes=<start>-`, `bytes=-<suffix>`). Multiple range không hỗ trợ và trả `416`.
 - `Cache-Control: no-store` được dùng cho tới khi có policy access/cache rõ ràng.
 - Nếu storage lỗi sau khi đã stream một phần response, kết nối bị ngắt; không thể
   đổi response đó thành JSON error envelope.

@@ -21,5 +21,10 @@ export default defineConfig(({ mode }) => {
     server: {
       port: Number(env.VITE_DEV_PORT || 5173),
     },
+    test: {
+      environmentMatchGlobs: [
+        ['src/components/media/MediaPreviewModal.test.jsx', 'jsdom'],
+      ],
+    },
   }
 })

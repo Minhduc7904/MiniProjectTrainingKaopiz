@@ -7,6 +7,7 @@ const variants = {
 
 const sizes = {
   default: 'h-9 px-3.5',
+  sm: 'h-8 px-3',
   icon: 'h-9 w-9 px-0',
 }
 

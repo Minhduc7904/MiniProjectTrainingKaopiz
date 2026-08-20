@@ -55,6 +55,8 @@ export const ui = {
   buttonGhost:
     'border border-line bg-surface text-fg hover:border-accent hover:text-accent-hover disabled:text-fg-subtle',
   modal: 'fixed inset-0 m-auto max-h-[calc(100svh-2rem)] w-[min(100%-2rem,32rem)] overflow-y-auto rounded-lg border border-line bg-surface p-0 text-fg shadow-[0_12px_32px_color-mix(in_oklab,var(--color-fg)_18%,transparent)] backdrop:bg-fg/20',
+  mediaStage: 'bg-fg',
+  mediaAction: 'bg-fg/65 text-on-accent',
   choiceIdle: 'border border-line bg-surface text-fg-muted hover:border-accent',
   choiceActive: 'border border-accent bg-accent-soft text-accent-hover',
   spinner: 'animate-spin text-accent',
@@ -63,6 +65,9 @@ export const ui = {
   badgeWarning: 'bg-warning-soft text-warning',
   badgeDanger: 'bg-danger-soft text-danger',
   badgeMuted: 'bg-surface-muted text-fg-muted',
+  statusDraft: 'border-warning bg-warning-soft text-warning',
+  statusPublished: 'border-accent bg-accent-soft text-accent-hover',
+  statusArchived: 'border-line bg-surface-muted text-fg-muted',
   toastFrame: 'border border-line bg-surface',
   toastPendingRail: 'shadow-[inset_3px_0_0_0_var(--color-accent)]',
   toastSuccessRail: 'shadow-[inset_3px_0_0_0_var(--color-success)]',

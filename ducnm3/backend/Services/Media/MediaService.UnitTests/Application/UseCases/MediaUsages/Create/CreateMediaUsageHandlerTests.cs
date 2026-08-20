@@ -13,6 +13,47 @@ namespace MediaService.UnitTests.Application.UseCases.MediaUsages.Create;
 
 public sealed class CreateMediaUsageHandlerTests
 {
+    [TestCase(MediaTypes.Image, "image.png", "image/png")]
+    [TestCase(MediaTypes.Video, "video.mp4", "video/mp4")]
+    [TestCase(MediaTypes.Document, "document.pdf", "application/pdf")]
+    [TestCase(MediaTypes.Audio, "audio.mp3", "audio/mpeg")]
+    [TestCase(MediaTypes.Other, "archive.bin", "application/octet-stream")]
+    public async Task CourseLessonAttachmentAcceptsEveryReadyOriginalMediaType(
+        string mediaType,
+        string fileName,
+        string contentType)
+    {
+        var repository = CreateRepository(new MediaRecord(
+            Guid.NewGuid(),
+            new StorageObjectLocation("attachments", fileName),
+            mediaType,
+            contentType,
+            fileName,
+            3,
+            MediaObjectStatuses.Ready,
+            DateTime.UtcNow,
+            null));
+        var handler = CreateHandler(repository);
+
+        var result = await handler.HandleAsync(
+            new CreateMediaUsageCommand(
+                repository.ExistingMedia!.Id,
+                MediaOwnerServices.Course,
+                MediaOwnerTypes.LessonAttachment,
+                Guid.NewGuid(),
+                MediaUsageTypes.Attachment,
+                0,
+                new ActorReference(ActorTypes.Admin, Guid.NewGuid())),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.OwnerType, Is.EqualTo(MediaOwnerTypes.LessonAttachment));
+            Assert.That(result.UsageType, Is.EqualTo(MediaUsageTypes.Attachment));
+            Assert.That(repository.EnsuredUsages.Single().MediaId, Is.EqualTo(repository.ExistingMedia.Id));
+        });
+    }
+
     [Test]
     public async Task CourseGalleryAcceptsReadyOriginalImage()
     {

@@ -210,12 +210,12 @@ public sealed class EfMediaUsageRepository(
         IReadOnlyList<CreateMediaUsageRecord> usages,
         CancellationToken cancellationToken)
     {
-        var mediaIds = usages.Select(item => item.MediaId).Distinct().ToArray();
+        var mediaIds = usages.Select(item => item.MediaId).Distinct().ToList();
         var readyCount = await dbContext.MediaObjects.CountAsync(
             item => mediaIds.Contains(item.Id) && item.Status == MediaObjectStatuses.Ready &&
                 item.DeletedAt == null && item.SourceMediaId == null,
             cancellationToken);
-        if (readyCount != mediaIds.Length)
+        if (readyCount != mediaIds.Count)
         {
             throw MediaErrors.MediaNotReady();
         }

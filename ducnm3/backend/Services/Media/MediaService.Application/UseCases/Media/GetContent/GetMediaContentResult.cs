@@ -46,6 +46,13 @@ public sealed class GetMediaContentResult
     public async Task CopyToAsync(
         Stream destination,
         CancellationToken cancellationToken)
+        => await CopyToAsync(destination, 0, null, cancellationToken);
+
+    public async Task CopyToAsync(
+        Stream destination,
+        long offset,
+        long? length,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(destination);
         if (!destination.CanWrite)
@@ -57,8 +64,15 @@ public sealed class GetMediaContentResult
 
         try
         {
+            if (offset < 0 || length is <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(offset),
+                    "The requested byte range is invalid.");
+            }
+
             await storage.DownloadAsync(
-                new StorageDownloadRequest(location, destination),
+                new StorageDownloadRequest(location, destination, offset, length),
                 cancellationToken);
         }
         catch (OperationCanceledException) when (

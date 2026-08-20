@@ -148,7 +148,51 @@ public sealed class MediaCommandEndpointTests
             Assert.That(contentResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(contentResponse.Content.Headers.ContentType?.MediaType, Is.EqualTo("image/png"));
             Assert.That(contentResponse.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(contentResponse.Headers.AcceptRanges, Does.Contain("bytes"));
             Assert.That(bytes, Is.EqualTo(ContentBytes));
+        });
+    }
+
+    [Test]
+    public async Task UploadedMediaContentSupportsSingleByteRanges()
+    {
+        using var multipart = CreateMultipart(Guid.NewGuid(), ActorTypes.Student);
+        using var uploadResponse = await client.PostAsync(ApiRoutes.Media.Upload, multipart);
+        Assert.That(uploadResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            ApiRoutes.Media.ContentServicePath(repository.Pending!.Id));
+        request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(1, 2);
+        using var response = await client.SendAsync(request);
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.PartialContent));
+            Assert.That(response.Headers.GetValues("Content-Range"), Does.Contain("bytes 1-2/3"));
+            Assert.That(response.Headers.AcceptRanges, Does.Contain("bytes"));
+            Assert.That(bytes, Is.EqualTo(new byte[] { 2, 3 }));
+        });
+    }
+
+    [Test]
+    public async Task UploadedMediaContentRejectsUnsatisfiableByteRange()
+    {
+        using var multipart = CreateMultipart(Guid.NewGuid(), ActorTypes.Student);
+        using var uploadResponse = await client.PostAsync(ApiRoutes.Media.Upload, multipart);
+        Assert.That(uploadResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            ApiRoutes.Media.ContentServicePath(repository.Pending!.Id));
+        request.Headers.TryAddWithoutValidation("Range", "bytes=9-12");
+        using var response = await client.SendAsync(request);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.RequestedRangeNotSatisfiable));
+            Assert.That(response.Headers.GetValues("Content-Range"), Does.Contain("bytes */3"));
         });
     }
 

@@ -18,6 +18,7 @@ export function Dropdown({
   placement = 'bottom',
   placeholder = UI_LABELS.select,
   className = '',
+  triggerClassName = '',
   onChange,
 }) {
   const generatedId = useId()
@@ -115,6 +116,7 @@ export function Dropdown({
           onKeyDown={handleKeyDown}
           className={[
             controlClassName,
+            triggerClassName,
             'flex cursor-pointer items-center justify-between gap-2 text-left disabled:cursor-not-allowed',
           ].join(' ')}
         >

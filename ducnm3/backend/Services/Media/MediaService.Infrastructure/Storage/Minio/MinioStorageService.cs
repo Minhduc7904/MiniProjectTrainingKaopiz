@@ -1,6 +1,7 @@
 // File: backend/Services/Media/MediaService.Infrastructure/Storage/Minio/MinioStorageService.cs
 // Mục đích: Adapter MinIO triển khai lưu, stat, promote và xóa Media object; phân biệt object thiếu với sự cố storage.
 
+using System.Buffers;
 using MediaService.Application.Services.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -67,17 +68,30 @@ public sealed partial class MinioStorageService(
         {
             throw new StorageValidationException("The download destination stream must be writable.");
         }
+        if (request.Offset < 0 || request.Length is <= 0)
+        {
+            throw new StorageValidationException("The requested download range is invalid.");
+        }
 
         MinioStorageRequestValidator.ValidateLocation(request.Location, storageOptions.GetBuckets());
 
         try
         {
+            var arguments = new GetObjectArgs()
+                .WithBucket(request.Location.Bucket)
+                .WithObject(request.Location.ObjectKey)
+                .WithCallbackStream(
+                    (source, token) => request.Length is null
+                        ? source.CopyToAsync(request.Destination, token)
+                        : CopyRangeAsync(
+                            source,
+                            request.Destination,
+                            request.Offset,
+                            request.Length.Value,
+                            token));
+
             var result = await client.GetObjectAsync(
-                new GetObjectArgs()
-                    .WithBucket(request.Location.Bucket)
-                    .WithObject(request.Location.ObjectKey)
-                    .WithCallbackStream(
-                        (source, token) => source.CopyToAsync(request.Destination, token)),
+                arguments,
                 cancellationToken);
 
             return MapObjectInfo(request.Location, result);
@@ -88,6 +102,7 @@ public sealed partial class MinioStorageService(
         }
         catch (Exception exception)
         {
+            StorageLog.DownloadFailed(logger, exception);
             throw CreateOperationException("download", exception);
         }
     }
@@ -278,6 +293,53 @@ public sealed partial class MinioStorageService(
             Metadata: metadata);
     }
 
+    private static async Task CopyRangeAsync(
+        Stream source,
+        Stream destination,
+        long offset,
+        long length,
+        CancellationToken cancellationToken)
+    {
+        var buffer = ArrayPool<byte>.Shared.Rent(81_920);
+        try
+        {
+            var remainingOffset = offset;
+            while (remainingOffset > 0)
+            {
+                var read = await source.ReadAsync(
+                    buffer.AsMemory(0, (int)Math.Min(buffer.Length, remainingOffset)),
+                    cancellationToken);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException(
+                        "The media object ended before the requested range.");
+                }
+
+                remainingOffset -= read;
+            }
+
+            var remainingLength = length;
+            while (remainingLength > 0)
+            {
+                var read = await source.ReadAsync(
+                    buffer.AsMemory(0, (int)Math.Min(buffer.Length, remainingLength)),
+                    cancellationToken);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException(
+                        "The media object ended before the requested range.");
+                }
+
+                await destination.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+                remainingLength -= read;
+            }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
+    }
+
     private static StorageOperationException CreateOperationException(
         string operation,
         Exception exception) =>
@@ -290,5 +352,11 @@ public sealed partial class MinioStorageService(
             Level = LogLevel.Warning,
             Message = "Media storage health probe failed.")]
         public static partial void DependencyUnavailable(ILogger logger, Exception? exception);
+
+        [LoggerMessage(
+            EventId = 2202,
+            Level = LogLevel.Warning,
+            Message = "Media storage download failed.")]
+        public static partial void DownloadFailed(ILogger logger, Exception exception);
     }
 }

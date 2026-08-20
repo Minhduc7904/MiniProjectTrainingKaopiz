@@ -10,6 +10,7 @@ import { useDirectMediaUpload } from '@/hooks/media/useDirectMediaUpload'
 import { useMediaLibrary } from '@/hooks/media/useMediaLibrary'
 import { ui } from '@/theme'
 import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
+import { getMediaTypeIcon, getMediaTypeLabel } from '@/components/media/mediaPresentation'
 
 const LIBRARY_TABS = [
   { id: '', label: 'Tất cả', icon: Images },
@@ -161,11 +162,11 @@ export function MediaLibraryModal({
                     className={`relative overflow-hidden rounded-md border text-left ${active ? 'border-accent ring-2 ring-accent/30' : 'border-line'} bg-surface`}
                     onClick={() => toggle(media)}
                   >
-                    <div className="aspect-[4/3] bg-surface-muted">
-                      {readyThumbnail ? <MediaImagePreview contentUrl={media.thumbnailUrl} alt="" /> : fallbackImage ? <MediaImagePreview contentUrl={media.contentUrl} alt="" /> : <div className={`flex h-full items-center justify-center text-[11px] ${ui.caption}`}>{media.thumbnailStatus || 'Đang xử lý'}</div>}
+                    <div className="bg-surface-muted">
+                      {readyThumbnail ? <MediaImagePreview contentUrl={media.thumbnailUrl} alt="" /> : fallbackImage ? <MediaImagePreview contentUrl={media.contentUrl} alt="" /> : <div className={`flex h-full flex-col items-center justify-center gap-2 ${ui.caption}`}><Icon icon={getMediaTypeIcon(media.mediaType)} size={28} /><span className="text-[11px]">{getMediaTypeLabel(media.mediaType)}</span></div>}
                     </div>
                     {active ? <span className="absolute right-2 top-2 rounded-full bg-accent p-1 text-white"><Icon icon={Check} size={14} /></span> : null}
-                    <div className="p-2"><p className={`truncate text-[12px] font-medium ${ui.title}`}>{media.originalFileName}</p><p className={`mt-1 text-[11px] ${ui.caption}`}>{media.status} · {media.isDraft ? 'Draft' : 'Đã dùng'}</p><p className={`mt-1 truncate text-[10px] ${ui.caption}`}>{formatUploadDate(media.completedAtUtc || media.createdAtUtc)}</p></div>
+                    <div className="p-2"><p className={`truncate text-[12px] font-medium ${ui.title}`}>{media.originalFileName}</p><p className={`mt-1 text-[11px] ${ui.caption}`}>{getMediaTypeLabel(media.mediaType)} · {media.status} · {media.isDraft ? 'Draft' : 'Đã dùng'}</p><p className={`mt-1 truncate text-[10px] ${ui.caption}`}>{formatUploadDate(media.completedAtUtc || media.createdAtUtc)}</p></div>
                   </button>
                 )
               })}
@@ -180,8 +181,8 @@ export function MediaLibraryModal({
                   const fallbackImage = media.mediaType === 'IMAGE' && media.contentUrl
                   return (
                     <button key={media.id} type="button" className={`grid w-full grid-cols-[minmax(0,2fr)_100px_120px_100px_170px_48px] items-center gap-3 px-3 py-2 text-left ${ui.tableRow} ${active ? 'bg-accent-soft' : ''}`} onClick={() => toggle(media)}>
-                      <span className="flex min-w-0 items-center gap-3"><span className="h-10 w-12 shrink-0 overflow-hidden rounded bg-surface-muted">{readyThumbnail ? <MediaImagePreview contentUrl={media.thumbnailUrl} alt="" /> : fallbackImage ? <MediaImagePreview contentUrl={media.contentUrl} alt="" /> : <span className={`flex h-full items-center justify-center text-[9px] ${ui.caption}`}>{media.thumbnailStatus || '—'}</span>}</span><span className={`truncate text-[12px] font-medium ${ui.title}`}>{media.originalFileName}</span></span>
-                      <span className={`text-[11px] ${ui.body}`}>{media.mediaType}</span>
+                      <span className="flex min-w-0 items-center gap-3"><span className="h-10 w-12 shrink-0 overflow-hidden rounded bg-surface-muted">{readyThumbnail ? <MediaImagePreview contentUrl={media.thumbnailUrl} alt="" /> : fallbackImage ? <MediaImagePreview contentUrl={media.contentUrl} alt="" /> : <span className={`flex h-full items-center justify-center ${ui.caption}`}><Icon icon={getMediaTypeIcon(media.mediaType)} size={18} /></span>}</span><span className={`truncate text-[12px] font-medium ${ui.title}`}>{media.originalFileName}</span></span>
+                      <span className={`text-[11px] ${ui.body}`}>{getMediaTypeLabel(media.mediaType)}</span>
                       <span className={`text-[11px] ${ui.body}`}>{media.status}</span>
                       <span className={`text-[11px] ${ui.body}`}>{media.isDraft ? 'Draft' : 'Đã dùng'}</span>
                       <span className={`text-[11px] ${ui.body}`}>{formatUploadDate(media.completedAtUtc || media.createdAtUtc)}</span>
