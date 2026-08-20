@@ -11,6 +11,11 @@ using CourseService.Api.Endpoints.Courses.Export;
 using CourseService.Api.Endpoints.Courses.GetDetails;
 using CourseService.Api.Endpoints.Courses.GetList;
 using CourseService.Api.Endpoints.Courses.CreateLesson;
+using CourseService.Api.Endpoints.Courses.CreateCourse;
+using CourseService.Api.Endpoints.Courses.UpdateCourse;
+using CourseService.Api.Endpoints.Courses.UpdateLesson;
+using CourseService.Api.Endpoints.Courses.GetLessonDetail;
+using CourseService.Api.Endpoints.Courses.ReorderLessons;
 using CourseService.Api.Endpoints.Performance;
 using CourseService.Application;
 using CourseService.Infrastructure;
@@ -75,6 +80,11 @@ app.MapDatabaseHealthEndpoint(ServiceNames.Course);
 app.MapGetCourses();
 app.MapGetCourseDetails();
 app.MapCreateLesson();
+app.MapCreateCourse();
+app.MapUpdateCourse();
+app.MapUpdateLesson();
+app.MapGetLessonDetail();
+app.MapReorderLessons();
 app.MapExportCourses();
 if (app.Environment.IsDevelopment())
 {

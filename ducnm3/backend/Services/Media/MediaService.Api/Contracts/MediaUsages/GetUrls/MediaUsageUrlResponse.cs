@@ -10,4 +10,7 @@ public sealed record MediaUsageUrlResponse(
     string ContentUrl,
     string? ThumbnailUrl,
     DateTime? ExpiresAtUtc,
-    uint DisplayOrder);
+    uint DisplayOrder,
+    string MediaType,
+    string ContentType,
+    string OriginalFileName);

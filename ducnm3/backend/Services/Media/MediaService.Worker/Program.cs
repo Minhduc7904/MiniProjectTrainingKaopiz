@@ -65,6 +65,13 @@ builder.Services.AddLmsMessagingWithConsumers(
 
         registration
             .AddCommandConsumer<
+                SynchronizeCourseContentMediaUsageConsumer,
+                SynchronizeCourseContentMediaUsageV1,
+                SynchronizeCourseContentMediaUsageConsumerDefinition>(
+                ServiceNames.Media);
+
+        registration
+            .AddCommandConsumer<
                 RegisterNotificationMediaUsageBatchConsumer,
                 RegisterNotificationMediaUsageBatchV1,
                 RegisterNotificationMediaUsageBatchConsumerDefinition>(

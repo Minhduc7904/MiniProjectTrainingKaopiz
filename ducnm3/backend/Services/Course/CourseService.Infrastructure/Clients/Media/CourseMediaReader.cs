@@ -42,6 +42,11 @@ public sealed class CourseMediaReader(HttpClient httpClient) : ICourseMediaReade
                 galleries.GetValueOrDefault(courseId, [])));
     }
 
+    public Task<IReadOnlyList<CourseMediaAsset>> GetLessonAttachmentsAsync(
+        Guid lessonId,
+        CancellationToken cancellationToken) =>
+        GetUsageUrlsAsync("LESSON_ATTACHMENT", "ATTACHMENT", [lessonId], cancellationToken);
+
     private async Task<IReadOnlyList<CourseMediaAsset>> GetUsageUrlsAsync(
         string ownerType,
         string usageType,
@@ -59,7 +64,10 @@ public sealed class CourseMediaReader(HttpClient httpClient) : ICourseMediaReade
             item.ContentUrl,
             item.ThumbnailUrl,
             item.ExpiresAtUtc,
-            item.DisplayOrder)).ToArray() ?? [];
+            item.DisplayOrder,
+            item.MediaType,
+            item.ContentType,
+            item.OriginalFileName)).ToArray() ?? [];
     }
 
     private sealed record MediaUsageUrlResponse(
@@ -69,5 +77,8 @@ public sealed class CourseMediaReader(HttpClient httpClient) : ICourseMediaReade
         string ContentUrl,
         string? ThumbnailUrl,
         DateTime? ExpiresAtUtc,
-        uint DisplayOrder);
+        uint DisplayOrder,
+        string MediaType,
+        string ContentType,
+        string OriginalFileName);
 }

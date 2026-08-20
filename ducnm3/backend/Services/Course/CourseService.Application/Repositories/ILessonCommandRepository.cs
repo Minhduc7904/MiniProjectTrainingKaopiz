@@ -8,6 +8,12 @@ public interface ILessonCommandRepository
         string? contentMarkdown,
         uint? displayOrder,
         CancellationToken cancellationToken);
+
+    Task<LessonCreateRecord?> GetAsync(Guid courseId, Guid lessonId, CancellationToken cancellationToken);
+
+    Task<LessonCreateRecord?> UpdateAsync(Guid courseId, Guid lessonId, string title, string? contentMarkdown, CancellationToken cancellationToken);
+
+    Task<bool> ReorderAsync(Guid courseId, IReadOnlyList<Guid> lessonIds, CancellationToken cancellationToken);
 }
 
 public sealed record LessonCreateRecord(

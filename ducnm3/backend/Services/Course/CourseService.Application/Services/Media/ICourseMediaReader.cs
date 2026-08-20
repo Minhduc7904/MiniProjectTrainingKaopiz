@@ -7,6 +7,10 @@ public interface ICourseMediaReader
     Task<IReadOnlyDictionary<Guid, CourseMediaSet>> GetManyAsync(
         IReadOnlyList<Guid> courseIds,
         CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<CourseMediaAsset>> GetLessonAttachmentsAsync(
+        Guid lessonId,
+        CancellationToken cancellationToken);
 }
 
 public sealed record CourseMediaSet(
@@ -20,4 +24,7 @@ public sealed record CourseMediaAsset(
     string ContentUrl,
     string? ThumbnailUrl,
     DateTime? ExpiresAtUtc,
-    uint DisplayOrder);
+    uint DisplayOrder,
+    string MediaType,
+    string ContentType,
+    string OriginalFileName);

@@ -23,8 +23,11 @@ function joinPath(...parts) {
 export const API_ROUTES = {
   courses: {
     list: joinPath(GATEWAY_PREFIXES.course, '/api/courses'),
+    byId: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId),
     detail: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'details'),
     lessons: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons'),
+    lessonById: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId),
+    lessonReorder: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', 'reorder'),
     export: joinPath(GATEWAY_PREFIXES.course, '/api/courses/export'),
   },
   students: {

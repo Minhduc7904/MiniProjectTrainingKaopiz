@@ -64,5 +64,8 @@ public static class MediaResponseMapper
             result.ContentUrl,
             result.ThumbnailUrl,
             result.ExpiresAtUtc,
-            result.DisplayOrder);
+            result.DisplayOrder,
+            result.MediaType,
+            result.ContentType,
+            result.OriginalFileName);
 }

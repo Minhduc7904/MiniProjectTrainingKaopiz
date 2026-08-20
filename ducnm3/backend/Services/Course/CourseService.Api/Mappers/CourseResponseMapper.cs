@@ -23,6 +23,7 @@ public static class CourseResponseMapper
         new(
             result.Id,
             result.Name,
+            result.DescriptionMarkdown,
             result.Status,
             result.CreatedAtUtc,
             ToOptionalMediaResponse(media.Thumbnail),
@@ -30,6 +31,7 @@ public static class CourseResponseMapper
             result.Lessons.Select(lesson => new LessonDetailsResponse(
                 lesson.Id,
                 lesson.Title,
+                lesson.ContentMarkdown,
                 lesson.DisplayOrder,
                 lesson.Progresses.Select(progress => new LessonProgressResponse(
                     progress.StudentId,
@@ -37,14 +39,17 @@ public static class CourseResponseMapper
                     progress.CompletedAtUtc,
                     progress.UpdatedAtUtc)).ToArray())).ToArray());
 
-    private static CourseMediaResponse ToMediaResponse(CourseMediaAsset media) =>
+    public static CourseMediaResponse ToMediaResponse(CourseMediaAsset media) =>
         new(
             media.UsageId,
             media.MediaId,
             media.ContentUrl,
             media.ThumbnailUrl,
             media.ExpiresAtUtc,
-            media.DisplayOrder);
+            media.DisplayOrder,
+            media.MediaType,
+            media.ContentType,
+            media.OriginalFileName);
 
     private static CourseMediaResponse? ToOptionalMediaResponse(CourseMediaAsset? media) =>
         media is null ? null : ToMediaResponse(media);

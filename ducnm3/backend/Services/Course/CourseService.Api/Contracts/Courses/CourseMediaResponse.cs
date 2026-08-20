@@ -6,11 +6,15 @@ public sealed record CourseMediaResponse(
     string ContentUrl,
     string? ThumbnailUrl,
     DateTime? ExpiresAtUtc,
-    uint DisplayOrder);
+    uint DisplayOrder,
+    string MediaType,
+    string ContentType,
+    string OriginalFileName);
 
 public sealed record CourseDetailsResponse(
     Guid Id,
     string Name,
+    string? DescriptionMarkdown,
     string Status,
     DateTime CreatedAtUtc,
     CourseMediaResponse? Thumbnail,
@@ -20,6 +24,7 @@ public sealed record CourseDetailsResponse(
 public sealed record LessonDetailsResponse(
     Guid Id,
     string Title,
+    string? ContentMarkdown,
     uint DisplayOrder,
     IReadOnlyList<LessonProgressResponse> Progresses);
 

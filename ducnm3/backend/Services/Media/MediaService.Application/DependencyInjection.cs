@@ -17,6 +17,7 @@ using MediaService.Application.UseCases.MediaUsages.GetUrl;
 using MediaService.Application.UseCases.MediaUsages.GetUrls;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;
 using MediaService.Application.UseCases.MediaUsages.RegisterCourseLesson;
+using MediaService.Application.UseCases.MediaUsages.SynchronizeCourseContent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -56,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<GetMediaUsageUrlsHandler>();
         services.AddScoped<RegisterNotificationMediaUsagesHandler>();
         services.AddScoped<RegisterCourseLessonMediaUsagesHandler>();
+        services.AddScoped<SynchronizeCourseContentMediaUsagesHandler>();
         services.AddScoped<GetNotificationMediaUsageJobStatusHandler>();
         services.AddScoped<NotificationMediaUsageJobLifecycleHandler>();
         services.AddScoped<GenerateMediaThumbnailHandler>();

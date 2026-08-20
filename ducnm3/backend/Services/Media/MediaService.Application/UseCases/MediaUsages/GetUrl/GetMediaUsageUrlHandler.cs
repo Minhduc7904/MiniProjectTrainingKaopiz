@@ -40,7 +40,10 @@ public sealed class GetMediaUsageUrlHandler(
             url.Value,
             thumbnailUrl?.Value,
             url.ExpiresAtUtc,
-            record.Usage.DisplayOrder);
+            record.Usage.DisplayOrder,
+            record.Media.MediaType,
+            record.Media.ContentType,
+            record.Media.OriginalFileName);
     }
 
     internal static void ValidateImage(MediaRecord media)

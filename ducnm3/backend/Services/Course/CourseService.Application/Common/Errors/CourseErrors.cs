@@ -17,4 +17,10 @@ public static class CourseErrors
 
     public static CourseApplicationException CourseNotFound() =>
         new(CourseErrorCodes.CourseNotFound, "Course was not found.", 404);
+
+    public static CourseApplicationException LessonNotFound() =>
+        new(CourseErrorCodes.LessonNotFound, "Lesson was not found.", 404);
+
+    public static CourseApplicationException LessonOrderConflict() =>
+        new(CourseErrorCodes.LessonOrderConflict, "Lesson displayOrder already exists.", 409);
 }

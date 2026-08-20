@@ -37,6 +37,11 @@ public interface IMediaUsageRepository
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();
 
+    Task RemoveCourseContentMediaAsync(
+        IReadOnlyList<CourseContentMediaUsageRemoval> removals,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
     Task EnsureMediaUsagesAsync(
         IReadOnlyList<CreateMediaUsageRecord> usages,
         CancellationToken cancellationToken);
@@ -53,3 +58,9 @@ public interface IMediaUsageRepository
         CancellationToken cancellationToken) =>
         throw new NotSupportedException();
 }
+
+public sealed record CourseContentMediaUsageRemoval(
+    Guid OwnerId,
+    string OwnerType,
+    Guid MediaId,
+    string UsageType);

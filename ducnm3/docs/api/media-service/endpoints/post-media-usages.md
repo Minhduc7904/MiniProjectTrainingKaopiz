@@ -52,8 +52,12 @@ Content type bắt buộc là `application/json`.
 | `createdByType` | string | Có | Actor type tạo usage; hiện chỉ hỗ trợ `STUDENT`. |
 | `createdBy` | UUID | Có | ID actor tạo usage; phải tồn tại trong Student Service. |
 
-Hai tổ hợp được hỗ trợ là `STUDENT/STUDENT_AVATAR/AVATAR` và
-`MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`. Với thumbnail, `mediaId` phải là media dẫn
+Ngoài các tổ hợp avatar/thumbnail/gallery hiện có, Admin có thể gắn mọi media gốc
+`READY` vào Lesson qua `COURSE/LESSON_ATTACHMENT/ATTACHMENT`. Media đính kèm
+không dùng chung owner với media tham chiếu trong Markdown (`LESSON_CONTENT`),
+nên khi sửa Markdown sẽ không gỡ file đã đính kèm.
+
+Với thumbnail, `mediaId` phải là media dẫn
 xuất `READY`, `image/webp`, còn `ownerId` phải là media gốc `READY`; actor phải
 sở hữu cả media gốc và source của thumbnail dẫn xuất.
 

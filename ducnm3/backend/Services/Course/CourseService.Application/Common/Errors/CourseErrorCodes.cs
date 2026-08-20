@@ -6,4 +6,6 @@ namespace CourseService.Application.Common.Errors;
 public static class CourseErrorCodes
 {
     public const string CourseNotFound = "COURSE_NOT_FOUND";
+    public const string LessonNotFound = "LESSON_NOT_FOUND";
+    public const string LessonOrderConflict = "LESSON_ORDER_CONFLICT";
 }

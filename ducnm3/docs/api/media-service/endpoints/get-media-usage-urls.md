@@ -4,7 +4,7 @@ Business flow: [`get-media-usage-urls.md`](../../../business-flows/media/get-med
 
 ## Mục đích
 
-Trả URL phân phối cho mọi usage ảnh active của đúng một owner. Direct service
+Trả URL phân phối cho mọi usage media active của đúng một owner. Direct service
 path là `GET /api/media/usages/urls`.
 
 ## Xác thực và phân quyền
@@ -42,12 +42,13 @@ Ví dụ: `GET /media/api/media/usages/urls?ownerService=STUDENT&ownerType=STUDE
 }
 ```
 
-Mảng rỗng là kết quả hợp lệ khi owner chưa có usage ảnh active.
+Mỗi phần tử còn có `thumbnailUrl` (nếu có), `mediaType`, `contentType` và
+`originalFileName`. Mảng rỗng là kết quả hợp lệ khi owner chưa có usage media active.
 Response dùng `Cache-Control: no-store`.
 
 ## Mã trạng thái HTTP
 
-- `200`: trả toàn bộ usage ảnh active của owner, có thể rỗng.
+- `200`: trả toàn bộ usage media active của owner, có thể rỗng.
 - `400 INVALID_MEDIA`: thiếu/sai query parameter, gồm `usageType`.
 
 Lỗi dùng [error envelope chuẩn](../../shared/error-format.md).
@@ -55,5 +56,5 @@ Lỗi dùng [error envelope chuẩn](../../shared/error-format.md).
 ## Điều kiện nghiệp vụ và tác động phụ
 
 - Request safe, idempotent, chỉ đọc `media_usages` và `media_objects`.
-- Không trả media soft-delete, chưa `READY` hoặc không phải `IMAGE`.
+- Không trả media soft-delete hoặc chưa `READY`. Thumbnail chỉ được trả khi đó là ảnh `READY`.
 - Không thay đổi database, không gọi MinIO, không publish message.

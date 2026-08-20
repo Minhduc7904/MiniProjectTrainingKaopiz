@@ -10,6 +10,9 @@ public sealed class CreateLessonHandler(
     ILessonCommandRepository repository,
     ICommandSender commandSender)
 {
+    internal static string? NormalizeMarkdown(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value;
+
     public async Task<LessonCreateRecord> HandleAsync(
         Guid courseId,
         string? title,
@@ -32,7 +35,7 @@ public sealed class CreateLessonHandler(
         var result = await repository.CreateAsync(
             courseId,
             normalizedTitle,
-            string.IsNullOrWhiteSpace(contentMarkdown) ? null : contentMarkdown,
+            NormalizeMarkdown(contentMarkdown),
             displayOrder,
             cancellationToken) ?? throw new KeyNotFoundException("Course was not found.");
         var references = LessonMediaReferenceExtractor.Extract(contentMarkdown);

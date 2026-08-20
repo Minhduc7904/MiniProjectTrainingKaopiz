@@ -15,6 +15,22 @@ export async function createCourseLessonRequest(courseId, lesson) {
   return unwrapEnvelope(await httpClient.post(API_ROUTES.courses.lessons(courseId), lesson))
 }
 
+export async function updateCourseRequest(courseId, payload) {
+  return unwrapEnvelope(await httpClient.put(API_ROUTES.courses.byId(courseId), payload))
+}
+
+export async function fetchCourseLessonDetailRequest(courseId, lessonId) {
+  return unwrapEnvelope(await httpClient.get(API_ROUTES.courses.lessonById(courseId, lessonId)))
+}
+
+export async function updateCourseLessonRequest(courseId, lessonId, payload) {
+  return unwrapEnvelope(await httpClient.put(API_ROUTES.courses.lessonById(courseId, lessonId), payload))
+}
+
+export async function reorderCourseLessonsRequest(courseId, lessonIds) {
+  return unwrapEnvelope(await httpClient.put(API_ROUTES.courses.lessonReorder(courseId), { lessonIds }))
+}
+
 export async function exportCoursesRequest(query = {}, onProgress) {
   const params = new URLSearchParams()
   if (query.status) params.set('status', query.status)

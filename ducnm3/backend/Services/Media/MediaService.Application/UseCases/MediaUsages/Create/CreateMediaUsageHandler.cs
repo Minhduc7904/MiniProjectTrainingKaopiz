@@ -30,6 +30,8 @@ public sealed class CreateMediaUsageHandler(
             ownerType == MediaOwnerTypes.CourseThumbnail;
         var isCourseGallery = ownerService == MediaOwnerServices.Course &&
             ownerType == MediaOwnerTypes.CourseGallery;
+        var isLessonAttachment = ownerService == MediaOwnerServices.Course &&
+            ownerType == MediaOwnerTypes.LessonAttachment;
         var actor = await actorValidationService.ValidateAsync(
             command.CreatedBy,
             cancellationToken);
@@ -70,7 +72,7 @@ public sealed class CreateMediaUsageHandler(
             throw MediaErrors.InvalidMedia("Course gallery media must be a READY original image.");
         }
 
-        if (!isStudentAvatar && !isCourseGallery &&
+        if (!isStudentAvatar && !isCourseGallery && !isLessonAttachment &&
             (!string.Equals(media.DerivationType, MediaDerivationTypes.Thumbnail, StringComparison.Ordinal) ||
              !string.Equals(media.ContentType, "image/webp", StringComparison.OrdinalIgnoreCase)))
         {
@@ -91,9 +93,11 @@ public sealed class CreateMediaUsageHandler(
             ? await mediaUsageRepository.ReplaceStudentAvatarAsync(record, cancellationToken)
             : isCourseThumbnail
                 ? await mediaUsageRepository.ReplaceCourseThumbnailAsync(record, cancellationToken)
-                : isCourseGallery
-                    ? await mediaUsageRepository.AddCourseGalleryMediaAsync(record, cancellationToken)
-                    : await mediaUsageRepository.ReplaceMediaThumbnailAsync(record, cancellationToken);
+                    : isCourseGallery
+                        ? await mediaUsageRepository.AddCourseGalleryMediaAsync(record, cancellationToken)
+                    : isLessonAttachment
+                        ? await AddLessonAttachmentAsync(record, cancellationToken)
+                        : await mediaUsageRepository.ReplaceMediaThumbnailAsync(record, cancellationToken);
 
         return new CreateMediaUsageResult(
             usage.Id,
@@ -134,11 +138,26 @@ public sealed class CreateMediaUsageHandler(
             ownerService == MediaOwnerServices.Course &&
             ownerType == MediaOwnerTypes.CourseGallery &&
             usageType == MediaUsageTypes.Attachment;
-        if (!isStudentAvatar && !isMediaThumbnail && !isCourseThumbnail && !isCourseGallery)
+        var isLessonAttachment =
+            ownerService == MediaOwnerServices.Course &&
+            ownerType == MediaOwnerTypes.LessonAttachment &&
+            usageType == MediaUsageTypes.Attachment;
+        if (!isStudentAvatar && !isMediaThumbnail && !isCourseThumbnail && !isCourseGallery && !isLessonAttachment)
         {
             throw MediaErrors.InvalidMedia(
                 "Supported usages are STUDENT/STUDENT_AVATAR/AVATAR, MEDIA/MEDIA_THUMBNAIL/THUMBNAIL, " +
-                "and COURSE/COURSE_THUMBNAIL/THUMBNAIL or COURSE/COURSE_GALLERY/ATTACHMENT.");
+                "COURSE/COURSE_THUMBNAIL/THUMBNAIL, COURSE/COURSE_GALLERY/ATTACHMENT, " +
+                "or COURSE/LESSON_ATTACHMENT/ATTACHMENT.");
         }
+    }
+
+    private async Task<MediaService.Domain.Entities.MediaUsage> AddLessonAttachmentAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken)
+    {
+        await mediaUsageRepository.EnsureCourseLessonMediaAsync([usage], cancellationToken);
+        return new MediaService.Domain.Entities.MediaUsage(
+            usage.Id, usage.MediaId, usage.OwnerService, usage.OwnerType, usage.OwnerId,
+            usage.UsageType, usage.DisplayOrder, usage.CreatedBy, DateTime.UtcNow);
     }
 }

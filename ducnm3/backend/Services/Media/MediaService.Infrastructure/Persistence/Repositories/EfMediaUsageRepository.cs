@@ -212,7 +212,8 @@ public sealed class EfMediaUsageRepository(
     {
         var mediaIds = usages.Select(item => item.MediaId).Distinct().ToArray();
         var readyCount = await dbContext.MediaObjects.CountAsync(
-            item => mediaIds.Contains(item.Id) && item.Status == MediaObjectStatuses.Ready && item.DeletedAt == null,
+            item => mediaIds.Contains(item.Id) && item.Status == MediaObjectStatuses.Ready &&
+                item.DeletedAt == null && item.SourceMediaId == null,
             cancellationToken);
         if (readyCount != mediaIds.Length)
         {
@@ -241,6 +242,53 @@ public sealed class EfMediaUsageRepository(
             var media = await dbContext.MediaObjects.SingleAsync(item => item.Id == usage.MediaId, cancellationToken);
             media.IsDraft = true;
             media.DraftedAt = timeProvider.GetUtcNow().UtcDateTime;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RemoveCourseContentMediaAsync(
+        IReadOnlyList<CourseContentMediaUsageRemoval> removals,
+        CancellationToken cancellationToken)
+    {
+        if (removals.Count == 0)
+        {
+            return;
+        }
+
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        foreach (var removal in removals.Distinct())
+        {
+            var usages = await dbContext.MediaUsages
+                .Where(item => item.OwnerService == MediaOwnerServices.Course &&
+                    item.OwnerType == removal.OwnerType &&
+                    item.OwnerId == removal.OwnerId &&
+                    item.MediaId == removal.MediaId &&
+                    item.UsageType == removal.UsageType &&
+                    item.DeletedAt == null)
+                .ToListAsync(cancellationToken);
+            if (usages.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var usage in usages)
+            {
+                usage.DeletedAt = now;
+            }
+
+            var hasOtherActiveUsage = await dbContext.MediaUsages.AnyAsync(
+                item => item.MediaId == removal.MediaId && item.DeletedAt == null &&
+                    !usages.Select(usage => usage.Id).Contains(item.Id),
+                cancellationToken);
+            if (!hasOtherActiveUsage)
+            {
+                var media = await dbContext.MediaObjects.SingleAsync(
+                    item => item.Id == removal.MediaId,
+                    cancellationToken);
+                media.IsDraft = true;
+                media.DraftedAt = now;
+            }
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -362,7 +410,6 @@ public sealed class EfMediaUsageRepository(
             .Where(usage => usage.DeletedAt == null &&
                 usage.Media.DeletedAt == null &&
                 usage.Media.Status == MediaObjectStatuses.Ready &&
-                usage.Media.MediaType == MediaTypes.Image &&
                 (ownerService == null || usage.OwnerService == ownerService) &&
                 (ownerType == null || usage.OwnerType == ownerType) &&
                 (usageType == null || usage.UsageType == usageType) &&

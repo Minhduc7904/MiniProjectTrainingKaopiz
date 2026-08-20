@@ -13,7 +13,7 @@ public sealed class EfCourseDetailsRepository(CourseDbContext db) : ICourseDetai
         var course = await db.Courses
             .AsNoTracking()
             .Where(x => x.Id == courseId)
-            .Select(x => new { x.Id, x.Name, x.Status, x.CreatedAt })
+            .Select(x => new { x.Id, x.Name, x.DescriptionMarkdown, x.Status, x.CreatedAt })
             .SingleOrDefaultAsync(cancellationToken);
 
         if (course is null)
@@ -25,7 +25,7 @@ public sealed class EfCourseDetailsRepository(CourseDbContext db) : ICourseDetai
             .AsNoTracking()
             .Where(x => x.CourseId == courseId)
             .OrderBy(x => x.DisplayOrder)
-            .Select(x => new { x.Id, x.Title, x.DisplayOrder })
+            .Select(x => new { x.Id, x.Title, x.ContentMarkdown, x.DisplayOrder })
             .ToListAsync(cancellationToken);
         var lessonIds = lessons.Select(x => x.Id).ToArray();
         var progresses = lessonIds.Length == 0
@@ -47,11 +47,13 @@ public sealed class EfCourseDetailsRepository(CourseDbContext db) : ICourseDetai
         return new CourseDetailsResult(
             course.Id,
             course.Name,
+            course.DescriptionMarkdown,
             course.Status,
             ToUtc(course.CreatedAt),
             lessons.Select(lesson => new LessonDetailsResult(
                 lesson.Id,
                 lesson.Title,
+                lesson.ContentMarkdown,
                 lesson.DisplayOrder,
                 progressesByLesson[lesson.Id].Select(progress => new LessonProgressDetailsResult(
                     progress.StudentId,
@@ -88,6 +90,7 @@ public sealed class EfCourseDetailsRepository(CourseDbContext db) : ICourseDetai
             output.Add(new LessonDetailsResult(
                 lesson.Id,
                 lesson.Title,
+                lesson.ContentMarkdown,
                 lesson.DisplayOrder,
                 progresses.Select(progress => new LessonProgressDetailsResult(
                     progress.StudentId,
@@ -99,6 +102,7 @@ public sealed class EfCourseDetailsRepository(CourseDbContext db) : ICourseDetai
         return new CourseDetailsResult(
             course.Id,
             course.Name,
+            course.DescriptionMarkdown,
             course.Status,
             ToUtc(course.CreatedAt),
             output);

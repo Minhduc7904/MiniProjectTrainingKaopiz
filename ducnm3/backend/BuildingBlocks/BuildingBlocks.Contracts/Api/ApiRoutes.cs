@@ -27,12 +27,24 @@ public static class ApiRoutes
         public const string BufferedExportBenchmark = "/api/performance/courses/export-buffered";
         public const string DetailsTemplate = "/api/courses/{courseId}/details";
         public const string LessonsTemplate = "/api/courses/{courseId}/lessons";
+        public const string ByIdTemplate = "/api/courses/{courseId}";
+        public const string LessonByIdTemplate = "/api/courses/{courseId}/lessons/{lessonId}";
+        public const string LessonReorderTemplate = "/api/courses/{courseId}/lessons/reorder";
 
         public static string ListServicePath() =>
             BuildServicePath(List);
 
         public static string ListPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Course, List);
+
+        public static string ByIdServicePath(Guid courseId) =>
+            BuildServicePath(FormatGuidRoute(ByIdTemplate, "courseId", courseId));
+
+        public static string LessonByIdServicePath(Guid courseId, Guid lessonId) =>
+            BuildServicePath(FormatGuidRoute(FormatGuidRoute(LessonByIdTemplate, "courseId", courseId), "lessonId", lessonId));
+
+        public static string LessonReorderServicePath(Guid courseId) =>
+            BuildServicePath(FormatGuidRoute(LessonReorderTemplate, "courseId", courseId));
 
         public static string ExportServicePath() =>
             BuildServicePath(Export);

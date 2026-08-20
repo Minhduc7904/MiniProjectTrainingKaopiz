@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<ICourseDetailsRepository, EfCourseDetailsRepository>();
         services.AddServiceQueryClient<ICourseMediaReader, CourseMediaReader>(configuration, ServiceNames.Media);
         services.AddScoped<ILessonCommandRepository, EfLessonCommandRepository>();
+        services.AddScoped<ICourseCommandRepository, EfCourseCommandRepository>();
         services.AddSingleton<IDatabaseHealthProbe>(provider => new CourseDatabaseHealthProbe(connectionString, provider.GetRequiredService<ILogger<CourseDatabaseHealthProbe>>()));
         return services;
     }

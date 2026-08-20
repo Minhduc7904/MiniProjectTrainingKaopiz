@@ -26,11 +26,29 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
 
     public IReadOnlyList<CreateMediaUsageRecord> EnsuredUsages { get; private set; } = [];
 
+    public IReadOnlyList<CourseContentMediaUsageRemoval> RemovedCourseContentUsages { get; private set; } = [];
+
+    public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
+        Domain.ValueObjects.ActorReference actor,
+        string? mediaType,
+        (DateTime CreatedAtUtc, Guid Id)? cursor,
+        int take,
+        CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<MediaLibraryRecord>>([]);
+
     public Task EnsureMediaUsagesAsync(
         IReadOnlyList<CreateMediaUsageRecord> usages,
         CancellationToken cancellationToken)
     {
         EnsuredUsages = usages;
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveCourseContentMediaAsync(
+        IReadOnlyList<CourseContentMediaUsageRemoval> removals,
+        CancellationToken cancellationToken)
+    {
+        RemovedCourseContentUsages = removals;
         return Task.CompletedTask;
     }
 

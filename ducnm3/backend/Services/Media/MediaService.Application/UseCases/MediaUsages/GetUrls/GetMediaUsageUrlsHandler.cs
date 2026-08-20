@@ -34,8 +34,8 @@ public sealed class GetMediaUsageUrlsHandler(
                 query.OwnerIds),
             cancellationToken);
         var readableRecords = records
-            .Where(record => IsReadableImage(record.Media))
-            .Select(record => IsReadableImage(record.ThumbnailMedia)
+            .Where(record => IsReadable(record.Media))
+            .Select(record => IsReadableThumbnail(record.ThumbnailMedia)
                 ? record
                 : record with { ThumbnailMedia = null })
             .ToArray();
@@ -56,13 +56,18 @@ public sealed class GetMediaUsageUrlsHandler(
                     urlByMediaId[record.Media.Id].Value,
                     record.ThumbnailMedia is null ? null : urlByMediaId[record.ThumbnailMedia.Id].Value,
                     urlByMediaId[record.Media.Id].ExpiresAtUtc,
-                    record.Usage.DisplayOrder))
+                    record.Usage.DisplayOrder,
+                    record.Media.MediaType,
+                    record.Media.ContentType,
+                    record.Media.OriginalFileName))
             .ToArray();
     }
 
-    private static bool IsReadableImage(MediaRecord? media) =>
+    private static bool IsReadable(MediaRecord? media) =>
         media is not null &&
         media.Status == MediaObjectStatuses.Ready &&
-        media.DeletedAtUtc is null &&
-        media.MediaType == MediaTypes.Image;
+        media.DeletedAtUtc is null;
+
+    private static bool IsReadableThumbnail(MediaRecord? media) =>
+        IsReadable(media) && media!.MediaType == MediaTypes.Image;
 }
