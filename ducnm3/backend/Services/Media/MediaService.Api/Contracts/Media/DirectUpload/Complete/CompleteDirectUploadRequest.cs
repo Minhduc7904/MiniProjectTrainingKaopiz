@@ -3,6 +3,4 @@
 
 namespace MediaService.Api.Contracts.Requests;
 
-public sealed record CompleteDirectUploadRequest(
-    string UploadedBy,
-    string UploadedByType);
+public sealed record CompleteDirectUploadRequest;

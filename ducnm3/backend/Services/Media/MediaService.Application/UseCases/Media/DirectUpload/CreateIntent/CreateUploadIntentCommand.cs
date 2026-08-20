@@ -8,7 +8,6 @@ namespace MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 
 public sealed record CreateUploadIntentCommand(
     string OriginalFileName,
-    string MediaType,
     string ContentType,
     long SizeBytes,
     string ChecksumSha256,

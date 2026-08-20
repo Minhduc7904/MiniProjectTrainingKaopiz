@@ -5,9 +5,6 @@ namespace MediaService.Api.Contracts.Requests;
 
 public sealed record CreateUploadIntentRequest(
     string OriginalFileName,
-    string MediaType,
     string ContentType,
     long SizeBytes,
-    string ChecksumSha256,
-    string UploadedBy,
-    string UploadedByType);
+    string ChecksumSha256);

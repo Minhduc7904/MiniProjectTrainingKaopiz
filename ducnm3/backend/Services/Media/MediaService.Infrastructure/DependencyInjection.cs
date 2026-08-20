@@ -6,10 +6,12 @@ using BuildingBlocks.Contracts.Health;
 using BuildingBlocks.Http;
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Derivation;
+using MediaService.Application.Services.Admins;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.Services.Students;
 using MediaService.Application.Services.Urls;
 using MediaService.Infrastructure.Clients.Student;
+using MediaService.Infrastructure.Clients.Admin;
 using MediaService.Infrastructure.Health;
 using MediaService.Infrastructure.Persistence;
 using MediaService.Infrastructure.Persistence.Context;
@@ -84,6 +86,9 @@ public static class DependencyInjection
         services.AddServiceQueryClient<IStudentLookup, StudentLookupClient>(
             configuration,
             ServiceNames.Student);
+        services.AddServiceQueryClient<IAdminLookup, AdminLookupClient>(
+            configuration,
+            ServiceNames.Admin);
         services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
             new MediaDatabaseHealthProbe(
                 connectionString,

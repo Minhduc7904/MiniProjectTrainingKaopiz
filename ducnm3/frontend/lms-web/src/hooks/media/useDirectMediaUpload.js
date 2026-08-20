@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { readActor } from '@/auth/actorStorage'
 import {
   completeDirectUploadRequest,
   createUploadIntentRequest,
@@ -7,7 +8,6 @@ import {
 } from '@/api/directMediaUploadApi'
 import { toApiError } from '@/api/toApiError'
 import { sanitizeApiError } from '@/api/sanitizeApiError'
-import { POST_MEDIA_FIELDS } from '@/constants/media'
 import { API_ERROR_CODES } from '@/constants/apiErrorCodes'
 import { createDirectUploadRuntime } from '@/hooks/media/directUploadRuntime'
 import { executeDirectUploadWorkflow } from '@/hooks/media/directUploadWorkflow'
@@ -88,9 +88,7 @@ export function useDirectMediaUpload() {
   const submit = useCallback(async (file) => {
     abortRuntime()
     const runId = runRef.current
-    const query = state.query
-    const mediaType = query[POST_MEDIA_FIELDS.mediaType]
-    const validationError = validateDirectUploadFile(file, mediaType)
+    const validationError = validateDirectUploadFile(file)
     if (validationError) {
       dispatch(directUploadActions.failed(validationError))
       return false
@@ -98,13 +96,13 @@ export function useDirectMediaUpload() {
     const runtime = createDirectUploadRuntime()
     runtimeRef.current = runtime
 
+    const persistedActor = readActor()
     const actor = {
-      uploadedBy: String(query[POST_MEDIA_FIELDS.uploadedBy] ?? '').trim(),
-      uploadedByType: query[POST_MEDIA_FIELDS.uploadedByType],
+      uploadedBy: persistedActor.id,
+      uploadedByType: persistedActor.type,
     }
     const result = await executeDirectUploadWorkflow({
       file,
-      mediaType,
       actor,
       runtime,
       isCurrent: () => runRef.current === runId,
@@ -131,7 +129,7 @@ export function useDirectMediaUpload() {
     })
     if (runtimeRef.current === runtime) runtimeRef.current = null
     return result
-  }, [abortRuntime, dispatch, state.query])
+  }, [abortRuntime, dispatch])
 
   return {
     ...state,

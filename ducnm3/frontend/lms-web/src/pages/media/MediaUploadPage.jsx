@@ -11,7 +11,6 @@ import { Workbench } from '@/components/layout/Workbench'
 import { POST_MEDIA_ACTIVITY } from '@/constants/activities/postMedia'
 import { HTTP_STATUS } from '@/constants/http'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
-import { POST_MEDIA_FIELDS } from '@/constants/media'
 import { UI_LABELS } from '@/constants/ui'
 import { useMediaUpload } from '@/hooks/media/useMediaUpload'
 import { MediaManualForm } from './components/MediaManualForm'
@@ -53,9 +52,6 @@ export function MediaUploadPage() {
   const send = () => {
     submit({
       file,
-      mediaType: query[POST_MEDIA_FIELDS.mediaType],
-      uploadedByType: query[POST_MEDIA_FIELDS.uploadedByType],
-      uploadedBy: String(query[POST_MEDIA_FIELDS.uploadedBy] ?? '').trim(),
     })
   }
 
@@ -88,11 +84,9 @@ export function MediaUploadPage() {
               </div>
               <div className="min-h-0 flex-1">
                 <MediaUploadForm
-                  query={query}
                   file={file}
                   fileKey={fileKey}
                   loading={loading}
-                  onQueryChange={setQuery}
                   onFileChange={setFile}
                   onSubmit={send}
                 />
@@ -138,7 +132,7 @@ export function MediaUploadPage() {
               description={MEDIA_COPY.emptyHint}
             />
           ) : null}
-          {!error && data ? <MediaResult media={data} location={location} query={query} /> : null}
+          {!error && data ? <MediaResult media={data} location={location} /> : null}
         </OutputPanel>
       }
     />

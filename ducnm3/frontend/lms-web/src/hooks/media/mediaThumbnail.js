@@ -13,13 +13,6 @@ export function isImageMedia(media) {
   return media?.mediaType === 'IMAGE' && String(media.contentType ?? '').startsWith('image/')
 }
 
-export function toThumbnailRetryActor(query = {}) {
-  return {
-    requestedByType: query.uploadedByType,
-    requestedBy: query.uploadedBy,
-  }
-}
-
 function toInitialThumbnail(media) {
   return {
     status: media?.thumbnailStatus ?? null,
@@ -30,7 +23,7 @@ function toInitialThumbnail(media) {
   }
 }
 
-export function useMediaThumbnail(media, query) {
+export function useMediaThumbnail(media) {
   const dispatch = useDispatch()
   const state = useSelector((rootState) => rootState.mediaThumbnail)
   const thumbnail = state.data ?? toInitialThumbnail(media)
@@ -70,7 +63,7 @@ export function useMediaThumbnail(media, query) {
     if (!media?.id) return false
     dispatch(mediaThumbnailActions.retryStarted())
     try {
-      const response = await retryMediaThumbnailRequest(media.id, toThumbnailRetryActor(query))
+      const response = await retryMediaThumbnailRequest(media.id)
       dispatch(mediaThumbnailActions.retrySucceeded({
         mediaId: media.id,
         thumbnail: { ...response.data, thumbnailStatusUrl: media.thumbnailStatusUrl },
@@ -81,7 +74,7 @@ export function useMediaThumbnail(media, query) {
       return false
     } finally {
     }
-  }, [dispatch, media?.id, media?.thumbnailStatusUrl, query])
+  }, [dispatch, media?.id, media?.thumbnailStatusUrl])
 
   return { thumbnail, error: state.error, retrying: state.retrying, retry }
 }

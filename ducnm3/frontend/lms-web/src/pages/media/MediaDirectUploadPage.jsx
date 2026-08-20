@@ -108,7 +108,7 @@ export function MediaDirectUploadPage() {
               />
             ) : <EmptyState title={MEDIA_COPY.empty} description={MEDIA_COPY.directEmptyHint} />
           ) : null}
-          {!upload.error && upload.data ? <MediaResult media={upload.data} query={upload.query} showDraft /> : null}
+          {!upload.error && upload.data ? <MediaResult media={upload.data} showDraft /> : null}
         </OutputPanel>
       }
     />

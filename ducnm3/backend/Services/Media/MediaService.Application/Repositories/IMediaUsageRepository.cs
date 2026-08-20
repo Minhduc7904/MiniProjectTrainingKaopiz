@@ -23,6 +23,14 @@ public interface IMediaUsageRepository
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);
 
+    Task<MediaUsage> ReplaceCourseThumbnailAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken);
+
+    Task<MediaUsage> AddCourseGalleryMediaAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken);
+
     Task EnsureMediaUsagesAsync(
         IReadOnlyList<CreateMediaUsageRecord> usages,
         CancellationToken cancellationToken);

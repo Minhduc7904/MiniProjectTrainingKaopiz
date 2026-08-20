@@ -1,6 +1,5 @@
 export async function executeDirectUploadWorkflow({
   file,
-  mediaType,
   actor,
   runtime,
   isCurrent,
@@ -30,7 +29,6 @@ export async function executeDirectUploadWorkflow({
     const intent = await operations.createIntent(
       {
         originalFileName: file.name,
-        mediaType,
         contentType: file.type,
         sizeBytes: file.size,
         checksumSha256,

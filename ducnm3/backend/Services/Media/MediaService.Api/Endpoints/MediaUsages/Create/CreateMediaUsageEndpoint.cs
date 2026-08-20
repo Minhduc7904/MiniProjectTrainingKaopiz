@@ -8,7 +8,6 @@ using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
 using MediaService.Application.UseCases.MediaUsages.Create;
 using MediaService.Domain.Constants;
-using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Api.Endpoints.Media;
 
@@ -38,11 +37,7 @@ public static class CreateMediaUsageEndpoint
                                 "ownerId"),
                             request.UsageType,
                             request.DisplayOrder,
-                            new ActorReference(
-                                request.CreatedByType,
-                                MediaRequestParser.ParseGuid(
-                                    request.CreatedBy,
-                                    "createdBy"))),
+                            MediaRequestParser.ReadActor(context.Request)),
                         cancellationToken);
                     var response = MediaResponseMapper.ToResponse(result);
                     context.Response.Headers.Location =

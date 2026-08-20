@@ -6,29 +6,12 @@ import {
   normalizeProgress,
   validateDirectUploadFile,
 } from '@/features/media/directUploadSlice'
-import { MEDIA_TYPES } from '@/constants/media'
 
 describe('direct upload file validation', () => {
-  it('accepts a supported file within the current category limit', () => {
+  it('accepts a valid file and leaves type classification to the backend', () => {
     const file = new File(['image'], 'lesson.png', { type: 'image/png' })
 
-    expect(validateDirectUploadFile(file, MEDIA_TYPES.image)).toBeNull()
-  })
-
-  it('rejects a MIME type that does not belong to the selected category', () => {
-    const file = new File(['video'], 'lesson.mp4', { type: 'video/mp4' })
-
-    expect(validateDirectUploadFile(file, MEDIA_TYPES.image)).toMatchObject({
-      code: 'UNSUPPORTED_MEDIA_TYPE',
-    })
-  })
-
-  it('rejects a file over the current category limit before hashing', () => {
-    const file = { name: 'large.pdf', type: 'application/pdf', size: 51 * 1024 * 1024 }
-
-    expect(validateDirectUploadFile(file, MEDIA_TYPES.document)).toMatchObject({
-      code: 'PAYLOAD_TOO_LARGE',
-    })
+    expect(validateDirectUploadFile(file)).toBeNull()
   })
 })
 

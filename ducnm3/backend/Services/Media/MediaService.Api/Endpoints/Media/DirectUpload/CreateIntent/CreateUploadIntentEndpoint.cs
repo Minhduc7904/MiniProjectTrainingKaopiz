@@ -7,7 +7,6 @@ using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 using MediaService.Domain.Constants;
-using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Api.Endpoints.Media;
 
@@ -24,20 +23,17 @@ public static class CreateUploadIntentEndpoint
                     var result = await handler.HandleAsync(
                         new CreateUploadIntentCommand(
                             request.OriginalFileName,
-                            request.MediaType,
                             request.ContentType,
                             request.SizeBytes,
                             request.ChecksumSha256,
-                            new ActorReference(
-                                request.UploadedByType,
-                                MediaRequestParser.ParseGuid(request.UploadedBy, "uploadedBy"))),
+                            MediaRequestParser.ReadActor(context.Request)),
                         cancellationToken);
                     context.Response.Headers.Location =
                         ApiRoutes.Media.ResourcePublicPath(result.MediaId);
                     return Results.Json(
                         ApiResponseFactory.Success(
                             new CreateUploadIntentResponse(
-                                result.MediaId, result.Status, result.IsDraft,
+                                result.MediaId, result.MediaType, result.Status, result.IsDraft,
                                 result.ExpiresAtUtc, result.UploadUrl, result.FormFields),
                             context.TraceIdentifier),
                         statusCode: StatusCodes.Status201Created);

@@ -24,7 +24,7 @@ public partial class MediaUsage
     public string OwnerService { get; set; } = null!;
 
     /// <summary>
-    /// COURSE_THUMBNAIL | COURSE_DESCRIPTION | LESSON_CONTENT | NOTIFICATION_BODY
+    /// COURSE_THUMBNAIL | COURSE_GALLERY | COURSE_DESCRIPTION | LESSON_CONTENT | NOTIFICATION_BODY
     /// </summary>
     public string OwnerType { get; set; } = null!;
 

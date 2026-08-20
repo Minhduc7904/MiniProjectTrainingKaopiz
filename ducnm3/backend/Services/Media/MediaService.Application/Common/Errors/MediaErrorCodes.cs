@@ -20,4 +20,5 @@ public static class MediaErrorCodes
     public const string ActorNotFound = "ACTOR_NOT_FOUND";
     public const string OwnerNotFound = "OWNER_NOT_FOUND";
     public const string StudentServiceUnavailable = "STUDENT_SERVICE_UNAVAILABLE";
+    public const string AdminServiceUnavailable = "ADMIN_SERVICE_UNAVAILABLE";
 }

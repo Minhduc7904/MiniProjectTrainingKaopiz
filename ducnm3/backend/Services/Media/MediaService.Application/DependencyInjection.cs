@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddSingleton(thumbnailOptions);
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IActorValidator, StudentActorValidator>();
+        services.AddScoped<IActorValidator, AdminActorValidator>();
         services.AddScoped<IActorValidationService, ActorValidationService>();
         services.AddScoped<UploadMediaHandler>();
         services.AddScoped<CreateUploadIntentHandler>();

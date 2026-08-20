@@ -5,6 +5,7 @@ namespace MediaService.Api.Contracts.Responses;
 
 public sealed record CreateUploadIntentResponse(
     Guid MediaId,
+    string MediaType,
     string Status,
     bool IsDraft,
     DateTime ExpiresAtUtc,

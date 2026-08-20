@@ -31,6 +31,8 @@ public static class ApiErrorMessages
 public static class ApiHeaderNames
 {
     public const string CorrelationId = "X-Correlation-Id";
+    public const string ActorType = "X-Actor-Type";
+    public const string ActorId = "X-Actor-Id";
 }
 
 /// <summary>Tên header metadata được gắn vào message RabbitMQ.</summary>
@@ -56,6 +58,7 @@ public static class HealthStatusValues
 /// <summary>Định danh service dùng cho cấu hình endpoint, messaging và observability.</summary>
 public static class ServiceNames
 {
+    public const string Admin = "admin-service";
     public const string Course = "course-service";
     public const string Student = "student-service";
     public const string Media = "media-service";
@@ -67,6 +70,7 @@ public static class ServiceNames
 /// <summary>Prefix public của từng service khi đi qua API Gateway.</summary>
 public static class GatewayRoutePrefixes
 {
+    public const string Admin = "/admin";
     public const string Course = "/course";
     public const string Student = "/student";
     public const string Media = "/media";

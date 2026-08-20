@@ -4,6 +4,7 @@
 using System.Text.RegularExpressions;
 using MediaService.Application.Common.Errors;
 using MediaService.Application.Services.Storage;
+using MediaService.Domain.Constants;
 
 namespace MediaService.Application.UseCases.Media.DirectUpload;
 
@@ -55,6 +56,31 @@ public static partial class MediaContentTypeRules
                 normalizedContentType.StartsWith("audio/", StringComparison.Ordinal),
             StorageMediaCategory.Other => !IsKnownCategory(normalizedContentType),
             _ => false
+        };
+
+    public static StorageMediaCategory InferCategory(string contentType)
+    {
+        var normalized = Normalize(contentType);
+        if (normalized.StartsWith("image/", StringComparison.Ordinal))
+            return StorageMediaCategory.Image;
+        if (normalized.StartsWith("video/", StringComparison.Ordinal))
+            return StorageMediaCategory.Video;
+        if (normalized.StartsWith("audio/", StringComparison.Ordinal))
+            return StorageMediaCategory.Audio;
+        if (DocumentContentTypes.Contains(normalized))
+            return StorageMediaCategory.Document;
+        return StorageMediaCategory.Other;
+    }
+
+    public static string ToMediaType(StorageMediaCategory category) =>
+        category switch
+        {
+            StorageMediaCategory.Image => MediaTypes.Image,
+            StorageMediaCategory.Video => MediaTypes.Video,
+            StorageMediaCategory.Document => MediaTypes.Document,
+            StorageMediaCategory.Audio => MediaTypes.Audio,
+            StorageMediaCategory.Other => MediaTypes.Other,
+            _ => throw MediaErrors.InvalidMedia("The media category is not supported.")
         };
 
     private static bool IsKnownCategory(string contentType) =>

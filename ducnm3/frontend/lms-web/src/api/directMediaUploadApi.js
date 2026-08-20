@@ -6,18 +6,19 @@ import { normalizeProgress } from '@/features/media/directUploadSlice'
 import { ENV } from '@/constants/env'
 
 export async function createUploadIntentRequest(payload, { signal } = {}) {
+  const { uploadedBy: _uploadedBy, uploadedByType: _uploadedByType, ...request } = payload
   const response = await httpClient.post(
     API_ROUTES.media.uploadIntents,
-    payload,
+    request,
     { signal },
   )
   return unwrapEnvelope(response)
 }
 
-export async function completeDirectUploadRequest(mediaId, actor, { signal } = {}) {
+export async function completeDirectUploadRequest(mediaId, _actor, { signal } = {}) {
   const response = await httpClient.post(
     API_ROUTES.media.uploadComplete(mediaId),
-    actor,
+    undefined,
     { signal },
   )
   return unwrapEnvelope(response)

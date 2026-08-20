@@ -18,6 +18,7 @@ import {
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { Icon } from '@/components/ui/Icon'
+import { readAdmin } from '@/auth/actorStorage'
 import { ENV } from '@/constants/env'
 import { ICON } from '@/constants/icons'
 import { LAYOUT } from '@/constants/layout'
@@ -56,6 +57,7 @@ export function Sidebar() {
   const navigate = useNavigate()
   const activeService = getServiceByPath(location.pathname)
   const activeMenu = getMenuByPath(location.pathname)
+  const admin = readAdmin()
 
   return (
     <aside
@@ -123,9 +125,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      <p className={`${ui.sidebarFooter} px-5 py-4 text-[12px] ${ui.caption}`}>
-        Chọn service, rồi mở menu để gọi API.
-      </p>
+      <div className={`${ui.sidebarFooter} px-5 py-4 text-[12px] ${ui.caption}`}>
+        <p className="font-medium text-fg">{admin.displayName}</p>
+        <p className="mt-1 break-all font-mono text-[10px]">{admin.id}</p>
+      </div>
     </aside>
   )
 }

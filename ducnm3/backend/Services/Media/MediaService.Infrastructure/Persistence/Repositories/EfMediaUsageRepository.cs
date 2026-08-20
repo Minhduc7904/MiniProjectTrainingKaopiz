@@ -170,6 +170,64 @@ public sealed class EfMediaUsageRepository(
         return await ReplaceExclusiveUsageAsync(usage, cancellationToken);
     }
 
+    public async Task<DomainMediaUsage> ReplaceCourseThumbnailAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken)
+    {
+        await EnsureCourseMediaAsync(usage, requireThumbnail: true, cancellationToken);
+        return await ReplaceExclusiveUsageAsync(usage, cancellationToken);
+    }
+
+    public async Task<DomainMediaUsage> AddCourseGalleryMediaAsync(
+        CreateMediaUsageRecord usage,
+        CancellationToken cancellationToken)
+    {
+        await EnsureCourseMediaAsync(usage, requireThumbnail: false, cancellationToken);
+        await EnsureMediaUsagesAsync([usage], cancellationToken);
+        return new DomainMediaUsage(
+            usage.Id,
+            usage.MediaId,
+            usage.OwnerService,
+            usage.OwnerType,
+            usage.OwnerId,
+            usage.UsageType,
+            usage.DisplayOrder,
+            usage.CreatedBy,
+            timeProvider.GetUtcNow().UtcDateTime);
+    }
+
+    private async Task EnsureCourseMediaAsync(
+        CreateMediaUsageRecord usage,
+        bool requireThumbnail,
+        CancellationToken cancellationToken)
+    {
+        var media = await dbContext.MediaObjects
+            .AsNoTracking()
+            .Where(item => item.Id == usage.MediaId &&
+                item.Status == MediaObjectStatuses.Ready &&
+                item.DeletedAt == null &&
+                item.UploadedBy == usage.CreatedBy.Id &&
+                item.UploadedByType == usage.CreatedBy.Type)
+            .Select(item => new { item.MediaType, item.SourceMediaId, item.DerivationType, item.ContentType })
+            .SingleOrDefaultAsync(cancellationToken);
+        if (media is null)
+        {
+            throw MediaErrors.MediaNotReady();
+        }
+
+        var valid = requireThumbnail
+            ? media.SourceMediaId is not null &&
+              media.DerivationType == MediaDerivationTypes.Thumbnail &&
+              string.Equals(media.ContentType, "image/webp", StringComparison.OrdinalIgnoreCase)
+            : media.MediaType == MediaTypes.Image && media.SourceMediaId is null;
+        if (!valid)
+        {
+            throw MediaErrors.InvalidMedia(requireThumbnail
+                ? "Course thumbnail must be a READY WebP thumbnail owned by the actor."
+                : "Course gallery media must be a READY original image owned by the actor.");
+        }
+    }
+
     private async Task<DomainMediaUsage> ReplaceExclusiveUsageAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)

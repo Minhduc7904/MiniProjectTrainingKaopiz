@@ -7,7 +7,6 @@ using MediaService.Domain.ValueObjects;
 namespace MediaService.Application.UseCases.Media.Upload;
 
 public sealed record UploadMediaCommand(
-    string MediaType,
     string ContentType,
     string OriginalFileName,
     Stream Content,

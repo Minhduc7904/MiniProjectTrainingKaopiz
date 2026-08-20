@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { uploadMediaRequest } from '@/api/mediaApi'
 import { toApiError } from '@/api/toApiError'
-import { POST_MEDIA_FIELDS } from '@/constants/media'
 import { POST_MEDIA_DEFAULT_QUERY } from '@/constants/inputs/postMedia'
 import {
   assignMutationQuery,
@@ -13,9 +12,6 @@ import {
 
 function toStoredQuery(arg = {}) {
   return {
-    [POST_MEDIA_FIELDS.mediaType]: arg.mediaType,
-    [POST_MEDIA_FIELDS.uploadedByType]: arg.uploadedByType,
-    [POST_MEDIA_FIELDS.uploadedBy]: arg.uploadedBy,
     fileName: arg.file?.name ?? null,
     fileSize: arg.file?.size ?? null,
   }

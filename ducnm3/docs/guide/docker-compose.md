@@ -31,6 +31,7 @@ docker compose down
 - Media Service: `http://localhost:5103`
 - Notification Service: `http://localhost:5104`
 - Scheduler Service: `http://localhost:5105`
+- Admin Service: `http://localhost:5106`
 - MinIO API: `http://localhost:9000`
 - Bảng điều khiển MinIO: `http://localhost:9001`
 - RabbitMQ AMQP: `localhost:5672`
@@ -43,6 +44,24 @@ Gateway định tuyến các yêu cầu bên ngoài theo tiền tố dịch vụ
 - `/media/{path}` → Media Service
 - `/notification/{path}` → Notification Service
 - `/scheduler/{path}` → Scheduler Service
+- `/admin/{path}` → Admin Service
+
+## Development actor headers
+
+Media upload và Media Usage dùng hai header development:
+
+```http
+X-Actor-Type: ADMIN
+X-Actor-Id: 00000000-0000-0000-0000-000000000001
+```
+
+Frontend lưu actor dưới key `lms.actor` với dạng
+`{"type":"ADMIN","id":"..."}`; Axios tự thêm hai header cho request.
+
+Upload chỉ chuẩn hóa actor để ghi audit. Media Usage mới gọi Student Service
+hoặc Admin Service để xác minh ID; Course thumbnail/gallery chỉ cho `ADMIN`.
+Đây là cơ chế giả lập Development, chưa phải authentication và không nên dùng
+để bảo vệ Production.
 
 Ví dụ, trạng thái sức khỏe của Course Service có tại `http://localhost:5100/course/health`.
 

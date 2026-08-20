@@ -5,6 +5,7 @@ namespace MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 
 public sealed record CreateUploadIntentResult(
     Guid MediaId,
+    string MediaType,
     string Status,
     bool IsDraft,
     DateTime ExpiresAtUtc,

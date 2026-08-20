@@ -9,6 +9,4 @@ public sealed record CreateMediaUsageRequest(
     string OwnerType,
     string OwnerId,
     string UsageType,
-    uint DisplayOrder,
-    string CreatedByType,
-    string CreatedBy);
+    uint DisplayOrder);

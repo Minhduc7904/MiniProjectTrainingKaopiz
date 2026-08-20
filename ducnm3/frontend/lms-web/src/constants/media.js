@@ -21,11 +21,34 @@ export const MEDIA_TYPE_LABELS = {
   [MEDIA_TYPES.other]: 'Khác',
 }
 
+export const MEDIA_OWNER_SERVICES = {
+  course: 'COURSE',
+  media: 'MEDIA',
+  notification: 'NOTIFICATION',
+  student: 'STUDENT',
+}
+
+export const COURSE_MEDIA = {
+  thumbnail: {
+    ownerService: MEDIA_OWNER_SERVICES.course,
+    ownerType: 'COURSE_THUMBNAIL',
+    usageType: 'THUMBNAIL',
+    displayOrder: 0,
+  },
+  gallery: {
+    ownerService: MEDIA_OWNER_SERVICES.course,
+    ownerType: 'COURSE_GALLERY',
+    usageType: 'ATTACHMENT',
+  },
+}
+
 export const ACTOR_TYPES = {
+  admin: 'ADMIN',
   student: 'STUDENT',
 }
 
 export const ACTOR_TYPE_LABELS = {
+  [ACTOR_TYPES.admin]: 'Admin',
   [ACTOR_TYPES.student]: 'Student',
 }
 

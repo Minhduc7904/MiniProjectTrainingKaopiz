@@ -3,7 +3,6 @@
 
 using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
-using MediaService.Application.Services.Actors;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Domain.Constants;
@@ -11,7 +10,6 @@ using MediaService.Domain.Constants;
 namespace MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 
 public sealed class CreateUploadIntentHandler(
-    IActorValidationService actorValidationService,
     IStorageLocationAllocator locationAllocator,
     IStorageUploadPolicyProvider policyProvider,
     IMediaRepository mediaRepository,
@@ -23,13 +21,9 @@ public sealed class CreateUploadIntentHandler(
     {
         ArgumentNullException.ThrowIfNull(command);
         var fileName = ValidateFileName(command.OriginalFileName);
-        var category = ParseCategory(command.MediaType);
-        var mediaType = command.MediaType.Trim().ToUpperInvariant();
         var contentType = MediaContentTypeRules.Normalize(command.ContentType);
-        if (!MediaContentTypeRules.Matches(category, contentType))
-        {
-            throw MediaErrors.UnsupportedMediaType();
-        }
+        var category = MediaContentTypeRules.InferCategory(contentType);
+        var mediaType = MediaContentTypeRules.ToMediaType(category);
 
         if (command.SizeBytes <= 0)
         {
@@ -42,9 +36,7 @@ public sealed class CreateUploadIntentHandler(
         }
 
         var checksum = DirectUploadChecksum.Validate(command.ChecksumSha256);
-        var actor = await actorValidationService.ValidateAsync(
-            command.UploadedBy,
-            cancellationToken);
+        var actor = command.UploadedBy.Normalize();
         StorageObjectLocation location;
         try
         {
@@ -67,7 +59,7 @@ public sealed class CreateUploadIntentHandler(
                 location, contentType, command.SizeBytes, checksum),
             cancellationToken);
         return new CreateUploadIntentResult(
-            mediaId, MediaObjectStatuses.Pending, true, policy.ExpiresAtUtc,
+            mediaId, mediaType, MediaObjectStatuses.Pending, true, policy.ExpiresAtUtc,
             policy.UploadUrl, policy.FormFields);
     }
 
@@ -89,21 +81,4 @@ public sealed class CreateUploadIntentHandler(
         return fileName;
     }
 
-    private static StorageMediaCategory ParseCategory(string mediaType)
-    {
-        if (string.IsNullOrWhiteSpace(mediaType))
-        {
-            throw MediaErrors.InvalidMedia("mediaType is required.");
-        }
-
-        return mediaType.Trim().ToUpperInvariant() switch
-        {
-            MediaTypes.Image => StorageMediaCategory.Image,
-            MediaTypes.Video => StorageMediaCategory.Video,
-            MediaTypes.Document => StorageMediaCategory.Document,
-            MediaTypes.Audio => StorageMediaCategory.Audio,
-            MediaTypes.Other => StorageMediaCategory.Other,
-            _ => throw MediaErrors.InvalidMedia("mediaType is not supported.")
-        };
-    }
 }

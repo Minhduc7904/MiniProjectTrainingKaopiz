@@ -6,8 +6,8 @@ import { useMediaThumbnail } from '@/hooks/media/mediaThumbnail'
 import { ui } from '@/theme'
 import { MediaImagePreview } from './MediaImagePreview'
 
-export function MediaThumbnailStatus({ media, query }) {
-  const { thumbnail, error, retrying, retry } = useMediaThumbnail(media, query)
+export function MediaThumbnailStatus({ media }) {
+  const { thumbnail, error, retrying, retry } = useMediaThumbnail(media)
   const active = thumbnail.status === 'QUEUED' || thumbnail.status === 'PROCESSING'
   const failed = thumbnail.status === 'FAILED'
 

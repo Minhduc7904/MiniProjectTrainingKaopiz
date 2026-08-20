@@ -2,15 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ImagePlus, Paperclip, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { Dropdown } from '@/components/ui/Dropdown'
 import { FieldLabel, FileInput, TextInput } from '@/components/ui/Field'
 import { Icon } from '@/components/ui/Icon'
-import {
-  ACTOR_TYPE_LABELS,
-  ACTOR_TYPES,
-  POST_MEDIA_FIELDS,
-} from '@/constants/media'
-import { MEDIA_COPY } from '@/constants/mediaCopy'
 import { ui } from '@/theme'
 import { preventParentBatchSubmit } from './notificationMarkdownSubmission'
 
@@ -18,11 +11,6 @@ const MEDIA_USAGE = {
   embed: 'EMBED',
   attachment: 'ATTACHMENT',
 }
-
-const ACTOR_TYPE_OPTIONS = Object.values(ACTOR_TYPES).map((value) => ({
-  value,
-  label: ACTOR_TYPE_LABELS[value],
-}))
 
 function markdownForMedia({ usage, label, contentUrl }) {
   const safeLabel = label.replaceAll(']', '')
@@ -36,10 +24,8 @@ function MediaInsertDialog({
   disabled,
   uploadLoading,
   uploadError,
-  uploadQuery,
   onClose,
   onInsert,
-  onUploadQueryChange,
 }) {
   const dialogRef = useRef(null)
   const [file, setFile] = useState(null)
@@ -64,7 +50,7 @@ function MediaInsertDialog({
   const submit = async (event) => {
     preventParentBatchSubmit(event)
     if (!file) return
-    const inserted = await onInsert({ file, usage, label, uploadQuery })
+    const inserted = await onInsert({ file, usage, label })
     if (inserted) close()
   }
 
@@ -113,44 +99,6 @@ function MediaInsertDialog({
             />
           </div>
 
-          <section className={`rounded-md p-3 ${ui.choiceIdle}`} aria-labelledby="upload-actor-title">
-            <p className={`font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`} id="upload-actor-title">
-              Người upload tạm thời
-            </p>
-            <p className={`mt-1 text-[12px] ${ui.body}`}>
-              Media API cần actor trước khi có xác thực; các trường này sẽ được lấy từ JWT sau này.
-            </p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <Dropdown
-                id="markdown-media-uploaded-by-type"
-                label={MEDIA_COPY.uploadedByType}
-                value={uploadQuery[POST_MEDIA_FIELDS.uploadedByType] ?? ''}
-                options={ACTOR_TYPE_OPTIONS}
-                disabled={disabled || uploadLoading}
-                onChange={(uploadedByType) => onUploadQueryChange({
-                  ...uploadQuery,
-                  [POST_MEDIA_FIELDS.uploadedByType]: uploadedByType,
-                })}
-              />
-              <div className="flex flex-col gap-1">
-                <FieldLabel htmlFor="markdown-media-uploaded-by" hint="UUID học viên tồn tại trên Student Service.">
-                  {MEDIA_COPY.uploadedBy}
-                </FieldLabel>
-                <TextInput
-                  id="markdown-media-uploaded-by"
-                  name={POST_MEDIA_FIELDS.uploadedBy}
-                  value={uploadQuery[POST_MEDIA_FIELDS.uploadedBy] ?? ''}
-                  disabled={disabled || uploadLoading}
-                  placeholder="UUID học viên"
-                  onChange={(event) => onUploadQueryChange({
-                    ...uploadQuery,
-                    [POST_MEDIA_FIELDS.uploadedBy]: event.target.value,
-                  })}
-                />
-              </div>
-            </div>
-          </section>
-
           <fieldset disabled={disabled || uploadLoading}>
             <legend className={`font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>
               Cách dùng trong nội dung
@@ -190,7 +138,7 @@ function MediaInsertDialog({
           <Button type="button" variant="ghost" onClick={close}>Hủy</Button>
           <Button
             type="submit"
-            disabled={disabled || uploadLoading || !file || !uploadQuery[POST_MEDIA_FIELDS.uploadedBy]?.trim()}
+            disabled={disabled || uploadLoading || !file}
           >
             {uploadLoading ? 'Đang tải ảnh' : 'Chèn vào nội dung'}
           </Button>
@@ -207,17 +155,15 @@ export function NotificationMarkdownEditor({
   disabled,
   uploadLoading,
   uploadError,
-  uploadQuery,
   onChange,
   onUploadImage,
-  onUploadQueryChange,
 }) {
   const textareaRef = useRef(null)
   const selectionRef = useRef({ start: value.length, end: value.length })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const insertMedia = async ({ file, usage, label, uploadQuery: mediaQuery }) => {
-    const media = await onUploadImage(file, mediaQuery)
+  const insertMedia = async ({ file, usage, label }) => {
+    const media = await onUploadImage(file)
     if (!media?.contentUrl) return false
 
     const insert = markdownForMedia({ usage, label: label.trim() || file.name, contentUrl: media.contentUrl })
@@ -262,10 +208,8 @@ export function NotificationMarkdownEditor({
         disabled={disabled}
         uploadLoading={uploadLoading}
         uploadError={uploadError}
-        uploadQuery={uploadQuery}
         onClose={() => setIsDialogOpen(false)}
         onInsert={insertMedia}
-        onUploadQueryChange={onUploadQueryChange}
       />
     </section>
   )

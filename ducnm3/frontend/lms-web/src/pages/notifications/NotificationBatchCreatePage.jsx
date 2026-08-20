@@ -11,7 +11,6 @@ import { POST_NOTIFICATION_BATCH_ACTIVITY } from '@/constants/activities/postNot
 import { UI_LABELS } from '@/constants/ui'
 import { useNotificationBatchCreate } from '@/hooks/notifications/useNotificationBatchCreate'
 import { useMediaUpload } from '@/hooks/media/useMediaUpload'
-import { MEDIA_TYPES } from '@/constants/media'
 import { NotificationBatchForm } from './components/NotificationBatchForm'
 import { NotificationBatchManualForm } from './components/NotificationBatchManualForm'
 import { NotificationBatchResult } from './components/NotificationBatchResult'
@@ -21,12 +20,9 @@ function toOutputJson({ data, error, success, query, traceId, location }) { retu
 export function NotificationBatchCreatePage() {
   const { data, query, loading, success, error, traceId, location, setQuery, submit, reset } = useNotificationBatchCreate()
   const mediaUpload = useMediaUpload()
-  const uploadImage = async (file, mediaQuery) => {
+  const uploadImage = async (file) => {
     const result = await mediaUpload.submit({
       file,
-      mediaType: MEDIA_TYPES.image,
-      uploadedByType: mediaQuery.uploadedByType,
-      uploadedBy: String(mediaQuery.uploadedBy ?? '').trim(),
     })
     return result.meta.requestStatus === 'fulfilled' ? result.payload.data : null
   }

@@ -218,5 +218,15 @@ public sealed class GetMediaUsageUrlEndpointsComponentTests
             CreateMediaUsageRecord usage,
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
+
+        public Task<MediaUsage> ReplaceCourseThumbnailAsync(
+            CreateMediaUsageRecord usage,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<MediaUsage> AddCourseGalleryMediaAsync(
+            CreateMediaUsageRecord usage,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 }

@@ -3,7 +3,6 @@
 
 using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
-using MediaService.Application.Services.Actors;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;
@@ -12,7 +11,6 @@ using MediaService.Domain.Constants;
 namespace MediaService.Application.UseCases.Media.DirectUpload.Complete;
 
 public sealed class CompleteDirectUploadHandler(
-    IActorValidationService actorValidationService,
     IStorage storage,
     IMediaRepository mediaRepository,
     IMediaUploadFinalizer uploadFinalizer,
@@ -29,9 +27,7 @@ public sealed class CompleteDirectUploadHandler(
             throw MediaErrors.InvalidMedia("mediaId must be a non-empty UUID.");
         }
 
-        var actor = await actorValidationService.ValidateAsync(
-            command.UploadedBy,
-            cancellationToken);
+        var actor = command.UploadedBy.Normalize();
         var media = await mediaRepository.GetByIdAsync(
             command.MediaId,
             cancellationToken) ?? throw MediaErrors.MediaNotFound();

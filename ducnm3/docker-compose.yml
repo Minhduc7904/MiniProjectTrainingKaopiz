@@ -191,6 +191,8 @@ services:
         condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
+      admin-service:
+        condition: service_started
     environment:
       <<: [*messaging-environment, *http-query-environment, *observability-environment]
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
@@ -217,6 +219,7 @@ services:
       MediaUpload__OtherMaxBytes: ${MEDIA_UPLOAD_OTHER_MAX_BYTES:-26214400}
       MediaUpload__RequestMaxBytes: ${MEDIA_UPLOAD_REQUEST_MAX_BYTES:-550502400}
       ServiceEndpoints__student-service: http://student-service:8080/
+      ServiceEndpoints__admin-service: http://admin-service:8080/
     ports:
       - "5103:8080"
 
@@ -259,6 +262,7 @@ services:
       MediaThumbnail__VideoCaptureMaxSeconds: ${MEDIA_THUMBNAIL_VIDEO_CAPTURE_MAX_SECONDS:-30}
       MediaThumbnail__ProcessTimeoutSeconds: ${MEDIA_THUMBNAIL_PROCESS_TIMEOUT_SECONDS:-120}
       ServiceEndpoints__student-service: http://student-service:8080/
+      ServiceEndpoints__admin-service: http://admin-service:8080/
     restart: unless-stopped
     stop_grace_period: 30s
     mem_limit: 1g
@@ -347,6 +351,25 @@ services:
       ServiceEndpoints__notification-service: http://notification-service:8080/
       ServiceEndpoints__media-service: http://media-service:8080/
 
+  admin-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Admin/AdminService.Api/AdminService.Api.csproj
+    command: AdminService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      Admin__Ids__0: ${ADMIN_ID:-00000000-0000-0000-0000-000000000001}
+      Admin__DisplayName: ${ADMIN_DISPLAY_NAME:-Development Admin}
+    ports:
+      - "5106:8080"
+
   data-seeder:
     profiles: ["seed"]
     build:
@@ -381,6 +404,7 @@ services:
       ServiceEndpoints__media-service: http://media-service:8080/
       ServiceEndpoints__notification-service: http://notification-service:8080/
       ServiceEndpoints__scheduler-service: http://scheduler-service:8080/
+      ServiceEndpoints__admin-service: http://admin-service:8080/
       Proxy__MaxRequestBodySize: ${MEDIA_UPLOAD_REQUEST_MAX_BYTES:-550502400}
     ports:
       - "5100:8080"

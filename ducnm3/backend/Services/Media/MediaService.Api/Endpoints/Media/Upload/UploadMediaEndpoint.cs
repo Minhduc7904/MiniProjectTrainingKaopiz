@@ -31,28 +31,16 @@ public static class UploadMediaEndpoint
                         cancellationToken);
                     var file = form.Files.GetFile("file") ??
                         throw MediaErrors.InvalidMedia("file is required.");
-                    var mediaType = MediaRequestParser.GetRequiredFormValue(
-                        form,
-                        "mediaType");
-                    var uploadedByType =
-                        MediaRequestParser.GetRequiredFormValue(
-                            form,
-                            "uploadedByType");
-                    var uploadedBy = MediaRequestParser.ParseGuid(
-                        MediaRequestParser.GetRequiredFormValue(
-                            form,
-                            "uploadedBy"),
-                        "uploadedBy");
+                    var actor = MediaRequestParser.ReadActor(context.Request);
 
                     await using var stream = file.OpenReadStream();
                     var result = await handler.HandleAsync(
                         new UploadMediaCommand(
-                            mediaType,
                             file.ContentType,
                             file.FileName,
                             stream,
                             file.Length,
-                            new ActorReference(uploadedByType, uploadedBy)),
+                            actor),
                         cancellationToken);
                     var response = MediaResponseMapper.ToResponse(result);
                     context.Response.Headers.Location =

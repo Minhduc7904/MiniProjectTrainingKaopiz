@@ -8,6 +8,17 @@ namespace BuildingBlocks.Contracts.Api;
 /// </summary>
 public static class ApiRoutes
 {
+    public static class Admins
+    {
+        public const string GetByIdTemplate = "/api/admins/{adminId}";
+
+        public static string GetByIdServicePath(Guid adminId) =>
+            BuildServicePath(FormatGuidRoute(GetByIdTemplate, "adminId", adminId));
+
+        public static string GetByIdPublicPath(Guid adminId) =>
+            BuildPublicPath(GatewayRoutePrefixes.Admin, FormatGuidRoute(GetByIdTemplate, "adminId", adminId));
+    }
+
     /// <summary>Route contract do Course Service sở hữu.</summary>
     public static class Courses
     {

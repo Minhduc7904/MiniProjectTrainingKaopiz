@@ -14,6 +14,67 @@ namespace MediaService.UnitTests.Application.UseCases.MediaUsages.Create;
 public sealed class CreateMediaUsageHandlerTests
 {
     [Test]
+    public async Task CourseGalleryAcceptsReadyOriginalImage()
+    {
+        var repository = CreateRepository(new MediaRecord(
+            Guid.NewGuid(),
+            new StorageObjectLocation("images", "gallery.png"),
+            MediaTypes.Image,
+            "image/png",
+            "gallery.png",
+            3,
+            MediaObjectStatuses.Ready,
+            DateTime.UtcNow,
+            null));
+        var handler = CreateHandler(repository);
+
+        var result = await handler.HandleAsync(
+            new CreateMediaUsageCommand(
+                repository.ExistingMedia!.Id,
+                MediaOwnerServices.Course,
+                MediaOwnerTypes.CourseGallery,
+                Guid.NewGuid(),
+                MediaUsageTypes.Attachment,
+                2,
+                new ActorReference(ActorTypes.Admin, Guid.NewGuid())),
+            CancellationToken.None);
+
+        Assert.That(result.OwnerType, Is.EqualTo(MediaOwnerTypes.CourseGallery));
+        Assert.That(result.UsageType, Is.EqualTo(MediaUsageTypes.Attachment));
+    }
+
+    [Test]
+    public async Task CourseThumbnailUsesExclusiveUsageContract()
+    {
+        var repository = CreateRepository(new MediaRecord(
+            Guid.NewGuid(),
+            new StorageObjectLocation("images", "thumbnail.webp"),
+            MediaTypes.Image,
+            "image/webp",
+            "thumbnail.webp",
+            3,
+            MediaObjectStatuses.Ready,
+            DateTime.UtcNow,
+            null,
+            Guid.NewGuid(),
+            MediaDerivationTypes.Thumbnail));
+        var handler = CreateHandler(repository);
+
+        var result = await handler.HandleAsync(
+            new CreateMediaUsageCommand(
+                repository.ExistingMedia!.Id,
+                MediaOwnerServices.Course,
+                MediaOwnerTypes.CourseThumbnail,
+                Guid.NewGuid(),
+                MediaUsageTypes.Thumbnail,
+                0,
+                new ActorReference(ActorTypes.Admin, Guid.NewGuid())),
+            CancellationToken.None);
+
+        Assert.That(result.OwnerType, Is.EqualTo(MediaOwnerTypes.CourseThumbnail));
+    }
+
+    [Test]
     public async Task UsageKeepsCreatorActorSeparateFromOwner()
     {
         var repository = new StubMediaRepository
@@ -77,4 +138,9 @@ public sealed class CreateMediaUsageHandlerTests
             return Task.FromResult(normalizedActor);
         }
     }
+
+    private static StubMediaRepository CreateRepository(MediaRecord media) => new() { ExistingMedia = media };
+
+    private static CreateMediaUsageHandler CreateHandler(StubMediaRepository repository) =>
+        new(new RecordingActorValidationService(), new StubStudentLookup(), repository, repository);
 }

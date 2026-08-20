@@ -6,15 +6,9 @@ import { POST_MEDIA_FIELDS } from '@/constants/media'
 
 export async function uploadMediaRequest({
   file,
-  mediaType,
-  uploadedByType,
-  uploadedBy,
 }) {
   const body = new FormData()
   body.append(POST_MEDIA_FIELDS.file, file)
-  body.append(POST_MEDIA_FIELDS.mediaType, mediaType)
-  body.append(POST_MEDIA_FIELDS.uploadedByType, uploadedByType)
-  body.append(POST_MEDIA_FIELDS.uploadedBy, uploadedBy)
 
   const response = await httpClient.post(API_ROUTES.media.upload, body)
   const envelope = unwrapEnvelope(response)
@@ -41,10 +35,10 @@ export async function getMediaContentRequest(contentUrl, { signal } = {}) {
   return response.data
 }
 
-export async function retryMediaThumbnailRequest(mediaId, actor, { signal } = {}) {
+export async function retryMediaThumbnailRequest(mediaId, { signal } = {}) {
   const response = await httpClient.post(
     API_ROUTES.media.retryThumbnail(mediaId),
-    actor,
+    undefined,
     { signal },
   )
   return unwrapEnvelope(response)

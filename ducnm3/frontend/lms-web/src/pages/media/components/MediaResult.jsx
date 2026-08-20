@@ -15,7 +15,7 @@ function Row({ label, value }) {
   )
 }
 
-export function MediaResult({ media, location, query, showDraft = false }) {
+export function MediaResult({ media, location, showDraft = false }) {
   return (
     <div className="space-y-4">
       {isImageMedia(media) ? <MediaImagePreview contentUrl={media.contentUrl} alt={media.id} /> : null}
@@ -36,7 +36,7 @@ export function MediaResult({ media, location, query, showDraft = false }) {
           <Row label={MEDIA_COPY.location} value={location} />
         </dl>
       </div>
-      <MediaThumbnailStatus media={media} query={query} />
+      <MediaThumbnailStatus media={media} />
     </div>
   )
 }

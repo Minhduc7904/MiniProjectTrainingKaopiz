@@ -22,10 +22,8 @@ export function NotificationBatchForm({
           disabled={loading}
           uploadLoading={mediaUpload.loading}
           uploadError={mediaUpload.error}
-          uploadQuery={mediaUpload.query}
           onChange={(bodyMarkdown) => onChange({ ...query, bodyMarkdown })}
           onUploadImage={onUploadImage}
-          onUploadQueryChange={mediaUpload.setQuery}
         />
         <Dropdown label="Phạm vi gửi" className="w-full" value={query.targetScope ?? ''} disabled={loading} options={[{ value: 'ALL_STUDENTS', label: 'Tất cả học viên đang hoạt động' }]} onChange={(targetScope) => onChange({ ...query, targetScope })} />
         <div className="flex flex-col gap-1"><FieldLabel htmlFor="batch-size">Kích thước chunk</FieldLabel><TextInput id="batch-size" name={NOTIFICATION_BATCH_FIELDS.batchSize} type="number" value={query.batchSize ?? ''} disabled={loading} onChange={(event) => onChange({ ...query, batchSize: Number(event.target.value) })} /></div>

@@ -91,6 +91,12 @@ public static class MediaErrors
             "Student Service is unavailable.",
             503);
 
+    public static MediaApplicationException AdminServiceUnavailable() =>
+        new(
+            MediaErrorCodes.AdminServiceUnavailable,
+            "Admin Service is unavailable.",
+            503);
+
     public static MediaApplicationException StorageUnavailable() =>
         new(
             ApiErrorCodes.StorageUnavailable,
