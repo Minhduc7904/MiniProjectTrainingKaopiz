@@ -61,6 +61,8 @@ scripts/seed/run-development-seed.sh \
 Giới hạn:
 
 - Học viên: `1-100,000`; Khóa học: `1-300,000` (mặc định vẫn là `100,000`).
+- Profile `course-api-large` cho phép `3,000,000` Course, đúng `1` Lesson/Course,
+  khoảng `1,000,000` Enrollment và `3,000,000` LessonProgress.
 - Bài học/Khóa học: `1-5`.
 - Khóa học/Học viên: `1-10` và không lớn hơn tổng số khóa học.
 - Kích thước lô: `1-2,000`.
@@ -141,6 +143,49 @@ dotnet run --project backend/Tools/Lms.DataSeeder/Lms.DataSeeder.csproj -- --hel
 
 Không ghi nhật ký chuỗi kết nối hoặc mật khẩu; bảng cấu hình chỉ hiển thị
 máy chủ/cổng/cơ sở dữ liệu.
+
+## Seed profile Course API lớn
+
+Profile này tạo dataset quan hệ đủ lớn cho index, pagination, export và API
+Course details. Reset trước khi chạy để tránh trộn dataset:
+
+```bash
+scripts/database/reset-development-databases.sh --confirm
+docker compose up -d --build
+
+scripts/seed/run-development-seed.sh \
+  --confirm \
+  --profile course-api-large \
+  --random-seed 20260820 \
+  --batch-size 2000
+```
+
+Kế hoạch mặc định của profile:
+
+```text
+students           100,000
+courses          3,000,000
+lessons          3,000,000
+enrollments      1,000,000
+lesson_progresses 3,000,000
+```
+
+Kiểm tra sau seed:
+
+```bash
+docker compose exec -T mysql mysql --batch --skip-column-names \
+  --user=root --password="$MYSQL_ROOT_PASSWORD" \
+  --execute="
+    SELECT 'students', COUNT(*) FROM lms_student_db.students;
+    SELECT 'courses', COUNT(*) FROM lms_course_db.courses;
+    SELECT 'lessons', COUNT(*) FROM lms_course_db.lessons;
+    SELECT 'enrollments', COUNT(*) FROM lms_course_db.enrollments;
+    SELECT 'lesson_progresses', COUNT(*) FROM lms_course_db.lesson_progresses;
+  "
+```
+
+Không tính thời gian reset/seed vào số đo API. Dataset này có thể cần nhiều
+thời gian và dung lượng MySQL; nếu bị ngắt, chạy lại đúng lệnh với `--resume`.
 
 ## Kiểm tra bằng SQL
 

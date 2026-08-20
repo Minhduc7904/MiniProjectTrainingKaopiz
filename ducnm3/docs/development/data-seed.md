@@ -41,7 +41,8 @@ không rỗng.
 4. Seed khóa học.
 5. Seed bài học sau khóa học cha.
 6. Seed lượt ghi danh sau học viên và khóa học.
-7. Kiểm tra tổng số chính xác, phạm vi quan hệ và một tham chiếu logic học viên
+7. Seed tiến độ bài học sau khi đã có Lesson và Student.
+8. Kiểm tra tổng số chính xác, phạm vi quan hệ và một tham chiếu logic học viên
    xuyên database.
 
 Mỗi lô được tham số hóa và thực thi trong transaction. Kích thước lô mặc định
@@ -54,6 +55,32 @@ là `1,000`; công cụ tạo và giải phóng từng lô một.
 - `1-5` bài học cho mỗi khóa học.
 - `1-10` lượt ghi danh cho mỗi học viên.
 - Không có tiến độ bài học.
+
+## Profile Course API lớn
+
+Profile `course-api-large` phục vụ benchmark index, pagination, export và
+Course -> Lessons -> Progress:
+
+- `100,000` Student.
+- `3,000,000` Course.
+- `3,000,000` Lesson, đúng một Lesson/Course.
+- khoảng `1,000,000` Enrollment, 10 Enrollment/Student.
+- `3,000,000` LessonProgress, một Progress/`Lesson` và Student được phân bổ
+   deterministic theo vòng lặp.
+
+Profile này cố ý không tạo Progress cho mọi tổ hợp Student x Lesson; cách đó sẽ
+tạo hàng nghìn tỷ dòng và không phản ánh một dataset benchmark có thể vận hành.
+
+```bash
+scripts/seed/run-development-seed.sh \
+   --confirm \
+   --profile course-api-large \
+   --random-seed 20260820 \
+   --batch-size 2000
+```
+
+Profile yêu cầu đúng một Lesson/Course. Không tính thời gian seed vào benchmark
+API và nên kiểm tra dung lượng MySQL trước khi chạy.
 
 Xem các lệnh, hành vi resume/reset và cách khắc phục sự cố vận hành tại
 [`../guide/DATA_SEED_GUIDE.md`](../guide/DATA_SEED_GUIDE.md).

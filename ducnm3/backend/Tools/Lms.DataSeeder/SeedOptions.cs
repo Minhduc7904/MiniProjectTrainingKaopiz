@@ -15,11 +15,13 @@ public sealed record SeedOptions(
     int RandomSeed,
     bool Confirmed,
     bool Resume,
-    bool DryRun)
+    bool DryRun,
+    bool CourseApiLarge = false)
 {
     public const int DefaultStudentCount = 100_000;
     public const int DefaultCourseCount = 100_000;
     public const int MaximumCourseCount = 300_000;
+    public const int MaximumCourseApiLargeCourseCount = 3_000_000;
     public const int DefaultRandomSeed = 20_260_813;
     public const int DefaultBatchSize = 1_000;
 
@@ -38,12 +40,18 @@ public sealed record SeedOptions(
         }
 
         ValidateRange(StudentCount, 1, DefaultStudentCount, nameof(StudentCount));
-        ValidateRange(CourseCount, 1, MaximumCourseCount, nameof(CourseCount));
+        ValidateRange(CourseCount, 1, CourseApiLarge ? MaximumCourseApiLargeCourseCount : MaximumCourseCount, nameof(CourseCount));
         ValidateRange(MinLessonsPerCourse, 1, 5, nameof(MinLessonsPerCourse));
         ValidateRange(MaxLessonsPerCourse, MinLessonsPerCourse, 5, nameof(MaxLessonsPerCourse));
         ValidateRange(MinCoursesPerStudent, 1, 10, nameof(MinCoursesPerStudent));
         ValidateRange(MaxCoursesPerStudent, MinCoursesPerStudent, 10, nameof(MaxCoursesPerStudent));
         ValidateRange(BatchSize, 1, 2_000, nameof(BatchSize));
+
+        if (CourseApiLarge && (MinLessonsPerCourse != 1 || MaxLessonsPerCourse != 1))
+        {
+            throw new SeedValidationException(
+                "The course-api-large profile requires exactly one lesson per course.");
+        }
 
         if (MaxCoursesPerStudent > CourseCount)
         {

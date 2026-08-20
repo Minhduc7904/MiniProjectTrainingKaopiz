@@ -10,7 +10,7 @@
 | CSV Export | Export danh sách khóa học với 100k+ records | Hiểu streaming/chunking và cách tránh OOM |
 | CSV – Performance | So sánh SELECT ALL → build CSV → response với xử lý theo batch/stream | Hiểu trade-off giữa memory và performance |
 | API – N+1 | API Course → Lessons → Progress; kiểm tra số lượng SQL query khi lấy nhiều records | Nhận biết và xử lý N+1 |
-| API – Index | Test query trên 10k / 100k / 1M records, so sánh trước và sau khi tạo index | Hiểu khi nào index có tác dụng, không phải query nào cũng nên thêm index |
+| API – Index | Test query trên 10k / 100k / 1M/3M records, so sánh trước và sau khi tạo index | Hiểu khi nào index có tác dụng, không phải query nào cũng nên thêm index |
 | API – Query Plan | Sử dụng EXPLAIN / EXPLAIN ANALYZE để kiểm tra query | Biết đọc execution plan, index scan/full scan và xác định bottleneck |
 | API – Pagination | API list với dataset lớn; thử offset pagination và kiểm tra performance khi offset tăng | Hiểu vấn đề của pagination trên dataset lớn và khi nào cần cách tiếp cận khác |
 | API – Performance | Benchmark API với 10k / 100k records, đo response time trước/sau optimization | Biết đo performance bằng số liệu thay vì cảm tính |

@@ -65,6 +65,13 @@ public sealed class DeterministicSeedData(SeedOptions options)
             CreateId("course", courseIndex),
             CreateId("student", studentIndex));
 
+    public LessonProgressSeedRow CreateLessonProgress(int courseIndex, int studentCount) =>
+        new(
+            CreateId("lesson-progress", courseIndex, 1),
+            CreateId("lesson", courseIndex, 1),
+            CreateId("student", ((courseIndex - 1) % studentCount) + 1),
+            (courseIndex % 10) * 10);
+
     public SeedPlan CalculatePlan()
     {
         long lessonCount = 0;
@@ -79,11 +86,14 @@ public sealed class DeterministicSeedData(SeedOptions options)
             enrollmentCount += GetCourseIndexesForStudent(studentIndex).Count;
         }
 
+        var progressCount = options.CourseApiLarge ? options.CourseCount : 0;
+
         return new SeedPlan(
             options.StudentCount,
             options.CourseCount,
             lessonCount,
-            enrollmentCount);
+            enrollmentCount,
+            progressCount);
     }
 
     private Guid CreateId(string entityType, int primaryIndex, int secondaryIndex = 0)
@@ -136,11 +146,18 @@ public sealed record LessonSeedRow(Guid Id, Guid CourseId, string Title, int Dis
 
 public sealed record EnrollmentSeedRow(Guid Id, Guid CourseId, Guid StudentId);
 
+public sealed record LessonProgressSeedRow(
+    Guid Id,
+    Guid LessonId,
+    Guid StudentId,
+    decimal ProgressPercent);
+
 public sealed record SeedPlan(
     long Students,
     long Courses,
     long Lessons,
-    long Enrollments)
+    long Enrollments,
+    long LessonProgresses)
 {
     public long TotalRows => Students + Courses + Lessons + Enrollments;
 }

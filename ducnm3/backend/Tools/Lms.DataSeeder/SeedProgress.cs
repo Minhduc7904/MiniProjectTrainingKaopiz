@@ -25,6 +25,7 @@ public enum SeedPhase
     Courses,
     Lessons,
     Enrollments,
+    LessonProgresses,
     Validation,
 }
 

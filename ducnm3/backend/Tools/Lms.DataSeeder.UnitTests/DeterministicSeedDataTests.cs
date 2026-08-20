@@ -97,6 +97,22 @@ public class DeterministicSeedDataTests
         });
     }
 
+    [Test]
+    public void CourseApiLargeProfilePlansOneProgressPerCourse()
+    {
+        var generator = new DeterministicSeedData(CreateOptions(randomSeed: 123) with
+        {
+            CourseApiLarge = true,
+            CourseCount = 1_000,
+            MinLessonsPerCourse = 1,
+            MaxLessonsPerCourse = 1,
+        });
+
+        var plan = generator.CalculatePlan();
+
+        Assert.That(plan.LessonProgresses, Is.EqualTo(1_000));
+    }
+
     private static SeedOptions CreateOptions(int randomSeed) =>
         new(
             "Server=localhost;Database=lms_student_db;User ID=test;Password=test;",

@@ -50,6 +50,11 @@ public sealed class MySqlSeedRunner(
                 plan.Enrollments,
                 existing.Enrollments,
                 cancellationToken);
+            await SeedLessonProgressesAsync(
+                courseConnection,
+                plan.LessonProgresses,
+                existing.LessonProgresses,
+                cancellationToken);
             await ValidateResultAsync(
                 studentConnection,
                 courseConnection,
@@ -81,14 +86,15 @@ public sealed class MySqlSeedRunner(
             cancellationToken);
         await EnsureSchemaReadyAsync(
             courseConnection,
-            ["schema_migrations", "courses", "lessons", "enrollments"],
+            ["schema_migrations", "courses", "lessons", "enrollments", "lesson_progresses"],
             cancellationToken);
 
         var existing = new SeedExistingCounts(
             await CountRowsAsync(studentConnection, "students", cancellationToken),
             await CountRowsAsync(courseConnection, "courses", cancellationToken),
             await CountRowsAsync(courseConnection, "lessons", cancellationToken),
-            await CountRowsAsync(courseConnection, "enrollments", cancellationToken));
+            await CountRowsAsync(courseConnection, "enrollments", cancellationToken),
+            await CountRowsAsync(courseConnection, "lesson_progresses", cancellationToken));
 
         if (!options.Resume && existing.TotalRows > 0)
         {
@@ -100,7 +106,8 @@ public sealed class MySqlSeedRunner(
         if (existing.Students > plan.Students ||
             existing.Courses > plan.Courses ||
             existing.Lessons > plan.Lessons ||
-            existing.Enrollments > plan.Enrollments)
+            existing.Enrollments > plan.Enrollments ||
+            existing.LessonProgresses > plan.LessonProgresses)
         {
             throw new SeedValidationException(
                 "Existing row counts exceed the requested deterministic dataset. " +
@@ -257,6 +264,40 @@ public sealed class MySqlSeedRunner(
             stopwatch.Elapsed);
     }
 
+    private async Task SeedLessonProgressesAsync(
+        MySqlConnection connection,
+        long total,
+        long existingRows,
+        CancellationToken cancellationToken)
+    {
+        if (!options.CourseApiLarge) return;
+
+        progress.PhaseStarted(SeedPhase.LessonProgresses, total);
+        var stopwatch = Stopwatch.StartNew();
+        var rows = new List<LessonProgressSeedRow>(options.BatchSize);
+        long processed = 0;
+        for (var courseIndex = 1; courseIndex <= options.CourseCount; courseIndex++)
+        {
+            rows.Add(data.CreateLessonProgress(courseIndex, options.StudentCount));
+            if (rows.Count == options.BatchSize)
+            {
+                await ExecuteLessonProgressBatchAsync(connection, rows, cancellationToken);
+                processed += rows.Count;
+                rows.Clear();
+                ReportProgress(SeedPhase.LessonProgresses, processed, total, existingRows);
+            }
+        }
+
+        if (rows.Count > 0)
+        {
+            await ExecuteLessonProgressBatchAsync(connection, rows, cancellationToken);
+            processed += rows.Count;
+            ReportProgress(SeedPhase.LessonProgresses, processed, total, existingRows);
+        }
+
+        progress.PhaseCompleted(SeedPhase.LessonProgresses, total, total - existingRows, existingRows, stopwatch.Elapsed);
+    }
+
     private async Task ValidateResultAsync(
         MySqlConnection studentConnection,
         MySqlConnection courseConnection,
@@ -269,17 +310,26 @@ public sealed class MySqlSeedRunner(
             await CountRowsAsync(studentConnection, "students", cancellationToken),
             await CountRowsAsync(courseConnection, "courses", cancellationToken),
             await CountRowsAsync(courseConnection, "lessons", cancellationToken),
-            await CountRowsAsync(courseConnection, "enrollments", cancellationToken));
+            await CountRowsAsync(courseConnection, "enrollments", cancellationToken),
+            await CountRowsAsync(courseConnection, "lesson_progresses", cancellationToken));
 
         progress.PhaseAdvanced(SeedPhase.Validation, 1, 4, 1, 0);
         if (actual.Students != plan.Students ||
             actual.Courses != plan.Courses ||
             actual.Lessons != plan.Lessons ||
-            actual.Enrollments != plan.Enrollments)
+            actual.Enrollments != plan.Enrollments ||
+            actual.LessonProgresses != plan.LessonProgresses)
         {
             throw new InvalidOperationException(
                 "Seed validation failed because final row counts do not match the deterministic plan. " +
                 $"Expected {Format(plan)}, actual {Format(actual)}.");
+        }
+
+        if (options.CourseApiLarge)
+        {
+            progress.PhaseAdvanced(SeedPhase.Validation, 4, 4, 4, 0);
+            progress.PhaseCompleted(SeedPhase.Validation, 4, 4, 0, stopwatch.Elapsed);
+            return;
         }
 
         var lessonDistribution = await GetDistributionAsync(
@@ -417,6 +467,25 @@ public sealed class MySqlSeedRunner(
                 AddParameter(command, rowIndex, 0, row.Id.ToString("D"));
                 AddParameter(command, rowIndex, 1, row.CourseId.ToString("D"));
                 AddParameter(command, rowIndex, 2, row.StudentId.ToString("D"));
+            },
+            cancellationToken);
+
+    private static Task ExecuteLessonProgressBatchAsync(
+        MySqlConnection connection,
+        List<LessonProgressSeedRow> rows,
+        CancellationToken cancellationToken) =>
+        ExecuteBatchAsync(
+            connection,
+            "lesson_progresses",
+            ["id", "lesson_id", "student_id", "progress_percent"],
+            rows.Count,
+            (command, rowIndex) =>
+            {
+                var row = rows[rowIndex];
+                AddParameter(command, rowIndex, 0, row.Id.ToString("D"));
+                AddParameter(command, rowIndex, 1, row.LessonId.ToString("D"));
+                AddParameter(command, rowIndex, 2, row.StudentId.ToString("D"));
+                AddParameter(command, rowIndex, 3, row.ProgressPercent);
             },
             cancellationToken);
 
@@ -639,21 +708,24 @@ public sealed class MySqlSeedRunner(
         string.Create(
             CultureInfo.InvariantCulture,
             $"students={plan.Students}, courses={plan.Courses}, " +
-            $"lessons={plan.Lessons}, enrollments={plan.Enrollments}");
+            $"lessons={plan.Lessons}, enrollments={plan.Enrollments}, " +
+            $"lessonProgresses={plan.LessonProgresses}");
 
     private static string Format(SeedExistingCounts counts) =>
         string.Create(
             CultureInfo.InvariantCulture,
             $"students={counts.Students}, courses={counts.Courses}, " +
-            $"lessons={counts.Lessons}, enrollments={counts.Enrollments}");
+            $"lessons={counts.Lessons}, enrollments={counts.Enrollments}, " +
+            $"lessonProgresses={counts.LessonProgresses}");
 
     private sealed record SeedExistingCounts(
         long Students,
         long Courses,
         long Lessons,
-        long Enrollments)
+        long Enrollments,
+        long LessonProgresses)
     {
-        public long TotalRows => Students + Courses + Lessons + Enrollments;
+        public long TotalRows => Students + Courses + Lessons + Enrollments + LessonProgresses;
     }
 
     private sealed record Distribution(long Groups, long Minimum, long Maximum);

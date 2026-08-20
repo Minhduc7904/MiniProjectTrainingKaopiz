@@ -76,6 +76,26 @@ public class SeedOptionsTests
     }
 
     [Test]
+    public void ValidateCourseApiLargeProfileAllowsThreeMillionCourses()
+    {
+        var options = CreateValidOptions() with
+        {
+            CourseCount = SeedOptions.MaximumCourseApiLargeCourseCount,
+            CourseApiLarge = true,
+        };
+
+        Assert.DoesNotThrow(() => options.Validate("Development"));
+    }
+
+    [Test]
+    public void ValidateRejectsThreeMillionCoursesWithoutLargeProfile()
+    {
+        var options = CreateValidOptions() with { CourseCount = 3_000_000 };
+
+        Assert.Throws<SeedValidationException>(() => options.Validate("Development"));
+    }
+
+    [Test]
     public void DefaultCourseCountRemainsOneHundredThousand()
     {
         Assert.That(SeedOptions.DefaultCourseCount, Is.EqualTo(100_000));

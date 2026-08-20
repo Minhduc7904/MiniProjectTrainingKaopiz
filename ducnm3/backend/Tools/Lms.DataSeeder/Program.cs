@@ -89,6 +89,7 @@ public static class Program
                 "--max-courses-per-student",
                 "--batch-size",
                 "--random-seed",
+                "--profile",
             ],
             StringComparer.Ordinal);
         var flagOptions = new HashSet<string>(
@@ -117,6 +118,13 @@ public static class Program
             values[argument] = args[index];
         }
 
+        var profile = values.GetValueOrDefault("--profile");
+        if (profile is not null && profile != "course-api-large")
+        {
+            throw new SeedValidationException("--profile must be course-api-large.");
+        }
+
+        var courseApiLarge = profile == "course-api-large";
         return new SeedOptions(
             RequiredEnvironmentVariable(
                 "SEED_STUDENT_DB_CONNECTION_STRING",
@@ -125,16 +133,17 @@ public static class Program
                 "SEED_COURSE_DB_CONNECTION_STRING",
                 "COURSE_DB_CONNECTION_STRING"),
             ParseInteger(values, "--students", SeedOptions.DefaultStudentCount),
-            ParseInteger(values, "--courses", SeedOptions.DefaultCourseCount),
+            ParseInteger(values, "--courses", courseApiLarge ? 3_000_000 : SeedOptions.DefaultCourseCount),
             ParseInteger(values, "--min-lessons", 1),
-            ParseInteger(values, "--max-lessons", 5),
-            ParseInteger(values, "--min-courses-per-student", 1),
+            ParseInteger(values, "--max-lessons", courseApiLarge ? 1 : 5),
+            ParseInteger(values, "--min-courses-per-student", courseApiLarge ? 10 : 1),
             ParseInteger(values, "--max-courses-per-student", 10),
-            ParseInteger(values, "--batch-size", SeedOptions.DefaultBatchSize),
+            ParseInteger(values, "--batch-size", courseApiLarge ? 2_000 : SeedOptions.DefaultBatchSize),
             ParseInteger(values, "--random-seed", SeedOptions.DefaultRandomSeed),
             flags.Contains("--confirm"),
             flags.Contains("--resume"),
-            flags.Contains("--dry-run"));
+            flags.Contains("--dry-run"),
+            courseApiLarge);
     }
 
     private static int ParseInteger(
@@ -214,6 +223,7 @@ public static class Program
             .AddRow("Courses", $"{summary.Plan.Courses:N0}")
             .AddRow("Lessons", $"{summary.Plan.Lessons:N0}")
             .AddRow("Enrollments", $"{summary.Plan.Enrollments:N0}")
+            .AddRow("Lesson progresses", $"{summary.Plan.LessonProgresses:N0}")
             .AddRow("Inserted this run", $"{summary.InsertedRows:N0}")
             .AddRow("Already present", $"{summary.SkippedRows:N0}")
             .AddRow("Elapsed", summary.Elapsed.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture));
@@ -233,8 +243,9 @@ public static class Program
                   --confirm                         Required for writes
                   --resume                          Resume the same deterministic dataset
                   --dry-run                         Validate schema and show planned counts only
+                  --profile course-api-large        3M courses with lessons and progress
                   --students <1..100000>            Default: 100000
-                  --courses <1..300000>             Default: 100000
+                  --courses <1..300000>             Default: 100000; profile: up to 3000000
                   --min-lessons <1..5>              Default: 1
                   --max-lessons <1..5>              Default: 5
                   --min-courses-per-student <1..10> Default: 1
