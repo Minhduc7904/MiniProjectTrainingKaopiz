@@ -92,6 +92,8 @@ app.MapUploadMedia();
 app.MapCreateUploadIntent();
 app.MapCompleteDirectUpload();
 app.MapCreateMediaUsage();
+app.MapCreateMediaUsagesBatch();
+app.MapManageMediaUsages();
 app.MapGetMediaUsageUrl();
 app.MapGetMediaUsageUrls();
 app.MapGetMediaContent();

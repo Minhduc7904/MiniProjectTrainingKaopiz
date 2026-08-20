@@ -4,6 +4,7 @@
 using CourseService.Application.UseCases.Courses.Export;
 using CourseService.Application.UseCases.Courses.GetDetails;
 using CourseService.Application.UseCases.Courses.GetList;
+using CourseService.Application.UseCases.Lessons.Create;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CourseService.Application;
@@ -16,6 +17,7 @@ public static class DependencyInjection
         services.AddScoped<ExportCoursesHandler>();
         services.AddScoped<BufferedCourseExportHandler>();
         services.AddScoped<GetCourseDetailsHandler>();
+        services.AddScoped<CreateLessonHandler>();
         return services;
     }
 }

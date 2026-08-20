@@ -7,6 +7,14 @@ export async function fetchCoursesListRequest(query = {}) {
   return unwrapEnvelope(await httpClient.get(API_ROUTES.courses.list, { params }))
 }
 
+export async function fetchCourseDetailsRequest(courseId) {
+  return unwrapEnvelope(await httpClient.get(API_ROUTES.courses.detail(courseId)))
+}
+
+export async function createCourseLessonRequest(courseId, lesson) {
+  return unwrapEnvelope(await httpClient.post(API_ROUTES.courses.lessons(courseId), lesson))
+}
+
 export async function exportCoursesRequest(query = {}, onProgress) {
   const params = new URLSearchParams()
   if (query.status) params.set('status', query.status)

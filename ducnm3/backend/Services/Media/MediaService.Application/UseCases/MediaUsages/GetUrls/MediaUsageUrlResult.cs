@@ -6,6 +6,8 @@ namespace MediaService.Application.UseCases.MediaUsages.GetUrls;
 public sealed record MediaUsageUrlResult(
     Guid UsageId,
     Guid MediaId,
-    string Url,
+    Guid OwnerId,
+    string ContentUrl,
+    string? ThumbnailUrl,
     DateTime? ExpiresAtUtc,
     uint DisplayOrder);

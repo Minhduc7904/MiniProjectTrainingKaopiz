@@ -7,6 +7,7 @@ using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Storage;
 using MediaService.Domain.Constants;
+using MediaService.Domain.ValueObjects;
 using MediaService.Infrastructure.Persistence.Context;
 using MediaService.Infrastructure.Persistence.Mappers;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +98,15 @@ public sealed class EfMediaUsageRepository(
             });
         }
 
+        var attachedMedia = await dbContext.MediaObjects
+            .Where(media => mediaIds.Contains(media.Id) && media.DeletedAt == null)
+            .ToListAsync(cancellationToken);
+        foreach (var media in attachedMedia)
+        {
+            media.IsDraft = false;
+            media.DraftedAt = null;
+        }
+
         try
         {
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -120,21 +130,21 @@ public sealed class EfMediaUsageRepository(
     {
         var pair = await ActiveImageUsages()
             .SingleOrDefaultAsync(item => item.Usage.Id == usageId, cancellationToken);
-        return pair is null ? null : MapUsageUrl(pair.Usage, pair.Media);
+        return pair is null ? null : MapUsageUrl(pair.Usage, pair.Media, pair.Thumbnail);
     }
 
     public async Task<IReadOnlyList<MediaUsageUrlRecord>> GetActiveUsageUrlsAsync(
         MediaUsageOwnerQuery query,
         CancellationToken cancellationToken)
     {
-        var pairs = await ActiveImageUsages()
-            .Where(item => item.Usage.OwnerService == query.OwnerService &&
-                item.Usage.OwnerType == query.OwnerType && item.Usage.UsageType == query.UsageType &&
-                item.Usage.OwnerId == query.OwnerId)
-            .OrderBy(item => item.Usage.DisplayOrder)
-            .ThenBy(item => item.Usage.Id)
+        var ownerIds = query.OwnerIds.ToArray();
+        var pairs = await ActiveImageUsages(
+                query.OwnerService,
+                query.OwnerType,
+                query.UsageType,
+                ownerIds)
             .ToListAsync(cancellationToken);
-        return pairs.Select(pair => MapUsageUrl(pair.Usage, pair.Media)).ToArray();
+        return pairs.Select(pair => MapUsageUrl(pair.Usage, pair.Media, pair.Thumbnail)).ToArray();
     }
 
     public Task<DomainMediaUsage> ReplaceStudentAvatarAsync(
@@ -194,6 +204,78 @@ public sealed class EfMediaUsageRepository(
             usage.DisplayOrder,
             usage.CreatedBy,
             timeProvider.GetUtcNow().UtcDateTime);
+    }
+
+    public async Task EnsureCourseLessonMediaAsync(
+        IReadOnlyList<CreateMediaUsageRecord> usages,
+        CancellationToken cancellationToken)
+    {
+        var mediaIds = usages.Select(item => item.MediaId).Distinct().ToArray();
+        var readyCount = await dbContext.MediaObjects.CountAsync(
+            item => mediaIds.Contains(item.Id) && item.Status == MediaObjectStatuses.Ready && item.DeletedAt == null,
+            cancellationToken);
+        if (readyCount != mediaIds.Length)
+        {
+            throw MediaErrors.MediaNotReady();
+        }
+
+        await EnsureMediaUsagesAsync(usages, cancellationToken);
+    }
+
+    public async Task RemoveAsync(Guid usageId, ActorReference actor, CancellationToken cancellationToken)
+    {
+        var usage = await dbContext.MediaUsages
+            .SingleOrDefaultAsync(item => item.Id == usageId && item.DeletedAt == null, cancellationToken)
+            ?? throw MediaErrors.MediaUsageNotFound();
+        if (usage.OwnerService == MediaOwnerServices.Course && actor.Type != ActorTypes.Admin)
+        {
+            throw MediaErrors.InvalidActorType("Only ADMIN actors can manage Course media.");
+        }
+
+        usage.DeletedAt = timeProvider.GetUtcNow().UtcDateTime;
+        var hasActiveUsage = await dbContext.MediaUsages.AnyAsync(
+            item => item.MediaId == usage.MediaId && item.DeletedAt == null && item.Id != usage.Id,
+            cancellationToken);
+        if (!hasActiveUsage)
+        {
+            var media = await dbContext.MediaObjects.SingleAsync(item => item.Id == usage.MediaId, cancellationToken);
+            media.IsDraft = true;
+            media.DraftedAt = timeProvider.GetUtcNow().UtcDateTime;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ReorderAsync(
+        string ownerService,
+        string ownerType,
+        Guid ownerId,
+        IReadOnlyList<Guid> usageIds,
+        ActorReference actor,
+        CancellationToken cancellationToken)
+    {
+        if (ownerService == MediaOwnerServices.Course && actor.Type != ActorTypes.Admin)
+        {
+            throw MediaErrors.InvalidActorType("Only ADMIN actors can manage Course media.");
+        }
+
+        var usages = await dbContext.MediaUsages
+            .Where(item => item.OwnerService == ownerService && item.OwnerType == ownerType &&
+                item.OwnerId == ownerId && item.DeletedAt == null)
+            .ToListAsync(cancellationToken);
+        if (usages.Count != usageIds.Count || usages.Any(item => !usageIds.Contains(item.Id)))
+        {
+            throw MediaErrors.InvalidMedia("usageIds must contain exactly the active usages for the owner.");
+        }
+
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        for (var index = 0; index < usageIds.Count; index++)
+        {
+            usages.Single(item => item.Id == usageIds[index]).DisplayOrder = (uint)index;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 
     private async Task EnsureCourseMediaAsync(
@@ -267,18 +349,42 @@ public sealed class EfMediaUsageRepository(
             usage.UsageType, usage.DisplayOrder, usage.CreatedBy, now);
     }
 
-    private IQueryable<ActiveImageUsage> ActiveImageUsages() =>
+    private IQueryable<ActiveImageUsage> ActiveImageUsages(
+        string? ownerService = null,
+        string? ownerType = null,
+        string? usageType = null,
+        IReadOnlyList<Guid>? ownerIds = null) =>
         dbContext.MediaUsages.AsNoTracking()
-            .Where(usage => usage.DeletedAt == null)
-            .Join(
-                dbContext.MediaObjects.AsNoTracking().Where(media =>
-                    media.DeletedAt == null && media.Status == MediaObjectStatuses.Ready &&
-                    media.MediaType == MediaTypes.Image),
-                usage => usage.MediaId,
-                media => media.Id,
-                (usage, media) => new ActiveImageUsage(usage, media));
+            .Include(usage => usage.Media)
+                .ThenInclude(media => media.SourceMedia)
+            .Include(usage => usage.Media)
+                .ThenInclude(media => media.InverseSourceMedia)
+            .Where(usage => usage.DeletedAt == null &&
+                usage.Media.DeletedAt == null &&
+                usage.Media.Status == MediaObjectStatuses.Ready &&
+                usage.Media.MediaType == MediaTypes.Image &&
+                (ownerService == null || usage.OwnerService == ownerService) &&
+                (ownerType == null || usage.OwnerType == ownerType) &&
+                (usageType == null || usage.UsageType == usageType) &&
+                (ownerIds == null || Enumerable.Contains(ownerIds, usage.OwnerId)))
+            .OrderBy(usage => usage.DisplayOrder)
+            .ThenBy(usage => usage.Id)
+            .Select(usage => new ActiveImageUsage(
+                usage,
+                usage.Media.SourceMedia ?? usage.Media,
+                usage.Media.SourceMedia == null
+                    ? usage.Media.InverseSourceMedia
+                        .Where(media => media.DeletedAt == null &&
+                            media.Status == MediaObjectStatuses.Ready &&
+                            media.DerivationType == MediaDerivationTypes.Thumbnail)
+                        .OrderByDescending(media => media.CompletedAt)
+                        .FirstOrDefault()
+                    : usage.Media));
 
-    private static MediaUsageUrlRecord MapUsageUrl(DatabaseMediaUsage usage, DatabaseMediaObject media)
+    private static MediaUsageUrlRecord MapUsageUrl(
+        DatabaseMediaUsage usage,
+        DatabaseMediaObject media,
+        DatabaseMediaObject? thumbnail)
     {
         var domainUsage = MediaUsagePersistenceMapper.ToDomain(usage);
         var domainMedia = MediaPersistenceMapper.ToDomain(media);
@@ -292,23 +398,33 @@ public sealed class EfMediaUsageRepository(
                 domainUsage.UsageType,
                 domainUsage.DisplayOrder,
                 domainUsage.CreatedAtUtc),
-            new MediaRecord(
-                domainMedia.Id,
-                new StorageObjectLocation(domainMedia.Bucket, domainMedia.ObjectKey),
-                domainMedia.MediaType,
-                domainMedia.ContentType,
-                domainMedia.OriginalFileName,
-                domainMedia.SizeBytes,
-                domainMedia.Status,
-                domainMedia.CreatedAtUtc,
-                domainMedia.DeletedAtUtc,
-                domainMedia.SourceMediaId,
-                domainMedia.DerivationType,
-                domainMedia.IsDraft,
-                domainMedia.DraftedAtUtc,
-                domainMedia.ChecksumSha256,
-                domainMedia.UploadedBy));
+            ToMediaRecord(media),
+            thumbnail is null || thumbnail.Id == media.Id ? null : ToMediaRecord(thumbnail));
     }
 
-    private sealed record ActiveImageUsage(DatabaseMediaUsage Usage, DatabaseMediaObject Media);
+    private static MediaRecord ToMediaRecord(DatabaseMediaObject media)
+    {
+        var domainMedia = MediaPersistenceMapper.ToDomain(media);
+        return new MediaRecord(
+            domainMedia.Id,
+            new StorageObjectLocation(domainMedia.Bucket, domainMedia.ObjectKey),
+            domainMedia.MediaType,
+            domainMedia.ContentType,
+            domainMedia.OriginalFileName,
+            domainMedia.SizeBytes,
+            domainMedia.Status,
+            domainMedia.CreatedAtUtc,
+            domainMedia.DeletedAtUtc,
+            domainMedia.SourceMediaId,
+            domainMedia.DerivationType,
+            domainMedia.IsDraft,
+            domainMedia.DraftedAtUtc,
+            domainMedia.ChecksumSha256,
+            domainMedia.UploadedBy);
+    }
+
+    private sealed record ActiveImageUsage(
+        DatabaseMediaUsage Usage,
+        DatabaseMediaObject Media,
+        DatabaseMediaObject? Thumbnail);
 }

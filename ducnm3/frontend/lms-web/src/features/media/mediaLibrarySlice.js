@@ -68,6 +68,7 @@ const mediaLibrarySlice = createSlice({
         bucket.loading = true
         bucket.error = null
         if (!cursor) {
+          bucket.data = []
           bucket.loaded = false
           bucket.nextCursor = null
         }

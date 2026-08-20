@@ -38,6 +38,7 @@ public static class GetMediaLibraryEndpoint
                         item.DraftedAtUtc,
                         item.CreatedAtUtc,
                         item.CompletedAtUtc,
+                        item.ThumbnailMediaId,
                         ApiRoutes.Media.ContentPublicPath(item.Id),
                         item.ThumbnailStatus ?? "NOT_REQUIRED",
                         item.ThumbnailStatus == "READY" && item.ThumbnailMediaId is { } thumbnailId

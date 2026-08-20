@@ -9,5 +9,6 @@ public static class MediaOwnerTypes
     public const string CourseThumbnail = "COURSE_THUMBNAIL";
     public const string MediaThumbnail = "MEDIA_THUMBNAIL";
     public const string NotificationBody = "NOTIFICATION_BODY";
+    public const string LessonContent = "LESSON_CONTENT";
     public const string StudentAvatar = "STUDENT_AVATAR";
 }

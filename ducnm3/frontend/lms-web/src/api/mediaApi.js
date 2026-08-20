@@ -56,3 +56,24 @@ export async function retryMediaThumbnailRequest(mediaId, { signal } = {}) {
   )
   return unwrapEnvelope(response)
 }
+
+export async function createMediaUsageRequest(item) {
+  return unwrapEnvelope(await httpClient.post(API_ROUTES.media.usages, item))
+}
+
+export async function createMediaUsagesBatchRequest(items) {
+  return unwrapEnvelope(await httpClient.post(API_ROUTES.media.usageBatch, { items }))
+}
+
+export async function removeMediaUsageRequest(usageId) {
+  return httpClient.delete(API_ROUTES.media.usageById(usageId))
+}
+
+export async function reorderMediaUsagesRequest({ ownerService, ownerType, ownerId, usageIds }) {
+  return unwrapEnvelope(await httpClient.post(API_ROUTES.media.usageReorder, {
+    ownerService,
+    ownerType,
+    ownerId,
+    usageIds,
+  }))
+}

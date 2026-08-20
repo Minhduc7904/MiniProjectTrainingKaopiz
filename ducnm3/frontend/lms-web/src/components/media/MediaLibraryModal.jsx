@@ -152,7 +152,7 @@ export function MediaLibraryModal({
             {viewMode === 'grid' ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {library.data.map((media) => {
                 const active = selected.some((item) => item.id === media.id)
-                const readyThumbnail = media.thumbnailUrl && media.thumbnailStatus === 'READY'
+                    const readyThumbnail = media.thumbnailUrl && media.thumbnailStatus === 'READY'
                 const fallbackImage = media.mediaType === 'IMAGE' && media.contentUrl
                 return (
                   <button

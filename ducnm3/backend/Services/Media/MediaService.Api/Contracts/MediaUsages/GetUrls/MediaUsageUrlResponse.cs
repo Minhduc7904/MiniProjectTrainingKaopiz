@@ -6,6 +6,8 @@ namespace MediaService.Api.Contracts.Responses;
 public sealed record MediaUsageUrlResponse(
     Guid UsageId,
     Guid MediaId,
-    string Url,
+    Guid OwnerId,
+    string ContentUrl,
+    string? ThumbnailUrl,
     DateTime? ExpiresAtUtc,
     uint DisplayOrder);

@@ -2,6 +2,7 @@ export const APP_ROUTES = {
   home: '/',
   students: '/student/students',
   courses: '/course/courses',
+  courseDetails: '/course/courses/:courseId',
   courseExport: '/course/courses/export',
   mediaUpload: '/media/upload',
   mediaUploadDirect: '/media/upload-direct',
@@ -46,6 +47,7 @@ export const SERVICES = [
         icon: 'courses',
         ready: true,
         activityId: 'getCourses',
+        matchRoutes: [APP_ROUTES.courses, APP_ROUTES.courseDetails],
       },
       {
         to: APP_ROUTES.courseExport,

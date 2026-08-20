@@ -30,10 +30,15 @@ public sealed class GetMediaUsageUrlHandler(
         var url = await mediaUrlProvider.GenerateAsync(
             record.Media,
             cancellationToken);
+        var thumbnailUrl = record.ThumbnailMedia is null
+            ? null
+            : await mediaUrlProvider.GenerateAsync(record.ThumbnailMedia, cancellationToken);
         return new MediaUsageUrlResult(
             record.Usage.Id,
             record.Media.Id,
+            record.Usage.OwnerId,
             url.Value,
+            thumbnailUrl?.Value,
             url.ExpiresAtUtc,
             record.Usage.DisplayOrder);
     }

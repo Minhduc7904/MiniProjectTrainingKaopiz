@@ -32,7 +32,7 @@ public sealed class EfCourseDetailsRepository(CourseDbContext db) : ICourseDetai
             ? []
             : await db.LessonProgresses
                 .AsNoTracking()
-                .Where(x => lessonIds.Contains(x.LessonId))
+                .Where(x => Enumerable.Contains(lessonIds, x.LessonId))
                 .Select(x => new
                 {
                     x.LessonId,

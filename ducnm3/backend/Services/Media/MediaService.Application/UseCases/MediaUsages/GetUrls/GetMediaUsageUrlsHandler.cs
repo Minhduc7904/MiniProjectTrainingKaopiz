@@ -4,7 +4,7 @@
 using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.Urls;
-using MediaService.Application.UseCases.MediaUsages.GetUrl;
+using MediaService.Domain.Constants;
 
 namespace MediaService.Application.UseCases.MediaUsages.GetUrls;
 
@@ -17,7 +17,7 @@ public sealed class GetMediaUsageUrlsHandler(
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(query);
-        if (query.OwnerId == Guid.Empty ||
+        if (query.OwnerIds.Count == 0 || query.OwnerIds.Any(id => id == Guid.Empty) ||
             string.IsNullOrWhiteSpace(query.OwnerService) ||
             string.IsNullOrWhiteSpace(query.OwnerType) ||
             string.IsNullOrWhiteSpace(query.UsageType))
@@ -31,25 +31,38 @@ public sealed class GetMediaUsageUrlsHandler(
                 query.OwnerService.Trim().ToUpperInvariant(),
                 query.OwnerType.Trim().ToUpperInvariant(),
                 query.UsageType.Trim().ToUpperInvariant(),
-                query.OwnerId),
+                query.OwnerIds),
             cancellationToken);
-        foreach (var record in records)
-        {
-            GetMediaUsageUrlHandler.ValidateImage(record.Media);
-        }
+        var readableRecords = records
+            .Where(record => IsReadableImage(record.Media))
+            .Select(record => IsReadableImage(record.ThumbnailMedia)
+                ? record
+                : record with { ThumbnailMedia = null })
+            .ToArray();
 
         var urls = await mediaUrlProvider.GenerateManyAsync(
-            records.Select(record => record.Media).ToArray(),
+            readableRecords.SelectMany(record => new[] { record.Media, record.ThumbnailMedia })
+                .Where(media => media is not null)
+                .Cast<MediaRecord>()
+                .ToArray(),
             cancellationToken);
-        return records
-            .Zip(
-                urls,
-                (record, url) => new MediaUsageUrlResult(
+        var urlByMediaId = urls.Select((url, index) => new { url, mediaId = readableRecords.SelectMany(record => new[] { record.Media, record.ThumbnailMedia }).Where(media => media is not null).Cast<MediaRecord>().ElementAt(index).Id })
+            .ToDictionary(item => item.mediaId, item => item.url);
+        return readableRecords
+            .Select(record => new MediaUsageUrlResult(
                     record.Usage.Id,
                     record.Media.Id,
-                    url.Value,
-                    url.ExpiresAtUtc,
+                    record.Usage.OwnerId,
+                    urlByMediaId[record.Media.Id].Value,
+                    record.ThumbnailMedia is null ? null : urlByMediaId[record.ThumbnailMedia.Id].Value,
+                    urlByMediaId[record.Media.Id].ExpiresAtUtc,
                     record.Usage.DisplayOrder))
             .ToArray();
     }
+
+    private static bool IsReadableImage(MediaRecord? media) =>
+        media is not null &&
+        media.Status == MediaObjectStatuses.Ready &&
+        media.DeletedAtUtc is null &&
+        media.MediaType == MediaTypes.Image;
 }

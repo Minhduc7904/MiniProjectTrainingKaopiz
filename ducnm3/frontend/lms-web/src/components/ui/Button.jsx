@@ -17,6 +17,7 @@ export function Button({
   size = 'default',
   disabled = false,
   onClick,
+  form,
   'aria-label': ariaLabel,
 }) {
   return (
@@ -24,6 +25,7 @@ export function Button({
       type={type}
       disabled={disabled}
       onClick={onClick}
+      form={form}
       aria-label={ariaLabel}
       className={[
         'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md text-[14px] font-medium',

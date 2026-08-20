@@ -5,4 +5,5 @@ namespace MediaService.Application.Repositories;
 
 public sealed record MediaUsageUrlRecord(
     MediaUsageRecord Usage,
-    MediaRecord Media);
+    MediaRecord Media,
+    MediaRecord? ThumbnailMedia = null);

@@ -21,6 +21,7 @@ public static class GetMediaUsageUrlsEndpoint
                     string? ownerType,
                     string? usageType,
                     string? ownerId,
+                    string? ownerIds,
                     HttpContext context,
                     GetMediaUsageUrlsHandler handler,
                     CancellationToken cancellationToken) =>
@@ -30,7 +31,7 @@ public static class GetMediaUsageUrlsEndpoint
                             ownerService ?? string.Empty,
                             ownerType ?? string.Empty,
                             usageType ?? string.Empty,
-                            MediaRequestParser.ParseGuid(ownerId ?? string.Empty, "ownerId")),
+                            ParseOwnerIds(ownerId, ownerIds)),
                         cancellationToken);
                     context.Response.Headers.CacheControl = "no-store";
                     return Results.Json(
@@ -43,4 +44,12 @@ public static class GetMediaUsageUrlsEndpoint
             .Produces<ApiResponse<IReadOnlyList<MediaUsageUrlResponse>>>(
                 StatusCodes.Status200OK)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest);
+
+    private static Guid[] ParseOwnerIds(string? ownerId, string? ownerIds)
+    {
+        var values = string.IsNullOrWhiteSpace(ownerIds)
+            ? [ownerId ?? string.Empty]
+            : ownerIds.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return values.Select(value => MediaRequestParser.ParseGuid(value, "ownerId")).ToArray();
+    }
 }

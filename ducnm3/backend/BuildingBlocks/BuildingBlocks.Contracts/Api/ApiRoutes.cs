@@ -26,6 +26,7 @@ public static class ApiRoutes
         public const string Export = "/api/courses/export";
         public const string BufferedExportBenchmark = "/api/performance/courses/export-buffered";
         public const string DetailsTemplate = "/api/courses/{courseId}/details";
+        public const string LessonsTemplate = "/api/courses/{courseId}/lessons";
 
         public static string ListServicePath() =>
             BuildServicePath(List);
@@ -54,6 +55,8 @@ public static class ApiRoutes
         public const string UploadIntents = "/api/media/upload-intents";
         public const string UploadCompleteTemplate = "/api/media/{mediaId}/upload-complete";
         public const string Usages = "/api/media/usages";
+        public const string UsageBatch = "/api/media/usages/batch";
+        public const string UsageReorder = "/api/media/usages/reorder";
         public const string UsageUrlTemplate = "/api/media/usages/{usageId}/url";
         public const string UsageUrls = "/api/media/usages/urls";
         public const string ContentTemplate = "/api/media/{mediaId}/content";
@@ -86,6 +89,9 @@ public static class ApiRoutes
         /// <summary>Trả path nội bộ để lấy signed URL của một media usage.</summary>
         public static string UsageUrlServicePath(Guid usageId) =>
             BuildServicePath(FormatGuidRoute(UsageUrlTemplate, "usageId", usageId));
+
+        public static string UsageDeleteTemplatePath(Guid usageId) =>
+            BuildServicePath($"{Usages}/{usageId:D}");
 
         /// <summary>Trả path Gateway để client lấy signed URL của một media usage.</summary>
         public static string UsageUrlPublicPath(Guid usageId) =>

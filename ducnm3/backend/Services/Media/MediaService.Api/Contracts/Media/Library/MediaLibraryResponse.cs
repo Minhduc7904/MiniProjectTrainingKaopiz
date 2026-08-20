@@ -11,6 +11,7 @@ public sealed record MediaLibraryResponse(
     DateTime? DraftedAtUtc,
     DateTime CreatedAtUtc,
     DateTime? CompletedAtUtc,
+    Guid? ThumbnailMediaId,
     string ContentUrl,
     string ThumbnailStatus,
     string? ThumbnailUrl);

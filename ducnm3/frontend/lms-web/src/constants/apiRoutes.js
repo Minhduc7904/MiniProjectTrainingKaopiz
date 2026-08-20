@@ -23,6 +23,8 @@ function joinPath(...parts) {
 export const API_ROUTES = {
   courses: {
     list: joinPath(GATEWAY_PREFIXES.course, '/api/courses'),
+    detail: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'details'),
+    lessons: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons'),
     export: joinPath(GATEWAY_PREFIXES.course, '/api/courses/export'),
   },
   students: {
@@ -37,6 +39,9 @@ export const API_ROUTES = {
     uploadComplete: (mediaId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'upload-complete'),
     usages: joinPath(GATEWAY_PREFIXES.media, '/api/media/usages'),
+    usageBatch: joinPath(GATEWAY_PREFIXES.media, '/api/media/usages/batch'),
+    usageReorder: joinPath(GATEWAY_PREFIXES.media, '/api/media/usages/reorder'),
+    usageById: (usageId) => joinPath(GATEWAY_PREFIXES.media, '/api/media/usages', usageId),
     usageUrl: (usageId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media/usages', usageId, 'url'),
     usageUrls: joinPath(GATEWAY_PREFIXES.media, '/api/media/usages/urls'),

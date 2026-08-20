@@ -7,4 +7,14 @@ public sealed record MediaUsageOwnerQuery(
     string OwnerService,
     string OwnerType,
     string UsageType,
-    Guid OwnerId);
+    IReadOnlyList<Guid> OwnerIds)
+{
+    public MediaUsageOwnerQuery(
+        string ownerService,
+        string ownerType,
+        string usageType,
+        Guid ownerId)
+        : this(ownerService, ownerType, usageType, [ownerId])
+    {
+    }
+}

@@ -60,7 +60,9 @@ public static class MediaResponseMapper
         new(
             result.UsageId,
             result.MediaId,
-            result.Url,
+            result.OwnerId,
+            result.ContentUrl,
+            result.ThumbnailUrl,
             result.ExpiresAtUtc,
             result.DisplayOrder);
 }

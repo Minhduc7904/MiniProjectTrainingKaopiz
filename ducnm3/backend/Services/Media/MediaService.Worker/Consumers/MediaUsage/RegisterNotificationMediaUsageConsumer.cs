@@ -4,6 +4,7 @@
 using MassTransit;
 using MediaService.Application.UseCases.MediaUsageJobs.Process;
 using MediaService.Application.UseCases.MediaUsages.RegisterNotification;
+using MediaService.Application.UseCases.MediaUsages.RegisterCourseLesson;
 using MediaService.Contracts.Messaging;
 using MediaService.Infrastructure.Persistence.Context;
 
@@ -15,6 +16,24 @@ public sealed class RegisterNotificationMediaUsageConsumer(
 {
     public Task Consume(ConsumeContext<RegisterNotificationMediaUsageV1> context) =>
         handler.HandleAsync(context.Message, context.CancellationToken);
+}
+
+public sealed class RegisterCourseLessonMediaUsageConsumer(
+    RegisterCourseLessonMediaUsagesHandler handler)
+    : IConsumer<RegisterCourseLessonMediaUsageV1>
+{
+    public Task Consume(ConsumeContext<RegisterCourseLessonMediaUsageV1> context) =>
+        handler.HandleAsync(context.Message, context.CancellationToken);
+}
+
+public sealed class RegisterCourseLessonMediaUsageConsumerDefinition
+    : ConsumerDefinition<RegisterCourseLessonMediaUsageConsumer>
+{
+    protected override void ConfigureConsumer(
+        IReceiveEndpointConfigurator endpointConfigurator,
+        IConsumerConfigurator<RegisterCourseLessonMediaUsageConsumer> consumerConfigurator,
+        IRegistrationContext context) =>
+        endpointConfigurator.UseEntityFrameworkOutbox<MediaDbContext>(context);
 }
 
 public sealed class RegisterNotificationMediaUsageBatchConsumer(

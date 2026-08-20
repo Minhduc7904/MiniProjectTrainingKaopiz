@@ -3,4 +3,9 @@
 
 namespace CourseService.Api.Contracts.Courses;
 
-public sealed record CourseListItemResponse(Guid Id, string Name, string Status, DateTime CreatedAtUtc);
+public sealed record CourseListItemResponse(
+	Guid Id,
+	string Name,
+	string Status,
+	DateTime CreatedAtUtc,
+	string? ThumbnailUrl);

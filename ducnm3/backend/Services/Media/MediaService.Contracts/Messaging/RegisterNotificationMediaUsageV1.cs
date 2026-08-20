@@ -10,6 +10,11 @@ public sealed record RegisterNotificationMediaUsageV1(
     Guid CreatedBy,
     IReadOnlyList<NotificationMediaUsageReferenceV1> References) : ICommand;
 
+public sealed record RegisterCourseLessonMediaUsageV1(
+    Guid LessonId,
+    Guid CreatedBy,
+    IReadOnlyList<NotificationMediaUsageReferenceV1> References) : ICommand;
+
 public sealed record RegisterNotificationMediaUsageBatchV1(
     Guid JobId,
     IReadOnlyList<Guid> NotificationIds,
