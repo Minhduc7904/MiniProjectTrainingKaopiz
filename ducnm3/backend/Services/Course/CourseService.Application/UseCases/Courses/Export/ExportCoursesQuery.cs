@@ -11,18 +11,29 @@ public sealed record ExportCoursesQuery
 {
     public const int ChunkSize = 500;
 
-    private ExportCoursesQuery(string? status) => Status = status;
+    private ExportCoursesQuery(string? status, int? limit)
+    {
+        Status = status;
+        Limit = limit;
+    }
 
     public string? Status { get; }
+    public int? Limit { get; }
 
-    public static ExportCoursesQuery Create(string? status)
+    public static ExportCoursesQuery Create(string? status, int? limit = null)
     {
-        if (string.IsNullOrWhiteSpace(status)) return new ExportCoursesQuery((string?)null);
+        if (limit is <= 0)
+        {
+            throw CourseErrors.ValidationFailed(
+                [new ApiErrorDetail("limit", "Limit must be greater than zero.")]);
+        }
+
+        if (string.IsNullOrWhiteSpace(status)) return new ExportCoursesQuery(null, limit);
 
         var normalizedStatus = status.Trim().ToUpperInvariant();
         if (CourseStatuses.IsSupported(normalizedStatus))
         {
-            return new ExportCoursesQuery(normalizedStatus);
+            return new ExportCoursesQuery(normalizedStatus, limit);
         }
 
         throw CourseErrors.ValidationFailed(

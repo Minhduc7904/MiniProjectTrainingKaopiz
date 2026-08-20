@@ -3,95 +3,133 @@
     "datasetCount": 3000,
     "run": 1,
     "result": {
-      "batchId": "b66119af-b469-4a36-8244-a3edc9893dfd",
-      "postLatency": "00:00:00.0288444",
-      "totalDuration": "00:00:05.0678654",
-      "snapshotDuration": "00:00:04.5328778",
+      "batchId": "af46de8b-fe3f-4af9-b436-0fac706d6266",
+      "postLatency": "00:00:00.0223551",
+      "totalDuration": "00:00:13.1341936",
+      "snapshotDuration": "00:00:05.0354894",
       "snapshotTimingErrorMilliseconds": 500,
-      "dispatchDurationMilliseconds": 701,
+      "dispatchDurationMilliseconds": 8103,
       "finalStatus": "COMPLETED",
       "totalCount": 3000,
       "processedCount": 3000,
       "successCount": 3000,
       "failedCount": 0,
-      "endToEndThroughput": 591.9655008820384,
-      "dispatchThroughput": 4279.60057061341
+      "endToEndThroughput": 228.4114796259625,
+      "dispatchThroughput": 370.23324694557573
     },
     "memory": {
-      "baselineBytes": 122263961,
-      "peakBytes": 122263961,
-      "averageBytes": 121582386.75,
-      "deltaBytes": 0,
-      "sampleCount": 8,
-      "baselineMegabytes": 116.59999942779541,
-      "peakMegabytes": 116.59999942779541,
-      "averageMegabytes": 115.94999957084656,
-      "deltaMegabytes": 0
+      "baselineBytes": 129184563,
+      "peakBytes": 130547712,
+      "averageBytes": 129298158.5,
+      "deltaBytes": 1363149,
+      "sampleCount": 12,
+      "baselineMegabytes": 123.19999980926514,
+      "peakMegabytes": 124.5,
+      "averageMegabytes": 123.30833292007446,
+      "deltaMegabytes": 1.3000001907348633
+    },
+    "resources": {
+      "currentCpuPercent": 0.01,
+      "peakCpuPercent": 45.88,
+      "averageCpuPercent": 10.901666666666666,
+      "sampleCount": 12
     },
     "samples": [
       {
-        "timestampUtc": "2026-08-19T10:08:30.933876+00:00",
-        "elapsed": "00:00:00.0000003",
+        "timestampUtc": "2026-08-20T02:41:40.1084941+00:00",
+        "elapsed": "00:00:00.0000004",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122263961,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129184563,
+        "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-19T10:08:32.9805749+00:00",
-        "elapsed": "00:00:02.0333720",
+        "timestampUtc": "2026-08-20T02:41:42.1619926+00:00",
+        "elapsed": "00:00:02.0257698",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122263961,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129079705,
+        "cpuPercent": 0.04
       },
       {
-        "timestampUtc": "2026-08-19T10:08:35.002428+00:00",
-        "elapsed": "00:00:04.0737870",
+        "timestampUtc": "2026-08-20T02:41:44.1970973+00:00",
+        "elapsed": "00:00:04.0718400",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122263961,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129603993,
+        "cpuPercent": 0.65
       },
       {
-        "timestampUtc": "2026-08-19T10:08:37.0359805+00:00",
-        "elapsed": "00:00:06.0946811",
+        "timestampUtc": "2026-08-20T02:41:46.228104+00:00",
+        "elapsed": "00:00:06.1069020",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122263961,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129603993,
+        "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-19T10:08:39.0598671+00:00",
-        "elapsed": "00:00:08.1291956",
+        "timestampUtc": "2026-08-20T02:41:48.2514454+00:00",
+        "elapsed": "00:00:08.1377758",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122263961,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129184563,
+        "cpuPercent": 0.97
       },
       {
-        "timestampUtc": "2026-08-19T10:08:41.0761865+00:00",
-        "elapsed": "00:00:10.1553086",
+        "timestampUtc": "2026-08-20T02:41:50.2648988+00:00",
+        "elapsed": "00:00:10.1621716",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 120271667,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 127821414,
+        "cpuPercent": 1.56
       },
       {
-        "timestampUtc": "2026-08-19T10:08:43.0883869+00:00",
-        "elapsed": "00:00:12.1687299",
+        "timestampUtc": "2026-08-20T02:41:52.2780312+00:00",
+        "elapsed": "00:00:12.1746241",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119747379,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 128345702,
+        "cpuPercent": 1.41
       },
       {
-        "timestampUtc": "2026-08-19T10:08:46.1179448+00:00",
-        "elapsed": "00:00:14.2300348",
+        "timestampUtc": "2026-08-20T02:41:54.3095683+00:00",
+        "elapsed": "00:00:14.1882024",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121320243,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 128345702,
+        "cpuPercent": 15.35
+      },
+      {
+        "timestampUtc": "2026-08-20T02:41:56.3494918+00:00",
+        "elapsed": "00:00:16.2185747",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 129813708,
+        "cpuPercent": 45.88
+      },
+      {
+        "timestampUtc": "2026-08-20T02:41:58.3850249+00:00",
+        "elapsed": "00:00:18.2587097",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 130442854,
+        "cpuPercent": 27.16
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:00.4247828+00:00",
+        "elapsed": "00:00:20.2951291",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 130547712,
+        "cpuPercent": 37.77
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:02.4228576+00:00",
+        "elapsed": "00:00:22.2988751",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 129603993,
+        "cpuPercent": 0.01
       }
     ]
   },
@@ -99,95 +137,133 @@
     "datasetCount": 3000,
     "run": 2,
     "result": {
-      "batchId": "598aff09-5fac-49b2-89ff-a6e4ef045b0b",
-      "postLatency": "00:00:00.0177647",
-      "totalDuration": "00:00:05.5608375",
-      "snapshotDuration": "00:00:04.5311412",
+      "batchId": "9317d1bf-4987-4af6-acd0-bde6b74a3bc2",
+      "postLatency": "00:00:00.0218022",
+      "totalDuration": "00:00:13.1273111",
+      "snapshotDuration": "00:00:05.0352104",
       "snapshotTimingErrorMilliseconds": 500,
-      "dispatchDurationMilliseconds": 681,
+      "dispatchDurationMilliseconds": 7959,
       "finalStatus": "COMPLETED",
       "totalCount": 3000,
       "processedCount": 3000,
       "successCount": 3000,
       "failedCount": 0,
-      "endToEndThroughput": 539.4873445979729,
-      "dispatchThroughput": 4405.286343612334
+      "endToEndThroughput": 228.53120185633153,
+      "dispatchThroughput": 376.9317753486619
     },
     "memory": {
-      "baselineBytes": 121320243,
-      "peakBytes": 122997964,
-      "averageBytes": 121464422.125,
-      "deltaBytes": 1677721,
-      "sampleCount": 8,
-      "baselineMegabytes": 115.69999980926514,
-      "peakMegabytes": 117.29999923706055,
-      "averageMegabytes": 115.83749973773956,
-      "deltaMegabytes": 1.5999994277954102
+      "baselineBytes": 129394278,
+      "peakBytes": 130442854,
+      "averageBytes": 129630207.41666667,
+      "deltaBytes": 1048576,
+      "sampleCount": 12,
+      "baselineMegabytes": 123.39999961853027,
+      "peakMegabytes": 124.39999961853027,
+      "averageMegabytes": 123.62499944368999,
+      "deltaMegabytes": 1
+    },
+    "resources": {
+      "currentCpuPercent": 0.01,
+      "peakCpuPercent": 42.86,
+      "averageCpuPercent": 9.815,
+      "sampleCount": 12
     },
     "samples": [
       {
-        "timestampUtc": "2026-08-19T10:08:48.1196939+00:00",
-        "elapsed": "00:00:00.0000006",
+        "timestampUtc": "2026-08-20T02:42:04.4284895+00:00",
+        "elapsed": "00:00:00.0000004",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121320243,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129394278,
+        "cpuPercent": 0.05
       },
       {
-        "timestampUtc": "2026-08-19T10:08:50.1598665+00:00",
-        "elapsed": "00:00:02.8840143",
+        "timestampUtc": "2026-08-20T02:42:06.4670993+00:00",
+        "elapsed": "00:00:02.9278908",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121320243,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129394278,
+        "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-19T10:08:52.1957253+00:00",
-        "elapsed": "00:00:04.9242388",
+        "timestampUtc": "2026-08-20T02:42:08.502984+00:00",
+        "elapsed": "00:00:04.9664358",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121320243,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129603993,
+        "cpuPercent": 0.3
       },
       {
-        "timestampUtc": "2026-08-19T10:08:54.2327109+00:00",
-        "elapsed": "00:00:06.9600948",
+        "timestampUtc": "2026-08-20T02:42:10.5301395+00:00",
+        "elapsed": "00:00:07.0027435",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121320243,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129289420,
+        "cpuPercent": 0.03
       },
       {
-        "timestampUtc": "2026-08-19T10:08:56.2768996+00:00",
-        "elapsed": "00:00:08.9970252",
+        "timestampUtc": "2026-08-20T02:42:12.5571574+00:00",
+        "elapsed": "00:00:09.0296782",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121320243,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129289420,
+        "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-19T10:08:58.291608+00:00",
-        "elapsed": "00:00:11.0407142",
+        "timestampUtc": "2026-08-20T02:42:14.5684641+00:00",
+        "elapsed": "00:00:11.0560218",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122997964,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 130337996,
+        "cpuPercent": 1.38
       },
       {
-        "timestampUtc": "2026-08-19T10:09:00.3057717+00:00",
-        "elapsed": "00:00:13.0558884",
+        "timestampUtc": "2026-08-20T02:42:16.5834838+00:00",
+        "elapsed": "00:00:13.0669154",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122578534,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129918566,
+        "cpuPercent": 1.47
       },
       {
-        "timestampUtc": "2026-08-19T10:09:03.3318715+00:00",
-        "elapsed": "00:00:15.6027160",
+        "timestampUtc": "2026-08-20T02:42:18.6122046+00:00",
+        "elapsed": "00:00:15.0827485",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119537664,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 130128281,
+        "cpuPercent": 18.61
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:20.6520746+00:00",
+        "elapsed": "00:00:17.1117573",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 128240844,
+        "cpuPercent": 30.53
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:22.683734+00:00",
+        "elapsed": "00:00:19.1514466",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 130128281,
+        "cpuPercent": 22.52
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:24.7192999+00:00",
+        "elapsed": "00:00:21.1832123",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 130442854,
+        "cpuPercent": 42.86
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:26.7240017+00:00",
+        "elapsed": "00:00:23.1839711",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 129394278,
+        "cpuPercent": 0.01
       }
     ]
   },
@@ -195,95 +271,133 @@
     "datasetCount": 3000,
     "run": 3,
     "result": {
-      "batchId": "8e800070-e6e3-4088-91a8-b876ac23ae0a",
-      "postLatency": "00:00:00.0296688",
-      "totalDuration": "00:00:05.5745349",
-      "snapshotDuration": "00:00:04.5349894",
+      "batchId": "4353384a-d631-4d04-bf31-c4120c50a8e8",
+      "postLatency": "00:00:00.0227853",
+      "totalDuration": "00:00:13.1761635",
+      "snapshotDuration": "00:00:05.0654975",
       "snapshotTimingErrorMilliseconds": 500,
-      "dispatchDurationMilliseconds": 711,
+      "dispatchDurationMilliseconds": 8014,
       "finalStatus": "COMPLETED",
       "totalCount": 3000,
       "processedCount": 3000,
       "successCount": 3000,
       "failedCount": 0,
-      "endToEndThroughput": 538.1617492495603,
-      "dispatchThroughput": 4219.409282700422
+      "endToEndThroughput": 227.68391061627537,
+      "dispatchThroughput": 374.34489643124533
     },
     "memory": {
-      "baselineBytes": 119327948,
-      "peakBytes": 122788249,
-      "averageBytes": 120402738.625,
-      "deltaBytes": 3460301,
-      "sampleCount": 8,
-      "baselineMegabytes": 113.79999923706055,
-      "peakMegabytes": 117.09999942779541,
-      "averageMegabytes": 114.82499945163727,
-      "deltaMegabytes": 3.3000001907348633
+      "baselineBytes": 129603993,
+      "peakBytes": 130547712,
+      "averageBytes": 129368063.58333333,
+      "deltaBytes": 943719,
+      "sampleCount": 12,
+      "baselineMegabytes": 123.59999942779541,
+      "peakMegabytes": 124.5,
+      "averageMegabytes": 123.3749996026357,
+      "deltaMegabytes": 0.9000005722045898
+    },
+    "resources": {
+      "currentCpuPercent": 0.1,
+      "peakCpuPercent": 50.88,
+      "averageCpuPercent": 12.971666666666666,
+      "sampleCount": 12
     },
     "samples": [
       {
-        "timestampUtc": "2026-08-19T10:09:05.3344102+00:00",
-        "elapsed": "00:00:00.0000016",
+        "timestampUtc": "2026-08-20T02:42:28.7288333+00:00",
+        "elapsed": "00:00:00.0000034",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119432806,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129708851,
+        "cpuPercent": 0.02
       },
       {
-        "timestampUtc": "2026-08-19T10:09:07.3720959+00:00",
-        "elapsed": "00:00:02.9133600",
+        "timestampUtc": "2026-08-20T02:42:30.7505584+00:00",
+        "elapsed": "00:00:02.9051816",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119642521,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129394278,
+        "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-19T10:09:09.4105843+00:00",
-        "elapsed": "00:00:04.9511266",
+        "timestampUtc": "2026-08-20T02:42:32.7720381+00:00",
+        "elapsed": "00:00:04.9269460",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119327948,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129394278,
+        "cpuPercent": 0.08
       },
       {
-        "timestampUtc": "2026-08-19T10:09:11.4367916+00:00",
-        "elapsed": "00:00:06.9895884",
+        "timestampUtc": "2026-08-20T02:42:34.797493+00:00",
+        "elapsed": "00:00:06.9484261",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119327948,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129708851,
+        "cpuPercent": 0.12
       },
       {
-        "timestampUtc": "2026-08-19T10:09:13.4711232+00:00",
-        "elapsed": "00:00:09.0157969",
+        "timestampUtc": "2026-08-20T02:42:36.83395+00:00",
+        "elapsed": "00:00:08.9739295",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 119327948,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 129603993,
+        "cpuPercent": 0.12
       },
       {
-        "timestampUtc": "2026-08-19T10:09:15.483464+00:00",
-        "elapsed": "00:00:11.0495620",
+        "timestampUtc": "2026-08-20T02:42:38.8513236+00:00",
+        "elapsed": "00:00:11.0108303",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121739673,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 130442854,
+        "cpuPercent": 1.37
       },
       {
-        "timestampUtc": "2026-08-19T10:09:17.5036966+00:00",
-        "elapsed": "00:00:13.0632745",
+        "timestampUtc": "2026-08-20T02:42:40.8627823+00:00",
+        "elapsed": "00:00:13.0269445",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 122788249,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 130023424,
+        "cpuPercent": 1.35
       },
       {
-        "timestampUtc": "2026-08-19T10:09:20.5347495+00:00",
-        "elapsed": "00:00:15.6251378",
+        "timestampUtc": "2026-08-20T02:42:42.8837999+00:00",
+        "elapsed": "00:00:15.0395813",
         "service": "notification-worker",
-        "containerId": "501b7001629a",
-        "memoryBytes": 121634816,
-        "cpuPercent": null
+        "containerId": "857f06eca684",
+        "memoryBytes": 128240844,
+        "cpuPercent": 16.81
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:44.9195939+00:00",
+        "elapsed": "00:00:17.0607374",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 130547712,
+        "cpuPercent": 43.61
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:46.9565685+00:00",
+        "elapsed": "00:00:19.0952185",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 128240844,
+        "cpuPercent": 41.19
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:49.0015325+00:00",
+        "elapsed": "00:00:21.1326035",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 128869990,
+        "cpuPercent": 50.88
+      },
+      {
+        "timestampUtc": "2026-08-20T02:42:52.0417553+00:00",
+        "elapsed": "00:00:23.1881506",
+        "service": "notification-worker",
+        "containerId": "857f06eca684",
+        "memoryBytes": 128240844,
+        "cpuPercent": 0.1
       }
     ]
   }

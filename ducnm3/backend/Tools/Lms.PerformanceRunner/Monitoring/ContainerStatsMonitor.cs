@@ -10,7 +10,8 @@ public sealed class ContainerStatsMonitor(
 {
     public async Task<ContainerStatsCapture> CaptureAsync(
         Func<CancellationToken, Task> measurement,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IProgress<ContainerStatsSample>? progress = null)
     {
         ArgumentNullException.ThrowIfNull(measurement);
         ArgumentOutOfRangeException.ThrowIfLessThan(
@@ -23,7 +24,9 @@ public sealed class ContainerStatsMonitor(
 
         for (var index = 0; index < baselineSampleCount; index++)
         {
-            samples.Add(await ReadSampleAsync(containerId, stopwatch.Elapsed, cancellationToken));
+            var sample = await ReadSampleAsync(containerId, stopwatch.Elapsed, cancellationToken);
+            samples.Add(sample);
+            progress?.Report(sample);
             if (index + 1 < baselineSampleCount)
             {
                 await Task.Delay(sampleInterval, cancellationToken);
@@ -35,7 +38,8 @@ public sealed class ContainerStatsMonitor(
             containerId,
             stopwatch,
             samples,
-            samplingCancellation.Token);
+            samplingCancellation.Token,
+            progress);
         try
         {
             await measurement(cancellationToken);
@@ -68,20 +72,24 @@ public sealed class ContainerStatsMonitor(
         return new ContainerStatsCapture(
             containerId,
             samples,
-            MemoryStatistics.Calculate(samples, Math.Min(baselineSampleCount, samples.Count)));
+            MemoryStatistics.Calculate(samples, Math.Min(baselineSampleCount, samples.Count)),
+            ResourceStatistics.Calculate(samples));
     }
 
     private async Task SampleUntilCancelledAsync(
         string containerId,
         Stopwatch stopwatch,
         List<ContainerStatsSample> samples,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IProgress<ContainerStatsSample>? progress)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             await Task.Delay(sampleInterval, cancellationToken);
             if (cancellationToken.IsCancellationRequested) break;
-            samples.Add(await ReadSampleAsync(containerId, stopwatch.Elapsed, cancellationToken));
+            var sample = await ReadSampleAsync(containerId, stopwatch.Elapsed, cancellationToken);
+            samples.Add(sample);
+            progress?.Report(sample);
         }
     }
 
@@ -106,20 +114,27 @@ public sealed class ContainerStatsMonitor(
         CancellationToken cancellationToken)
     {
         var result = await RunDockerAsync(
-            ["stats", "--no-stream", "--format", "{{.MemUsage}}", containerId],
+            ["stats", "--no-stream", "--format", "{{.CPUPerc}}\\t{{.MemUsage}}", containerId],
             cancellationToken);
         if (result.ExitCode != 0)
         {
             throw new InvalidOperationException("docker stats failed.");
         }
 
-        var memory = result.StandardOutput.Split('/', 2)[0].Trim();
+        var fields = result.StandardOutput.Trim().Split('\t', 2);
+        if (fields.Length != 2)
+        {
+            throw new FormatException("Docker stats did not return CPU and memory fields.");
+        }
+
+        var memory = fields[1].Split('/', 2)[0].Trim();
         return new ContainerStatsSample(
             DateTimeOffset.UtcNow,
             elapsed,
             service,
             containerId.Length > 12 ? containerId[..12] : containerId,
-            ContainerStatsParser.ParseMemoryBytes(memory));
+            ContainerStatsParser.ParseMemoryBytes(memory),
+            ContainerStatsParser.ParseCpuPercent(fields[0]));
     }
 
     private Task<DockerCommandResult> RunDockerAsync(
@@ -158,4 +173,5 @@ public sealed class ContainerStatsMonitor(
 public sealed record ContainerStatsCapture(
     string ContainerId,
     IReadOnlyList<ContainerStatsSample> Samples,
-    MemoryStatistics Memory);
+    MemoryStatistics Memory,
+    ResourceStatistics Resources);

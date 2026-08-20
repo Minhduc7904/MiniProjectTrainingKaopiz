@@ -4,6 +4,18 @@ namespace Lms.PerformanceRunner.Monitoring;
 
 public static class ContainerStatsParser
 {
+    public static double ParseCpuPercent(string rawValue)
+    {
+        var value = rawValue.Trim().TrimEnd('%');
+        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var percent)
+            || percent < 0)
+        {
+            throw new FormatException($"Docker stats CPU value '{rawValue}' is invalid.");
+        }
+
+        return percent;
+    }
+
     public static long ParseMemoryBytes(string rawValue)
     {
         if (string.IsNullOrWhiteSpace(rawValue))

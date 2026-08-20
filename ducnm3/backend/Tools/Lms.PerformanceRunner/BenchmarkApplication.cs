@@ -19,6 +19,7 @@ public sealed class BenchmarkApplication
     {
         using var httpClient = new HttpClient { BaseAddress = options.GatewayUrl, Timeout = options.Timeout };
         var outputDirectory = Path.GetFullPath(options.OutputDirectory);
+        var renderer = new TerminalBenchmarkRenderer(!options.PlainOutput);
         Directory.CreateDirectory(outputDirectory);
         await WriteMetadataAsync(outputDirectory, options, cancellationToken);
 
@@ -26,9 +27,9 @@ public sealed class BenchmarkApplication
         {
             var client = new NotificationBenchmarkClient(httpClient);
             foreach (var count in options.RecipientCounts)
-            {
-                await RunBatchCountAsync(client, count, options, outputDirectory, cancellationToken);
-            }
+                {
+                    await RunBatchCountAsync(client, count, options, outputDirectory, renderer, cancellationToken);
+                }
 
             return;
         }
@@ -36,7 +37,7 @@ public sealed class BenchmarkApplication
         var csvClient = new CourseBenchmarkClient(httpClient);
         foreach (var count in options.RecordCounts)
         {
-            await RunCsvCountAsync(csvClient, count, options, outputDirectory, cancellationToken);
+            await RunCsvCountAsync(csvClient, count, options, outputDirectory, renderer, cancellationToken);
         }
     }
 
@@ -45,6 +46,7 @@ public sealed class BenchmarkApplication
         int count,
         PerformanceOptions options,
         string outputDirectory,
+        TerminalBenchmarkRenderer renderer,
         CancellationToken cancellationToken)
     {
         for (var run = 0; run < options.WarmupRuns; run++)
@@ -57,13 +59,17 @@ public sealed class BenchmarkApplication
         for (var run = 0; run < options.MeasuredRuns; run++)
         {
             var monitor = CreateMonitor("notification-worker", options);
-            ContainerStatsCapture? capture = null;
-            BatchBenchmarkResult? result = null;
-            capture = await monitor.CaptureAsync(async token =>
-            {
-                result = await client.RunAsync(count, options.PollIntervalMilliseconds, token);
-            }, cancellationToken);
-            results.Add(new { DatasetCount = count, Run = run + 1, Result = result, Memory = capture.Memory, Samples = capture.Samples });
+            var measured = await renderer.RunBatchAsync(
+                client,
+                monitor,
+                count,
+                run + 1,
+                options.MeasuredRuns,
+                options.PollIntervalMilliseconds,
+                cancellationToken);
+            var result = measured.Result;
+            var capture = measured.Capture;
+            results.Add(new { DatasetCount = count, Run = run + 1, Result = result, Memory = capture.Memory, Resources = capture.Resources, Samples = capture.Samples });
             Console.WriteLine($"batch users={count} run={run + 1} status={result!.FinalStatus} totalMs={result.TotalDuration.TotalMilliseconds:0}");
         }
 
@@ -75,6 +81,7 @@ public sealed class BenchmarkApplication
         int count,
         PerformanceOptions options,
         string outputDirectory,
+        TerminalBenchmarkRenderer renderer,
         CancellationToken cancellationToken)
     {
         string[] approaches = options.Approach switch
@@ -87,7 +94,7 @@ public sealed class BenchmarkApplication
         {
             foreach (var approach in approaches)
             {
-                await client.DownloadAsync(approach, null, cancellationToken);
+                await client.DownloadAsync(approach, null, cancellationToken, limit: count);
             }
 
             Console.WriteLine($"warmup csv records={count} run={run + 1}");
@@ -98,16 +105,23 @@ public sealed class BenchmarkApplication
         {
             var measured = new List<CsvExportMeasurement>();
             var memory = new List<MemoryStatistics>();
+            var resources = new List<ResourceStatistics>();
             foreach (var approach in approaches)
             {
                 var monitor = CreateMonitor("course-service", options);
-                CsvExportMeasurement? measurement = null;
-                var capture = await monitor.CaptureAsync(async token =>
-                {
-                    measurement = await client.DownloadAsync(approach, null, token);
-                }, cancellationToken);
-                measured.Add(measurement!);
+                var current = await renderer.RunCsvAsync(
+                    client,
+                    monitor,
+                    approach,
+                    null,
+                    count,
+                    run + 1,
+                    options.MeasuredRuns,
+                    cancellationToken);
+                measured.Add(current.Measurement);
+                var capture = current.Capture;
                 memory.Add(capture.Memory);
+                resources.Add(capture.Resources);
             }
 
             if (measured.Count == 2 && measured[0].ContentSha256 != measured[1].ContentSha256)
@@ -115,7 +129,7 @@ public sealed class BenchmarkApplication
                 throw new InvalidOperationException("Buffered and streaming CSV content hashes differ.");
             }
 
-            results.Add(new { DatasetCount = count, Run = run + 1, Measurements = measured, Memory = memory });
+            results.Add(new { DatasetCount = count, Run = run + 1, Measurements = measured, Memory = memory, Resources = resources });
             Console.WriteLine($"csv records={count} run={run + 1} approaches={string.Join(',', approaches)}");
         }
 
@@ -130,7 +144,7 @@ public sealed class BenchmarkApplication
         {
             TimestampUtc = DateTimeOffset.UtcNow,
             Options = options,
-            Note = "Raw benchmark results only; preparation and container samples are not included yet.",
+            Note = "Raw benchmark results with container memory and CPU samples.",
         }, cancellationToken);
 
     private static ContainerStatsMonitor CreateMonitor(string service, PerformanceOptions options) =>

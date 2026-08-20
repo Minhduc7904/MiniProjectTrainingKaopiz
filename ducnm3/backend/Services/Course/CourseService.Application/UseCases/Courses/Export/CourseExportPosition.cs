@@ -3,4 +3,4 @@
 
 namespace CourseService.Application.UseCases.Courses.Export;
 
-public sealed record CourseExportPosition(DateTime CreatedAtUtc, Guid Id);
+public sealed record CourseExportPosition(DateTime CreatedAtUtc, Guid Id, int ReadCount = 0);

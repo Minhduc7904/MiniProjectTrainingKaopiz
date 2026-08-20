@@ -151,7 +151,7 @@ Một kích thước:
 
 ```bash
 dotnet run --project backend/Tools/Lms.PerformanceRunner -- \
-  batch --users 3000 --warmup 1 --runs 3 \
+  batch --users 10000 --warmup 1 --runs 3 \
   --poll-interval-ms 500 \
   --memory-sample-interval-ms 1000 \
   --timeout 00:30:00 \
@@ -191,6 +191,11 @@ dotnet run --project backend/Tools/Lms.PerformanceRunner -- \
 `buffered` chỉ được register khi Course Service chạy Development. Không dùng
 đường dẫn này để kiểm tra Production; Production phải trả `404`.
 
+`--records` được runner truyền thành query `limit` cho cả hai endpoint CSV, nên
+`--records 100000` sẽ nhận đúng tối đa `100000` Course (chưa tính dòng header).
+API export vẫn giữ hành vi tương thích: không truyền `limit` thì export toàn bộ
+Course phù hợp với `status`.
+
 ## Tùy chọn CLI
 
 | Option | Mặc định | Ý nghĩa |
@@ -203,7 +208,8 @@ dotnet run --project backend/Tools/Lms.PerformanceRunner -- \
 | `--memory-sample-interval-ms` | `1000` | Khoảng đọc Docker memory, tối thiểu `250 ms` |
 | `--timeout` | Batch `30m`, CSV `10m` | Timeout HTTP/scenario |
 | `--approach` | `both` | `buffered`, `streaming` hoặc `both` cho CSV |
-| `--plain` | tắt | Tắt terminal rendering nâng cao |
+| `--records` | bắt buộc với lệnh `csv` | Số Course truyền vào API dưới dạng `limit` |
+| `--plain` | tắt | Tắt terminal rendering realtime, phù hợp CI/log file |
 
 `--prepare-data` và `--confirm-reset` hiện chỉ được parser kiểm tra; xem cảnh
 báo ở phần [Chuẩn bị dataset](#chuẩn-bị-dataset).
@@ -214,9 +220,9 @@ Mặc định output nằm trong `performance/results/` và không được comm
 
 - `metadata.json`: timestamp và options.
 - `batch-<count>.json`: raw batch results, status, counters, duration,
-  throughput và memory samples.
+  throughput, CPU/RAM statistics và resource samples.
 - `csv-<count>.json`: raw CSV measurements, bytes, rows, SHA-256,
-  headers/TTFB/total time và memory statistics.
+  headers/TTFB/total time và CPU/RAM statistics.
 
 Batch:
 
@@ -226,6 +232,7 @@ Batch:
 - `DispatchDuration`: `durationMs` API khi có.
 - `EndToEndThroughput`: processed / total seconds.
 - Memory: baseline median, peak, average và delta của `notification-worker`.
+- CPU: hiện tại, peak và average của `notification-worker`.
 
 CSV:
 
@@ -234,6 +241,14 @@ CSV:
 - `TotalDownloadTime`: request tới đọc hết body.
 - `ResponseBytes`, `RowsReceived`, `ContentSha256`.
 - Memory: baseline median, peak, average và delta của `course-service`.
+- CPU: hiện tại, peak và average của `course-service`.
+
+Khi không dùng `--plain`, runner hiển thị live table trong terminal. CSV cập
+nhật byte, row, tốc độ, TTFB và elapsed time sau mỗi chunk. Batch cập nhật phase,
+processed/success/failed, throughput và elapsed time sau mỗi lần poll. CPU/RAM là
+resource của container Docker được đo bằng `docker stats`; đây không phải CPU/RAM
+của toàn bộ máy host. ETA chỉ có thể suy ra khi CSV response có `Content-Length`;
+nếu server stream không cung cấp header này, giao diện hiển thị số byte đã nhận.
 
 CSV `both` phải có cùng SHA-256. Hash khác nhau nghĩa là correctness failure,
 không được dùng kết quả đó để so sánh hiệu năng.

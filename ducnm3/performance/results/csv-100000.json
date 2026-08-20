@@ -5,18 +5,18 @@
     "measurements": [
       {
         "approach": "buffered",
-        "responseHeadersTime": "00:00:02.4526815",
-        "ttfb": "00:00:02.4528164",
-        "totalDownloadTime": "00:00:02.5807615",
+        "responseHeadersTime": "00:00:00.6779417",
+        "ttfb": "00:00:00.6839198",
+        "totalDownloadTime": "00:00:00.8748957",
         "responseBytes": 31500032,
         "rowsReceived": 300000,
         "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
       },
       {
         "approach": "streaming",
-        "responseHeadersTime": "00:00:00.0018056",
-        "ttfb": "00:00:00.0018607",
-        "totalDownloadTime": "00:00:40.7690775",
+        "responseHeadersTime": "00:00:00.0146883",
+        "ttfb": "00:00:00.0147889",
+        "totalDownloadTime": "00:00:35.0698581",
         "responseBytes": 31500032,
         "rowsReceived": 300000,
         "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
@@ -24,26 +24,40 @@
     ],
     "memory": [
       {
-        "baselineBytes": 245052211,
-        "peakBytes": 468713472,
-        "averageBytes": 282329087.8333333,
-        "deltaBytes": 223661261,
+        "baselineBytes": 454033408,
+        "peakBytes": 583847116,
+        "averageBytes": 475686502,
+        "deltaBytes": 129813708,
         "sampleCount": 6,
-        "baselineMegabytes": 233.69999980926514,
-        "peakMegabytes": 447,
-        "averageMegabytes": 269.24999984105426,
-        "deltaMegabytes": 213.30000019073486
+        "baselineMegabytes": 433,
+        "peakMegabytes": 556.7999992370605,
+        "averageMegabytes": 453.6499996185303,
+        "deltaMegabytes": 123.79999923706055
       },
       {
-        "baselineBytes": 468608614,
-        "peakBytes": 491152998,
-        "averageBytes": 398491992.57894737,
-        "deltaBytes": 22544384,
-        "sampleCount": 19,
-        "baselineMegabytes": 446.8999996185303,
-        "peakMegabytes": 468.3999996185303,
-        "averageMegabytes": 380.0315786160921,
-        "deltaMegabytes": 21.5
+        "baselineBytes": 583847116,
+        "peakBytes": 604608921,
+        "averageBytes": 598267315.8695652,
+        "deltaBytes": 20761805,
+        "sampleCount": 23,
+        "baselineMegabytes": 556.7999992370605,
+        "peakMegabytes": 576.5999994277954,
+        "averageMegabytes": 570.5521734901097,
+        "deltaMegabytes": 19.800000190734863
+      }
+    ],
+    "resources": [
+      {
+        "currentCpuPercent": 1.2,
+        "peakCpuPercent": 1.2,
+        "averageCpuPercent": 0.27499999999999997,
+        "sampleCount": 6
+      },
+      {
+        "currentCpuPercent": 3.45,
+        "peakCpuPercent": 32.57,
+        "averageCpuPercent": 5.496086956521739,
+        "sampleCount": 23
       }
     ]
   },
@@ -53,18 +67,18 @@
     "measurements": [
       {
         "approach": "buffered",
-        "responseHeadersTime": "00:00:02.4324009",
-        "ttfb": "00:00:02.4324617",
-        "totalDownloadTime": "00:00:02.5390251",
+        "responseHeadersTime": "00:00:00.5824273",
+        "ttfb": "00:00:00.5825226",
+        "totalDownloadTime": "00:00:00.7248497",
         "responseBytes": 31500032,
         "rowsReceived": 300000,
         "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
       },
       {
         "approach": "streaming",
-        "responseHeadersTime": "00:00:00.0039667",
-        "ttfb": "00:00:00.0040415",
-        "totalDownloadTime": "00:00:41.7202033",
+        "responseHeadersTime": "00:00:00.0065754",
+        "ttfb": "00:00:00.0066684",
+        "totalDownloadTime": "00:00:35.3834946",
         "responseBytes": 31500032,
         "rowsReceived": 300000,
         "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
@@ -72,26 +86,40 @@
     ],
     "memory": [
       {
-        "baselineBytes": 316460236,
-        "peakBytes": 437780480,
-        "averageBytes": 336680276.6666667,
-        "deltaBytes": 121320244,
+        "baselineBytes": 603245772,
+        "peakBytes": 603350630,
+        "averageBytes": 602669055.3333334,
+        "deltaBytes": 104858,
         "sampleCount": 6,
-        "baselineMegabytes": 301.79999923706055,
-        "peakMegabytes": 417.5,
-        "averageMegabytes": 321.0833326975505,
-        "deltaMegabytes": 115.70000076293945
+        "baselineMegabytes": 575.2999992370605,
+        "peakMegabytes": 575.3999996185303,
+        "averageMegabytes": 574.7499993642172,
+        "deltaMegabytes": 0.10000038146972656
       },
       {
-        "baselineBytes": 437465907,
-        "peakBytes": 449629388,
-        "averageBytes": 353585345.6315789,
-        "deltaBytes": 12163481,
-        "sampleCount": 19,
-        "baselineMegabytes": 417.19999980926514,
-        "peakMegabytes": 428.79999923706055,
-        "averageMegabytes": 337.20526278646366,
-        "deltaMegabytes": 11.59999942779541
+        "baselineBytes": 599156326,
+        "peakBytes": 600309760,
+        "averageBytes": 546175883.8695652,
+        "deltaBytes": 1153434,
+        "sampleCount": 23,
+        "baselineMegabytes": 571.3999996185303,
+        "peakMegabytes": 572.5,
+        "averageMegabytes": 520.873912686887,
+        "deltaMegabytes": 1.1000003814697266
+      }
+    ],
+    "resources": [
+      {
+        "currentCpuPercent": 1,
+        "peakCpuPercent": 1,
+        "averageCpuPercent": 0.24333333333333332,
+        "sampleCount": 6
+      },
+      {
+        "currentCpuPercent": 0.23,
+        "peakCpuPercent": 7.33,
+        "averageCpuPercent": 4.063478260869566,
+        "sampleCount": 23
       }
     ]
   },
@@ -101,18 +129,18 @@
     "measurements": [
       {
         "approach": "buffered",
-        "responseHeadersTime": "00:00:02.7565970",
-        "ttfb": "00:00:02.7567099",
-        "totalDownloadTime": "00:00:02.8711281",
+        "responseHeadersTime": "00:00:00.5878853",
+        "ttfb": "00:00:00.5879926",
+        "totalDownloadTime": "00:00:00.7279139",
         "responseBytes": 31500032,
         "rowsReceived": 300000,
         "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
       },
       {
         "approach": "streaming",
-        "responseHeadersTime": "00:00:00.0029090",
-        "ttfb": "00:00:00.0029677",
-        "totalDownloadTime": "00:00:34.4051174",
+        "responseHeadersTime": "00:00:00.0024123",
+        "ttfb": "00:00:00.0024828",
+        "totalDownloadTime": "00:00:36.2016763",
         "responseBytes": 31500032,
         "rowsReceived": 300000,
         "contentSha256": "6EE50C7D2A367A0D977EE893551A12662156FD7142E4D75F30D5121421B86811"
@@ -120,26 +148,40 @@
     ],
     "memory": [
       {
-        "baselineBytes": 251448524,
-        "peakBytes": 441974784,
-        "averageBytes": 283272805.8333333,
-        "deltaBytes": 190526260,
+        "baselineBytes": 501114470,
+        "peakBytes": 515479961,
+        "averageBytes": 503596099.8333333,
+        "deltaBytes": 14365491,
         "sampleCount": 6,
-        "baselineMegabytes": 239.79999923706055,
-        "peakMegabytes": 421.5,
-        "averageMegabytes": 270.14999945958454,
-        "deltaMegabytes": 181.70000076293945
+        "baselineMegabytes": 477.8999996185303,
+        "peakMegabytes": 491.5999994277954,
+        "averageMegabytes": 480.2666662534078,
+        "deltaMegabytes": 13.699999809265137
       },
       {
-        "baselineBytes": 442184499,
-        "peakBytes": 452565401,
-        "averageBytes": 393623093.8235294,
-        "deltaBytes": 10380902,
-        "sampleCount": 17,
-        "baselineMegabytes": 421.69999980926514,
-        "peakMegabytes": 431.5999994277954,
-        "averageMegabytes": 375.3882349238676,
-        "deltaMegabytes": 9.899999618530273
+        "baselineBytes": 515060531,
+        "peakBytes": 517262540,
+        "averageBytes": 426939115.5652174,
+        "deltaBytes": 2202009,
+        "sampleCount": 23,
+        "baselineMegabytes": 491.19999980926514,
+        "peakMegabytes": 493.29999923706055,
+        "averageMegabytes": 407.16086918374765,
+        "deltaMegabytes": 2.09999942779541
+      }
+    ],
+    "resources": [
+      {
+        "currentCpuPercent": 0.01,
+        "peakCpuPercent": 0.36,
+        "averageCpuPercent": 0.09000000000000001,
+        "sampleCount": 6
+      },
+      {
+        "currentCpuPercent": 0.02,
+        "peakCpuPercent": 6.7,
+        "averageCpuPercent": 3.8465217391304347,
+        "sampleCount": 23
       }
     ]
   }

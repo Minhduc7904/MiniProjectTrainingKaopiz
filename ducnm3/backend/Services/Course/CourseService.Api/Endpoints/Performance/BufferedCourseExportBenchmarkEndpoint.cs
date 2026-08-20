@@ -11,12 +11,13 @@ public static class BufferedCourseExportBenchmarkEndpoint
         this IEndpointRouteBuilder endpoints) =>
         endpoints.MapGet(ApiRoutes.Courses.BufferedExportBenchmark, async (
                 string? status,
+            int? limit,
                 HttpContext context,
                 BufferedCourseExportHandler handler,
                 CancellationToken cancellationToken) =>
             {
                 var bytes = await handler.HandleAsync(
-                    ExportCoursesQuery.Create(status),
+                    ExportCoursesQuery.Create(status, limit),
                     cancellationToken);
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentType = "text/csv; charset=utf-8";

@@ -13,11 +13,12 @@ public static class ExportCoursesEndpoint
     public static RouteHandlerBuilder MapExportCourses(this IEndpointRouteBuilder endpoints) =>
         endpoints.MapGet(ApiRoutes.Courses.Export, async (
                 string? status,
+            int? limit,
                 HttpContext context,
                 ExportCoursesHandler handler,
                 CancellationToken cancellationToken) =>
             {
-                var query = ExportCoursesQuery.Create(status);
+                var query = ExportCoursesQuery.Create(status, limit);
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentType = "text/csv; charset=utf-8";
                 context.Response.Headers.ContentDisposition = ContentDisposition;

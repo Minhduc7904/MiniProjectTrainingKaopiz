@@ -14,7 +14,8 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
     public async Task<BatchBenchmarkResult> RunAsync(
         int recipientCount,
         int pollIntervalMilliseconds,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IProgress<BatchDownloadProgress>? progress = null)
     {
         var stopwatch = Stopwatch.StartNew();
         using var createResponse = await httpClient.PostAsJsonAsync(
@@ -37,6 +38,14 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
             cancellationToken: cancellationToken);
         var data = createDocument.RootElement.GetProperty("data");
         var batchId = data.GetProperty("id").GetGuid();
+        progress?.Report(new BatchDownloadProgress(
+            "snapshot",
+            "ACCEPTED",
+            0,
+            0,
+            0,
+            0,
+            stopwatch.Elapsed));
 
         TimeSpan? snapshotDuration = null;
         while (true)
@@ -50,6 +59,14 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
                 cancellationToken: cancellationToken);
             var snapshotData = snapshotDocument.RootElement.GetProperty("data");
             var snapshotStatus = snapshotData.GetProperty("status").GetString();
+            progress?.Report(new BatchDownloadProgress(
+                "snapshot",
+                snapshotStatus ?? "UNKNOWN",
+                GetUInt32(snapshotData, "totalCount"),
+                GetUInt32(snapshotData, "processedCount"),
+                GetUInt32(snapshotData, "successCount"),
+                GetUInt32(snapshotData, "failedCount"),
+                stopwatch.Elapsed));
             if (snapshotStatus is "COMPLETED" or "FAILED")
             {
                 snapshotDuration = stopwatch.Elapsed - postLatency;
@@ -75,16 +92,24 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
                 cancellationToken: cancellationToken);
             var deliveryData = deliveryDocument.RootElement.GetProperty("data");
             var status = deliveryData.GetProperty("status").GetString() ?? "UNKNOWN";
+            var totalCount = deliveryData.GetProperty("totalCount").GetUInt32();
+            var processedCount = deliveryData.GetProperty("processedCount").GetUInt32();
+            var successCount = deliveryData.GetProperty("successCount").GetUInt32();
+            var failedCount = deliveryData.GetProperty("failedCount").GetUInt32();
+            progress?.Report(new BatchDownloadProgress(
+                "delivery",
+                status,
+                totalCount,
+                processedCount,
+                successCount,
+                failedCount,
+                stopwatch.Elapsed));
             if (status is not ("COMPLETED" or "FAILED"))
             {
                 await Task.Delay(pollIntervalMilliseconds, cancellationToken);
                 continue;
             }
 
-            var totalCount = deliveryData.GetProperty("totalCount").GetUInt32();
-            var processedCount = deliveryData.GetProperty("processedCount").GetUInt32();
-            var successCount = deliveryData.GetProperty("successCount").GetUInt32();
-            var failedCount = deliveryData.GetProperty("failedCount").GetUInt32();
             long? dispatchDuration = deliveryData.TryGetProperty("durationMs", out var duration)
                 && duration.ValueKind != JsonValueKind.Null
                 ? duration.GetInt64()
@@ -110,6 +135,11 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
 
     private Task<HttpResponseMessage> GetStatusAsync(string path, CancellationToken cancellationToken) =>
         httpClient.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+    private static uint GetUInt32(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out var property) && property.ValueKind != JsonValueKind.Null
+            ? property.GetUInt32()
+            : 0;
 
     private static async Task EnsureSuccessAsync(
         HttpResponseMessage response,

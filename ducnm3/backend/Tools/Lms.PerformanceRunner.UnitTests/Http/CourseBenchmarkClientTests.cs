@@ -16,8 +16,13 @@ public sealed class CourseBenchmarkClientTests
             BaseAddress = new Uri("http://localhost:5100"),
         };
         var benchmarkClient = new CourseBenchmarkClient(client);
+        var progress = new List<CsvDownloadProgress>();
 
-        var result = await benchmarkClient.DownloadAsync("streaming", "PUBLISHED", CancellationToken.None);
+        var result = await benchmarkClient.DownloadAsync(
+            "streaming",
+            "PUBLISHED",
+            CancellationToken.None,
+            new Progress<CsvDownloadProgress>(progress.Add));
 
         Assert.Multiple(() =>
         {
@@ -25,6 +30,9 @@ public sealed class CourseBenchmarkClientTests
             Assert.That(result.RowsReceived, Is.EqualTo(2));
             Assert.That(result.Ttfb, Is.Not.Null);
             Assert.That(result.ContentSha256, Is.EqualTo(Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(csv)))));
+            Assert.That(progress, Is.Not.Empty);
+            Assert.That(progress[^1].BytesRead, Is.EqualTo(result.ResponseBytes));
+            Assert.That(progress[^1].RowsRead, Is.EqualTo(result.RowsReceived));
         });
     }
 

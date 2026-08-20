@@ -11,7 +11,9 @@ public sealed class CourseBenchmarkClient(HttpClient httpClient)
     public async Task<CsvExportMeasurement> DownloadAsync(
         string approach,
         string? status,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IProgress<CsvDownloadProgress>? progress = null,
+        int? limit = null)
     {
         var path = approach switch
         {
@@ -19,7 +21,7 @@ public sealed class CourseBenchmarkClient(HttpClient httpClient)
             "streaming" => ApiRoutes.Courses.ExportPublicPath(),
             _ => throw new ArgumentOutOfRangeException(nameof(approach)),
         };
-        var uri = BuildUri(path, status);
+        var uri = BuildUri(path, status, limit);
         using var request = new HttpRequestMessage(HttpMethod.Get, uri);
         var stopwatch = Stopwatch.StartNew();
         using var response = await httpClient.SendAsync(
@@ -40,6 +42,7 @@ public sealed class CourseBenchmarkClient(HttpClient httpClient)
         var buffer = new byte[64 * 1024];
         var bytes = 0L;
         var rows = 0L;
+        var totalBytes = response.Content.Headers.ContentLength;
         TimeSpan? ttfb = null;
         var previousByte = (byte)0;
         var hasByte = false;
@@ -57,6 +60,14 @@ public sealed class CourseBenchmarkClient(HttpClient httpClient)
                 previousByte = buffer[index];
                 hasByte = true;
             }
+
+            progress?.Report(new CsvDownloadProgress(
+                approach,
+                bytes,
+                totalBytes,
+                rows,
+                stopwatch.Elapsed,
+                ttfb));
         }
 
         var totalTime = stopwatch.Elapsed;
@@ -70,13 +81,16 @@ public sealed class CourseBenchmarkClient(HttpClient httpClient)
             Convert.ToHexString(hash.GetHashAndReset()));
     }
 
-    private Uri BuildUri(string path, string? status)
+    private Uri BuildUri(string path, string? status, int? limit)
     {
         var builder = new UriBuilder(new Uri(httpClient.BaseAddress ?? throw new InvalidOperationException("HttpClient.BaseAddress is required."), path));
+        var query = new List<string>();
         if (!string.IsNullOrWhiteSpace(status))
         {
-            builder.Query = $"status={Uri.EscapeDataString(status)}";
+            query.Add($"status={Uri.EscapeDataString(status)}");
         }
+        if (limit is not null) query.Add($"limit={limit.Value}");
+        builder.Query = string.Join('&', query);
 
         return builder.Uri;
     }

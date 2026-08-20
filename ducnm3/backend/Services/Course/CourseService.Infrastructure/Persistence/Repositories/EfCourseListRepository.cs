@@ -47,16 +47,21 @@ public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseL
                 (course.CreatedAt == position.CreatedAtUtc && course.Id.CompareTo(position.Id) < 0));
         }
 
+        var remaining = query.Limit is int limit ? limit - (position?.ReadCount ?? 0) : ExportCoursesQuery.ChunkSize;
+        if (remaining <= 0) return new CourseExportChunk([], position?.ReadCount ?? 0);
+
         var rows = await source
             .OrderByDescending(course => course.CreatedAt)
             .ThenByDescending(course => course.Id)
-            .Take(ExportCoursesQuery.ChunkSize)
+            .Take(Math.Min(ExportCoursesQuery.ChunkSize, remaining))
             .Select(course => new CourseExportRowProjection(
                 course.Id, course.Name, course.Status, course.CreatedAt))
             .ToListAsync(cancellationToken);
-        return new CourseExportChunk(rows.Select(row => new CourseExportRow(
-            row.Id, row.Name, row.Status,
-            DateTime.SpecifyKind(row.CreatedAt, DateTimeKind.Utc))).ToArray());
+        return new CourseExportChunk(
+            rows.Select(row => new CourseExportRow(
+                row.Id, row.Name, row.Status,
+                DateTime.SpecifyKind(row.CreatedAt, DateTimeKind.Utc))).ToArray(),
+            position?.ReadCount ?? 0);
     }
 
     public async Task<IReadOnlyList<CourseExportRow>> ReadAllExportRowsAsync(
@@ -69,6 +74,7 @@ public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseL
         var rows = await source
             .OrderByDescending(course => course.CreatedAt)
             .ThenByDescending(course => course.Id)
+            .Take(query.Limit ?? int.MaxValue)
             .Select(course => new CourseExportRowProjection(
                 course.Id, course.Name, course.Status, course.CreatedAt))
             .ToListAsync(cancellationToken);
