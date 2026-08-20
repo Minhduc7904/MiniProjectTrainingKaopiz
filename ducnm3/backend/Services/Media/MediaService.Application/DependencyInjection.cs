@@ -5,6 +5,7 @@ using MediaService.Application.Services.Actors;
 using MediaService.Application.UseCases.Media.DirectUpload.Complete;
 using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
 using MediaService.Application.UseCases.Media.GetContent;
+using MediaService.Application.UseCases.Media.Library;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;
 using MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
@@ -48,6 +49,7 @@ public static class DependencyInjection
         services.AddScoped<CreateUploadIntentHandler>();
         services.AddScoped<CompleteDirectUploadHandler>();
         services.AddScoped<GetMediaContentHandler>();
+        services.AddScoped<GetMediaLibraryHandler>();
         services.AddScoped<CreateMediaUsageHandler>();
         services.AddScoped<GetMediaUsageUrlHandler>();
         services.AddScoped<GetMediaUsageUrlsHandler>();

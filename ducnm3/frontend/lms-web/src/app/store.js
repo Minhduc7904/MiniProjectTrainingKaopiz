@@ -3,6 +3,7 @@ import { attachHttpInterceptors } from '@/api/httpInterceptors'
 import { mediaReducer, uploadMedia } from '@/features/media/mediaSlice'
 import { directUploadReducer } from '@/features/media/directUploadSlice'
 import { mediaThumbnailReducer } from '@/features/media/mediaThumbnailSlice'
+import { mediaLibraryReducer } from '@/features/media/mediaLibrarySlice'
 import { studentsReducer } from '@/features/students/studentsSlice'
 import { coursesReducer } from '@/features/courses/coursesSlice'
 import { notificationBatchesReducer } from '@/features/notifications/notificationBatchesSlice'
@@ -15,6 +16,7 @@ export const store = configureStore({
     media: mediaReducer,
     directUpload: directUploadReducer,
     mediaThumbnail: mediaThumbnailReducer,
+    mediaLibrary: mediaLibraryReducer,
     notificationBatches: notificationBatchesReducer,
     toasts: toastsReducer,
   },

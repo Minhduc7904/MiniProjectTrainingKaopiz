@@ -32,6 +32,7 @@ export const API_ROUTES = {
   },
   media: {
     upload: joinPath(GATEWAY_PREFIXES.media, '/api/media'),
+    library: joinPath(GATEWAY_PREFIXES.media, '/api/media/library'),
     uploadIntents: joinPath(GATEWAY_PREFIXES.media, '/api/media/upload-intents'),
     uploadComplete: (mediaId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'upload-complete'),

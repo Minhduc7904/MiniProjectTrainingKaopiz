@@ -3,6 +3,8 @@
 
 namespace MediaService.Application.Repositories;
 
+using MediaService.Domain.ValueObjects;
+
 public interface IMediaRepository
 {
     Task AddPendingAsync(
@@ -22,6 +24,13 @@ public interface IMediaRepository
 
     Task<MediaRecord?> GetByIdAsync(
         Guid mediaId,
+        CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
+        ActorReference actor,
+        string? mediaType,
+        (DateTime CreatedAtUtc, Guid Id)? cursor,
+        int take,
         CancellationToken cancellationToken);
 
 }

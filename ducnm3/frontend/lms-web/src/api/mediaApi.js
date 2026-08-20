@@ -3,6 +3,7 @@ import { unwrapEnvelope } from '@/api/unwrapEnvelope'
 import { API_ROUTES } from '@/constants/apiRoutes'
 import { HTTP_HEADERS } from '@/constants/http'
 import { POST_MEDIA_FIELDS } from '@/constants/media'
+import { SILENT_TOAST_CONFIG } from '@/constants/toast'
 
 export async function uploadMediaRequest({
   file,
@@ -25,13 +26,25 @@ export async function uploadMediaRequest({
   }
 }
 
+export async function fetchMediaLibraryRequest({ mediaType = '', cursor = null, pageSize = 24 } = {}) {
+  const params = { pageSize }
+  if (mediaType) params.mediaType = mediaType
+  if (cursor) params.cursor = cursor
+  const response = await httpClient.get(API_ROUTES.media.library, { params })
+  return unwrapEnvelope(response)
+}
+
 export async function getMediaThumbnailRequest(thumbnailStatusUrl, { signal } = {}) {
   const response = await httpClient.get(thumbnailStatusUrl, { signal })
   return unwrapEnvelope(response)
 }
 
 export async function getMediaContentRequest(contentUrl, { signal } = {}) {
-  const response = await httpClient.get(contentUrl, { signal, responseType: 'blob' })
+  const response = await httpClient.get(contentUrl, {
+    signal,
+    responseType: 'blob',
+    apiToast: SILENT_TOAST_CONFIG,
+  })
   return response.data
 }
 

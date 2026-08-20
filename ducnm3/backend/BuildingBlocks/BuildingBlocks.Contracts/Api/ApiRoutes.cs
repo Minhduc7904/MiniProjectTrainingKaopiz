@@ -50,6 +50,7 @@ public static class ApiRoutes
     public static class Media
     {
         public const string Upload = "/api/media";
+        public const string Library = "/api/media/library";
         public const string UploadIntents = "/api/media/upload-intents";
         public const string UploadCompleteTemplate = "/api/media/{mediaId}/upload-complete";
         public const string Usages = "/api/media/usages";

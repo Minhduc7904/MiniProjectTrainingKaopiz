@@ -26,3 +26,4 @@ export const TOAST_DURATION_MS = {
 export const TOAST_HOVER_SCALE = 1.04
 
 export const TOAST_CONFIG_KEY = 'apiToast'
+export const SILENT_TOAST_CONFIG = { skip: true }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { appendMedia } from '@/features/media/mediaLibrarySlice'
 import { readActor } from '@/auth/actorStorage'
 import {
   completeDirectUploadRequest,
@@ -120,7 +121,10 @@ export function useDirectMediaUpload() {
         uploadStarted: (mediaId, traceId) => dispatch(directUploadActions.uploadStarted({ mediaId, traceId })),
         uploadProgress: (progress) => dispatch(directUploadActions.uploadProgress(progress)),
         finalizeStarted: () => dispatch(directUploadActions.finalizeStarted()),
-        completed: (data, traceId) => dispatch(directUploadActions.completed({ data, traceId })),
+        completed: (data, traceId) => {
+          dispatch(directUploadActions.completed({ data, traceId }))
+          dispatch(appendMedia(data))
+        },
         failed: (error) => dispatch(directUploadActions.failed(error)),
       },
       sanitizeError: (error) => sanitizeApiError(

@@ -10,4 +10,10 @@ public static class MediaTypes
     public const string Document = "DOCUMENT";
     public const string Audio = "AUDIO";
     public const string Other = "OTHER";
+
+    public static readonly IReadOnlySet<string> All =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            Image, Video, Document, Audio, Other,
+        };
 }

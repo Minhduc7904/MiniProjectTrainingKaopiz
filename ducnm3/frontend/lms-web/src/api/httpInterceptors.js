@@ -27,6 +27,10 @@ function toastMeta(config) {
   return config?.[TOAST_CONFIG_KEY]
 }
 
+function shouldSkipToast(config) {
+  return toastMeta(config)?.skip === true
+}
+
 let attached = false
 
 export function attachHttpInterceptors(store) {
@@ -45,6 +49,8 @@ export function attachHttpInterceptors(store) {
         delete config.headers['content-type']
       }
     }
+
+    if (shouldSkipToast(config)) return config
 
     const id = crypto.randomUUID()
     config.headers[HTTP_HEADERS.correlationId] = id
@@ -74,7 +80,7 @@ export function attachHttpInterceptors(store) {
     (response) => {
       logHttpResponse(response)
       const meta = toastMeta(response.config)
-      if (!meta) {
+      if (!meta || meta.skip) {
         return response
       }
 
@@ -91,6 +97,10 @@ export function attachHttpInterceptors(store) {
       return response
     },
     (error) => {
+      if (error?.code === 'ERR_CANCELED' || error?.name === 'CanceledError') {
+        return Promise.reject(error)
+      }
+      if (shouldSkipToast(error.config)) return Promise.reject(error)
       logHttpError(error)
       const meta = toastMeta(error.config)
       const apiError = toApiError(error)

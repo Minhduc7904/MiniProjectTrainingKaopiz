@@ -98,4 +98,51 @@ public sealed class EfMediaRepository(
                 item.ChecksumSha256,
                 new ActorReference(item.UploadedByType, item.UploadedBy)))
             .SingleOrDefaultAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
+        ActorReference actor,
+        string? mediaType,
+        (DateTime CreatedAtUtc, Guid Id)? cursor,
+        int take,
+        CancellationToken cancellationToken)
+    {
+        var query = dbContext.MediaObjects
+            .AsNoTracking()
+            .Where(item => item.UploadedBy == actor.Id &&
+                item.UploadedByType == actor.Type &&
+                item.SourceMediaId == null &&
+                item.DeletedAt == null);
+        if (mediaType is not null)
+            query = query.Where(item => item.MediaType == mediaType);
+        if (cursor is { } value)
+        {
+            query = query.Where(item => item.CreatedAt < value.CreatedAtUtc ||
+                (item.CreatedAt == value.CreatedAtUtc && item.Id.CompareTo(value.Id) < 0));
+        }
+
+        return await query
+            .OrderByDescending(item => item.CreatedAt)
+            .ThenByDescending(item => item.Id)
+            .Take(take)
+            .Select(item => new MediaLibraryRecord(
+                item.Id,
+                item.MediaType,
+                item.ContentType,
+                item.OriginalFileName,
+                (long)item.SizeBytes,
+                item.Status,
+                item.IsDraft,
+                item.DraftedAt,
+                item.CreatedAt,
+                item.CompletedAt,
+                dbContext.MediaDerivationJobs
+                    .Where(job => job.SourceMediaId == item.Id && job.DerivationType == "THUMBNAIL")
+                    .Select(job => (Guid?)job.DerivativeMediaId)
+                    .FirstOrDefault(),
+                dbContext.MediaDerivationJobs
+                    .Where(job => job.SourceMediaId == item.Id && job.DerivationType == "THUMBNAIL")
+                    .Select(job => job.Status)
+                    .FirstOrDefault()))
+            .ToArrayAsync(cancellationToken);
+    }
 }
