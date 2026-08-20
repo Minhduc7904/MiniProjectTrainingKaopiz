@@ -36,6 +36,7 @@ export function Pagination({
       </p>
       <Dropdown
         label={UI_LABELS.pageSize}
+        placement="top"
         className="w-full min-w-0"
         value={size}
         disabled={loading}

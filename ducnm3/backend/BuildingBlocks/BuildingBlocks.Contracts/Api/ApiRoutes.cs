@@ -40,6 +40,11 @@ public static class ApiRoutes
         public static string ByIdServicePath(Guid courseId) =>
             BuildServicePath(FormatGuidRoute(ByIdTemplate, "courseId", courseId));
 
+        public static string DetailsPublicPath(Guid courseId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(DetailsTemplate, "courseId", courseId));
+
         public static string LessonByIdServicePath(Guid courseId, Guid lessonId) =>
             BuildServicePath(FormatGuidRoute(FormatGuidRoute(LessonByIdTemplate, "courseId", courseId), "lessonId", lessonId));
 

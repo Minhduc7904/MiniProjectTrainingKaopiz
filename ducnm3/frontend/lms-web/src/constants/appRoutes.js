@@ -158,6 +158,16 @@ export function getServiceByPath(pathname) {
 
 export function getMenuByPath(pathname) {
   for (const service of SERVICES) {
+    const menu = service.menus.find((item) =>
+      (item.matchRoutes ?? [item.to]).includes(pathname),
+    )
+
+    if (menu) {
+      return menu
+    }
+  }
+
+  for (const service of SERVICES) {
     const menu = service.menus.find((item) => matchesMenuPath(pathname, item))
 
     if (menu) {

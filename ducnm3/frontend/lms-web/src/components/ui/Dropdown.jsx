@@ -7,6 +7,7 @@ import { KEYBOARD } from '@/constants/keyboard'
 import { UI_LABELS } from '@/constants/ui'
 import { ui } from '@/theme'
 import { useClickOutside } from '@/hooks/ui/useClickOutside'
+import { getDropdownPanelPlacementClass } from '@/components/ui/dropdownPlacement'
 
 export function Dropdown({
   id,
@@ -14,6 +15,7 @@ export function Dropdown({
   value,
   options,
   disabled = false,
+  placement = 'bottom',
   placeholder = UI_LABELS.select,
   className = '',
   onChange,
@@ -125,7 +127,10 @@ export function Dropdown({
           />
         </button>
         {open ? (
-          <ul role="listbox" className={ui.dropdownPanel}>
+          <ul
+            role="listbox"
+            className={[ui.dropdownPanel, getDropdownPanelPlacementClass(placement)].join(' ')}
+          >
             {options.map((option, index) => {
               const active = option.value === value
               const highlighted = index === highlightIndex

@@ -14,7 +14,7 @@ import { Workbench } from '@/components/layout/Workbench'
 import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
 import { MediaLibraryModal } from '@/components/media/MediaLibraryModal'
 import { createMediaUsageRequest, createMediaUsagesBatchRequest, removeMediaUsageRequest, reorderMediaUsagesRequest } from '@/api/mediaApi'
-import { createCourseLessonRequest, fetchCourseLessonDetailRequest, reorderCourseLessonsRequest, updateCourseLessonRequest, updateCourseRequest } from '@/api/coursesApi'
+import { createCourseLessonRequest, createCourseRequest, fetchCourseLessonDetailRequest, reorderCourseLessonsRequest, updateCourseLessonRequest, updateCourseRequest } from '@/api/coursesApi'
 import { RightPanel } from '@/components/layout/RightPanel'
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor'
 import { useDispatch, useSelector } from 'react-redux'
@@ -26,6 +26,7 @@ import { SORT_DIRECTIONS } from '@/constants/queryParams'
 import { GET_COURSES_ACTIVITY } from '@/constants/activities/getCourses'
 import { ui } from '@/theme'
 import { buildChangedPayload } from '@/pages/courses/courseUpdatePayload'
+import { buildCourseCreatePayload, COURSE_CREATE_INITIAL_FORM, isCourseCreateFormValid } from '@/pages/courses/courseCreatePayload'
 
 export function CourseDetailPage() {
   const { courseId } = useParams()
@@ -374,6 +375,10 @@ export function CoursesPage() {
   const dispatch = useDispatch()
   const list = useSelector((state) => state.courses.list)
   const loaded = useRef(false)
+  const [coursePanelOpen, setCoursePanelOpen] = useState(false)
+  const [courseSaving, setCourseSaving] = useState(false)
+  const [courseError, setCourseError] = useState(null)
+  const [courseForm, setCourseForm] = useState(COURSE_CREATE_INITIAL_FORM)
 
   useEffect(() => {
     if (!loaded.current) {
@@ -383,9 +388,31 @@ export function CoursesPage() {
   }, [dispatch, list.query])
 
   const load = (patch) => dispatch(fetchCoursesList({ ...list.query, ...patch }))
+  const openCourseCreator = () => {
+    setCourseForm(COURSE_CREATE_INITIAL_FORM)
+    setCourseError(null)
+    setCoursePanelOpen(true)
+  }
+  const submitCourseCreate = async (event) => {
+    event.preventDefault()
+    if (!isCourseCreateFormValid(courseForm)) return
+    setCourseSaving(true)
+    setCourseError(null)
+    try {
+      await createCourseRequest(buildCourseCreatePayload(courseForm))
+      setCoursePanelOpen(false)
+      setCourseForm(COURSE_CREATE_INITIAL_FORM)
+      dispatch(fetchCoursesList({ ...list.query, page: 1 }))
+    } catch (error) {
+      setCourseError(error?.message ?? 'Không thể tạo khóa học.')
+    } finally {
+      setCourseSaving(false)
+    }
+  }
 
   return (
-    <Workbench
+    <>
+      <Workbench
       input={
         <InputPanel
           guided={
@@ -409,9 +436,18 @@ export function CoursesPage() {
           {list.error ? <EmptyState title="Không tải được khóa học" description={list.error.message} /> : null}
           {!list.error && list.loading && !list.data.length ? <LoadingState label="Đang tải khóa học..." /> : null}
           {!list.error && !list.loading && !list.data.length ? <EmptyState title="Chưa có khóa học" description="Không có dữ liệu phù hợp." /> : null}
+          <div className="mb-4 flex justify-end"><Button type="button" onClick={openCourseCreator}><Icon icon={Plus} />Tạo khóa học</Button></div>
           {list.data.length ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{list.data.map((course) => <Link key={course.id} to={APP_ROUTES.courseDetails.replace(':courseId', course.id)} className={`overflow-hidden rounded-lg ${ui.card}`}><div className="aspect-video bg-surface-muted">{course.thumbnailUrl ? <MediaImagePreview contentUrl={course.thumbnailUrl} alt={course.name} /> : <div className={`flex h-full items-center justify-center text-[12px] ${ui.caption}`}>Chưa có thumbnail</div>}</div><div className="p-4"><h2 className={`truncate text-[15px] font-medium ${ui.title}`}>{course.name}</h2><p className={`mt-2 text-[12px] ${ui.body}`}>{course.status}</p></div></Link>)}</div> : null}
         </OutputPanel>
       }
-    />
+      />
+      <RightPanel open={coursePanelOpen} title="Tạo khóa học" description="Khóa học mới sẽ được lưu ở trạng thái Bản nháp." onClose={() => { if (!courseSaving) setCoursePanelOpen(false) }} footer={<div className="flex justify-end gap-2"><Button type="button" variant="ghost" disabled={courseSaving} onClick={() => setCoursePanelOpen(false)}>Hủy</Button><Button type="submit" form="create-course-form" disabled={courseSaving || !isCourseCreateFormValid(courseForm)}>Tạo khóa học</Button></div>}>
+        <form id="create-course-form" className="space-y-4" onSubmit={submitCourseCreate}>
+          <label className={`block text-[13px] ${ui.body}`}>Tên khóa học<input className={`${ui.control} mt-1 w-full py-2`} maxLength={200} disabled={courseSaving} value={courseForm.name} onChange={(event) => setCourseForm((current) => ({ ...current, name: event.target.value }))} placeholder="Ví dụ: Backend Fundamentals" /></label>
+          <MarkdownEditor id="create-course-description-markdown" value={courseForm.descriptionMarkdown} disabled={courseSaving} onChange={(descriptionMarkdown) => setCourseForm((current) => ({ ...current, descriptionMarkdown }))} placeholder="Mô tả Markdown (không bắt buộc)" />
+          {courseError ? <p className={`rounded-md px-3 py-2 text-[12px] ${ui.badgeDanger}`}>{courseError}</p> : null}
+        </form>
+      </RightPanel>
+    </>
   )
 }

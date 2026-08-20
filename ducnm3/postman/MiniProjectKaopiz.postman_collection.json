@@ -83,6 +83,45 @@
           "response": []
         },
         {
+          "name": "POST Create course draft",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Course is created as draft\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.status).to.eql(\"DRAFT\");",
+                  "  pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/course/api/courses/\" + body.data.id + \"/details\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" },
+              { "key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend Fundamentals\",\n  \"descriptionMarkdown\": \"![Course cover](/media/api/media/{{mediaId}}/content)\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/course/api/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["course", "api", "courses"]
+            },
+            "description": "Business flow: docs/business-flows/courses/post-courses.md"
+          },
+          "response": []
+        },
+        {
           "name": "GET Export courses CSV",
           "event": [
             {

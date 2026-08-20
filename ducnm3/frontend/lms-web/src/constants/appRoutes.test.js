@@ -25,3 +25,9 @@ describe('notification menu routing', () => {
     expect(getMenuByPath(pathname).label).toBe(label)
   })
 })
+
+describe('course menu routing', () => {
+  it('selects the CSV export menu instead of the dynamic course-detail menu', () => {
+    expect(getMenuByPath(APP_ROUTES.courseExport).label).toBe('Xuất CSV khóa học')
+  })
+})

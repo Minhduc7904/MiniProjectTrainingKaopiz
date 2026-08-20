@@ -43,7 +43,7 @@ export const ui = {
   controlInvalid:
     'border-danger focus:border-danger focus:shadow-[inset_0_0_0_1px_var(--color-danger)]',
   dropdownPanel:
-    'absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md border border-line bg-surface py-1 shadow-[inset_3px_0_0_0_var(--color-accent)]',
+    'absolute z-20 max-h-60 w-full overflow-auto rounded-md border border-line bg-surface py-1 shadow-[inset_3px_0_0_0_var(--color-accent)]',
   dropdownValue: 'text-fg',
   dropdownPlaceholder: 'text-fg-subtle',
   dropdownChevron: 'shrink-0 text-fg-subtle transition-transform duration-150',

@@ -11,6 +11,10 @@ export async function fetchCourseDetailsRequest(courseId) {
   return unwrapEnvelope(await httpClient.get(API_ROUTES.courses.detail(courseId)))
 }
 
+export async function createCourseRequest(course) {
+  return unwrapEnvelope(await httpClient.post(API_ROUTES.courses.list, course))
+}
+
 export async function createCourseLessonRequest(courseId, lesson) {
   return unwrapEnvelope(await httpClient.post(API_ROUTES.courses.lessons(courseId), lesson))
 }
