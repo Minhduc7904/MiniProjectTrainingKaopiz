@@ -37,6 +37,10 @@ public static class DependencyInjection
         services.AddScoped<ReorderLessonsHandler>();
         services.AddScoped<EnrollCourseHandler>();
         services.AddScoped<CompleteLessonProgressHandler>();
+        services.AddScoped<GetStudentEnrollmentsHandler>();
+        services.AddScoped<GetStudentCourseCatalogHandler>();
+        services.AddScoped<GetStudentEnrollmentDetailHandler>();
+        services.AddScoped<GetMyCourseProgressHandler>();
         return services;
     }
 }

@@ -27,6 +27,15 @@ public sealed class ApiRoutesTests
             Assert.That(
                 ApiRoutes.Courses.CompleteLessonProgressPublicPath(CourseId, LessonId),
                 Is.EqualTo("/course/api/courses/11111111-1111-1111-1111-111111111111/lessons/22222222-2222-2222-2222-222222222222/progress/complete"));
+            Assert.That(ApiRoutes.Courses.StudentEnrollmentsServicePath(), Is.EqualTo("api/student/enrollments"));
+            Assert.That(ApiRoutes.Courses.StudentEnrollmentsPublicPath(), Is.EqualTo("/course/api/student/enrollments"));
+            Assert.That(ApiRoutes.Courses.StudentCourseCatalogPublicPath(), Is.EqualTo("/course/api/student/courses"));
+            Assert.That(
+                ApiRoutes.Courses.StudentEnrollmentDetailPublicPath(CourseId),
+                Is.EqualTo("/course/api/student/enrollments/11111111-1111-1111-1111-111111111111"));
+            Assert.That(
+                ApiRoutes.Courses.MyProgressPublicPath(CourseId),
+                Is.EqualTo("/course/api/courses/11111111-1111-1111-1111-111111111111/my-progress"));
         });
     }
 }

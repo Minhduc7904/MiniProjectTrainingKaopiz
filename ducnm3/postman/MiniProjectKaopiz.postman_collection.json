@@ -83,6 +83,30 @@
           "response": []
         },
         {
+          "name": "GET Student enrollments",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Student enrollments OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data).to.be.an(\"array\"); pm.expect(body.meta.pagination.type).to.eql(\"offset\"); });"] } }],
+          "request": { "method": "GET", "header": [{ "key": "X-Actor-Type", "value": "STUDENT", "type": "text" }, { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" }, { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/student/enrollments?page=1&pageSize=12", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "12" }] }, "description": "Business flow: docs/business-flows/course-learning/get-student-enrollments.md" },
+          "response": []
+        },
+        {
+          "name": "GET Student course catalog",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Student course catalog OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data).to.be.an(\"array\"); pm.expect(body.meta.pagination.type).to.eql(\"offset\"); });"] } }],
+          "request": { "method": "GET", "header": [{ "key": "X-Actor-Type", "value": "STUDENT", "type": "text" }, { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" }, { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/student/courses?page=1&pageSize=12", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "courses"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "12" }] }, "description": "Business flow: docs/business-flows/course-learning/get-student-course-catalog.md" },
+          "response": []
+        },
+        {
+          "name": "GET Student enrollment detail",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Student enrollment detail OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data.lessons).to.be.an(\"array\"); });"] } }],
+          "request": { "method": "GET", "header": [{ "key": "X-Actor-Type", "value": "STUDENT", "type": "text" }, { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" }, { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}"] }, "description": "Business flow: docs/business-flows/course-learning/get-student-enrollment-detail.md" },
+          "response": []
+        },
+        {
+          "name": "GET My course progress",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"My course progress OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data.progressPercent).to.be.a(\"number\"); });"] } }],
+          "request": { "method": "GET", "header": [{ "key": "X-Actor-Type", "value": "STUDENT", "type": "text" }, { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" }, { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/courses/{{courseId}}/my-progress", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "my-progress"] }, "description": "Business flow: docs/business-flows/course-learning/get-course-my-progress.md" },
+          "response": []
+        },
+        {
           "name": "POST Create course draft",
           "event": [
             {

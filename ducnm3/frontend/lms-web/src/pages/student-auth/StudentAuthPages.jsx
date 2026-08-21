@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { studentAuthApi } from '@/api/studentAuthApi'
 import { clearStudentActor, readStudentActor, writeStudentActor } from '@/auth/studentAuthStorage'
-import { verifyStudentSession } from '@/auth/studentSession'
+import { getVerifiedStudentProfile, verifyStudentSession } from '@/auth/studentSession'
 import { APP_ROUTES } from '@/constants/appRoutes'
 import { StudentButton, StudentInput, StudentLoadingState } from '@/components/ui/student'
 import { studentUi } from '@/theme/student'
 import { StudentAuthLayout } from './components/StudentAuthLayout'
 import { StudentDashboard } from './components/StudentDashboard'
+import { StudentProfile } from './components/StudentProfile'
+import { StudentCourseCatalog } from './components/StudentCourseCatalog'
+import { StudentCourseDetail } from './components/StudentCourseDetail'
 
 function AuthError({ error }) {
   return error ? <p aria-live="polite" className={`mt-4 ${studentUi.error}`}>{error.message ?? 'Không thể xử lý yêu cầu. Hãy thử lại.'}</p> : null
@@ -27,10 +30,16 @@ export function StudentLoginPage() {
 
 export function StudentLoadingPage() {
   const navigate = useNavigate(); const [params] = useSearchParams()
-  useEffect(() => { const actor = readStudentActor(); if (!actor) { navigate(APP_ROUTES.studentLogin, { replace: true }); return } let active = true; studentAuthApi.me().then(() => { verifyStudentSession(actor.id); if (active) navigate(params.get('returnTo') || APP_ROUTES.studentHome, { replace: true }) }).catch(() => { clearStudentActor(); if (active) navigate(APP_ROUTES.studentLogin, { replace: true }) }); return () => { active = false } }, [navigate, params])
+  useEffect(() => { const actor = readStudentActor(); if (!actor) { navigate(APP_ROUTES.studentLogin, { replace: true }); return } let active = true; studentAuthApi.me().then((student) => { verifyStudentSession(student); if (active) navigate(params.get('returnTo') || APP_ROUTES.studentHome, { replace: true }) }).catch(() => { clearStudentActor(); if (active) navigate(APP_ROUTES.studentLogin, { replace: true }) }); return () => { active = false } }, [navigate, params])
   return <StudentAuthLayout title="Đang chuẩn bị phiên học"><StudentLoadingState title="Chúng tôi đang xác minh không gian học của bạn." /></StudentAuthLayout>
 }
 
 export function StudentLogoutPage() { clearStudentActor(); return <Navigate to={APP_ROUTES.studentLogin} replace /> }
 
-export function StudentHomePage() { return <StudentDashboard /> }
+export function StudentHomePage() { return <StudentDashboard student={getVerifiedStudentProfile()} /> }
+
+export function StudentProfilePage() { return <StudentProfile student={getVerifiedStudentProfile()} /> }
+
+export function StudentCoursesPage() { return <StudentCourseCatalog student={getVerifiedStudentProfile()} /> }
+
+export function StudentCourseDetailPage() { return <StudentCourseDetail student={getVerifiedStudentProfile()} /> }

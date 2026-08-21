@@ -93,6 +93,10 @@ app.MapReorderLessons();
 app.MapExportCourses();
 app.MapEnrollCourse();
 app.MapCompleteLessonProgress();
+app.MapGetStudentEnrollments();
+app.MapGetStudentCourseCatalog();
+app.MapGetStudentEnrollmentDetail();
+app.MapGetMyCourseProgress();
 if (app.Environment.IsDevelopment())
 {
     app.MapBufferedCourseExportBenchmark();

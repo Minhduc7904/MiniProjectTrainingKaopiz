@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ILessonCommandRepository, EfLessonCommandRepository>();
         services.AddScoped<ICourseCommandRepository, EfCourseCommandRepository>();
         services.AddScoped<ILearningCommandRepository, EfLearningCommandRepository>();
+        services.AddScoped<IStudentLearningRepository, EfStudentLearningRepository>();
         services.AddSingleton<IDatabaseHealthProbe>(provider => new CourseDatabaseHealthProbe(connectionString, provider.GetRequiredService<ILogger<CourseDatabaseHealthProbe>>()));
         return services;
     }

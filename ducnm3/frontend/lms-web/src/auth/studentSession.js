@@ -1,13 +1,17 @@
-let verifiedStudentId = null
+let verifiedStudentProfile = null
 
 export function isStudentSessionVerified(actor) {
-  return actor?.id === verifiedStudentId
+  return actor?.id === verifiedStudentProfile?.id
 }
 
-export function verifyStudentSession(studentId) {
-  verifiedStudentId = studentId
+export function verifyStudentSession(student) {
+  verifiedStudentProfile = student
+}
+
+export function getVerifiedStudentProfile() {
+  return verifiedStudentProfile
 }
 
 export function clearStudentSession() {
-  verifiedStudentId = null
+  verifiedStudentProfile = null
 }

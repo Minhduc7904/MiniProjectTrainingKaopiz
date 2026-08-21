@@ -31,6 +31,10 @@ public static class ApiRoutes
         public const string LessonByIdTemplate = "/api/courses/{courseId}/lessons/{lessonId}";
         public const string LessonReorderTemplate = "/api/courses/{courseId}/lessons/reorder";
         public const string EnrollmentsTemplate = "/api/courses/{courseId}/enrollments";
+        public const string StudentEnrollments = "/api/student/enrollments";
+        public const string StudentCourseCatalog = "/api/student/courses";
+        public const string StudentEnrollmentDetailTemplate = "/api/student/enrollments/{courseId}";
+        public const string MyProgressTemplate = "/api/courses/{courseId}/my-progress";
         public const string CompleteLessonProgressTemplate =
             "/api/courses/{courseId}/lessons/{lessonId}/progress/complete";
 
@@ -61,6 +65,34 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Course,
                 FormatGuidRoute(EnrollmentsTemplate, "courseId", courseId));
+
+        public static string StudentEnrollmentsServicePath() =>
+            BuildServicePath(StudentEnrollments);
+
+        public static string StudentEnrollmentsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, StudentEnrollments);
+
+        public static string StudentCourseCatalogServicePath() =>
+            BuildServicePath(StudentCourseCatalog);
+
+        public static string StudentCourseCatalogPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, StudentCourseCatalog);
+
+        public static string StudentEnrollmentDetailServicePath(Guid courseId) =>
+            BuildServicePath(FormatGuidRoute(StudentEnrollmentDetailTemplate, "courseId", courseId));
+
+        public static string StudentEnrollmentDetailPublicPath(Guid courseId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(StudentEnrollmentDetailTemplate, "courseId", courseId));
+
+        public static string MyProgressServicePath(Guid courseId) =>
+            BuildServicePath(FormatGuidRoute(MyProgressTemplate, "courseId", courseId));
+
+        public static string MyProgressPublicPath(Guid courseId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(MyProgressTemplate, "courseId", courseId));
 
         public static string CompleteLessonProgressServicePath(Guid courseId, Guid lessonId) =>
             BuildServicePath(

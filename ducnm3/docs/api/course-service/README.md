@@ -13,3 +13,7 @@
 - [Đổi thứ tự Lessons](endpoints/put-course-lessons-reorder.md)
 - [Lấy chi tiết khóa học](endpoints/get-course-details.md)
 - [Xuất khóa học](endpoints/get-courses-export.md)
+- [Khóa học đã ghi danh của Student](endpoints/get-student-enrollments.md)
+- [Danh mục khóa học chưa ghi danh của Student](endpoints/get-student-course-catalog.md)
+- [Chi tiết khóa học đã ghi danh](endpoints/get-student-enrollment-detail.md)
+- [Tiến độ Course của Student](endpoints/get-course-my-progress.md)

@@ -10,7 +10,7 @@ Học viên; Course Service; Student Service.
 
 ## Điều kiện đầu vào
 
-- Học viên đã được xác thực và có trạng thái `ACTIVE`.
+- Học viên gửi actor header `X-Actor-Type: STUDENT` và `X-Actor-Id` hợp lệ.
 - Khóa học tồn tại và có trạng thái `PUBLISHED`.
 
 ## UML luồng chạy
@@ -21,13 +21,10 @@ Học viên; Course Service; Student Service.
 sequenceDiagram
     participant Student
     participant Course as Course Service
-    participant StudentSvc as Student Service/JWT
     participant DB as MySQL Course
 
     Student->>Course: Enroll course
-    Course->>StudentSvc: Verify ACTIVE student
-    StudentSvc-->>Course: Verified identity/status
-    Course->>DB: Check PUBLISHED course + active enrollment
+    Course->>DB: Check PUBLISHED course + enrollment của actor
     DB-->>Course: Eligibility
     alt Không đủ điều kiện hoặc đã ghi danh
         Course-->>Student: 403/404/409
@@ -59,7 +56,7 @@ sequenceDiagram
 ## Luồng chính
 
 1. Học viên chọn một Khóa học để ghi danh.
-2. Course Service xác nhận Học viên qua Student Service hoặc thông tin xác nhận JWT.
+2. Course Service nhận Student identity từ actor header đã được endpoint policy validate.
 3. Course Service kiểm tra Khóa học cho phép ghi danh và chưa có lượt ghi danh đang hoạt động.
 4. Course Service tạo `enrollments` với `course_id`, `student_id`, và `enrolled_at`.
 5. Học viên mở Bài học thuộc Khóa học đã ghi danh.

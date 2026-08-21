@@ -9,6 +9,7 @@ import { studentsReducer } from '@/features/students/studentsSlice'
 import { coursesReducer } from '@/features/courses/coursesSlice'
 import { notificationBatchesReducer } from '@/features/notifications/notificationBatchesSlice'
 import { toastsReducer } from '@/features/toasts/toastsSlice'
+import { studentLearningReducer } from '@/features/studentLearning/studentLearningSlice'
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     mediaLibrary: mediaLibraryReducer,
     notificationBatches: notificationBatchesReducer,
     toasts: toastsReducer,
+    studentLearning: studentLearningReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

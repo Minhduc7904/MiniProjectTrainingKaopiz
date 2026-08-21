@@ -35,6 +35,13 @@ export const API_ROUTES = {
     detail: (studentId) =>
       joinPath(GATEWAY_PREFIXES.student, '/api/students', studentId),
   },
+  studentLearning: {
+    enrollments: joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments'),
+    catalog: joinPath(GATEWAY_PREFIXES.course, '/api/student/courses'),
+    enrollmentDetail: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId),
+    enroll: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'enrollments'),
+    progress: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'my-progress'),
+  },
   media: {
     upload: joinPath(GATEWAY_PREFIXES.media, '/api/media'),
     library: joinPath(GATEWAY_PREFIXES.media, '/api/media/library'),
