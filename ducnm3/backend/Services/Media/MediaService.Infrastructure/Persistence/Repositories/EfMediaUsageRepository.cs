@@ -147,6 +147,36 @@ public sealed class EfMediaUsageRepository(
         return pairs.Select(pair => MapUsageUrl(pair.Usage, pair.Media, pair.Thumbnail)).ToArray();
     }
 
+    public async Task<IReadOnlyList<Guid>> GetActiveUsageIdsByOwnersAsync(
+        IReadOnlyList<MediaUsageOwnerScope> owners,
+        CancellationToken cancellationToken)
+    {
+        if (owners.Count == 0)
+        {
+            return [];
+        }
+
+        var distinctOwners = owners.Distinct().ToArray();
+        var ownerServices = distinctOwners.Select(owner => owner.OwnerService).Distinct().ToArray();
+        var ownerTypes = distinctOwners.Select(owner => owner.OwnerType).Distinct().ToArray();
+        var ownerIds = distinctOwners.Select(owner => owner.OwnerId).Distinct().ToArray();
+        var ownerKeys = distinctOwners
+            .Select(owner => (owner.OwnerService, owner.OwnerType, owner.OwnerId))
+            .ToHashSet();
+        var candidates = await dbContext.MediaUsages.AsNoTracking()
+            .Where(item => item.DeletedAt == null &&
+                ownerServices.Contains(item.OwnerService) &&
+                ownerTypes.Contains(item.OwnerType) &&
+                ownerIds.Contains(item.OwnerId))
+            .Select(item => new { item.Id, item.OwnerService, item.OwnerType, item.OwnerId })
+            .ToListAsync(cancellationToken);
+        return candidates
+            .Where(item => ownerKeys.Contains((item.OwnerService, item.OwnerType, item.OwnerId)))
+            .Select(item => item.Id)
+            .Distinct()
+            .ToArray();
+    }
+
     public Task<DomainMediaUsage> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken) => ReplaceExclusiveUsageAsync(usage, cancellationToken);
@@ -242,6 +272,53 @@ public sealed class EfMediaUsageRepository(
             var media = await dbContext.MediaObjects.SingleAsync(item => item.Id == usage.MediaId, cancellationToken);
             media.IsDraft = true;
             media.DraftedAt = timeProvider.GetUtcNow().UtcDateTime;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RemoveByIdsAsync(
+        IReadOnlyList<Guid> usageIds,
+        CancellationToken cancellationToken)
+    {
+        var distinctUsageIds = usageIds.Where(id => id != Guid.Empty).Distinct().ToArray();
+        if (distinctUsageIds.Length == 0)
+        {
+            return;
+        }
+
+        var usages = await dbContext.MediaUsages
+            .Where(item => distinctUsageIds.Contains(item.Id) && item.DeletedAt == null)
+            .ToListAsync(cancellationToken);
+        if (usages.Count == 0)
+        {
+            return;
+        }
+
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        foreach (var usage in usages)
+        {
+            usage.DeletedAt = now;
+        }
+
+        var mediaIds = usages.Select(item => item.MediaId).Distinct().ToArray();
+        var mediaIdsWithOtherActiveUsage = await dbContext.MediaUsages.AsNoTracking()
+            .Where(item => mediaIds.Contains(item.MediaId) && item.DeletedAt == null &&
+                !distinctUsageIds.Contains(item.Id))
+            .Select(item => item.MediaId)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+        var orphanedMediaIds = mediaIds.Except(mediaIdsWithOtherActiveUsage).ToArray();
+        if (orphanedMediaIds.Length > 0)
+        {
+            var media = await dbContext.MediaObjects
+                .Where(item => orphanedMediaIds.Contains(item.Id) && item.DeletedAt == null)
+                .ToListAsync(cancellationToken);
+            foreach (var item in media)
+            {
+                item.IsDraft = true;
+                item.DraftedAt = now;
+            }
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

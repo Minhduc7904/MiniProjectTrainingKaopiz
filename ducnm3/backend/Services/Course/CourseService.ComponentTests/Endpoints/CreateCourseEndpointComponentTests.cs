@@ -59,7 +59,7 @@ public sealed class CreateCourseEndpointComponentTests
 
         using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.CurrentContext.CancellationToken));
-        var synchronization = commandSender.Commands.Single() as SynchronizeCourseContentMediaUsageV1;
+        var synchronization = commandSender.Commands.Single() as SynchronizeMarkdownMediaUsageV1;
 
         Assert.Multiple(() =>
         {
@@ -71,10 +71,10 @@ public sealed class CreateCourseEndpointComponentTests
             Assert.That(commandSender.Commands, Has.Count.EqualTo(1));
             Assert.That(synchronization, Is.Not.Null);
             Assert.That(synchronization?.OwnerId, Is.EqualTo(CourseId));
-            Assert.That(synchronization?.OwnerType, Is.EqualTo(CourseContentMediaOwnerTypes.CourseDescription));
+            Assert.That(synchronization?.OwnerType, Is.EqualTo(MarkdownMediaUsageOwnerTypes.CourseDescription));
             Assert.That(synchronization?.CreatedBy, Is.EqualTo(ActorId));
             Assert.That(synchronization?.Added, Is.EqualTo([
-                new NotificationMediaUsageReferenceV1(MediaId, NotificationMediaUsageTypes.Embed, 0),
+                new MarkdownMediaUsageReferenceV1(MediaId, MarkdownMediaUsageTypes.Embed, 0),
             ]));
             Assert.That(synchronization?.Removed, Is.Empty);
         });
@@ -124,6 +124,12 @@ public sealed class CreateCourseEndpointComponentTests
 
         public Task<CourseCommandRecord?> UpdateAsync(Guid courseId, string name, string? descriptionMarkdown, string status, CancellationToken cancellationToken) =>
             Task.FromResult<CourseCommandRecord?>(null);
+
+        public Task<IReadOnlyList<Guid>> GetLessonIdsAsync(Guid courseId, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Guid>>([]);
+
+        public Task<bool> DeleteAsync(Guid courseId, CancellationToken cancellationToken) =>
+            Task.FromResult(false);
     }
 
     private sealed class StubCommandSender : ICommandSender

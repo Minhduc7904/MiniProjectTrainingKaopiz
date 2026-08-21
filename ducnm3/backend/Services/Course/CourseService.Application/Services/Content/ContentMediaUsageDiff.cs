@@ -3,8 +3,8 @@ using MediaService.Contracts.Messaging;
 namespace CourseService.Application.Services.Content;
 
 public sealed record ContentMediaUsageDiff(
-    IReadOnlyList<NotificationMediaUsageReferenceV1> Added,
-    IReadOnlyList<NotificationMediaUsageReferenceV1> Removed)
+    IReadOnlyList<MarkdownMediaUsageReferenceV1> Added,
+    IReadOnlyList<MarkdownMediaUsageReferenceV1> Removed)
 {
     public static ContentMediaUsageDiff Create(string? before, string? after)
     {

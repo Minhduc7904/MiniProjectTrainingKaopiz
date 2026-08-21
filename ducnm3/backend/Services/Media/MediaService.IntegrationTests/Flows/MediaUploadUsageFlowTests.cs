@@ -244,7 +244,6 @@ public sealed class MediaUploadUsageFlowTests
 
         var usageHandler = new CreateMediaUsageHandler(
             actorValidation,
-            studentLookup,
             repository,
             mediaUsageRepository);
         var ownerId = actorId;

@@ -122,6 +122,24 @@
           "response": []
         },
         {
+          "name": "DELETE Course asynchronous cleanup",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Course delete accepted\", function () { pm.response.to.have.status(202); pm.expect(pm.response.text()).to.eql(\"\"); });"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/course/api/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["course", "api", "courses", "{{courseId}}"]
+            },
+            "description": "Business flow: docs/business-flows/course-learning/delete-course.md"
+          },
+          "response": []
+        },
+        {
           "name": "GET Export courses CSV",
           "event": [
             {
@@ -470,11 +488,21 @@
                 "key": "X-Correlation-ID",
                 "value": "{{$guid}}",
                 "type": "text"
+              },
+              {
+                "key": "X-Actor-Type",
+                "value": "STUDENT",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{studentId}}",
+                "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"ownerService\": \"STUDENT\",\n  \"ownerType\": \"STUDENT_AVATAR\",\n  \"ownerId\": \"{{ownerId}}\",\n  \"usageType\": \"AVATAR\",\n  \"displayOrder\": 0,\n  \"createdByType\": \"STUDENT\",\n  \"createdBy\": \"{{studentId}}\"\n}",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"ownerService\": \"STUDENT\",\n  \"ownerType\": \"STUDENT_AVATAR\",\n  \"ownerId\": \"{{studentId}}\",\n  \"usageType\": \"AVATAR\",\n  \"displayOrder\": 0\n}",
               "options": {
                 "raw": {
                   "language": "json"

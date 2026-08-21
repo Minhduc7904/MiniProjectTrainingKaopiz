@@ -47,6 +47,29 @@ public sealed class CourseMediaReader(HttpClient httpClient) : ICourseMediaReade
         CancellationToken cancellationToken) =>
         GetUsageUrlsAsync("LESSON_ATTACHMENT", "ATTACHMENT", [lessonId], cancellationToken);
 
+    public async Task<IReadOnlyList<Guid>> GetActiveUsageIdsAsync(
+        IReadOnlyList<CourseMediaUsageOwnerScope> owners,
+        CancellationToken cancellationToken)
+    {
+        if (owners.Count == 0)
+        {
+            return [];
+        }
+
+        var response = await httpClient.PostAsJsonAsync(
+            ApiRoutes.Media.UsageIdsQueryServicePath(),
+            new GetMediaUsageIdsByOwnersRequest(
+                owners.Select(owner => new MediaUsageOwnerScopeRequest(
+                    owner.OwnerService,
+                    owner.OwnerType,
+                    owner.OwnerId.ToString("D"))).ToArray()),
+            cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var envelope = await response.Content.ReadFromJsonAsync<ApiResponse<IReadOnlyList<Guid>>>(cancellationToken)
+            ?? throw new InvalidOperationException("Media Service returned an empty response.");
+        return envelope.Data ?? [];
+    }
+
     private async Task<IReadOnlyList<CourseMediaAsset>> GetUsageUrlsAsync(
         string ownerType,
         string usageType,
@@ -81,4 +104,12 @@ public sealed class CourseMediaReader(HttpClient httpClient) : ICourseMediaReade
         string MediaType,
         string ContentType,
         string OriginalFileName);
+
+    private sealed record GetMediaUsageIdsByOwnersRequest(
+        IReadOnlyList<MediaUsageOwnerScopeRequest> Owners);
+
+    private sealed record MediaUsageOwnerScopeRequest(
+        string OwnerService,
+        string OwnerType,
+        string OwnerId);
 }

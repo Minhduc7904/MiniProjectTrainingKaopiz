@@ -2,7 +2,7 @@
 
 ## Mục đích
 
-Đăng ký một media `READY` làm avatar Học viên hoặc thumbnail của media gốc.
+Đăng ký một media `READY` cho avatar Học viên hoặc các mục Course được hỗ trợ.
 Media Service sở hữu liên kết usage và soft-delete usage cũ khi thay thế.
 
 Đường dẫn công khai qua Gateway là `POST /media/api/media/usages`; đường dẫn
@@ -16,9 +16,9 @@ Postman: `MediaService/POST Create media usage`.
 
 - Xác thực: chưa bắt buộc trong phiên bản hiện tại.
 - `createdByType` và `createdBy` là định danh request tạm thời trong giai đoạn
-  chưa có xác thực. Hiện chỉ hỗ trợ actor type `STUDENT`, và UUID actor phải tồn
-  tại trong Student Service.
-- Actor tạo usage khác khái niệm với owner. `createdByType=STUDENT` phân loại
+  chưa có xác thực. Hỗ trợ actor type `STUDENT` và `ADMIN`; UUID actor phải được
+  actor validator tương ứng xác minh.
+- Actor tạo usage khác khái niệm với owner. `createdByType` phân loại
   tác nhân, còn `ownerType=STUDENT_AVATAR` phân loại tài nguyên/vị trí sở hữu;
   `createdBy` không mặc nhiên bằng `ownerId`.
 - Khi JWT được triển khai, actor type/ID sẽ được ánh xạ từ claim thay vì nhận từ
@@ -35,31 +35,33 @@ Content type bắt buộc là `application/json`.
   "ownerType": "STUDENT_AVATAR",
   "ownerId": "11111111-1111-1111-1111-111111111111",
   "usageType": "AVATAR",
-  "displayOrder": 0,
-  "createdByType": "STUDENT",
-  "createdBy": "11111111-1111-1111-1111-111111111111"
+  "displayOrder": 0
 }
 ```
+
+Request gửi actor qua header `X-Actor-Type` và `X-Actor-Id`.
 
 | Field | Kiểu | Bắt buộc | Quy tắc |
 | --- | --- | --- | --- |
 | `mediaId` | UUID | Có | Media phải tồn tại, chưa bị xóa và có trạng thái `READY`. |
-| `ownerService` | string | Có | `STUDENT` hoặc `MEDIA`. |
-| `ownerType` | string | Có | `STUDENT_AVATAR` hoặc `MEDIA_THUMBNAIL`, khớp owner service. |
-| `ownerId` | UUID | Có | ID Học viên hoặc ID media gốc sở hữu thumbnail. |
-| `usageType` | string | Có | `AVATAR` hoặc `THUMBNAIL`, khớp owner type. |
+| `ownerService` | string | Có | `STUDENT`, `MEDIA` hoặc `COURSE`; phải khớp tuple usage. |
+| `ownerType` | string | Có | `STUDENT_AVATAR`, `MEDIA_THUMBNAIL`, `COURSE_THUMBNAIL`, `COURSE_GALLERY` hoặc `LESSON_ATTACHMENT`. |
+| `ownerId` | UUID | Có | ID owner; Course/Lesson ID không được Media Service lookup trong phiên bản này. |
+| `usageType` | string | Có | `AVATAR`, `THUMBNAIL` hoặc `ATTACHMENT`, khớp tuple owner. |
 | `displayOrder` | uint | Có | Số nguyên không âm; với avatar thường dùng `0`. |
-| `createdByType` | string | Có | Actor type tạo usage; hiện chỉ hỗ trợ `STUDENT`. |
-| `createdBy` | UUID | Có | ID actor tạo usage; phải tồn tại trong Student Service. |
+| `X-Actor-Type` | header string | Có | `STUDENT` hoặc `ADMIN`, tùy policy của tuple. |
+| `X-Actor-Id` | header UUID | Có | ID actor tạo usage; được actor validator xác minh. |
 
-Ngoài các tổ hợp avatar/thumbnail/gallery hiện có, Admin có thể gắn mọi media gốc
-`READY` vào Lesson qua `COURSE/LESSON_ATTACHMENT/ATTACHMENT`. Media đính kèm
-không dùng chung owner với media tham chiếu trong Markdown (`LESSON_CONTENT`),
-nên khi sửa Markdown sẽ không gỡ file đã đính kèm.
+Student chỉ gán `STUDENT/STUDENT_AVATAR/AVATAR` cho chính mình và media phải là
+ảnh nguồn `READY`. Admin tạo các tuple `COURSE/*`; `COURSE_THUMBNAIL` và
+`COURSE_GALLERY` dùng ảnh nguồn `READY`, còn `LESSON_ATTACHMENT` nhận mọi media
+nguồn `READY` hợp lệ theo allowlist upload. Attachment không dùng chung owner
+với media tham chiếu trong Markdown (`LESSON_CONTENT`).
 
-Với thumbnail, `mediaId` phải là media dẫn
-xuất `READY`, `image/webp`, còn `ownerId` phải là media gốc `READY`; actor phải
-sở hữu cả media gốc và source của thumbnail dẫn xuất.
+`MEDIA/MEDIA_THUMBNAIL/THUMBNAIL` yêu cầu WebP thumbnail derivation `READY` có
+`sourceMediaId=ownerId`, do Admin hoặc system flow tạo. `COURSE_THUMBNAIL` lưu
+ảnh nguồn để Course detail hiển thị rõ; list Course có thể dùng thumbnail WebP
+dẫn xuất của ảnh nguồn mà không tạo usage mới.
 
 ## Phản hồi thành công
 
@@ -94,8 +96,7 @@ Location: /api/media/usages/555b1076-2cb1-4211-9207-c2ae685b9e06
 - `400 INVALID_MEDIA`: UUID không hợp lệ hoặc tổ hợp
   `ownerService/ownerType/usageType` chưa được hỗ trợ.
 - `400 INVALID_ACTOR_TYPE`: actor type thiếu hoặc chưa được hỗ trợ.
-- `404 ACTOR_NOT_FOUND`: `createdBy` không tồn tại trong Student Service.
-- `404 OWNER_NOT_FOUND`: `ownerId` khác actor và Học viên sở hữu không tồn tại.
+- `404 ACTOR_NOT_FOUND`: `createdBy` không tồn tại trong actor service tương ứng.
 - `404 MEDIA_NOT_FOUND`: `mediaId` không tồn tại.
 - `409 MEDIA_NOT_READY`: media còn `PENDING`, đã `FAILED` hoặc đã bị xóa mềm.
 - `409 MEDIA_USAGE_CONFLICT`: ràng buộc duy nhất của usage active bị xung đột
@@ -108,8 +109,8 @@ Location: /api/media/usages/555b1076-2cb1-4211-9207-c2ae685b9e06
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-- Media Service xác minh actor trước, sau đó xác minh owner khi actor không phải
-  chính Học viên sở hữu.
+- Media Service xác minh actor trước. Student phải là owner avatar; Course usage
+  chỉ kiểm tra actor là Admin, không gọi Course Service để lookup owner.
 - Việc thay avatar chạy trong transaction `SERIALIZABLE`: mọi
   `STUDENT/STUDENT_AVATAR/AVATAR` active trước đó của cùng `ownerId` được xóa
   mềm, rồi usage mới được tạo.

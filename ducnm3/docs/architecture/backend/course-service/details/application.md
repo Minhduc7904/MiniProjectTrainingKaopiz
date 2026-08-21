@@ -21,8 +21,10 @@ Implementation của port được đăng ký tại Infrastructure composition r
 
 ## Đã triển khai hiện tại
 
-Project Application và project reference theo Clean Architecture đã tồn tại;
-không có endpoint Course nghiệp vụ được map trong `CourseService.Api/Program.cs`.
+Course use case được đăng ký qua `AddCourseApplication()` và endpoint được map ở
+`CourseService.Api/Program.cs`; Application không phụ thuộc ASP.NET Core hoặc EF Core.
+
+`DeleteCourseHandler` snapshot usage ID theo scope Course/Lesson qua `ICourseMediaReader`, hard-delete aggregate tại Course repository, rồi gửi `DeleteMediaUsagesByIdsV1` cho Media Worker. Đây là luồng asynchronous không dùng distributed transaction.
 
 ## Định hướng/chưa triển khai
 

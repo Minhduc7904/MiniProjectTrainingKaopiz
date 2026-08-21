@@ -26,15 +26,15 @@ public sealed class ContentMediaUsageDiffTests
         Assert.Multiple(() =>
         {
             Assert.That(result.Added, Is.EqualTo([
-                new NotificationMediaUsageReferenceV1(
+                new MarkdownMediaUsageReferenceV1(
                     NewMediaId,
-                    NotificationMediaUsageTypes.Embed,
+                    MarkdownMediaUsageTypes.Embed,
                     0),
             ]));
             Assert.That(result.Removed, Is.EqualTo([
-                new NotificationMediaUsageReferenceV1(
+                new MarkdownMediaUsageReferenceV1(
                     OldMediaId,
-                    NotificationMediaUsageTypes.Attachment,
+                    MarkdownMediaUsageTypes.Attachment,
                     0),
             ]));
         });

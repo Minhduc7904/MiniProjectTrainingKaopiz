@@ -1,12 +1,12 @@
-using MediaService.Application.UseCases.MediaUsages.SynchronizeCourseContent;
+using MediaService.Application.UseCases.MediaUsages.SynchronizeMarkdown;
 using MediaService.Application.Repositories;
 using MediaService.Contracts.Messaging;
 using MediaService.Domain.Constants;
 using MediaService.UnitTests.TestDoubles;
 
-namespace MediaService.UnitTests.Application.UseCases.MediaUsages.SynchronizeCourseContent;
+namespace MediaService.UnitTests.Application.UseCases.MediaUsages.SynchronizeMarkdown;
 
-public sealed class SynchronizeCourseContentMediaUsagesHandlerTests
+public sealed class SynchronizeMarkdownMediaUsagesHandlerTests
 {
     [Test]
     public async Task HandleAsyncMixedDiffEnsuresAddedAndRemovesRequestedOwner()
@@ -16,15 +16,16 @@ public sealed class SynchronizeCourseContentMediaUsagesHandlerTests
         var addedMediaId = Guid.Parse("33333333-3333-3333-3333-333333333333");
         var removedMediaId = Guid.Parse("44444444-4444-4444-4444-444444444444");
         var repository = new StubMediaRepository();
-        var sut = new SynchronizeCourseContentMediaUsagesHandler(repository);
+        var sut = new SynchronizeMarkdownMediaUsagesHandler(repository);
 
         await sut.HandleAsync(
-            new SynchronizeCourseContentMediaUsageV1(
+            new SynchronizeMarkdownMediaUsageV1(
+                MarkdownMediaUsageOwnerServices.Course,
+                MarkdownMediaUsageOwnerTypes.LessonContent,
                 ownerId,
-                MediaOwnerTypes.LessonContent,
                 adminId,
-                [new NotificationMediaUsageReferenceV1(addedMediaId, NotificationMediaUsageTypes.Embed, 0)],
-                [new NotificationMediaUsageReferenceV1(removedMediaId, NotificationMediaUsageTypes.Attachment, 0)]),
+                [new MarkdownMediaUsageReferenceV1(addedMediaId, MarkdownMediaUsageTypes.Embed, 0)],
+                [new MarkdownMediaUsageReferenceV1(removedMediaId, MarkdownMediaUsageTypes.Attachment, 0)]),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -33,9 +34,9 @@ public sealed class SynchronizeCourseContentMediaUsagesHandlerTests
             Assert.That(repository.RemovedCourseContentUsages, Is.EqualTo([
                 new CourseContentMediaUsageRemoval(
                     ownerId,
-                    MediaOwnerTypes.LessonContent,
-                    removedMediaId,
-                    NotificationMediaUsageTypes.Attachment),
+                MarkdownMediaUsageOwnerTypes.LessonContent,
+                removedMediaId,
+                MarkdownMediaUsageTypes.Attachment),
             ]));
         });
     }

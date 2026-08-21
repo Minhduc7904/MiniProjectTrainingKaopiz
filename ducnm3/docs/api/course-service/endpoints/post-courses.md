@@ -52,7 +52,7 @@ Trả `201 Created`, header `Location` trỏ tới
 ## Xử lý media và retry
 
 Course được lưu trước, sau đó Application gửi command
-`SynchronizeCourseContentMediaUsageV1` tới Media Service cho các media reference
+`SynchronizeMarkdownMediaUsageV1` tới Media Service cho các media reference
 trong `descriptionMarkdown`. HTTP chỉ chờ command được nhận bởi transport, không
 chờ Media worker xử lý xong; worker đồng bộ usage `COURSE_DESCRIPTION` theo cơ chế
 idempotent.

@@ -13,4 +13,5 @@
 - [Liệt kê thông tin sử dụng phương tiện](endpoints/get-media-usages.md)
 - [Lấy URL của một usage ảnh](endpoints/get-media-usage-url.md)
 - [Lấy URL ảnh của owner](endpoints/get-media-usage-urls.md)
+- [Truy vấn media usage ID theo owner](endpoints/post-media-usage-ids-query.md)
 - [Lấy trạng thái job Media Usage của Notification Batch](endpoints/get-notification-media-usage-job-status.md)

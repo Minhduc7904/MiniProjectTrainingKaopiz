@@ -186,6 +186,11 @@ public sealed class GetMediaUsageUrlEndpointsComponentTests
             CancellationToken cancellationToken) =>
             Task.FromResult(Many);
 
+        public Task<IReadOnlyList<Guid>> GetActiveUsageIdsByOwnersAsync(
+            IReadOnlyList<MediaUsageOwnerScope> owners,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Guid>>([]);
+
         public Task AddPendingAsync(
             PendingMediaRecord media,
             CancellationToken cancellationToken) =>

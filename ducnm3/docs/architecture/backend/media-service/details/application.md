@@ -2,7 +2,7 @@
 
 ## Mục đích
 
-Application điều phối multipart/direct upload, completion, content, usage URL, thumbnail và actor validation qua
+Application điều phối multipart/direct upload, completion, content, usage URL, thumbnail, actor validation và media usage assignment policy qua
 storage/persistence/client abstractions.
 
 ## Kiến trúc
@@ -17,9 +17,13 @@ flowchart LR
 
 ## Cách dùng
 
-API/Worker inject handler; `IMediaRepository` chỉ sở hữu media object,
+API/Worker inject handler; `MediaUsageAssignmentPolicy` tập trung rule tuple
+owner/usage, actor và thuộc tính media trước khi handler chọn operation lưu usage.
+`IMediaRepository` chỉ sở hữu media object,
 `IMediaUsageRepository` sở hữu liên kết usage, còn `IStorage`, `IStudentLookup`
 và `IMediaUrlProvider` là các port khác được Infrastructure hiện thực.
+
+Media API có query nội bộ lấy active usage ID theo nhiều owner scope; Media Worker nhận `DeleteMediaUsagesByIdsV1` để soft-delete batch và đưa Media không còn usage active về draft.
 
 ## Đã triển khai hiện tại
 

@@ -16,6 +16,10 @@ public interface IMediaUsageRepository
         MediaUsageOwnerQuery query,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<Guid>> GetActiveUsageIdsByOwnersAsync(
+        IReadOnlyList<MediaUsageOwnerScope> owners,
+        CancellationToken cancellationToken);
+
     Task<MediaUsage> ReplaceStudentAvatarAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);
@@ -49,6 +53,11 @@ public interface IMediaUsageRepository
     Task RemoveAsync(Guid usageId, ActorReference actor, CancellationToken cancellationToken) =>
         throw new NotSupportedException();
 
+    Task RemoveByIdsAsync(
+        IReadOnlyList<Guid> usageIds,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
     Task ReorderAsync(
         string ownerService,
         string ownerType,
@@ -64,3 +73,8 @@ public sealed record CourseContentMediaUsageRemoval(
     string OwnerType,
     Guid MediaId,
     string UsageType);
+
+public sealed record MediaUsageOwnerScope(
+    string OwnerService,
+    string OwnerType,
+    Guid OwnerId);

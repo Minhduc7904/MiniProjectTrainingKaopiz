@@ -43,7 +43,13 @@ public sealed class CreateLessonHandler(
         {
             await commandSender.SendAsync(
                 ServiceNames.Media,
-                new RegisterCourseLessonMediaUsageV1(result.Id, createdBy, references),
+                new SynchronizeMarkdownMediaUsageV1(
+                    MarkdownMediaUsageOwnerServices.Course,
+                    MarkdownMediaUsageOwnerTypes.LessonContent,
+                    result.Id,
+                    createdBy,
+                    references,
+                    []),
                 cancellationToken);
         }
 

@@ -76,6 +76,7 @@ public static class ApiRoutes
         public const string UsageReorder = "/api/media/usages/reorder";
         public const string UsageUrlTemplate = "/api/media/usages/{usageId}/url";
         public const string UsageUrls = "/api/media/usages/urls";
+        public const string UsageIdsQuery = "/api/media/usages/ids:query";
         public const string ContentTemplate = "/api/media/{mediaId}/content";
         public const string ThumbnailStatusTemplate =
             "/api/media/{mediaId}/thumbnail";
@@ -123,6 +124,10 @@ public static class ApiRoutes
         /// <summary>Trả path public cho truy vấn signed URL theo lô.</summary>
         public static string UsageUrlsPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Media, UsageUrls);
+
+        /// <summary>Trả path nội bộ để lấy ID usage đang hoạt động theo nhiều owner.</summary>
+        public static string UsageIdsQueryServicePath() =>
+            BuildServicePath(UsageIdsQuery);
 
         /// <summary>Trả path nội bộ để xem trạng thái thumbnail của media.</summary>
         public static string ThumbnailStatusServicePath(Guid mediaId) =>

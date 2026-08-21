@@ -10,18 +10,6 @@ public sealed record RegisterNotificationMediaUsageV1(
     Guid CreatedBy,
     IReadOnlyList<NotificationMediaUsageReferenceV1> References) : ICommand;
 
-public sealed record RegisterCourseLessonMediaUsageV1(
-    Guid LessonId,
-    Guid CreatedBy,
-    IReadOnlyList<NotificationMediaUsageReferenceV1> References) : ICommand;
-
-public sealed record SynchronizeCourseContentMediaUsageV1(
-    Guid OwnerId,
-    string OwnerType,
-    Guid CreatedBy,
-    IReadOnlyList<NotificationMediaUsageReferenceV1> Added,
-    IReadOnlyList<NotificationMediaUsageReferenceV1> Removed) : ICommand;
-
 public sealed record RegisterNotificationMediaUsageBatchV1(
     Guid JobId,
     IReadOnlyList<Guid> NotificationIds,
@@ -43,12 +31,6 @@ public static class NotificationMediaUsageTypes
 {
     public const string Attachment = "ATTACHMENT";
     public const string Embed = "EMBED";
-}
-
-public static class CourseContentMediaOwnerTypes
-{
-    public const string CourseDescription = "COURSE_DESCRIPTION";
-    public const string LessonContent = "LESSON_CONTENT";
 }
 
 public static class NotificationMediaUsageBatchLimits

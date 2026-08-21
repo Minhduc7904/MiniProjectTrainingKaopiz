@@ -6,10 +6,10 @@ namespace CourseService.Application.Services.Content;
 
 public sealed partial class LessonMediaReferenceExtractor
 {
-    public static IReadOnlyList<NotificationMediaUsageReferenceV1> Extract(string? contentMarkdown)
+    public static IReadOnlyList<MarkdownMediaUsageReferenceV1> Extract(string? contentMarkdown)
     {
         if (string.IsNullOrWhiteSpace(contentMarkdown)) return [];
-        var references = new List<NotificationMediaUsageReferenceV1>();
+        var references = new List<MarkdownMediaUsageReferenceV1>();
         var seen = new HashSet<(Guid, string)>();
         foreach (Match match in MarkdownLinkRegex().Matches(contentMarkdown))
         {
@@ -19,7 +19,7 @@ public sealed partial class LessonMediaReferenceExtractor
                 : NotificationMediaUsageTypes.Attachment;
             if (seen.Add((mediaId, usageType)))
             {
-                references.Add(new NotificationMediaUsageReferenceV1(mediaId, usageType, checked((uint)references.Count)));
+                references.Add(new MarkdownMediaUsageReferenceV1(mediaId, usageType, checked((uint)references.Count)));
             }
         }
         return references;

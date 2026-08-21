@@ -11,7 +11,16 @@ public interface ICourseMediaReader
     Task<IReadOnlyList<CourseMediaAsset>> GetLessonAttachmentsAsync(
         Guid lessonId,
         CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<Guid>> GetActiveUsageIdsAsync(
+        IReadOnlyList<CourseMediaUsageOwnerScope> owners,
+        CancellationToken cancellationToken);
 }
+
+public sealed record CourseMediaUsageOwnerScope(
+    string OwnerService,
+    string OwnerType,
+    Guid OwnerId);
 
 public sealed record CourseMediaSet(
     CourseMediaAsset? Thumbnail,

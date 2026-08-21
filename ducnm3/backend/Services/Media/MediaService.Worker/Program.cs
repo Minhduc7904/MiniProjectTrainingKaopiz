@@ -3,6 +3,7 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Messaging;
+using BuildingBlocks.Observability.Logging;
 using MassTransit;
 using MediaService.Application;
 using MediaService.Application.Contracts.Messaging;
@@ -13,7 +14,6 @@ using MediaService.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using BuildingBlocks.Observability.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -58,16 +58,16 @@ builder.Services.AddLmsMessagingWithConsumers(
 
         registration
             .AddCommandConsumer<
-                RegisterCourseLessonMediaUsageConsumer,
-                RegisterCourseLessonMediaUsageV1,
-                RegisterCourseLessonMediaUsageConsumerDefinition>(
+                SynchronizeMarkdownMediaUsageConsumer,
+                SynchronizeMarkdownMediaUsageV1,
+                SynchronizeMarkdownMediaUsageConsumerDefinition>(
                 ServiceNames.Media);
 
         registration
             .AddCommandConsumer<
-                SynchronizeCourseContentMediaUsageConsumer,
-                SynchronizeCourseContentMediaUsageV1,
-                SynchronizeCourseContentMediaUsageConsumerDefinition>(
+                DeleteMediaUsagesByIdsConsumer,
+                DeleteMediaUsagesByIdsV1,
+                DeleteMediaUsagesByIdsConsumerDefinition>(
                 ServiceNames.Media);
 
         registration

@@ -96,6 +96,7 @@ app.MapCreateMediaUsagesBatch();
 app.MapManageMediaUsages();
 app.MapGetMediaUsageUrl();
 app.MapGetMediaUsageUrls();
+app.MapGetMediaUsageIdsByOwners();
 app.MapGetMediaContent();
 app.MapGetMediaLibrary();
 app.MapGetMediaThumbnailStatus();

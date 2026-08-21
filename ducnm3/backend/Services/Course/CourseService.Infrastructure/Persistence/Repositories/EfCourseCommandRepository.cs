@@ -31,4 +31,23 @@ public sealed class EfCourseCommandRepository(CourseDbContext db) : ICourseComma
         await db.SaveChangesAsync(cancellationToken);
         return new CourseCommandRecord(course.Id, course.Name, course.DescriptionMarkdown, course.Status, course.CreatedAt, course.UpdatedAt);
     }
+
+    public async Task<IReadOnlyList<Guid>> GetLessonIdsAsync(Guid courseId, CancellationToken cancellationToken) =>
+        await db.Lessons.AsNoTracking()
+            .Where(item => item.CourseId == courseId)
+            .Select(item => item.Id)
+            .ToListAsync(cancellationToken);
+
+    public async Task<bool> DeleteAsync(Guid courseId, CancellationToken cancellationToken)
+    {
+        var course = await db.Courses.SingleOrDefaultAsync(item => item.Id == courseId, cancellationToken);
+        if (course is null)
+        {
+            return false;
+        }
+
+        db.Courses.Remove(course);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
 }

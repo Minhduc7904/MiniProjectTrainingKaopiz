@@ -22,11 +22,15 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
 
     public IReadOnlyList<MediaUsageUrlRecord> UsageUrls { get; set; } = [];
 
+    public IReadOnlyList<Guid> UsageIds { get; set; } = [];
+
     public MediaUsageOwnerQuery? LastUsageUrlQuery { get; private set; }
 
     public IReadOnlyList<CreateMediaUsageRecord> EnsuredUsages { get; private set; } = [];
 
     public IReadOnlyList<CourseContentMediaUsageRemoval> RemovedCourseContentUsages { get; private set; } = [];
+
+    public IReadOnlyList<Guid> RemovedUsageIds { get; private set; } = [];
 
     public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
         Domain.ValueObjects.ActorReference actor,
@@ -127,6 +131,19 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
     {
         LastUsageUrlQuery = query;
         return Task.FromResult(UsageUrls);
+    }
+
+    public Task<IReadOnlyList<Guid>> GetActiveUsageIdsByOwnersAsync(
+        IReadOnlyList<MediaUsageOwnerScope> owners,
+        CancellationToken cancellationToken) =>
+        Task.FromResult(UsageIds);
+
+    public Task RemoveByIdsAsync(
+        IReadOnlyList<Guid> usageIds,
+        CancellationToken cancellationToken)
+    {
+        RemovedUsageIds = usageIds;
+        return Task.CompletedTask;
     }
 
     public Task<MediaUsage> ReplaceStudentAvatarAsync(
