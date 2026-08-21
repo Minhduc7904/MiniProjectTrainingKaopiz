@@ -31,8 +31,6 @@ public static class MediaUsageAssignmentPolicy
         {
             (MediaOwnerServices.Student, MediaOwnerTypes.StudentAvatar, MediaUsageTypes.Avatar) =>
                 ValidateStudentAvatar(ownerId, actor, media),
-            (MediaOwnerServices.Media, MediaOwnerTypes.MediaThumbnail, MediaUsageTypes.Thumbnail) =>
-                ValidateMediaThumbnail(ownerId, actor, media),
             (MediaOwnerServices.Course, MediaOwnerTypes.CourseThumbnail, MediaUsageTypes.Thumbnail) =>
                 ValidateCourseThumbnail(actor, media),
             (MediaOwnerServices.Course, MediaOwnerTypes.CourseGallery, MediaUsageTypes.Attachment) =>
@@ -41,7 +39,7 @@ public static class MediaUsageAssignmentPolicy
                 ValidateLessonAttachment(actor, media),
             _ => throw MediaErrors.InvalidMedia(
                 "Supported direct usages are STUDENT/STUDENT_AVATAR/AVATAR, " +
-                "MEDIA/MEDIA_THUMBNAIL/THUMBNAIL, COURSE/COURSE_THUMBNAIL/THUMBNAIL, " +
+                "COURSE/COURSE_THUMBNAIL/THUMBNAIL, " +
                 "COURSE/COURSE_GALLERY/ATTACHMENT, or COURSE/LESSON_ATTACHMENT/ATTACHMENT."),
         };
     }
@@ -58,23 +56,6 @@ public static class MediaUsageAssignmentPolicy
 
         EnsureReadyOriginalImage(media, "Student avatar media");
         return MediaUsageAssignmentKind.StudentAvatar;
-    }
-
-    private static MediaUsageAssignmentKind ValidateMediaThumbnail(
-        Guid ownerId,
-        ActorReference actor,
-        MediaRecord media)
-    {
-        EnsureAdmin(actor, "Only ADMIN actors can manage media thumbnails.");
-        if (media.SourceMediaId != ownerId ||
-            media.DerivationType != MediaDerivationTypes.Thumbnail ||
-            !string.Equals(media.ContentType, "image/webp", StringComparison.OrdinalIgnoreCase))
-        {
-            throw MediaErrors.InvalidMedia(
-                "Media thumbnail must be a READY WebP thumbnail derived from the owner media.");
-        }
-
-        return MediaUsageAssignmentKind.MediaThumbnail;
     }
 
     private static MediaUsageAssignmentKind ValidateCourseThumbnail(
@@ -136,7 +117,6 @@ public static class MediaUsageAssignmentPolicy
 public enum MediaUsageAssignmentKind
 {
     StudentAvatar,
-    MediaThumbnail,
     CourseThumbnail,
     CourseGallery,
     LessonAttachment,

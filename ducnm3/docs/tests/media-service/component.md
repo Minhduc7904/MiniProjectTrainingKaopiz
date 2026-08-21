@@ -49,7 +49,9 @@ MinIO và transaction thay active avatar được bao phủ trong
 | `GetUsageExistsReturnsOkEnvelope` | `GET /api/media/usages/{usageId}/url` | `200`, JSON envelope và URL do provider giả sinh. |
 | `GetOwnerUsagesReturnsEveryUrlInEnvelope` | `GET /api/media/usages/urls` với owner query | `200` và mảng URL có đúng thứ tự `displayOrder`. |
 | `GetUsageMissingReturnsNotFoundEnvelope` | Usage không tồn tại | `404 MEDIA_USAGE_NOT_FOUND` trong envelope an toàn. |
+| `PostThumbnailDerivativeUsageReturnsInvalidMediaEnvelope` | `POST /api/media/usages` với thumbnail derivative và tuple nội bộ. | `400 INVALID_MEDIA`; direct API không cho client tạo `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`. |
 | `CreateIntentReturnsCreatedEnvelopeAndCanonicalLocation` | JSON metadata direct upload hợp lệ | `201`, `Location=/media/api/media/{id}`, PENDING draft và signed response qua envelope. |
 | `CompleteReturnsReadyDraftAndIsRetrySafe` | Media PENDING/READY với storage/finalizer doubles | `200` READY draft; replay giữ established result và không nhân side effect. |
 | Direct errors | actor/media/object invalid | `400/404/409` trong envelope an toàn; không lộ storage routing/signed fields. |
 | `GetNotificationMediaUsageJobStatusEndpointComponentTests` | GET job status qua route Media-owned. | Trả `200`, progress/remaining đúng và `Cache-Control: no-store`. |
+| `GetMediaBackgroundJobsEndpointComponentTests` | `GET /api/media/jobs` với actor header ADMIN và repository double. | Trả `200`, offset envelope, item projection an toàn và `Cache-Control: no-store`. |

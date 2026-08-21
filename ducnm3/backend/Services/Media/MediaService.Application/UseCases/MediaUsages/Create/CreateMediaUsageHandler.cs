@@ -57,8 +57,6 @@ public sealed class CreateMediaUsageHandler(
         {
             MediaUsageAssignmentKind.StudentAvatar =>
                 await mediaUsageRepository.ReplaceStudentAvatarAsync(record, cancellationToken),
-            MediaUsageAssignmentKind.MediaThumbnail =>
-                await mediaUsageRepository.ReplaceMediaThumbnailAsync(record, cancellationToken),
             MediaUsageAssignmentKind.CourseThumbnail =>
                 await mediaUsageRepository.ReplaceCourseThumbnailAsync(record, cancellationToken),
             MediaUsageAssignmentKind.CourseGallery =>

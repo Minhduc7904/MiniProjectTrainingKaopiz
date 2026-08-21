@@ -10,6 +10,9 @@ public static class MediaErrors
     public static MediaApplicationException InvalidMedia(string message) =>
         new(MediaErrorCodes.InvalidMedia, message, 400);
 
+    public static MediaApplicationException InvalidMediaJobQuery(string message) =>
+        new(MediaErrorCodes.InvalidMediaJobQuery, message, 400);
+
     public static MediaApplicationException UnsupportedMediaType() =>
         new(
             MediaErrorCodes.UnsupportedMediaType,

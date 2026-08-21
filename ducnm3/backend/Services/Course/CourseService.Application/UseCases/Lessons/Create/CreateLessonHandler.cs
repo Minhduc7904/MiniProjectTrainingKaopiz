@@ -49,7 +49,8 @@ public sealed class CreateLessonHandler(
                     result.Id,
                     createdBy,
                     references,
-                    []),
+                    [],
+                    Guid.NewGuid()),
                 cancellationToken);
         }
 

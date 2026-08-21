@@ -11,21 +11,24 @@ namespace MediaService.Infrastructure.Persistence.Repositories;
 public sealed class EfNotificationMediaUsageJobRepository(MediaDbContext dbContext)
     : INotificationMediaUsageJobRepository
 {
+    private const string NotificationBatchSubjectType = "NOTIFICATION_BATCH";
+    private const string EmptyPayload = "{}";
     public Task<NotificationMediaUsageJobRecord?> GetByIdAsync(
         Guid jobId,
         CancellationToken cancellationToken) =>
-        dbContext.NotificationMediaUsageJobs.AsNoTracking()
-            .Where(job => job.Id == jobId)
+        dbContext.MediaBackgroundJobs.AsNoTracking()
+            .Where(job => job.Id == jobId && job.JobType == MediaBackgroundJobTypes.NotificationUsage)
             .Select(job => new NotificationMediaUsageJobRecord(
-                job.Id, job.Status, job.ExpectedUsageCount, job.ProcessedUsageCount,
-                job.FailedUsageCount, job.CreatedAt, job.StartedAt,
+                job.Id, job.Status, job.ExpectedItemCount, job.ProcessedItemCount,
+                job.FailedItemCount, job.CreatedAt, job.StartedAt,
                 job.CompletedAt, job.LastError))
             .SingleOrDefaultAsync(cancellationToken);
 
     public Task StartAsync(Guid jobId, CancellationToken cancellationToken) =>
         dbContext.Database.ExecuteSqlInterpolatedAsync($"""
-            INSERT INTO notification_media_usage_jobs (id, status)
-            VALUES ({jobId}, {NotificationMediaUsageJobStatuses.Pending})
+            INSERT INTO media_background_jobs
+                (id, job_type, subject_type, subject_id, correlation_id, status, payload_json)
+            VALUES ({jobId}, {MediaBackgroundJobTypes.NotificationUsage}, {NotificationBatchSubjectType}, {jobId}, {jobId}, {MediaBackgroundJobStatuses.Queued}, {EmptyPayload})
             ON DUPLICATE KEY UPDATE id = VALUES(id);
             """, cancellationToken);
 
@@ -35,13 +38,13 @@ public sealed class EfNotificationMediaUsageJobRepository(MediaDbContext dbConte
         CancellationToken cancellationToken)
     {
         await dbContext.Database.ExecuteSqlInterpolatedAsync($"""
-            INSERT INTO notification_media_usage_jobs
-                (id, status, processed_usage_count, started_at)
-            VALUES ({jobId}, {NotificationMediaUsageJobStatuses.Processing}, {usageCount}, UTC_TIMESTAMP(6))
+            INSERT INTO media_background_jobs
+                (id, job_type, subject_type, subject_id, correlation_id, status, payload_json, processed_item_count, started_at)
+            VALUES ({jobId}, {MediaBackgroundJobTypes.NotificationUsage}, {NotificationBatchSubjectType}, {jobId}, {jobId}, {MediaBackgroundJobStatuses.Processing}, {EmptyPayload}, {usageCount}, UTC_TIMESTAMP(6))
             ON DUPLICATE KEY UPDATE
-                processed_usage_count = processed_usage_count + VALUES(processed_usage_count),
+                processed_item_count = processed_item_count + VALUES(processed_item_count),
                 started_at = COALESCE(started_at, VALUES(started_at)),
-                status = {NotificationMediaUsageJobStatuses.Processing};
+                status = {MediaBackgroundJobStatuses.Processing};
             """, cancellationToken);
         await FinalizeIfReadyAsync(jobId, cancellationToken);
     }
@@ -56,14 +59,14 @@ public sealed class EfNotificationMediaUsageJobRepository(MediaDbContext dbConte
             ? "Media Usage processing failed."
             : safeError[..Math.Min(safeError.Length, 500)];
         await dbContext.Database.ExecuteSqlInterpolatedAsync($"""
-            INSERT INTO notification_media_usage_jobs
-                (id, status, failed_usage_count, last_error, started_at)
-            VALUES ({jobId}, {NotificationMediaUsageJobStatuses.Processing}, {usageCount}, {safeError}, UTC_TIMESTAMP(6))
+            INSERT INTO media_background_jobs
+                (id, job_type, subject_type, subject_id, correlation_id, status, payload_json, failed_item_count, last_error, started_at)
+            VALUES ({jobId}, {MediaBackgroundJobTypes.NotificationUsage}, {NotificationBatchSubjectType}, {jobId}, {jobId}, {MediaBackgroundJobStatuses.Processing}, {EmptyPayload}, {usageCount}, {safeError}, UTC_TIMESTAMP(6))
             ON DUPLICATE KEY UPDATE
-                failed_usage_count = failed_usage_count + VALUES(failed_usage_count),
+                failed_item_count = failed_item_count + VALUES(failed_item_count),
                 last_error = VALUES(last_error),
                 started_at = COALESCE(started_at, VALUES(started_at)),
-                status = {NotificationMediaUsageJobStatuses.Processing};
+                status = {MediaBackgroundJobStatuses.Processing};
             """, cancellationToken);
         await FinalizeIfReadyAsync(jobId, cancellationToken);
     }
@@ -74,25 +77,25 @@ public sealed class EfNotificationMediaUsageJobRepository(MediaDbContext dbConte
         CancellationToken cancellationToken)
     {
         await dbContext.Database.ExecuteSqlInterpolatedAsync($"""
-            INSERT INTO notification_media_usage_jobs
-                (id, status, expected_usage_count)
-            VALUES ({jobId}, {NotificationMediaUsageJobStatuses.Pending}, {expectedUsageCount})
-            ON DUPLICATE KEY UPDATE expected_usage_count = VALUES(expected_usage_count);
+            INSERT INTO media_background_jobs
+                (id, job_type, subject_type, subject_id, correlation_id, status, payload_json, expected_item_count)
+            VALUES ({jobId}, {MediaBackgroundJobTypes.NotificationUsage}, {NotificationBatchSubjectType}, {jobId}, {jobId}, {MediaBackgroundJobStatuses.Queued}, {EmptyPayload}, {expectedUsageCount})
+            ON DUPLICATE KEY UPDATE expected_item_count = VALUES(expected_item_count);
             """, cancellationToken);
         await FinalizeIfReadyAsync(jobId, cancellationToken);
     }
 
     private Task<int> FinalizeIfReadyAsync(Guid jobId, CancellationToken cancellationToken) =>
         dbContext.Database.ExecuteSqlInterpolatedAsync($"""
-            UPDATE notification_media_usage_jobs
+            UPDATE media_background_jobs
             SET status = CASE
-                    WHEN failed_usage_count = 0 THEN {NotificationMediaUsageJobStatuses.Completed}
-                    WHEN processed_usage_count = 0 THEN {NotificationMediaUsageJobStatuses.Failed}
-                    ELSE {NotificationMediaUsageJobStatuses.PartialFailed}
+                    WHEN failed_item_count = 0 THEN {MediaBackgroundJobStatuses.Completed}
+                    WHEN processed_item_count = 0 THEN {MediaBackgroundJobStatuses.Failed}
+                    ELSE {MediaBackgroundJobStatuses.PartialFailed}
                 END,
                 completed_at = COALESCE(completed_at, UTC_TIMESTAMP(6))
             WHERE id = {jobId}
-              AND expected_usage_count IS NOT NULL
-              AND processed_usage_count + failed_usage_count >= expected_usage_count;
+              AND expected_item_count IS NOT NULL
+              AND processed_item_count + failed_item_count >= expected_item_count;
             """, cancellationToken);
 }

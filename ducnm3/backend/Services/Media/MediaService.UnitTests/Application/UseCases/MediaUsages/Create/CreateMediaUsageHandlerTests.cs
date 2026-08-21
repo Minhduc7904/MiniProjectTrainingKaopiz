@@ -116,6 +116,43 @@ public sealed class CreateMediaUsageHandlerTests
     }
 
     [Test]
+    public void HandleAsyncThumbnailDerivativeForInternalMediaTupleThrowsInvalidMedia()
+    {
+        var sourceMediaId = Guid.NewGuid();
+        var repository = CreateRepository(new MediaRecord(
+            Guid.NewGuid(),
+            new StorageObjectLocation("images", "thumbnail.webp"),
+            MediaTypes.Image,
+            "image/webp",
+            "thumbnail.webp",
+            3,
+            MediaObjectStatuses.Ready,
+            DateTime.UtcNow,
+            null,
+            SourceMediaId: sourceMediaId,
+            DerivationType: MediaDerivationTypes.Thumbnail));
+        var handler = CreateHandler(repository);
+
+        var exception = Assert.ThrowsAsync<MediaApplicationException>(
+            () => handler.HandleAsync(
+                new CreateMediaUsageCommand(
+                    repository.ExistingMedia!.Id,
+                    MediaOwnerServices.Media,
+                    MediaOwnerTypes.MediaThumbnail,
+                    sourceMediaId,
+                    MediaUsageTypes.Thumbnail,
+                    0,
+                    new ActorReference(ActorTypes.Admin, Guid.NewGuid())),
+                CancellationToken.None));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(exception!.ErrorCode, Is.EqualTo(MediaErrorCodes.InvalidMedia));
+            Assert.That(repository.CreatedUsage, Is.Null);
+        });
+    }
+
+    [Test]
     public void HandleAsyncStudentAssignsAnotherStudentsAvatarThrowsInvalidActorType()
     {
         var repository = new StubMediaRepository

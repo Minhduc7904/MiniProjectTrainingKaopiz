@@ -15,3 +15,4 @@
 - [Lấy URL ảnh của owner](endpoints/get-media-usage-urls.md)
 - [Truy vấn media usage ID theo owner](endpoints/post-media-usage-ids-query.md)
 - [Lấy trạng thái job Media Usage của Notification Batch](endpoints/get-notification-media-usage-job-status.md)
+- [Liệt kê Media background job](endpoints/get-media-jobs.md)

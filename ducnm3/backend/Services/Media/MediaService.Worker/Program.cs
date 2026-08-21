@@ -112,6 +112,26 @@ builder.Services.AddLmsMessagingWithConsumers(
                 endpoint.Name =
                     "media-service--register-notification-media-usage-v1-fault";
             });
+
+        registration
+            .AddConsumer<
+                SynchronizeMarkdownMediaUsageFaultConsumer,
+                SynchronizeMarkdownMediaUsageFaultConsumerDefinition>()
+            .Endpoint(endpoint =>
+            {
+                endpoint.Name =
+                    "media-service--synchronize-markdown-media-usage-v1-fault";
+            });
+
+        registration
+            .AddConsumer<
+                DeleteMediaUsagesByIdsFaultConsumer,
+                DeleteMediaUsagesByIdsFaultConsumerDefinition>()
+            .Endpoint(endpoint =>
+            {
+                endpoint.Name =
+                    "media-service--delete-media-usages-by-ids-v1-fault";
+            });
     });
 
 var host = builder.Build();

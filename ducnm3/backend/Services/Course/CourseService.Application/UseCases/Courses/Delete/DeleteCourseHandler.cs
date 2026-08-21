@@ -39,7 +39,7 @@ public sealed class DeleteCourseHandler(
         {
             await commandSender.SendAsync(
                 ServiceNames.Media,
-                new DeleteMediaUsagesByIdsV1(usageIds.Distinct().ToArray()),
+                new DeleteMediaUsagesByIdsV1(usageIds.Distinct().ToArray(), Guid.NewGuid()),
                 cancellationToken);
         }
     }

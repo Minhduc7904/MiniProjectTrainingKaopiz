@@ -4,13 +4,16 @@
 using MediaService.Application.Common.Errors;
 using MediaService.Application.Repositories;
 using MediaService.Application.Services.MediaUsages;
+using MediaService.Application.UseCases.MediaUsageJobs.Process;
 using MediaService.Contracts.Messaging;
 using MediaService.Domain.Constants;
 using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Application.UseCases.MediaUsages.SynchronizeMarkdown;
 
-public sealed class SynchronizeMarkdownMediaUsagesHandler(IMediaUsageRepository repository)
+public sealed class SynchronizeMarkdownMediaUsagesHandler(
+    IMediaUsageRepository repository,
+    MediaBackgroundJobLifecycleHandler jobLifecycleHandler)
 {
     public async Task HandleAsync(
         SynchronizeMarkdownMediaUsageV1 command,
@@ -27,6 +30,11 @@ public sealed class SynchronizeMarkdownMediaUsagesHandler(IMediaUsageRepository 
         {
             MarkdownMediaUsageOwnerPolicy.ValidateReference(reference);
         }
+
+        var jobId = command.JobId == Guid.Empty ? Guid.NewGuid() : command.JobId;
+        var expectedItemCount = checked((uint)(command.Added.Count + command.Removed.Count));
+        await jobLifecycleHandler.StartMarkdownSyncAsync(
+            jobId, command.OwnerType, command.OwnerId, expectedItemCount, cancellationToken);
 
         var actor = new ActorReference(ActorTypes.Admin, command.CreatedBy);
         var additions = command.Added
@@ -51,5 +59,6 @@ public sealed class SynchronizeMarkdownMediaUsagesHandler(IMediaUsageRepository 
         {
             await repository.RemoveCourseContentMediaAsync(removals, cancellationToken);
         }
+        await jobLifecycleHandler.CompleteAsync(jobId, expectedItemCount, cancellationToken);
     }
 }

@@ -43,9 +43,9 @@ Request gửi actor qua header `X-Actor-Type` và `X-Actor-Id`.
 
 | Field | Kiểu | Bắt buộc | Quy tắc |
 | --- | --- | --- | --- |
-| `mediaId` | UUID | Có | Media phải tồn tại, chưa bị xóa và có trạng thái `READY`. |
-| `ownerService` | string | Có | `STUDENT`, `MEDIA` hoặc `COURSE`; phải khớp tuple usage. |
-| `ownerType` | string | Có | `STUDENT_AVATAR`, `MEDIA_THUMBNAIL`, `COURSE_THUMBNAIL`, `COURSE_GALLERY` hoặc `LESSON_ATTACHMENT`. |
+| `mediaId` | UUID | Có | Media original phải tồn tại, chưa bị xóa và có trạng thái `READY`. |
+| `ownerService` | string | Có | `STUDENT` hoặc `COURSE`; phải khớp tuple usage. |
+| `ownerType` | string | Có | `STUDENT_AVATAR`, `COURSE_THUMBNAIL`, `COURSE_GALLERY` hoặc `LESSON_ATTACHMENT`. |
 | `ownerId` | UUID | Có | ID owner; Course/Lesson ID không được Media Service lookup trong phiên bản này. |
 | `usageType` | string | Có | `AVATAR`, `THUMBNAIL` hoặc `ATTACHMENT`, khớp tuple owner. |
 | `displayOrder` | uint | Có | Số nguyên không âm; với avatar thường dùng `0`. |
@@ -58,10 +58,11 @@ Student chỉ gán `STUDENT/STUDENT_AVATAR/AVATAR` cho chính mình và media ph
 nguồn `READY` hợp lệ theo allowlist upload. Attachment không dùng chung owner
 với media tham chiếu trong Markdown (`LESSON_CONTENT`).
 
-`MEDIA/MEDIA_THUMBNAIL/THUMBNAIL` yêu cầu WebP thumbnail derivation `READY` có
-`sourceMediaId=ownerId`, do Admin hoặc system flow tạo. `COURSE_THUMBNAIL` lưu
-ảnh nguồn để Course detail hiển thị rõ; list Course có thể dùng thumbnail WebP
-dẫn xuất của ảnh nguồn mà không tạo usage mới.
+Mọi direct usage phải trỏ tới media original. `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`
+là usage nội bộ chỉ do Media Worker tạo sau derivation; thumbnail WebP phải trỏ
+đúng media original qua `ownerId=sourceMediaId` và không được gửi qua API này.
+`COURSE_THUMBNAIL` lưu ảnh nguồn để Course detail hiển thị rõ; list Course có
+thể dùng thumbnail WebP dẫn xuất của ảnh nguồn mà không tạo usage mới.
 
 ## Phản hồi thành công
 
@@ -92,7 +93,7 @@ Location: /api/media/usages/555b1076-2cb1-4211-9207-c2ae685b9e06
 
 ## Mã trạng thái HTTP
 
-- `201`: usage mới được tạo và trở thành avatar/thumbnail active.
+- `201`: usage mới được tạo và trở thành avatar hoặc Course thumbnail active.
 - `400 INVALID_MEDIA`: UUID không hợp lệ hoặc tổ hợp
   `ownerService/ownerType/usageType` chưa được hỗ trợ.
 - `400 INVALID_ACTOR_TYPE`: actor type thiếu hoặc chưa được hỗ trợ.
@@ -117,9 +118,10 @@ Location: /api/media/usages/555b1076-2cb1-4211-9207-c2ae685b9e06
 - Generated column `active_student_avatar_owner_id` cùng unique index bảo vệ
   quy tắc tối đa một avatar active cho mỗi Học viên, kể cả khi có request đồng
   thời.
-- Với `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`, transaction tương tự soft-delete
-  thumbnail active cũ. Generated column `active_media_thumbnail_owner_id` bảo
-  đảm mỗi media gốc chỉ có một thumbnail active.
+- Media Worker tạo `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL` qua internal repository
+  method riêng. Generated column `active_media_thumbnail_owner_id` bảo đảm mỗi
+  media gốc chỉ có một thumbnail active; client không thể gọi direct API để
+  tạo hoặc thay thế usage này.
 - `createdByType/createdBy` được lưu riêng với
   `ownerService/ownerType/ownerId`; hai nhóm field không được dùng thay thế nhau.
 - Request không có idempotency key. Gửi lại sẽ thay usage active; xung đột đồng

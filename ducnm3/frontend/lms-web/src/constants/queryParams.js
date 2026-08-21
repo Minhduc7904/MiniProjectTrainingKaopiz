@@ -8,6 +8,8 @@ export const QUERY_PARAMS = {
   ownerType: 'ownerType',
   usageType: 'usageType',
   ownerId: 'ownerId',
+  jobType: 'jobType',
+  correlationId: 'correlationId',
 }
 
 export const SORT_DIRECTIONS = {

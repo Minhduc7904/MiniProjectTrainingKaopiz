@@ -39,6 +39,20 @@ Khởi động toàn bộ stack ở chế độ nền:
 docker compose up -d --build
 ```
 
+## Chọn database profile
+
+Runtime mặc định dùng `.env`. Để chạy toàn bộ API và performance trên snapshot
+seed, dùng cùng một profile cho mọi lệnh:
+
+```bash
+docker compose --env-file .env.seed up -d --build --force-recreate
+scripts/database/reset-seed-databases.sh --confirm
+scripts/seed/run-development-seed.sh --env-file .env.seed --confirm
+```
+
+Performance runner chỉ gọi Gateway, nên đo đúng database mà stack hiện tại đang
+dùng. Không chạy lẫn `docker compose` (runtime) với script `--env-file .env.seed`.
+
 Kiểm tra các service:
 
 ```bash

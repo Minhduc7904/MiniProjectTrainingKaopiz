@@ -41,7 +41,8 @@ stub trong bộ nhớ để test không phụ thuộc Student Service qua mạng
 | `V005BackfillsExistingMediaDraftStateAndCreatesIndex` | Chèn legacy media trước V005: có active usage, không usage và PENDING; apply migration thật. | Active usage non-draft/null; còn lại draft với timestamp deterministic; `ix_media_objects_draft_cleanup` tồn tại. |
 | `PromoteAsyncSourceChangesAfterHeadRejectsStaleEtag` | Upload source lên real MinIO, stat ETag, thay source rồi promote với ETag cũ. | Real MinIO từ chối copy theo stale ETag; final object không được coi là committed. |
 | `V006TracksNotificationMediaUsageJobUntilExpectedCountCompletes` | Apply migration thật; start job, ghi 40/100 rồi ghi thêm 60. | Job giữ `PROCESSING` khi chưa đủ expected count và chuyển `COMPLETED` khi đạt 100. |
-| `GetActiveUsageIdsByOwnersAsync_MultipleOwnerScopes_ReturnsOnlyExactActiveUsageIds` | Thêm ba usage vào MySQL Testcontainer, trong đó một usage có cùng `ownerId` nhưng owner service/type khác. | Repository chỉ trả usage active khớp chính xác từng owner scope, phục vụ batch cleanup khi xóa Course. |
+| `GetActiveUsageIdsByOwnersAsyncMultipleOwnerScopesReturnsOnlyExactActiveUsageIds` | Thêm ba usage vào MySQL Testcontainer, trong đó một usage có cùng `ownerId` nhưng owner service/type khác. | Repository chỉ trả usage active khớp chính xác từng owner scope, phục vụ batch cleanup khi xóa Course. |
+| Thumbnail derivation internal usage | Worker hoàn tất thumbnail WebP với source original thật. | Chỉ Worker tạo được `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL`, `ownerId` đúng bằng ID original và thumbnail không được dùng ở usage nghiệp vụ. |
 
 Các kiểm thử vòng đời dùng `MinioStorageLocationAllocator` để reserve
 bucket/object key trước khi gọi storage adapter. Điều này bảo vệ ánh xạ loại →

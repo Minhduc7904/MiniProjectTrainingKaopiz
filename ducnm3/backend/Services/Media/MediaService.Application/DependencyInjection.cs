@@ -11,6 +11,7 @@ using MediaService.Application.UseCases.MediaDerivations.GenerateThumbnail;
 using MediaService.Application.UseCases.MediaDerivations.GetThumbnailStatus;
 using MediaService.Application.UseCases.MediaDerivations.RetryThumbnail;
 using MediaService.Application.UseCases.MediaUsageJobs.GetStatus;
+using MediaService.Application.UseCases.MediaUsageJobs.GetList;
 using MediaService.Application.UseCases.MediaUsageJobs.Process;
 using MediaService.Application.UseCases.MediaUsages.Create;
 using MediaService.Application.UseCases.MediaUsages.DeleteByIds;
@@ -61,7 +62,9 @@ public static class DependencyInjection
         services.AddScoped<RegisterNotificationMediaUsagesHandler>();
         services.AddScoped<SynchronizeMarkdownMediaUsagesHandler>();
         services.AddScoped<GetNotificationMediaUsageJobStatusHandler>();
+        services.AddScoped<GetMediaBackgroundJobsHandler>();
         services.AddScoped<NotificationMediaUsageJobLifecycleHandler>();
+        services.AddScoped<MediaBackgroundJobLifecycleHandler>();
         services.AddScoped<GenerateMediaThumbnailHandler>();
         services.AddScoped<GetMediaThumbnailStatusHandler>();
         services.AddScoped<RetryMediaThumbnailHandler>();

@@ -15,13 +15,12 @@ public partial class MediaDbContext : DbContext
     {
     }
 
-    public virtual DbSet<MediaDerivationJob> MediaDerivationJobs { get; set; }
+    public virtual DbSet<MediaBackgroundJob> MediaBackgroundJobs { get; set; }
 
     public virtual DbSet<MediaObject> MediaObjects { get; set; }
 
     public virtual DbSet<MediaUsage> MediaUsages { get; set; }
 
-    public virtual DbSet<NotificationMediaUsageJob> NotificationMediaUsageJobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,25 +28,21 @@ public partial class MediaDbContext : DbContext
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
 
-        modelBuilder.Entity<MediaDerivationJob>(entity =>
+        modelBuilder.Entity<MediaBackgroundJob>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("media_derivation_jobs");
-
-            entity.HasIndex(e => new { e.Status, e.UpdatedAt }, "ix_media_derivation_jobs_status_updated_at");
-
-            entity.HasIndex(e => e.DerivativeMediaId, "uq_media_derivation_jobs_derivative").IsUnique();
-
-            entity.HasIndex(e => new { e.SourceMediaId, e.DerivationType }, "uq_media_derivation_jobs_source_type").IsUnique();
+            entity.ToTable("media_background_jobs");
+            entity.HasIndex(e => e.CorrelationId, "ix_media_background_jobs_correlation_id");
+            entity.HasIndex(e => new { e.Status, e.UpdatedAt }, "ix_media_background_jobs_status_updated_at");
+            entity.HasIndex(e => new { e.JobType, e.SubjectType, e.SubjectId }, "ix_media_background_jobs_type_subject");
+            entity.HasIndex(e => e.DeduplicationKey, "uq_media_background_jobs_deduplication_key").IsUnique();
 
             entity.Property(e => e.Id)
-                .HasComment("UUID định danh operation tạo media dẫn xuất")
+                .HasComment("UUID định danh background job")
                 .HasColumnName("id")
                 .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
-            entity.Property(e => e.AttemptCount)
-                .HasComment("Số lần worker đã bắt đầu xử lý")
+            entity.Property(e => e.AttemptCount).HasComment("Tổng lần worker bắt đầu xử lý hoặc retry thủ công")
                 .HasColumnName("attempt_count");
             entity.Property(e => e.CompletedAt)
                 .HasMaxLength(6)
@@ -56,28 +51,25 @@ public partial class MediaDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasMaxLength(6)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
-                .HasComment("Thời điểm job được tạo, UTC")
+                .HasComment("Thời điểm tạo job, UTC")
                 .HasColumnName("created_at");
-            entity.Property(e => e.DerivationType)
-                .HasMaxLength(32)
-                .HasComment("Loại dẫn xuất; hiện chỉ hỗ trợ THUMBNAIL")
-                .HasColumnName("derivation_type")
+            entity.Property(e => e.CorrelationId).HasColumnName("correlation_id").UseCollation("ascii_bin").HasCharSet("ascii");
+            entity.Property(e => e.DeduplicationKey).HasMaxLength(128).HasColumnName("deduplication_key").UseCollation("ascii_general_ci").HasCharSet("ascii");
+            entity.Property(e => e.ExpectedItemCount).HasColumnName("expected_item_count");
+            entity.Property(e => e.FailedItemCount).HasColumnName("failed_item_count");
+            entity.Property(e => e.JobType).HasMaxLength(48).HasColumnName("job_type")
                 .UseCollation("ascii_general_ci")
-                .HasCharSet("ascii");
-            entity.Property(e => e.DerivativeMediaId)
-                .HasComment("Media WebP dẫn xuất được cấp trước")
-                .HasColumnName("derivative_media_id")
-                .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
             entity.Property(e => e.LastError)
                 .HasMaxLength(500)
                 .HasComment("Lỗi an toàn của lần xử lý cuối; không trả chi tiết nội bộ")
                 .HasColumnName("last_error");
-            entity.Property(e => e.SourceMediaId)
-                .HasComment("Media gốc cần tạo thumbnail")
-                .HasColumnName("source_media_id")
+            entity.Property(e => e.PayloadJson).HasColumnType("json").HasColumnName("payload_json");
+            entity.Property(e => e.ProcessedItemCount).HasColumnName("processed_item_count");
+            entity.Property(e => e.SubjectId).HasColumnName("subject_id")
                 .UseCollation("ascii_bin")
                 .HasCharSet("ascii");
+            entity.Property(e => e.SubjectType).HasMaxLength(48).HasColumnName("subject_type").UseCollation("ascii_general_ci").HasCharSet("ascii");
             entity.Property(e => e.StartedAt)
                 .HasMaxLength(6)
                 .HasComment("Thời điểm lần xử lý gần nhất bắt đầu, UTC")
@@ -85,7 +77,7 @@ public partial class MediaDbContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
                 .HasDefaultValueSql("'QUEUED'")
-                .HasComment("QUEUED | PROCESSING | READY | FAILED")
+                .HasComment("QUEUED | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED")
                 .HasColumnName("status")
                 .UseCollation("ascii_general_ci")
                 .HasCharSet("ascii");
@@ -94,60 +86,6 @@ public partial class MediaDbContext : DbContext
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                 .HasComment("Thời điểm job cập nhật gần nhất, UTC")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.DerivativeMedia).WithOne(p => p.MediaDerivationJobDerivativeMedia)
-                .HasForeignKey<MediaDerivationJob>(d => d.DerivativeMediaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_media_derivation_jobs_derivative");
-
-            entity.HasOne(d => d.SourceMedia).WithMany(p => p.MediaDerivationJobSourceMedia)
-                .HasForeignKey(d => d.SourceMediaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_media_derivation_jobs_source");
-        });
-
-        modelBuilder.Entity<NotificationMediaUsageJob>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-            entity.ToTable("notification_media_usage_jobs");
-            entity.HasIndex(e => new { e.Status, e.UpdatedAt }, "ix_notification_media_usage_jobs_status_updated_at");
-
-            entity.Property(e => e.Id)
-                .HasComment("UUID job; dùng cùng UUID với Notification Batch nguồn")
-                .HasColumnName("id")
-                .UseCollation("ascii_bin")
-                .HasCharSet("ascii");
-            entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .HasDefaultValueSql("'PENDING'")
-                .HasComment("PENDING | PROCESSING | COMPLETED | PARTIAL_FAILED | FAILED")
-                .HasColumnName("status")
-                .UseCollation("ascii_general_ci")
-                .HasCharSet("ascii");
-            entity.Property(e => e.ExpectedUsageCount)
-                .HasComment("Tổng usage Notification Service chốt sau khi delivery terminal")
-                .HasColumnName("expected_usage_count");
-            entity.Property(e => e.ProcessedUsageCount)
-                .HasComment("Số usage đã được Media Worker đăng ký thành công")
-                .HasColumnName("processed_usage_count");
-            entity.Property(e => e.FailedUsageCount)
-                .HasComment("Số usage thuộc command đã hết retry và thất bại")
-                .HasColumnName("failed_usage_count");
-            entity.Property(e => e.LastError)
-                .HasMaxLength(500)
-                .HasComment("Lỗi an toàn gần nhất; không chứa stack trace hoặc dữ liệu bí mật")
-                .HasColumnName("last_error");
-            entity.Property(e => e.CreatedAt)
-                .HasMaxLength(6)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
-                .HasColumnName("created_at");
-            entity.Property(e => e.StartedAt).HasMaxLength(6).HasColumnName("started_at");
-            entity.Property(e => e.CompletedAt).HasMaxLength(6).HasColumnName("completed_at");
-            entity.Property(e => e.UpdatedAt)
-                .HasMaxLength(6)
-                .ValueGeneratedOnAddOrUpdate()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                 .HasColumnName("updated_at");
         });
 

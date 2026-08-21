@@ -1,11 +1,11 @@
-# `POST /media/api/media/usages` — Thay avatar hoặc thumbnail
+# `POST /media/api/media/usages` — Gán media original
 
 API contract: [`post-media-usages.md`](../../api/media-service/endpoints/post-media-usages.md)
 
 ## Mục tiêu
 
-Đăng ký media `READY` theo policy avatar/Course, đồng thời giữ history usage đã
-soft-delete khi tuple có tính thay thế.
+Đăng ký media original `READY` theo policy avatar/Course, đồng thời giữ history
+usage đã soft-delete khi tuple có tính thay thế.
 
 ## Actor và thành phần
 
@@ -18,9 +18,9 @@ soft-delete khi tuple có tính thay thế.
 ## Điều kiện trước
 
 - Student chỉ gán `STUDENT/STUDENT_AVATAR/AVATAR` cho chính mình.
-- Admin tạo các tuple `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL` hoặc Course được public.
-- Media tồn tại, chưa soft-delete và đang `READY`; policy xác định ảnh nguồn,
-  WebP derivation hoặc media nguồn hợp lệ cho tuple.
+- Admin tạo các tuple Course được public.
+- Media tồn tại, chưa soft-delete, đang `READY` và là record original.
+  Thumbnail derivative không được nhận qua direct API.
 
 ## UML luồng chạy
 
@@ -51,7 +51,8 @@ sequenceDiagram
 3. Student chỉ thao tác avatar của chính mình; Course usage yêu cầu Admin và
    không lookup Course/Lesson owner trong release này.
 4. Repository mở transaction `SERIALIZABLE`.
-5. Usage avatar/thumbnail active cũ được soft-delete và usage mới được tạo.
+5. Usage avatar hoặc Course thumbnail active cũ được soft-delete và usage mới
+   được tạo.
 6. API trả `201` với actor/owner không bị trộn lẫn.
 
 ## Luồng lỗi
@@ -65,8 +66,10 @@ sequenceDiagram
 
 - Soft-delete usage active cũ.
 - Tạo một hàng `media_usages`.
-- Generated guards bảo đảm chỉ một avatar, media thumbnail hoặc Course thumbnail
-  active trên mỗi owner; gallery và Lesson attachment giữ nhiều usage.
+- Generated guards bảo đảm chỉ một avatar hoặc Course thumbnail active trên mỗi
+  owner; gallery và Lesson attachment giữ nhiều usage.
+- Worker là thành phần duy nhất tạo `MEDIA/MEDIA_THUMBNAIL/THUMBNAIL` cho đúng
+  original sau khi thumbnail derivation hoàn tất.
 - Chuỗi A → B → A hợp lệ; gửi lại A khi A đang active trả conflict.
 
 ## Test mapping

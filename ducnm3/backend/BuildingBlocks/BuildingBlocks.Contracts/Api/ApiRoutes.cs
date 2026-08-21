@@ -84,6 +84,12 @@ public static class ApiRoutes
             "/api/media/{mediaId}/thumbnail/retry";
         public const string NotificationMediaUsageJobStatusTemplate =
             "/api/media/usage-jobs/{jobId}/status";
+        public const string Jobs = "/api/media/jobs";
+
+        public static string JobsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Media, Jobs);
+
+        public static string JobsServicePath() => BuildServicePath(Jobs);
 
         public static string ResourcePublicPath(Guid mediaId) =>
             BuildPublicPath(

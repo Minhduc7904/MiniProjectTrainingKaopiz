@@ -45,7 +45,16 @@ dùng internal endpoint cho server-side storage. Worker đăng ký thumbnail và
 notification media usage consumer; API/Worker dùng Entity Framework Outbox.
 Xem [API docs](../../../api/media-service/README.md).
 
-Media Worker sở hữu `notification_media_usage_jobs` và GET status tương ứng. Start/register/complete command dùng Notification Batch ID làm correlation; completion marker không đóng job trước khi counter chunk đạt expected count.
+Media Worker sở hữu `media_background_jobs` cho thumbnail derivation, Markdown
+usage sync, usage deletion và notification usage. Tất cả consumer bất đồng bộ
+đều ghi `PROCESSING` trước side effect, `COMPLETED` sau thành công và `FAILED`
+qua fault consumer khi hết transport retry. Notification Batch dùng Batch ID làm
+correlation; completion marker không đóng job trước khi counter chunk đạt
+expected count. Payload JSON versioned và lỗi an toàn cho phép vận hành retry.
+
+Media API cung cấp `GET /api/media/jobs` chỉ cho ADMIN để theo dõi mọi job từ
+bảng chung. Endpoint chỉ trả projection vận hành an toàn, đọc bằng offset
+pagination và không làm lộ payload/retry metadata nội bộ.
 
 ## Định hướng/chưa triển khai
 

@@ -13,6 +13,7 @@ namespace MediaService.Infrastructure.Persistence.Repositories;
 
 public sealed class EfMediaRepository(
     MediaDbContext dbContext,
+    EfMediaBackgroundJobRepository backgroundJobs,
     TimeProvider timeProvider) : IMediaRepository
 {
     public async Task AddPendingAsync(
@@ -135,12 +136,12 @@ public sealed class EfMediaRepository(
                 item.DraftedAt,
                 item.CreatedAt,
                 item.CompletedAt,
-                dbContext.MediaDerivationJobs
-                    .Where(job => job.SourceMediaId == item.Id && job.DerivationType == "THUMBNAIL")
-                    .Select(job => (Guid?)job.DerivativeMediaId)
+                backgroundJobs.Query()
+                    .Where(job => job.JobType == MediaBackgroundJobTypes.ThumbnailDerivation && job.SubjectId == item.Id)
+                    .Select(job => (Guid?)null)
                     .FirstOrDefault(),
-                dbContext.MediaDerivationJobs
-                    .Where(job => job.SourceMediaId == item.Id && job.DerivationType == "THUMBNAIL")
+                backgroundJobs.Query()
+                    .Where(job => job.JobType == MediaBackgroundJobTypes.ThumbnailDerivation && job.SubjectId == item.Id)
                     .Select(job => job.Status)
                     .FirstOrDefault()))
             .ToArrayAsync(cancellationToken);

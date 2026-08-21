@@ -556,7 +556,7 @@
                 "usages"
               ]
             },
-            "description": "Business flow: docs/business-flows/media/post-media-usages.md"
+            "description": "Business flow: docs/business-flows/media/post-media-usages.md. Direct usage must reference original media; thumbnail derivation is Worker-only."
           },
           "response": []
         },
@@ -787,6 +787,41 @@
               "path": ["media", "api", "media", "usage-jobs", "{{notificationBatchId}}", "status"]
             },
             "description": "API contract: docs/api/media-service/endpoints/get-notification-media-usage-job-status.md"
+          }
+        },
+        {
+          "name": "GET Media Background Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Returns offset pagination\", function () { pm.expect(payload.data).to.be.an(\"array\"); pm.expect(payload.meta.pagination.type).to.eql(\"offset\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Actor-Type", "value": "ADMIN", "type": "text" },
+              { "key": "X-Actor-Id", "value": "{{adminId}}", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/jobs?status=PROCESSING&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "jobs"],
+              "query": [
+                { "key": "status", "value": "PROCESSING" },
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            },
+            "description": "API contract: docs/api/media-service/endpoints/get-media-jobs.md. ADMIN only; list is read-only and no-store."
           }
         }
       ]

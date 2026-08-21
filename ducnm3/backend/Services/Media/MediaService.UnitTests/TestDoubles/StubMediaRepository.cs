@@ -151,11 +151,6 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
         CancellationToken cancellationToken)
         => ReplaceUsageAsync(usage);
 
-    public Task<MediaUsage> ReplaceMediaThumbnailAsync(
-        CreateMediaUsageRecord usage,
-        CancellationToken cancellationToken)
-        => ReplaceUsageAsync(usage);
-
     public Task<MediaUsage> ReplaceCourseThumbnailAsync(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)

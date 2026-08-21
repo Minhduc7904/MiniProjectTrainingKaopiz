@@ -25,6 +25,6 @@ public sealed class DeleteLessonHandler(
             throw CourseErrors.LessonNotFound();
         if (usageIds.Count > 0)
             await commandSender.SendAsync(ServiceNames.Media,
-                new DeleteMediaUsagesByIdsV1(usageIds.Distinct().ToArray()), cancellationToken);
+                new DeleteMediaUsagesByIdsV1(usageIds.Distinct().ToArray(), Guid.NewGuid()), cancellationToken);
     }
 }

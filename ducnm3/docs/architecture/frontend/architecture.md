@@ -29,6 +29,10 @@ status.
 
 Vite + React, Tailwind, React Router, Redux Toolkit, Axios, toast interceptor, trang Student, Media và Notification Batch. Notification có ba menu tách biệt: tạo batch, quản lý list offset có action retry failed và tiến trình theo URL chứa `batchId`. Trang tiến trình polling tuần tự snapshot status, delivery status rồi Media Usage job status; bước sau không request trước khi bước trước terminal. Hai trang Media dùng chung preview ảnh và polling/retry thumbnail; trang direct upload hiển thị progress XHR ở Output panel. Xem [Backend overview](../backend/overview.md).
 
+Media có menu Quản lý job tương ứng duy nhất `GET /media/api/media/jobs`. Trang
+dùng Redux list state, Workbench Mẫu/Thủ công và table vận hành; không gộp retry
+hoặc detail payload vào trang list.
+
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.

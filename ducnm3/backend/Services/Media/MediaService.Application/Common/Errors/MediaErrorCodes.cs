@@ -6,6 +6,7 @@ namespace MediaService.Application.Common.Errors;
 public static class MediaErrorCodes
 {
     public const string InvalidMedia = "INVALID_MEDIA";
+    public const string InvalidMediaJobQuery = "INVALID_MEDIA_JOB_QUERY";
     public const string UnsupportedMediaType = "UNSUPPORTED_MEDIA_TYPE";
     public const string MediaUploadFailed = "MEDIA_UPLOAD_FAILED";
     public const string DirectUploadIncomplete = "MEDIA_UPLOAD_INCOMPLETE";

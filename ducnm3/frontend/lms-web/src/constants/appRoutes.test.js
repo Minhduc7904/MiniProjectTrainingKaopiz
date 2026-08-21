@@ -31,3 +31,9 @@ describe('course menu routing', () => {
     expect(getMenuByPath(APP_ROUTES.courseExport).label).toBe('Xuất CSV khóa học')
   })
 })
+
+describe('media menu routing', () => {
+  it('exposes the media job management menu', () => {
+    expect(getMenuByPath(APP_ROUTES.mediaJobs).label).toBe('Quản lý job')
+  })
+})

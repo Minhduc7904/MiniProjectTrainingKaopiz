@@ -3,6 +3,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { APP_ROUTES } from '@/constants/appRoutes'
 import { MediaUploadPage } from '@/pages/media/MediaUploadPage'
 import { MediaDirectUploadPage } from '@/pages/media/MediaDirectUploadPage'
+import { MediaJobsPage } from '@/pages/media/MediaJobsPage'
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage'
 import { StudentsPage } from '@/pages/students/StudentsPage'
 import { CourseExportPage } from '@/pages/courses/CourseExportPage'
@@ -25,6 +26,7 @@ export function AppRouter() {
         <Route path={APP_ROUTES.courseExport} element={<CourseExportPage />} />
         <Route path={APP_ROUTES.mediaUpload} element={<MediaUploadPage />} />
         <Route path={APP_ROUTES.mediaUploadDirect} element={<MediaDirectUploadPage />} />
+        <Route path={APP_ROUTES.mediaJobs} element={<MediaJobsPage />} />
         <Route path={APP_ROUTES.notificationSend} element={<NotificationBatchCreatePage />} />
         <Route path={APP_ROUTES.notificationBatches} element={<NotificationBatchListPage />} />
         <Route path={APP_ROUTES.notificationProgress} element={<NotificationBatchProgressPage />} />

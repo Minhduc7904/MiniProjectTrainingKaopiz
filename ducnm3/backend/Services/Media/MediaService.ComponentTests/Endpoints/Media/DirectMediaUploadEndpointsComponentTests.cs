@@ -310,12 +310,17 @@ public sealed class DirectMediaUploadEndpointsComponentTests
         }
         public Task<MediaRecord?> GetByIdAsync(Guid id, CancellationToken token) =>
             Task.FromResult(Media?.Id == id ? Media : null);
+        public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
+            ActorReference actor,
+            string? mediaType,
+            (DateTime CreatedAtUtc, Guid Id)? cursor,
+            int take,
+            CancellationToken token) => throw new NotSupportedException();
         public Task MarkFailedAsync(Guid id, string reason, CancellationToken token) => throw new NotSupportedException();
         public Task MarkReadyAsync(Guid id, string checksum, DateTime at, CancellationToken token) => throw new NotSupportedException();
         public Task EnsureMediaUsagesAsync(IReadOnlyList<CreateMediaUsageRecord> usages, CancellationToken token) => throw new NotSupportedException();
         public Task<MediaUsageUrlRecord?> GetActiveUsageUrlByIdAsync(Guid id, CancellationToken token) => throw new NotSupportedException();
         public Task<IReadOnlyList<MediaUsageUrlRecord>> GetActiveUsageUrlsAsync(MediaUsageOwnerQuery query, CancellationToken token) => throw new NotSupportedException();
-        public Task<MediaUsageRecord> ReplaceMediaThumbnailAsync(CreateMediaUsageRecord usage, CancellationToken token) => throw new NotSupportedException();
         public Task<MediaUsageRecord> ReplaceStudentAvatarAsync(CreateMediaUsageRecord usage, CancellationToken token) => throw new NotSupportedException();
     }
 }

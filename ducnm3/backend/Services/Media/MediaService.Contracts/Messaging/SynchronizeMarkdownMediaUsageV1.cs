@@ -11,7 +11,8 @@ public sealed record SynchronizeMarkdownMediaUsageV1(
     Guid OwnerId,
     Guid CreatedBy,
     IReadOnlyList<MarkdownMediaUsageReferenceV1> Added,
-    IReadOnlyList<MarkdownMediaUsageReferenceV1> Removed) : ICommand;
+    IReadOnlyList<MarkdownMediaUsageReferenceV1> Removed,
+    Guid JobId = default) : ICommand;
 
 public sealed record MarkdownMediaUsageReferenceV1(
     Guid MediaId,

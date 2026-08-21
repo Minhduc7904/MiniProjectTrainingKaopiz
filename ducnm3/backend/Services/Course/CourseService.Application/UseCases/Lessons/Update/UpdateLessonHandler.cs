@@ -25,7 +25,7 @@ public sealed class UpdateLessonHandler(ILessonCommandRepository repository, ICo
         {
             var diff = ContentMediaUsageDiff.Create(current.ContentMarkdown, result.ContentMarkdown);
             if (diff.Added.Count > 0 || diff.Removed.Count > 0)
-                await commandSender.SendAsync(ServiceNames.Media, new SynchronizeMarkdownMediaUsageV1(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.LessonContent, result.Id, command.ActorId, diff.Added, diff.Removed), cancellationToken);
+                await commandSender.SendAsync(ServiceNames.Media, new SynchronizeMarkdownMediaUsageV1(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.LessonContent, result.Id, command.ActorId, diff.Added, diff.Removed, Guid.NewGuid()), cancellationToken);
         }
         return result;
     }

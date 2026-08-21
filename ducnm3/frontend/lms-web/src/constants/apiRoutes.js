@@ -54,6 +54,7 @@ export const API_ROUTES = {
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'thumbnail'),
     retryThumbnail: (mediaId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media', mediaId, 'thumbnail', 'retry'),
+    jobs: joinPath(GATEWAY_PREFIXES.media, '/api/media/jobs'),
     notificationMediaUsageJobStatus: (jobId) =>
       joinPath(GATEWAY_PREFIXES.media, '/api/media/usage-jobs', jobId, 'status'),
   },

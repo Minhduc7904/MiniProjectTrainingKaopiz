@@ -400,16 +400,6 @@ public sealed class MediaUploadUsageFlowTests
             DateTime.UtcNow,
             CancellationToken.None);
         await usageHandler.HandleAsync(
-            new CreateMediaUsageCommand(
-                secondDerivationJob.DerivativeMediaId,
-                MediaOwnerServices.Media,
-                MediaOwnerTypes.MediaThumbnail,
-                firstMedia.Id,
-                MediaUsageTypes.Thumbnail,
-                0,
-                new ActorReference(ActorTypes.Student, actorId)),
-            CancellationToken.None);
-        await usageHandler.HandleAsync(
             CreateUsageCommand(secondMedia.Id, ownerId, actorId),
             CancellationToken.None);
         await usageHandler.HandleAsync(
@@ -441,10 +431,10 @@ public sealed class MediaUploadUsageFlowTests
             Assert.That(
                 conflict!.ErrorCode,
                 Is.EqualTo(MediaErrorCodes.MediaUsageConflict));
-            Assert.That(thumbnailUsages, Has.Count.EqualTo(2));
+            Assert.That(thumbnailUsages, Has.Count.EqualTo(1));
             Assert.That(
                 thumbnailUsages.Single(item => item.DeletedAt is null).MediaId,
-                Is.EqualTo(secondDerivationJob.DerivativeMediaId));
+                Is.EqualTo(derivationJob.DerivativeMediaId));
         });
     }
 

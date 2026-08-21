@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { attachHttpInterceptors } from '@/api/httpInterceptors'
 import { mediaReducer, uploadMedia } from '@/features/media/mediaSlice'
+import { mediaJobsReducer } from '@/features/media/mediaJobsSlice'
 import { directUploadReducer } from '@/features/media/directUploadSlice'
 import { mediaThumbnailReducer } from '@/features/media/mediaThumbnailSlice'
 import { mediaLibraryReducer } from '@/features/media/mediaLibrarySlice'
@@ -14,6 +15,7 @@ export const store = configureStore({
     students: studentsReducer,
     courses: coursesReducer,
     media: mediaReducer,
+    mediaJobs: mediaJobsReducer,
     directUpload: directUploadReducer,
     mediaThumbnail: mediaThumbnailReducer,
     mediaLibrary: mediaLibraryReducer,

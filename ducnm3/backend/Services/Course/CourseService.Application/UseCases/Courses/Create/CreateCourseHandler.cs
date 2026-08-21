@@ -22,7 +22,7 @@ public sealed class CreateCourseHandler(ICourseCommandRepository repository, ICo
             cancellationToken);
         var diff = ContentMediaUsageDiff.Create(null, result.DescriptionMarkdown);
         if (diff.Added.Count > 0)
-            await commandSender.SendAsync(ServiceNames.Media, new SynchronizeMarkdownMediaUsageV1(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.CourseDescription, result.Id, actorId, diff.Added, []), cancellationToken);
+            await commandSender.SendAsync(ServiceNames.Media, new SynchronizeMarkdownMediaUsageV1(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.CourseDescription, result.Id, actorId, diff.Added, [], Guid.NewGuid()), cancellationToken);
         return result;
     }
 

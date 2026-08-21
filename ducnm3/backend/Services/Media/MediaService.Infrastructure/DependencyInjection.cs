@@ -77,6 +77,11 @@ public static class DependencyInjection
         services.AddSingleton<IStorageUploadPolicyProvider, MinioUploadPolicyProvider>();
         services.AddScoped<IMediaRepository, EfMediaRepository>();
         services.AddScoped<IMediaUsageRepository, EfMediaUsageRepository>();
+        services.AddScoped<EfMediaBackgroundJobRepository>();
+        services.AddScoped<IMediaBackgroundJobListRepository>(serviceProvider =>
+            serviceProvider.GetRequiredService<EfMediaBackgroundJobRepository>());
+        services.AddScoped<IMediaBackgroundJobLifecycleRepository>(serviceProvider =>
+            serviceProvider.GetRequiredService<EfMediaBackgroundJobRepository>());
         services.AddScoped<INotificationMediaUsageJobRepository, EfNotificationMediaUsageJobRepository>();
         services.AddScoped<IMediaUploadFinalizer, EfMediaUploadFinalizer>();
         services.AddScoped<IMediaDerivationRepository, EfMediaDerivationRepository>();

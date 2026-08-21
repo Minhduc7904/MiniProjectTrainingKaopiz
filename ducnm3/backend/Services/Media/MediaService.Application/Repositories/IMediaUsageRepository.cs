@@ -24,9 +24,10 @@ public interface IMediaUsageRepository
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken);
 
-    Task<MediaUsage> ReplaceMediaThumbnailAsync(
+    Task EnsureThumbnailDerivationUsageAsync(
         CreateMediaUsageRecord usage,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
 
     Task<MediaUsage> ReplaceCourseThumbnailAsync(
         CreateMediaUsageRecord usage,

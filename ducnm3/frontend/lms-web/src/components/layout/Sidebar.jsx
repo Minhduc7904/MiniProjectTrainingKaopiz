@@ -13,6 +13,7 @@ import {
   Upload,
   UploadCloud,
   Download,
+  ListChecks,
   Users,
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -50,6 +51,7 @@ const menuIcons = {
   progress: Activity,
   batches: ListTodo,
   jobs: Timer,
+  mediaJobs: ListChecks,
 }
 
 export function Sidebar() {

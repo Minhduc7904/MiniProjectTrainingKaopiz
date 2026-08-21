@@ -10,6 +10,7 @@ using MassTransit;
 using MediaService.Api.Endpoints;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Api.Endpoints.MediaUsageJobs.GetStatus;
+using MediaService.Api.Endpoints.MediaUsageJobs.GetList;
 using MediaService.Application;
 using MediaService.Application.UseCases.Media.Upload;
 using MediaService.Infrastructure;
@@ -102,5 +103,6 @@ app.MapGetMediaLibrary();
 app.MapGetMediaThumbnailStatus();
 app.MapRetryMediaThumbnail();
 app.MapGetNotificationMediaUsageJobStatus();
+app.MapGetMediaBackgroundJobs();
 
 app.Run();

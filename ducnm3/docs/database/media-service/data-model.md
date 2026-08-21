@@ -53,21 +53,31 @@ Upload là database-first: tạo `PENDING`, stream MinIO đồng thời tính ch
 chuyển `READY` khi hoàn tất; lỗi thì xóa object best effort và đánh dấu `FAILED`.
 Direct flow dùng staging object, kiểm tra ETag rồi promotion sang unique final key.
 
-## `media_derivation_jobs`
+## `media_background_jobs`
 
 | Cột | Kiểu / null / mặc định | Ý nghĩa |
 | --- | --- | --- |
-| `id` | `CHAR(36)`, PK | UUID operation. |
-| `source_media_id` / `derivative_media_id` | `CHAR(36)`, `NOT NULL`, FK | Media source và WebP cấp trước; đều `ON DELETE RESTRICT`. |
-| `derivation_type` | `VARCHAR(32)`, `NOT NULL` | Hiện chỉ `THUMBNAIL`. |
-| `status` | `VARCHAR(20)`, `NOT NULL`, `QUEUED` | `QUEUED`, `PROCESSING`, `READY`, `FAILED`. |
-| `attempt_count` | `INT UNSIGNED`, `NOT NULL`, `0` | Số lần worker bắt đầu. |
+| `id` | `CHAR(36)`, PK | UUID job. |
+| `job_type` | `VARCHAR(48)`, `NOT NULL` | `THUMBNAIL_DERIVATION`, `MARKDOWN_USAGE_SYNC`, `MEDIA_USAGE_DELETE`, `NOTIFICATION_USAGE`. |
+| `subject_type` / `subject_id` | `VARCHAR(48)` / `CHAR(36)`, `NOT NULL` | Resource chịu tác động; logical reference. |
+| `correlation_id` | `CHAR(36)`, nullable | Correlation, ví dụ Notification Batch ID. |
+| `payload_json` | `JSON`, `NOT NULL` | Payload versioned, không chứa secret; dùng để retry. |
+| `status` | `VARCHAR(20)`, `NOT NULL`, `QUEUED` | `QUEUED`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED`, `FAILED`. |
+| `expected_item_count` / `processed_item_count` / `failed_item_count` | `INT UNSIGNED` | Counter aggregate của job batch. |
+| `attempt_count` | `INT UNSIGNED`, `NOT NULL`, `0` | Số lần worker bắt đầu hoặc retry thủ công. |
 | `last_error` | `VARCHAR(500)`, `NULL` | Lỗi an toàn lần cuối. |
 | `created_at`, `started_at`, `completed_at`, `updated_at` | `DATETIME(6)` | Vòng đời job; created/updated không null, hai cột còn lại nullable. |
 
-`uq_media_derivation_jobs_source_type(source_media_id, derivation_type)` và
-`uq_media_derivation_jobs_derivative(derivative_media_id)` làm retry idempotent.
-Có check type/status và index `(status, updated_at)`.
+`deduplication_key` unique dùng cho thumbnail một-source-một-job. Index theo
+`(status, updated_at)`, `(job_type, subject_type, subject_id)`, correlation,
+`(updated_at DESC, id DESC)` và `(job_type, status, updated_at DESC, id DESC)`
+phục vụ retry và danh sách vận hành ổn định. Migration V009 thay hai bảng job cũ;
+V010 bổ sung index cho `GET /api/media/jobs`.
+
+`MARKDOWN_USAGE_SYNC` dùng `subject_type` là Markdown owner type và `subject_id`
+là owner ID; `MEDIA_USAGE_DELETE` dùng `MEDIA_USAGE_BATCH` cùng Job ID làm
+subject/correlation. Hai loại đều ghi expected/processed hoặc failed count để
+quản trị job phân biệt được completion và fault sau retry.
 
 ## `media_usages`
 
@@ -92,21 +102,6 @@ usage_type, active_reference_guard)` chặn duplicate active nhưng cho phép t�
 sau soft-delete. Ba generated owner columns có unique index nên mỗi Course chỉ
 có một thumbnail, mỗi Student một avatar, mỗi media source một thumbnail active.
 Index `(owner_service, owner_type, owner_id, display_order)` phục vụ render.
-
-## `notification_media_usage_jobs`
-
-Migration `V006__add_notification_media_usage_jobs.sql` tạo job theo dõi phần xử lý Markdown do Media Service sở hữu.
-
-| Cột | Kiểu / null / mặc định | Ý nghĩa |
-| --- | --- | --- |
-| `id` | `CHAR(36)`, PK | Cùng UUID với Notification Batch; logical reference, không có cross-service FK. |
-| `status` | `VARCHAR(20)`, `PENDING` | `PENDING`, `PROCESSING`, `COMPLETED`, `PARTIAL_FAILED`, `FAILED`. |
-| `expected_usage_count` | `INT UNSIGNED`, null | Notification Service chốt khi delivery terminal. |
-| `processed_usage_count`, `failed_usage_count` | `INT UNSIGNED`, `0` | Counter Worker cập nhật nguyên tử theo command. |
-| `last_error` | `VARCHAR(500)`, null | Lỗi an toàn cuối cùng sau khi hết transport retry. |
-| `created_at`, `started_at`, `completed_at`, `updated_at` | `DATETIME(6)` | Mốc vòng đời job. |
-
-Job chỉ terminal khi tổng processed và failed đạt `expected_usage_count`. Completion marker đến trước chunk cuối không đóng job sớm. Index `(status, updated_at)` phục vụ vận hành.
 
 ## MassTransit persistence: đã có từ `V004`
 

@@ -110,9 +110,6 @@ public partial class MediaObject
 
     public virtual ICollection<MediaObject> InverseSourceMedia { get; set; } = new List<MediaObject>();
 
-    public virtual MediaDerivationJob? MediaDerivationJobDerivativeMedia { get; set; }
-
-    public virtual ICollection<MediaDerivationJob> MediaDerivationJobSourceMedia { get; set; } = new List<MediaDerivationJob>();
 
     public virtual ICollection<MediaUsage> MediaUsages { get; set; } = new List<MediaUsage>();
 

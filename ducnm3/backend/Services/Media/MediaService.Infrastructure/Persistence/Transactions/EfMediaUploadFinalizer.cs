@@ -9,13 +9,16 @@ using MediaService.Application.Contracts.Messaging;
 using MediaService.Application.Repositories;
 using MediaService.Domain.Constants;
 using MediaService.Infrastructure.Persistence.Context;
+using MediaService.Infrastructure.Persistence.Repositories;
 using MediaService.Infrastructure.Persistence.Scaffolded;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace MediaService.Infrastructure.Persistence.Transactions;
 
 public sealed class EfMediaUploadFinalizer(
     MediaDbContext dbContext,
+    EfMediaBackgroundJobRepository backgroundJobs,
     ICommandSender commandSender) : IMediaUploadFinalizer
 {
     public async Task<MediaUploadFinalizationResult> FinalizeAsync(
@@ -38,21 +41,22 @@ public sealed class EfMediaUploadFinalizer(
 
         if (source.Status == MediaObjectStatuses.Ready)
         {
-            var establishedJob = await dbContext.MediaDerivationJobs
+            var establishedJob = await backgroundJobs.Query()
                 .AsNoTracking()
-                .Where(job => job.SourceMediaId == request.SourceMediaId)
+                .Where(job => job.JobType == MediaBackgroundJobTypes.ThumbnailDerivation &&
+                    job.SubjectId == request.SourceMediaId)
                 .Select(job => new
                 {
                     job.Id,
-                    job.DerivativeMediaId,
                     job.Status,
+                    job.PayloadJson,
                 })
                 .SingleOrDefaultAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
             return new MediaUploadFinalizationResult(
                 source.CompletedAt ?? request.CompletedAtUtc,
-                establishedJob?.Status ?? MediaDerivationStatuses.NotRequired,
-                establishedJob?.DerivativeMediaId,
+                ToThumbnailStatus(establishedJob?.Status),
+                establishedJob is null ? null : ReadDerivativeMediaId(establishedJob.PayloadJson),
                 establishedJob?.Id,
                 false);
         }
@@ -109,14 +113,17 @@ public sealed class EfMediaUploadFinalizer(
                 CreatedAt = request.CompletedAtUtc,
                 UpdatedAt = request.CompletedAtUtc,
             });
-        dbContext.MediaDerivationJobs.Add(
-            new MediaDerivationJob
+        backgroundJobs.Add(
+            new MediaBackgroundJob
             {
                 Id = thumbnail.JobId,
-                SourceMediaId = request.SourceMediaId,
-                DerivativeMediaId = thumbnail.MediaId,
-                DerivationType = MediaDerivationTypes.Thumbnail,
-                Status = MediaDerivationStatuses.Queued,
+                JobType = MediaBackgroundJobTypes.ThumbnailDerivation,
+                SubjectType = "MEDIA",
+                SubjectId = request.SourceMediaId,
+                DeduplicationKey = $"THUMBNAIL:{request.SourceMediaId:D}",
+                Status = MediaBackgroundJobStatuses.Queued,
+                PayloadJson = JsonSerializer.Serialize(new MediaBackgroundJobPayload(
+                    1, request.SourceMediaId, thumbnail.MediaId)),
                 AttemptCount = 0,
                 CreatedAt = request.CompletedAtUtc,
                 UpdatedAt = request.CompletedAtUtc,
@@ -138,4 +145,14 @@ public sealed class EfMediaUploadFinalizer(
             thumbnail.MediaId,
             thumbnail.JobId);
     }
+
+    private static Guid? ReadDerivativeMediaId(string payloadJson) =>
+        JsonSerializer.Deserialize<MediaBackgroundJobPayload>(payloadJson)?.DerivativeMediaId;
+
+    private static string ToThumbnailStatus(string? status) => status switch
+    {
+        MediaBackgroundJobStatuses.Completed => MediaDerivationStatuses.Ready,
+        null => MediaDerivationStatuses.NotRequired,
+        _ => status,
+    };
 }

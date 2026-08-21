@@ -201,6 +201,14 @@ public sealed class GetMediaUsageUrlEndpointsComponentTests
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 
+        public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
+            ActorReference actor,
+            string? mediaType,
+            (DateTime CreatedAtUtc, Guid Id)? cursor,
+            int take,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
         public Task MarkFailedAsync(
             Guid mediaId,
             string failureReason,
@@ -211,11 +219,6 @@ public sealed class GetMediaUsageUrlEndpointsComponentTests
             Guid mediaId,
             string checksumSha256,
             DateTime completedAtUtc,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<MediaUsage> ReplaceMediaThumbnailAsync(
-            CreateMediaUsageRecord usage,
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 

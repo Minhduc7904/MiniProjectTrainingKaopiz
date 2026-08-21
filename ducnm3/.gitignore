@@ -1,4 +1,6 @@
 .env
+.env.seed
+var/db-seed-snapshots/
 docker-compose.windows.yml
 .vibe/
 **/bin/
