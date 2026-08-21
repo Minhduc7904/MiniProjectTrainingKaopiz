@@ -1,20 +1,20 @@
 import { CircleAlert, CircleCheck, LoaderCircle } from 'lucide-react'
 import { useCallback, useState } from 'react'
-import { Icon } from '@/components/ui/Icon'
+import { Icon } from '@/components/ui/admin/Icon'
 import { TOAST_HOVER_SCALE, TOAST_PHASE, TOAST_PHASE_LABELS } from '@/constants/toast'
 import { useToastProgress } from '@/hooks/toasts/useToastProgress'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const railByPhase = {
-  [TOAST_PHASE.pending]: ui.toastPendingRail,
-  [TOAST_PHASE.success]: ui.toastSuccessRail,
-  [TOAST_PHASE.error]: ui.toastErrorRail,
+  [TOAST_PHASE.pending]: adminUi.toastPendingRail,
+  [TOAST_PHASE.success]: adminUi.toastSuccessRail,
+  [TOAST_PHASE.error]: adminUi.toastErrorRail,
 }
 
 const barByPhase = {
-  [TOAST_PHASE.pending]: ui.toastBarPending,
-  [TOAST_PHASE.success]: ui.toastBarSuccess,
-  [TOAST_PHASE.error]: ui.toastBarError,
+  [TOAST_PHASE.pending]: adminUi.toastBarPending,
+  [TOAST_PHASE.success]: adminUi.toastBarSuccess,
+  [TOAST_PHASE.error]: adminUi.toastBarError,
 }
 
 const iconByPhase = {
@@ -24,9 +24,9 @@ const iconByPhase = {
 }
 
 const iconToneByPhase = {
-  [TOAST_PHASE.pending]: ui.toastIconPending,
-  [TOAST_PHASE.success]: ui.toastIconSuccess,
-  [TOAST_PHASE.error]: ui.toastIconError,
+  [TOAST_PHASE.pending]: adminUi.toastIconPending,
+  [TOAST_PHASE.success]: adminUi.toastIconSuccess,
+  [TOAST_PHASE.error]: adminUi.toastIconError,
 }
 
 function formatStatus(httpStatus) {
@@ -62,7 +62,7 @@ export function ApiToast({ toast, onDismiss }) {
       onMouseLeave={() => setPaused(false)}
       className={[
         'w-[360px] origin-top-right overflow-hidden rounded-lg',
-        ui.toastFrame,
+        adminUi.toastFrame,
         'transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]',
         railByPhase[toast.phase],
         paused ? 'z-10' : 'z-0',
@@ -73,7 +73,7 @@ export function ApiToast({ toast, onDismiss }) {
     >
       <div className="px-4 py-3">
         <p
-          className={`flex items-center gap-2 font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}
+          className={`flex items-center gap-2 font-display text-[11px] font-medium tracking-[0.18em] uppercase ${adminUi.eyebrow}`}
         >
           <Icon
             icon={iconByPhase[toast.phase]}
@@ -81,9 +81,9 @@ export function ApiToast({ toast, onDismiss }) {
           />
           {TOAST_PHASE_LABELS[toast.phase]}
         </p>
-        <p className={`mt-1 text-[14px] font-medium ${ui.title}`}>{toast.message}</p>
+        <p className={`mt-1 text-[14px] font-medium ${adminUi.title}`}>{toast.message}</p>
         <dl
-          className={`mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px] tabular-nums ${ui.body}`}
+          className={`mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px] tabular-nums ${adminUi.body}`}
         >
           <dt>Status</dt>
           <dd>{formatStatus(toast.httpStatus)}</dd>
@@ -99,7 +99,7 @@ export function ApiToast({ toast, onDismiss }) {
           ) : null}
         </dl>
       </div>
-      <div className={`h-0.5 ${ui.toastBarTrack}`}>
+      <div className={`h-0.5 ${adminUi.toastBarTrack}`}>
         <div
           className={['h-full origin-left', barByPhase[toast.phase]].join(' ')}
           style={{

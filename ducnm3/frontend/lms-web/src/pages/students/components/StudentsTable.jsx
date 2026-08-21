@@ -1,5 +1,5 @@
-import { StatusBadge } from '@/components/ui/StatusBadge'
-import { ui } from '@/theme'
+import { StatusBadge } from '@/components/ui/admin/StatusBadge'
+import { adminUi } from '@/theme/admin'
 
 function formatCreatedAt(value) {
   if (!value) {
@@ -14,10 +14,10 @@ function formatCreatedAt(value) {
 
 export function StudentsTable({ rows }) {
   return (
-    <div className={`overflow-hidden rounded-lg ${ui.card}`}>
+    <div className={`overflow-hidden rounded-lg ${adminUi.card}`}>
       <table className="w-full border-collapse text-left text-[14px]">
         <thead
-          className={`text-[12px] font-medium tracking-wide uppercase ${ui.tableHead}`}
+          className={`text-[12px] font-medium tracking-wide uppercase ${adminUi.tableHead}`}
         >
           <tr>
             <th className="px-4 py-3">Học viên</th>
@@ -28,15 +28,15 @@ export function StudentsTable({ rows }) {
         </thead>
         <tbody>
           {rows.map((student) => (
-            <tr key={student.id} className={`${ui.rail} ${ui.tableRow}`}>
-              <td className={`px-4 py-3 font-medium ${ui.tableCellStrong}`}>
+            <tr key={student.id} className={`${adminUi.rail} ${adminUi.tableRow}`}>
+              <td className={`px-4 py-3 font-medium ${adminUi.tableCellStrong}`}>
                 {student.displayName}
               </td>
-              <td className={`px-4 py-3 ${ui.tableCell}`}>{student.email}</td>
+              <td className={`px-4 py-3 ${adminUi.tableCell}`}>{student.email}</td>
               <td className="px-4 py-3">
                 <StatusBadge status={student.status} />
               </td>
-              <td className={`px-4 py-3 ${ui.tableCell}`}>
+              <td className={`px-4 py-3 ${adminUi.tableCell}`}>
                 {formatCreatedAt(student.createdAtUtc)}
               </td>
             </tr>

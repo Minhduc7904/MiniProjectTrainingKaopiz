@@ -1,4 +1,4 @@
-import { ApiToast } from '@/components/ui/ApiToast'
+import { ApiToast } from '@/components/ui/admin/ApiToast'
 import { useApiToasts } from '@/hooks/toasts/useApiToasts'
 
 export function ApiToastHost() {

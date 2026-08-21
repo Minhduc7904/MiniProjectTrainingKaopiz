@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getMediaContentRequest } from '@/api/mediaApi'
 import { ImageOff, LoaderCircle } from 'lucide-react'
-import { Icon } from '@/components/ui/Icon'
+import { Icon } from '@/components/ui/admin/Icon'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function MediaImagePreview({ contentUrl, alt }) {
   const [state, setState] = useState('empty')
@@ -40,15 +40,15 @@ export function MediaImagePreview({ contentUrl, alt }) {
   if (!contentUrl) return null
 
   return (
-    <div className={`relative aspect-video overflow-hidden rounded-lg ${ui.card}`}>
+    <div className={`relative aspect-video overflow-hidden rounded-lg ${adminUi.card}`}>
       {state === 'loading' ? (
-        <div className={`absolute inset-0 flex items-center justify-center ${ui.body}`}>
+        <div className={`absolute inset-0 flex items-center justify-center ${adminUi.body}`}>
           <Icon icon={LoaderCircle} className="animate-spin" />
           <span className="ml-2 text-[13px]">{MEDIA_COPY.loadingImage}</span>
         </div>
       ) : null}
       {state === 'error' ? (
-        <div className={`absolute inset-0 flex flex-col items-center justify-center gap-2 ${ui.caption}`}>
+        <div className={`absolute inset-0 flex flex-col items-center justify-center gap-2 ${adminUi.caption}`}>
           <Icon icon={ImageOff} />
           <span className="text-[13px]">{MEDIA_COPY.imageUnavailable}</span>
         </div>

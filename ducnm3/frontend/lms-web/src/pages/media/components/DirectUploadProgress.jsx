@@ -1,11 +1,11 @@
 import { BadgeCheck, Hash, UploadCloud } from 'lucide-react'
-import { Icon } from '@/components/ui/Icon'
+import { Icon } from '@/components/ui/admin/Icon'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
 import {
   DIRECT_UPLOAD_PHASES,
   DIRECT_UPLOAD_PHASE_LABELS,
 } from '@/features/media/directUploadSlice'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const STAGES = [
   { phase: DIRECT_UPLOAD_PHASES.checksum, label: MEDIA_COPY.checksum, icon: Hash },
@@ -29,16 +29,16 @@ export function DirectUploadProgress({ phase, failedPhase, progress }) {
 
   return (
     <div
-      className={`rounded-lg px-4 py-3 ${ui.card}`}
+      className={`rounded-lg px-4 py-3 ${adminUi.card}`}
       role={phase === DIRECT_UPLOAD_PHASES.error ? 'alert' : 'status'}
       aria-live={phase === DIRECT_UPLOAD_PHASES.error ? 'assertive' : 'polite'}
       aria-atomic="true"
     >
       <div className="flex items-center justify-between gap-3">
-        <p className={`font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>
+        <p className={`font-display text-[11px] font-medium tracking-[0.18em] uppercase ${adminUi.eyebrow}`}>
           Tiến trình truyền
         </p>
-        <p className={`text-[12px] font-medium ${phase === DIRECT_UPLOAD_PHASES.error ? ui.dangerText : ui.body}`}>
+        <p className={`text-[12px] font-medium ${phase === DIRECT_UPLOAD_PHASES.error ? adminUi.dangerText : adminUi.body}`}>
           {DIRECT_UPLOAD_PHASE_LABELS[phase]}
         </p>
       </div>
@@ -48,13 +48,13 @@ export function DirectUploadProgress({ phase, failedPhase, progress }) {
           const highlighted = complete || index <= activeIndex
           return (
             <li key={stage.phase} className="min-w-0">
-              <div className={`flex items-center gap-1.5 text-[12px] font-medium ${highlighted ? ui.accentText : ui.caption}`}>
+              <div className={`flex items-center gap-1.5 text-[12px] font-medium ${highlighted ? adminUi.accentText : adminUi.caption}`}>
                 <Icon icon={stage.icon} />
                 <span className="truncate">{stage.label}</span>
               </div>
-              <div className={`mt-2 h-1 overflow-hidden rounded-md ${ui.progressTrack}`}>
+              <div className={`mt-2 h-1 overflow-hidden rounded-md ${adminUi.progressTrack}`}>
                 <div
-                  className={`h-full ${phase === DIRECT_UPLOAD_PHASES.error && index === activeIndex ? ui.progressFailed : ui.progressFill}`}
+                  className={`h-full ${phase === DIRECT_UPLOAD_PHASES.error && index === activeIndex ? adminUi.progressFailed : adminUi.progressFill}`}
                   style={{ width: `${value}%` }}
                   role="progressbar"
                   aria-label={stage.label}

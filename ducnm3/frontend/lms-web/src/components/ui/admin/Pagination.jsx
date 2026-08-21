@@ -4,12 +4,12 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Dropdown } from '@/components/ui/Dropdown'
-import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/admin/Button'
+import { Dropdown } from '@/components/ui/admin/Dropdown'
+import { Icon } from '@/components/ui/admin/Icon'
 import { PAGINATION } from '@/constants/pagination'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function Pagination({
   page,
@@ -30,7 +30,7 @@ export function Pagination({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className={`text-[13px] tabular-nums ${ui.body}`}>
+      <p className={`text-[13px] tabular-nums ${adminUi.body}`}>
         {UI_LABELS.page} {currentPage}/{lastPage || 1} · {totalItems || 0}{' '}
         {itemLabel}
       </p>

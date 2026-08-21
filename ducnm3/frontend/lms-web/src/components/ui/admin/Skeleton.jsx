@@ -1,10 +1,10 @@
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function Skeleton({ className = '' }) {
   return (
     <span
       aria-hidden="true"
-      className={['skeleton-pulse block rounded-md', ui.skeleton, className].join(
+      className={['skeleton-pulse block rounded-md', adminUi.skeleton, className].join(
         ' ',
       )}
     />
@@ -13,8 +13,8 @@ export function Skeleton({ className = '' }) {
 
 export function TableSkeleton({ rows = 6, columns = 4 }) {
   return (
-    <div className={`overflow-hidden rounded-lg ${ui.card}`}>
-      <div className={`grid grid-cols-4 gap-4 px-4 py-3 ${ui.hairlineB} ${ui.tableHead}`}>
+    <div className={`overflow-hidden rounded-lg ${adminUi.card}`}>
+      <div className={`grid grid-cols-4 gap-4 px-4 py-3 ${adminUi.hairlineB} ${adminUi.tableHead}`}>
         {Array.from({ length: columns }).map((_, index) => (
           <Skeleton key={`head-${index}`} className="h-3 w-24" />
         ))}
@@ -23,7 +23,7 @@ export function TableSkeleton({ rows = 6, columns = 4 }) {
         {Array.from({ length: rows }).map((_, rowIndex) => (
           <div
             key={`row-${rowIndex}`}
-            className={`grid grid-cols-4 gap-4 px-4 py-3 ${ui.hairlineT}`}
+            className={`grid grid-cols-4 gap-4 px-4 py-3 ${adminUi.hairlineT}`}
           >
             {Array.from({ length: columns }).map((__, columnIndex) => (
               <Skeleton

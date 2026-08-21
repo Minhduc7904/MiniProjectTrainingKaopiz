@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/Button'
-import { Dropdown } from '@/components/ui/Dropdown'
-import { FieldLabel, TextInput } from '@/components/ui/Field'
+import { Button } from '@/components/ui/admin/Button'
+import { Dropdown } from '@/components/ui/admin/Dropdown'
+import { FieldLabel, TextInput } from '@/components/ui/admin/Field'
 import { NOTIFICATION_BATCH_FIELDS } from '@/constants/notification'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { NotificationMarkdownEditor } from './NotificationMarkdownEditor'
 
 export function NotificationBatchForm({
@@ -24,7 +24,7 @@ export function NotificationBatchForm({
         <div className="flex flex-col gap-1"><FieldLabel htmlFor="batch-size">Kích thước chunk</FieldLabel><TextInput id="batch-size" name={NOTIFICATION_BATCH_FIELDS.batchSize} type="number" value={query.batchSize ?? ''} disabled={loading} onChange={(event) => onChange({ ...query, batchSize: Number(event.target.value) })} /></div>
         <div className="flex flex-col gap-1"><FieldLabel htmlFor="batch-requested-count" hint="Để trống để gửi toàn bộ học viên đang hoạt động.">Số người nhận</FieldLabel><TextInput id="batch-requested-count" name={NOTIFICATION_BATCH_FIELDS.requestedCount} type="number" min="1" max="100000" value={query.requestedCount ?? ''} disabled={loading} placeholder="Tất cả" onChange={(event) => onChange({ ...query, requestedCount: event.target.value === '' ? null : Number(event.target.value) })} /></div>
       </div>
-      <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}><Button type="submit" disabled={loading}>Tạo batch gửi</Button></div>
+      <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}><Button type="submit" disabled={loading}>Tạo batch gửi</Button></div>
     </form>
   )
 }

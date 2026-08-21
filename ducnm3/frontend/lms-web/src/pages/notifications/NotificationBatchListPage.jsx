@@ -1,12 +1,12 @@
 import { Eye, RefreshCw, RotateCcw } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
-import { Dropdown } from '@/components/ui/Dropdown'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { Icon } from '@/components/ui/Icon'
-import { PageHeader } from '@/components/ui/PageHeader'
-import { Pagination } from '@/components/ui/Pagination'
-import { TableSkeleton } from '@/components/ui/Skeleton'
+import { Button } from '@/components/ui/admin/Button'
+import { Dropdown } from '@/components/ui/admin/Dropdown'
+import { EmptyState } from '@/components/ui/admin/EmptyState'
+import { Icon } from '@/components/ui/admin/Icon'
+import { PageHeader } from '@/components/ui/admin/PageHeader'
+import { Pagination } from '@/components/ui/admin/Pagination'
+import { TableSkeleton } from '@/components/ui/admin/Skeleton'
 import { InputPanel } from '@/components/layout/InputPanel'
 import { OutputPanel } from '@/components/layout/OutputPanel'
 import { Workbench } from '@/components/layout/Workbench'
@@ -17,7 +17,7 @@ import {
   NOTIFICATION_BATCH_TERMINAL_STATUSES,
 } from '@/constants/notification'
 import { useNotificationBatchList } from '@/hooks/notifications/useNotificationBatchList'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const statuses = [
   '',
@@ -49,7 +49,7 @@ function BatchActions({ batch, retrying, onRetry }) {
     <div className="flex items-center gap-2">
       <Link
         to={notificationBatchProgressPath(batch.id)}
-        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 ${ui.buttonGhost}`}
+        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 ${adminUi.buttonGhost}`}
       >
         <Icon icon={Eye} />
         Xem
@@ -72,7 +72,7 @@ function BatchTable({ batches, clock, retryingBatchId, onRetry }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-line">
       <table className="w-full min-w-[980px] text-left text-[13px]">
-        <thead className={ui.tableHead}>
+        <thead className={adminUi.tableHead}>
           <tr>
             <th className="px-3 py-3">Tiêu đề</th>
             <th className="px-3 py-3">Trạng thái</th>
@@ -84,19 +84,19 @@ function BatchTable({ batches, clock, retryingBatchId, onRetry }) {
         </thead>
         <tbody>
           {batches.map((batch) => (
-            <tr key={batch.id} className={ui.tableRow}>
+            <tr key={batch.id} className={adminUi.tableRow}>
               <td className="max-w-64 px-3 py-3">
-                <p className={`truncate font-medium ${ui.title}`}>{batch.title}</p>
-                <p className={`mt-1 font-mono text-[10px] ${ui.caption}`}>{batch.id}</p>
+                <p className={`truncate font-medium ${adminUi.title}`}>{batch.title}</p>
+                <p className={`mt-1 font-mono text-[10px] ${adminUi.caption}`}>{batch.id}</p>
               </td>
               <td className="px-3 py-3">
-                <span className={`rounded-full px-2 py-1 text-[11px] ${NOTIFICATION_BATCH_TERMINAL_STATUSES.has(batch.status) ? ui.badgeMuted : ui.badgeWarning}`}>
+                <span className={`rounded-full px-2 py-1 text-[11px] ${NOTIFICATION_BATCH_TERMINAL_STATUSES.has(batch.status) ? adminUi.badgeMuted : adminUi.badgeWarning}`}>
                   {batch.status}
                 </span>
               </td>
               <td className="px-3 py-3 font-mono tabular-nums">
                 {batch.processedCount.toLocaleString()} / {batch.totalCount.toLocaleString()}
-                <p className={`mt-1 text-[11px] ${ui.caption}`}>
+                <p className={`mt-1 text-[11px] ${adminUi.caption}`}>
                   Yêu cầu: {batch.requestedCount?.toLocaleString() ?? 'Tất cả'}
                 </p>
               </td>
@@ -163,7 +163,7 @@ export function NotificationBatchListPage() {
                   />
                 </div>
               </div>
-              <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}>
+              <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}>
                 <Pagination
                   page={list.query.page}
                   pageSize={list.query.pageSize}
@@ -177,7 +177,7 @@ export function NotificationBatchListPage() {
               </div>
             </div>
           }
-          manual={<div className="p-5"><p className={ui.body}>GET /notification/api/notification-batches</p></div>}
+          manual={<div className="p-5"><p className={adminUi.body}>GET /notification/api/notification-batches</p></div>}
         />
       }
       output={
@@ -187,7 +187,7 @@ export function NotificationBatchListPage() {
           run={{ loading: list.loading, success: list.success, error: list.error }}
         >
           {list.error ? <EmptyState title="Không đọc được batch" description={`${list.error.code}: ${list.error.message}`} /> : null}
-          {list.retryError ? <p className={`mb-3 rounded-md px-3 py-2 text-[13px] ${ui.badgeDanger}`}>{list.retryError.code}: {list.retryError.message}</p> : null}
+          {list.retryError ? <p className={`mb-3 rounded-md px-3 py-2 text-[13px] ${adminUi.badgeDanger}`}>{list.retryError.code}: {list.retryError.message}</p> : null}
           {!list.error && list.loading && !list.data.length ? <TableSkeleton /> : null}
           {!list.error && !list.loading && !list.data.length ? <EmptyState title="Chưa có batch" description="Tạo batch gửi đầu tiên để bắt đầu theo dõi." /> : null}
           {list.data.length ? (

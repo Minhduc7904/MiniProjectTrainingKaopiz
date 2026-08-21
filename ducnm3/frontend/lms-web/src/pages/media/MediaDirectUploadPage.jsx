@@ -3,15 +3,15 @@ import { RotateCcw } from 'lucide-react'
 import { InputPanel } from '@/components/layout/InputPanel'
 import { OutputPanel } from '@/components/layout/OutputPanel'
 import { Workbench } from '@/components/layout/Workbench'
-import { Button } from '@/components/ui/Button'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { Icon } from '@/components/ui/Icon'
-import { PageHeader } from '@/components/ui/PageHeader'
+import { Button } from '@/components/ui/admin/Button'
+import { EmptyState } from '@/components/ui/admin/EmptyState'
+import { Icon } from '@/components/ui/admin/Icon'
+import { PageHeader } from '@/components/ui/admin/PageHeader'
 import { POST_MEDIA_DIRECT_ACTIVITY } from '@/constants/activities/postMediaDirect'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
 import { UI_LABELS } from '@/constants/ui'
 import { useDirectMediaUpload } from '@/hooks/media/useDirectMediaUpload'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { DirectUploadForm } from './components/DirectUploadForm'
 import { DirectUploadProgress } from './components/DirectUploadProgress'
 import { MediaResult } from './components/MediaResult'
@@ -44,7 +44,7 @@ export function MediaDirectUploadPage() {
 
   return (
     <Workbench
-      className={ui.workbenchResponsive}
+      className={adminUi.workbenchResponsive}
       input={
         <InputPanel
           actions={

@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { CheckCircle2, Circle, CircleX, LoaderCircle, Pause, Play, RotateCcw, RefreshCw } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { Icon } from '@/components/ui/Icon'
-import { LoadingState } from '@/components/ui/LoadingState'
-import { PageHeader } from '@/components/ui/PageHeader'
+import { Button } from '@/components/ui/admin/Button'
+import { EmptyState } from '@/components/ui/admin/EmptyState'
+import { Icon } from '@/components/ui/admin/Icon'
+import { LoadingState } from '@/components/ui/admin/LoadingState'
+import { PageHeader } from '@/components/ui/admin/PageHeader'
 import { InputPanel } from '@/components/layout/InputPanel'
 import { OutputPanel } from '@/components/layout/OutputPanel'
 import { Workbench } from '@/components/layout/Workbench'
@@ -13,7 +13,7 @@ import { GET_NOTIFICATION_BATCH_ACTIVITY } from '@/constants/activities/getNotif
 import { UI_LABELS } from '@/constants/ui'
 import { APP_ROUTES, notificationBatchProgressPath } from '@/constants/appRoutes'
 import { useNotificationBatchProgress } from '@/hooks/notifications/useNotificationBatchProgress'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { NotificationBatchProgressForm } from './components/NotificationBatchProgressForm'
 import { NotificationBatchProgressManualForm } from './components/NotificationBatchProgressManualForm'
 
@@ -51,14 +51,14 @@ function StepCard({ code, title, description, data, active }) {
   const status = data?.status ?? 'PENDING'
   const percentage = data?.progressPercent
   const tone = terminalFailed.has(status)
-    ? ui.badgeDanger
+    ? adminUi.badgeDanger
     : status === 'COMPLETED'
-      ? ui.badgeSuccess
+      ? adminUi.badgeSuccess
       : active
-        ? ui.badgeWarning
-        : ui.badgeMuted
+        ? adminUi.badgeWarning
+        : adminUi.badgeMuted
   return (
-    <article className={`${active ? ui.rail : ''} rounded-lg ${ui.card} p-4`}>
+    <article className={`${active ? adminUi.rail : ''} rounded-lg ${adminUi.card} p-4`}>
       <div className="flex items-start gap-3">
         <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${tone}`}>
           <StepIcon status={status} />
@@ -66,16 +66,16 @@ function StepCard({ code, title, description, data, active }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className={`text-[11px] font-semibold uppercase tracking-[0.12em] ${ui.caption}`}>{code}</p>
-              <h3 className={`mt-0.5 text-[15px] font-semibold ${ui.title}`}>{title}</h3>
+              <p className={`text-[11px] font-semibold uppercase tracking-[0.12em] ${adminUi.caption}`}>{code}</p>
+              <h3 className={`mt-0.5 text-[15px] font-semibold ${adminUi.title}`}>{title}</h3>
             </div>
             <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${tone}`}>{status}</span>
           </div>
-          <p className={`mt-2 text-[13px] ${ui.body}`}>{description}</p>
+          <p className={`mt-2 text-[13px] ${adminUi.body}`}>{description}</p>
           {percentage != null ? (
             <div className="mt-3">
               <div
-                className={`h-2 overflow-hidden rounded-full ${ui.progressTrack}`}
+                className={`h-2 overflow-hidden rounded-full ${adminUi.progressTrack}`}
                 role="progressbar"
                 aria-label={`${title}: ${percentage}%`}
                 aria-valuenow={percentage}
@@ -83,11 +83,11 @@ function StepCard({ code, title, description, data, active }) {
                 aria-valuemax="100"
               >
                 <div
-                  className={`${terminalFailed.has(status) ? ui.progressFailed : ui.progressFill} h-full rounded-full transition-[width] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]`}
+                  className={`${terminalFailed.has(status) ? adminUi.progressFailed : adminUi.progressFill} h-full rounded-full transition-[width] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]`}
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <p className={`mt-1 text-right font-mono text-[11px] tabular-nums ${ui.caption}`}>{percentage}%</p>
+              <p className={`mt-1 text-right font-mono text-[11px] tabular-nums ${adminUi.caption}`}>{percentage}%</p>
             </div>
           ) : null}
         </div>
@@ -108,16 +108,16 @@ function Metric({ label, value, tone }) {
 function DeliverySummary({ delivery }) {
   if (!delivery) return null
   return (
-    <section className={`rounded-lg ${ui.card} p-5`}>
+    <section className={`rounded-lg ${adminUi.card} p-5`}>
       <div>
-        <p className={`font-display text-[18px] font-semibold ${ui.title}`}>Kết quả gửi notification</p>
-        <p className={`mt-1 text-[13px] ${ui.body}`}>Counter được cập nhật sau mỗi chunk; không đợi Media Usage hoàn tất.</p>
+        <p className={`font-display text-[18px] font-semibold ${adminUi.title}`}>Kết quả gửi notification</p>
+        <p className={`mt-1 text-[13px] ${adminUi.body}`}>Counter được cập nhật sau mỗi chunk; không đợi Media Usage hoàn tất.</p>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Metric label="Thành công" value={delivery.successCount.toLocaleString()} tone={ui.badgeSuccess} />
-        <Metric label="Thất bại" value={delivery.failedCount.toLocaleString()} tone={delivery.failedCount ? ui.badgeDanger : ui.badgeMuted} />
-        <Metric label="Còn lại" value={delivery.remainingCount.toLocaleString()} tone={ui.badgeMuted} />
-        <Metric label="Tổng thời gian" value={formatDuration(delivery.durationMs)} tone={ui.badgeMuted} />
+        <Metric label="Thành công" value={delivery.successCount.toLocaleString()} tone={adminUi.badgeSuccess} />
+        <Metric label="Thất bại" value={delivery.failedCount.toLocaleString()} tone={delivery.failedCount ? adminUi.badgeDanger : adminUi.badgeMuted} />
+        <Metric label="Còn lại" value={delivery.remainingCount.toLocaleString()} tone={adminUi.badgeMuted} />
+        <Metric label="Tổng thời gian" value={formatDuration(delivery.durationMs)} tone={adminUi.badgeMuted} />
       </div>
     </section>
   )
@@ -125,24 +125,24 @@ function DeliverySummary({ delivery }) {
 
 function Failures({ progress }) {
   return (
-    <section className={`rounded-lg ${ui.card} p-5`}>
+    <section className={`rounded-lg ${adminUi.card} p-5`}>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <p className={`font-display text-[18px] font-semibold ${ui.title}`}>Lỗi theo người nhận</p>
-          <p className={`mt-1 text-[13px] ${ui.body}`}>Retry tạo batch con chỉ từ item FAILED.</p>
+          <p className={`font-display text-[18px] font-semibold ${adminUi.title}`}>Lỗi theo người nhận</p>
+          <p className={`mt-1 text-[13px] ${adminUi.body}`}>Retry tạo batch con chỉ từ item FAILED.</p>
         </div>
         <Button disabled={progress.retryLoading} onClick={progress.onRetry}>
           <Icon icon={RefreshCw} />{progress.retryLoading ? 'Đang retry' : 'Retry lỗi'}
         </Button>
       </div>
-      {progress.retryError ? <p className={`mt-4 rounded-md ${ui.badgeDanger} px-3 py-2 text-[13px]`}>{progress.retryError.code}: {progress.retryError.message}</p> : null}
+      {progress.retryError ? <p className={`mt-4 rounded-md ${adminUi.badgeDanger} px-3 py-2 text-[13px]`}>{progress.retryError.code}: {progress.retryError.message}</p> : null}
       {progress.failuresLoading ? <div className="mt-4"><LoadingState /></div> : null}
-      {progress.failuresError ? <p className={`mt-4 rounded-md ${ui.badgeDanger} px-3 py-2 text-[13px]`}>{progress.failuresError.code}: {progress.failuresError.message}</p> : null}
+      {progress.failuresError ? <p className={`mt-4 rounded-md ${adminUi.badgeDanger} px-3 py-2 text-[13px]`}>{progress.failuresError.code}: {progress.failuresError.message}</p> : null}
       {!progress.failuresLoading && !progress.failuresError && progress.failures.length ? (
         <div className="mt-4 overflow-hidden rounded-md border border-line">
           <table className="w-full text-left text-[13px]">
-            <thead className={ui.tableHead}><tr><th className="px-3 py-2 font-medium">Student ID</th><th className="px-3 py-2 font-medium">Retry</th><th className="px-3 py-2 font-medium">Lỗi cuối</th></tr></thead>
-            <tbody>{progress.failures.map((item) => <tr key={item.studentId} className={ui.tableRow}><td className="break-all px-3 py-2 font-mono text-[11px]">{item.studentId}</td><td className="px-3 py-2 font-mono tabular-nums">{item.retryCount}</td><td className="px-3 py-2">{item.errorMessage}</td></tr>)}</tbody>
+            <thead className={adminUi.tableHead}><tr><th className="px-3 py-2 font-medium">Student ID</th><th className="px-3 py-2 font-medium">Retry</th><th className="px-3 py-2 font-medium">Lỗi cuối</th></tr></thead>
+            <tbody>{progress.failures.map((item) => <tr key={item.studentId} className={adminUi.tableRow}><td className="break-all px-3 py-2 font-mono text-[11px]">{item.studentId}</td><td className="px-3 py-2 font-mono tabular-nums">{item.retryCount}</td><td className="px-3 py-2">{item.errorMessage}</td></tr>)}</tbody>
           </table>
         </div>
       ) : null}
@@ -170,11 +170,11 @@ function BatchProgressView({ progress }) {
         <StepCard code="03" title="Đăng ký Media Usage" description={mediaDescription} data={progress.mediaUsage} active={progress.currentStep === 'mediaUsage'} />
       </section>
       <DeliverySummary delivery={progress.delivery} />
-      <section className={`rounded-lg ${ui.card} p-4`}>
+      <section className={`rounded-lg ${adminUi.card} p-4`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className={`text-[13px] font-medium ${ui.title}`}>Polling tuần tự</p>
-            <p className={`mt-1 text-[12px] ${ui.body}`}>{progress.isTerminal ? 'Toàn bộ pipeline đã terminal; polling tự dừng.' : progress.paused ? 'Polling đang tạm dừng trên trình duyệt.' : `Đang theo dõi bước ${progress.currentStep ?? 'hoàn tất'} mỗi 3 giây.`}</p>
+            <p className={`text-[13px] font-medium ${adminUi.title}`}>Polling tuần tự</p>
+            <p className={`mt-1 text-[12px] ${adminUi.body}`}>{progress.isTerminal ? 'Toàn bộ pipeline đã terminal; polling tự dừng.' : progress.paused ? 'Polling đang tạm dừng trên trình duyệt.' : `Đang theo dõi bước ${progress.currentStep ?? 'hoàn tất'} mỗi 3 giây.`}</p>
           </div>
           {!progress.isTerminal ? progress.paused ? <Button onClick={progress.resume}><Icon icon={Play} />Tiếp tục</Button> : <Button variant="ghost" onClick={progress.pause}><Icon icon={Pause} />Pause</Button> : null}
         </div>

@@ -1,6 +1,6 @@
-import { Dropdown } from '@/components/ui/Dropdown'
+import { Dropdown } from '@/components/ui/admin/Dropdown'
 import { MEDIA_JOB_COPY, MEDIA_JOB_STATUS, MEDIA_JOB_TYPE } from '@/constants/mediaJobs'
-import { FieldLabel, TextInput } from '@/components/ui/Field'
+import { FieldLabel, TextInput } from '@/components/ui/admin/Field'
 
 const selectOptions = (values) => [
   { value: '', label: 'Tất cả' },

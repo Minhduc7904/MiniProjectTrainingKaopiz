@@ -2,7 +2,7 @@
  * Semantic color classes. Components import `ui` — never write palette
  * utilities (`bg-accent`, `text-fg`, hex) inline.
  */
-export const ui = {
+export const adminUi = {
   page: 'bg-canvas text-fg',
   sidebar:
     'fixed inset-y-0 left-0 z-20 flex flex-col border-r border-line bg-canvas',

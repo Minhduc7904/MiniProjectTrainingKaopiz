@@ -1,14 +1,14 @@
 import { UploadCloud } from 'lucide-react'
-import { ApiField } from '@/components/ui/ApiField'
-import { Button } from '@/components/ui/Button'
-import { FieldLabel, FileInput, TextInput } from '@/components/ui/Field'
-import { Icon } from '@/components/ui/Icon'
+import { ApiField } from '@/components/ui/admin/ApiField'
+import { Button } from '@/components/ui/admin/Button'
+import { FieldLabel, FileInput, TextInput } from '@/components/ui/admin/Field'
+import { Icon } from '@/components/ui/admin/Icon'
 import { POST_MEDIA_DIRECT_INPUT_FIELDS } from '@/constants/inputs/postMediaDirect'
 import {
   POST_MEDIA_FIELDS,
 } from '@/constants/media'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function DirectUploadForm({
   query,
@@ -66,7 +66,7 @@ export function DirectUploadForm({
           </>
         )}
       </div>
-      <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}>
+      <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}>
         <Button type="submit" disabled={loading || !file}>
           <Icon icon={UploadCloud} />
           {MEDIA_COPY.directUploadAction}

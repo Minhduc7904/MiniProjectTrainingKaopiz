@@ -1,9 +1,9 @@
-import { ApiField } from '@/components/ui/ApiField'
-import { Button } from '@/components/ui/Button'
-import { TextInput } from '@/components/ui/Field'
+import { ApiField } from '@/components/ui/admin/ApiField'
+import { Button } from '@/components/ui/admin/Button'
+import { TextInput } from '@/components/ui/admin/Field'
 import { GET_STUDENTS_INPUT_FIELDS } from '@/constants/inputs/getStudents'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 function fieldValue(query, field) {
   const value = query[field.key]
@@ -43,8 +43,8 @@ export function StudentsManualForm({ query, loading, onChange, onSubmit }) {
       }}
     >
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-        <p className={`mb-3 text-[13px] ${ui.body}`}>{UI_LABELS.queryOnly}</p>
-        <p className={`mb-4 text-[12px] ${ui.caption}`}>{UI_LABELS.omitDefault}</p>
+        <p className={`mb-3 text-[13px] ${adminUi.body}`}>{UI_LABELS.queryOnly}</p>
+        <p className={`mb-4 text-[12px] ${adminUi.caption}`}>{UI_LABELS.omitDefault}</p>
         <div className="flex flex-col gap-3">
           {GET_STUDENTS_INPUT_FIELDS.map((field) => (
             <ApiField key={field.key} field={field}>
@@ -66,7 +66,7 @@ export function StudentsManualForm({ query, loading, onChange, onSubmit }) {
           ))}
         </div>
       </div>
-      <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}>
+      <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}>
         <Button type="submit" disabled={loading}>
           {UI_LABELS.callApi}
         </Button>

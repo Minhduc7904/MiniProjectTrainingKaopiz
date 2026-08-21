@@ -1,14 +1,14 @@
 import { MEDIA_COPY } from '@/constants/mediaCopy'
 import { isImageMedia } from '@/hooks/media/mediaThumbnail'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { MediaImagePreview } from './MediaImagePreview'
 import { MediaThumbnailStatus } from './MediaThumbnailStatus'
 
 function Row({ label, value }) {
   return (
-    <div className={`grid grid-cols-[140px_1fr] gap-3 px-4 py-3 ${ui.tableRow}`}>
-      <dt className={`font-mono text-[12px] ${ui.caption}`}>{label}</dt>
-      <dd className={`break-all text-[14px] ${ui.tableCellStrong}`}>
+    <div className={`grid grid-cols-[140px_1fr] gap-3 px-4 py-3 ${adminUi.tableRow}`}>
+      <dt className={`font-mono text-[12px] ${adminUi.caption}`}>{label}</dt>
+      <dd className={`break-all text-[14px] ${adminUi.tableCellStrong}`}>
         {value == null || value === '' ? '—' : String(value)}
       </dd>
     </div>
@@ -19,8 +19,8 @@ export function MediaResult({ media, location, showDraft = false }) {
   return (
     <div className="space-y-4">
       {isImageMedia(media) ? <MediaImagePreview contentUrl={media.contentUrl} alt={media.id} /> : null}
-      <div className={`overflow-hidden rounded-lg ${ui.card}`}>
-        <p className={`px-4 py-3 text-[12px] font-medium tracking-wide uppercase ${ui.tableHead}`}>
+      <div className={`overflow-hidden rounded-lg ${adminUi.card}`}>
+        <p className={`px-4 py-3 text-[12px] font-medium tracking-wide uppercase ${adminUi.tableHead}`}>
           {MEDIA_COPY.result}
         </p>
         <dl>

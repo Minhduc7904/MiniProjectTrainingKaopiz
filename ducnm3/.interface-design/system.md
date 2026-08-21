@@ -91,3 +91,34 @@ Dropdown service đổi bộ menu.
 | Borders-only depth | Roster dense; shadow làm nặng | 2026-08-14 |
 | Lucide for every icon | One stroke language | 2026-08-14 |
 | cursor-pointer on every clickable | Affordance rõ; disabled = not-allowed | 2026-08-14 |
+
+## Student Learning Trail
+
+**Personality:** Một không gian học buổi sớm, có lộ trình rõ ràng và khích lệ
+người học trở lại bài tiếp theo. Không dùng language/shape của Admin workbench.
+
+### Ownership
+
+- Admin components: `frontend/lms-web/src/components/ui/admin/`, import
+  `adminUi` từ `@/theme/admin`.
+- Student components: `frontend/lms-web/src/components/ui/student/`, import
+  `studentUi` từ `@/theme/student`.
+- Không import chéo giữa hai namespace UI. Những utility không có visual actor
+  vẫn đặt ngoài hai thư mục này.
+
+### Student tokens
+
+Canvas lavender `#EEF2FF`; ink navy-indigo `#312E81`; primary indigo
+`#4F46E5`; bookmark amber `#F59E0B`; completed green `#16A34A`. Token raw
+chỉ ở `theme/student/tokens.css`; JSX dùng class semantic của `studentUi`.
+
+### Student patterns
+
+- `StudentShell` có top bar nhận diện và action; dashboard ưu tiên một focal
+  heading, sau đó mới tới empty state hoặc Lesson Trail.
+- Card Student dùng radius 24px, viền indigo nhẹ, shadow lớp rất mỏng; spacing
+  vẫn theo grid 4px, card padding 24/32px.
+- `LessonTrail` là ordered list. Mọi state có Lucide icon và text, không chỉ
+  dùng màu.
+- Motion Student: entry 180–240ms custom ease-out, press 120ms `scale(0.97)`;
+  chỉ animate `transform`/`opacity` và tắt ở `prefers-reduced-motion`.

@@ -1,0 +1,1 @@
+export { adminUi } from './ui'

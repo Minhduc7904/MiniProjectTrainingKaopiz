@@ -1,4 +1,4 @@
-import { Dropdown } from '@/components/ui/Dropdown'
+import { Dropdown } from '@/components/ui/admin/Dropdown'
 import { STUDENT_COPY } from '@/constants/studentCopy'
 import { SORT_DIRECTIONS, STUDENT_SORT_BY } from '@/constants/queryParams'
 import { STUDENT_STATUS, STUDENT_STATUS_LABELS } from '@/constants/studentStatus'

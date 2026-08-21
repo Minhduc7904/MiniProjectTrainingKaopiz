@@ -1,9 +1,9 @@
 import { CircleAlert, LoaderCircle, RefreshCw } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/admin/Button'
+import { Icon } from '@/components/ui/admin/Icon'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
 import { useMediaThumbnail } from '@/hooks/media/mediaThumbnail'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { MediaImagePreview } from './MediaImagePreview'
 
 export function MediaThumbnailStatus({ media }) {
@@ -14,16 +14,16 @@ export function MediaThumbnailStatus({ media }) {
   if (!thumbnail.status || thumbnail.status === 'NOT_REQUIRED') return null
 
   return (
-    <section className={`overflow-hidden rounded-lg ${ui.card}`} aria-live="polite">
-      <div className={`flex items-center justify-between gap-3 px-4 py-3 ${ui.tableHead}`}>
+    <section className={`overflow-hidden rounded-lg ${adminUi.card}`} aria-live="polite">
+      <div className={`flex items-center justify-between gap-3 px-4 py-3 ${adminUi.tableHead}`}>
         <p className="text-[12px] font-medium tracking-wide uppercase">{MEDIA_COPY.thumbnail}</p>
-        <span className={`text-[12px] font-medium ${failed ? ui.dangerText : ui.accentText}`}>
+        <span className={`text-[12px] font-medium ${failed ? adminUi.dangerText : adminUi.accentText}`}>
           {thumbnail.status}
         </span>
       </div>
       <div className="space-y-3 p-4">
         {active ? (
-          <div className={`flex items-center gap-2 text-[13px] ${ui.body}`}>
+          <div className={`flex items-center gap-2 text-[13px] ${adminUi.body}`}>
             <Icon icon={LoaderCircle} className="animate-spin" />
             {MEDIA_COPY.thumbnailProcessing}
           </div>
@@ -32,7 +32,7 @@ export function MediaThumbnailStatus({ media }) {
           <MediaImagePreview contentUrl={thumbnail.thumbnailContentUrl} alt={MEDIA_COPY.thumbnail} />
         ) : null}
         {failed ? (
-          <div className={`flex flex-wrap items-center justify-between gap-3 rounded-md p-3 ${ui.badgeDanger}`}>
+          <div className={`flex flex-wrap items-center justify-between gap-3 rounded-md p-3 ${adminUi.badgeDanger}`}>
             <span className="flex items-center gap-2 text-[13px]">
               <Icon icon={CircleAlert} />
               {thumbnail.lastError || MEDIA_COPY.thumbnailFailed}
@@ -43,7 +43,7 @@ export function MediaThumbnailStatus({ media }) {
             </Button>
           </div>
         ) : null}
-        {error ? <p className={`text-[13px] ${ui.dangerText}`}>{error.message}</p> : null}
+        {error ? <p className={`text-[13px] ${adminUi.dangerText}`}>{error.message}</p> : null}
       </div>
     </section>
   )

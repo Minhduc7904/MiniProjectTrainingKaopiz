@@ -1,10 +1,10 @@
 import { STUDENT_STATUS, STUDENT_STATUS_LABELS } from '@/constants/studentStatus'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const toneByStatus = {
-  [STUDENT_STATUS.active]: ui.badgeSuccess,
-  [STUDENT_STATUS.inactive]: ui.badgeWarning,
-  [STUDENT_STATUS.blocked]: ui.badgeDanger,
+  [STUDENT_STATUS.active]: adminUi.badgeSuccess,
+  [STUDENT_STATUS.inactive]: adminUi.badgeWarning,
+  [STUDENT_STATUS.blocked]: adminUi.badgeDanger,
 }
 
 export function StatusBadge({ status }) {
@@ -12,7 +12,7 @@ export function StatusBadge({ status }) {
     <span
       className={[
         'inline-flex rounded-full px-2 py-0.5 text-[12px] font-medium',
-        toneByStatus[status] ?? ui.badgeMuted,
+        toneByStatus[status] ?? adminUi.badgeMuted,
       ].join(' ')}
     >
       {STUDENT_STATUS_LABELS[status] ?? status}

@@ -1,13 +1,13 @@
 import { Check, ChevronDown } from 'lucide-react'
 import { useCallback, useId, useMemo, useRef, useState } from 'react'
-import { FieldLabel } from '@/components/ui/Field'
-import { Icon } from '@/components/ui/Icon'
-import { controlClassName } from '@/components/ui/controlStyles'
+import { FieldLabel } from '@/components/ui/admin/Field'
+import { Icon } from '@/components/ui/admin/Icon'
+import { controlClassName } from '@/components/ui/admin/controlStyles'
 import { KEYBOARD } from '@/constants/keyboard'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { useClickOutside } from '@/hooks/ui/useClickOutside'
-import { getDropdownPanelPlacementClass } from '@/components/ui/dropdownPlacement'
+import { getDropdownPanelPlacementClass } from '@/components/ui/admin/dropdownPlacement'
 
 export function Dropdown({
   id,
@@ -120,18 +120,18 @@ export function Dropdown({
             'flex cursor-pointer items-center justify-between gap-2 text-left disabled:cursor-not-allowed',
           ].join(' ')}
         >
-          <span className={selected ? ui.dropdownValue : ui.dropdownPlaceholder}>
+          <span className={selected ? adminUi.dropdownValue : adminUi.dropdownPlaceholder}>
             {selected?.label ?? placeholder}
           </span>
           <Icon
             icon={ChevronDown}
-            className={[ui.dropdownChevron, open ? 'rotate-180' : ''].join(' ')}
+            className={[adminUi.dropdownChevron, open ? 'rotate-180' : ''].join(' ')}
           />
         </button>
         {open ? (
           <ul
             role="listbox"
-            className={[ui.dropdownPanel, getDropdownPanelPlacementClass(placement)].join(' ')}
+            className={[adminUi.dropdownPanel, getDropdownPanelPlacementClass(placement)].join(' ')}
           >
             {options.map((option, index) => {
               const active = option.value === value
@@ -148,13 +148,13 @@ export function Dropdown({
                     className={[
                       'flex w-full cursor-pointer items-center justify-between gap-2 px-3 py-2 text-left text-[14px]',
                       highlighted || active
-                        ? ui.dropdownOptionActive
-                        : ui.dropdownOptionIdle,
+                        ? adminUi.dropdownOptionActive
+                        : adminUi.dropdownOptionIdle,
                       active ? 'font-medium' : 'font-normal',
                     ].join(' ')}
                   >
                     <span>{option.label}</span>
-                    {active ? <Icon icon={Check} className={ui.check} /> : null}
+                    {active ? <Icon icon={Check} className={adminUi.check} /> : null}
                   </button>
                 </li>
               )

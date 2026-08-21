@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getDropdownPanelPlacementClass } from '@/components/ui/dropdownPlacement'
+import { getDropdownPanelPlacementClass } from '@/components/ui/admin/dropdownPlacement'
 
 describe('getDropdownPanelPlacementClass', () => {
   it('positions a top placement above its trigger', () => {

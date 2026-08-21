@@ -1,10 +1,10 @@
-import { ApiField } from '@/components/ui/ApiField'
-import { Button } from '@/components/ui/Button'
-import { FileInput, TextInput } from '@/components/ui/Field'
+import { ApiField } from '@/components/ui/admin/ApiField'
+import { Button } from '@/components/ui/admin/Button'
+import { FileInput, TextInput } from '@/components/ui/admin/Field'
 import { HTTP_CONTENT_TYPES, HTTP_STATUS } from '@/constants/http'
 import { POST_MEDIA_INPUT_FIELDS } from '@/constants/inputs/postMedia'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function MediaManualForm({
   query,
@@ -24,7 +24,7 @@ export function MediaManualForm({
       }}
     >
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-        <p className={`mb-3 text-[13px] ${ui.body}`}>
+        <p className={`mb-3 text-[13px] ${adminUi.body}`}>
           {HTTP_CONTENT_TYPES.multipart}. Gõ sai allowlist để xem{' '}
           {HTTP_STATUS.badRequest}/{HTTP_STATUS.unsupportedMediaType}.
         </p>
@@ -65,7 +65,7 @@ export function MediaManualForm({
           ))}
         </div>
       </div>
-      <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}>
+      <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}>
         <Button type="submit" disabled={loading}>
           {UI_LABELS.callApi}
         </Button>

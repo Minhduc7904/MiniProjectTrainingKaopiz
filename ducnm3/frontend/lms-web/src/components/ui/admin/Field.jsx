@@ -1,16 +1,16 @@
-import { controlClassName } from '@/components/ui/controlStyles'
-import { ui } from '@/theme'
+import { controlClassName } from '@/components/ui/admin/controlStyles'
+import { adminUi } from '@/theme/admin'
 
 export function FieldLabel({ htmlFor, children, hint }) {
   return (
     <div className="flex flex-col gap-1">
       <label
         htmlFor={htmlFor}
-        className={`cursor-pointer font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}
+        className={`cursor-pointer font-display text-[11px] font-medium tracking-[0.18em] uppercase ${adminUi.eyebrow}`}
       >
         {children}
       </label>
-      {hint ? <p className={`text-[12px] ${ui.body}`}>{hint}</p> : null}
+      {hint ? <p className={`text-[12px] ${adminUi.body}`}>{hint}</p> : null}
     </div>
   )
 }
@@ -37,7 +37,7 @@ export function TextInput({
       aria-invalid={invalid}
       onChange={onChange}
       onBlur={onBlur}
-      className={[controlClassName, invalid ? ui.controlInvalid : ''].join(' ')}
+      className={[controlClassName, invalid ? adminUi.controlInvalid : ''].join(' ')}
     />
   )
 }
@@ -64,11 +64,11 @@ export function FileInput({
         className={[
           controlClassName,
           'cursor-pointer py-1.5',
-          invalid ? ui.controlInvalid : '',
+          invalid ? adminUi.controlInvalid : '',
         ].join(' ')}
       />
       {fileName ? (
-        <p className={`truncate text-[12px] ${ui.caption}`}>{fileName}</p>
+        <p className={`truncate text-[12px] ${adminUi.caption}`}>{fileName}</p>
       ) : null}
     </div>
   )

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ImagePlus, Paperclip, X } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { FieldLabel, TextInput } from '@/components/ui/Field'
+import { Button } from '@/components/ui/admin/Button'
+import { FieldLabel, TextInput } from '@/components/ui/admin/Field'
 import { MediaLibraryModal } from '@/components/media/MediaLibraryModal'
-import { Icon } from '@/components/ui/Icon'
-import { ui } from '@/theme'
+import { Icon } from '@/components/ui/admin/Icon'
+import { adminUi } from '@/theme/admin'
 import { preventParentBatchSubmit } from './notificationMarkdownSubmission'
 
 const MEDIA_USAGE = {
@@ -71,38 +71,38 @@ function MediaInsertDialog({ open, disabled, onClose, onInsert }) {
         aria-labelledby="media-insert-title"
         onClick={(event) => { if (event.target === event.currentTarget) close() }}
         onCancel={(event) => { event.preventDefault(); close() }}
-        className={ui.modal}
+        className={adminUi.modal}
       >
         <form onSubmit={submit} className="flex flex-col">
-          <header className={`flex items-start justify-between gap-4 px-5 py-4 ${ui.hairlineB}`}>
+          <header className={`flex items-start justify-between gap-4 px-5 py-4 ${adminUi.hairlineB}`}>
             <div>
-              <p className={`font-display text-[18px] font-semibold ${ui.title}`} id="media-insert-title">Thêm media vào Markdown</p>
-              <p className={`mt-1 text-[13px] ${ui.body}`}>Chọn media trong thư viện, sau đó chọn cách hiển thị trong nội dung.</p>
+              <p className={`font-display text-[18px] font-semibold ${adminUi.title}`} id="media-insert-title">Thêm media vào Markdown</p>
+              <p className={`mt-1 text-[13px] ${adminUi.body}`}>Chọn media trong thư viện, sau đó chọn cách hiển thị trong nội dung.</p>
             </div>
             <Button type="button" variant="ghost" size="icon" aria-label="Đóng modal" onClick={close}><Icon icon={X} /></Button>
           </header>
 
           <div className="flex flex-col gap-4 px-5 py-4">
-            <div className={`flex items-center justify-between gap-3 rounded-md p-3 ${ui.choiceIdle}`}>
+            <div className={`flex items-center justify-between gap-3 rounded-md p-3 ${adminUi.choiceIdle}`}>
               <div className="min-w-0">
-                <p className={`text-[13px] font-medium ${ui.title}`}>{selectedMedia?.originalFileName || 'Chưa chọn ảnh'}</p>
-                <p className={`mt-1 text-[12px] ${ui.body}`}>{selectedMedia ? 'Đã chọn từ thư viện' : 'Mở thư viện để chọn một media'}</p>
+                <p className={`text-[13px] font-medium ${adminUi.title}`}>{selectedMedia?.originalFileName || 'Chưa chọn ảnh'}</p>
+                <p className={`mt-1 text-[12px] ${adminUi.body}`}>{selectedMedia ? 'Đã chọn từ thư viện' : 'Mở thư viện để chọn một media'}</p>
               </div>
               <Button type="button" variant="ghost" onClick={() => setIsLibraryOpen(true)}>Chọn ảnh</Button>
             </div>
 
             <fieldset disabled={disabled}>
-              <legend className={`font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>Cách dùng trong nội dung</legend>
+              <legend className={`font-display text-[11px] font-medium tracking-[0.18em] uppercase ${adminUi.eyebrow}`}>Cách dùng trong nội dung</legend>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                <label className={`cursor-pointer rounded-md p-3 ${usage === MEDIA_USAGE.embed ? ui.choiceActive : ui.choiceIdle}`}>
+                <label className={`cursor-pointer rounded-md p-3 ${usage === MEDIA_USAGE.embed ? adminUi.choiceActive : adminUi.choiceIdle}`}>
                   <input className="sr-only" type="radio" name="mediaUsage" checked={usage === MEDIA_USAGE.embed} onChange={() => setUsage(MEDIA_USAGE.embed)} />
                   <span className="flex items-center gap-2 text-[13px] font-medium"><Icon icon={ImagePlus} />Nhúng ảnh</span>
-                  <span className={`mt-1 block text-[11px] ${ui.body}`}>`![alt](url)`</span>
+                  <span className={`mt-1 block text-[11px] ${adminUi.body}`}>`![alt](url)`</span>
                 </label>
-                <label className={`cursor-pointer rounded-md p-3 ${usage === MEDIA_USAGE.attachment ? ui.choiceActive : ui.choiceIdle}`}>
+                <label className={`cursor-pointer rounded-md p-3 ${usage === MEDIA_USAGE.attachment ? adminUi.choiceActive : adminUi.choiceIdle}`}>
                   <input className="sr-only" type="radio" name="mediaUsage" checked={usage === MEDIA_USAGE.attachment} onChange={() => setUsage(MEDIA_USAGE.attachment)} />
                   <span className="flex items-center gap-2 text-[13px] font-medium"><Icon icon={Paperclip} />Attachment</span>
-                  <span className={`mt-1 block text-[11px] ${ui.body}`}>`[text](url)`</span>
+                  <span className={`mt-1 block text-[11px] ${adminUi.body}`}>`[text](url)`</span>
                 </label>
               </div>
             </fieldset>
@@ -113,7 +113,7 @@ function MediaInsertDialog({ open, disabled, onClose, onInsert }) {
             </div>
           </div>
 
-          <footer className={`flex justify-end gap-2 px-5 py-3 ${ui.hairlineT}`}>
+          <footer className={`flex justify-end gap-2 px-5 py-3 ${adminUi.hairlineT}`}>
             <Button type="button" variant="ghost" onClick={close}>Hủy</Button>
             <Button type="submit" disabled={disabled || !selectedMedia}>{usage === MEDIA_USAGE.embed ? 'Chèn ảnh' : 'Chèn attachment'}</Button>
           </footer>
@@ -153,11 +153,11 @@ export function NotificationMarkdownEditor({
   }
 
   return (
-    <section className={`rounded-lg ${ui.card} p-4`}>
+    <section className={`rounded-lg ${adminUi.card} p-4`}>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className={`font-display text-[16px] font-semibold ${ui.title}`}>Nội dung Markdown</p>
-          <p className={`mt-1 text-[12px] ${ui.body}`}>Chèn ảnh hoặc attachment đúng URL của Media Service.</p>
+          <p className={`font-display text-[16px] font-semibold ${adminUi.title}`}>Nội dung Markdown</p>
+          <p className={`mt-1 text-[12px] ${adminUi.body}`}>Chèn ảnh hoặc attachment đúng URL của Media Service.</p>
         </div>
         <Button size="icon" variant="ghost" aria-label="Thêm media vào Markdown" disabled={disabled} onClick={() => setIsDialogOpen(true)}>
           <Icon icon={ImagePlus} />
@@ -175,7 +175,7 @@ export function NotificationMarkdownEditor({
           selectionRef.current = { start: event.target.selectionStart, end: event.target.selectionEnd }
           onChange(event.target.value)
         }}
-        className={`${ui.control} mt-4 h-48 resize-y py-2`}
+        className={`${adminUi.control} mt-4 h-48 resize-y py-2`}
       />
       <MediaInsertDialog
         open={isDialogOpen}

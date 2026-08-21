@@ -1,9 +1,9 @@
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const variants = {
-  primary: ui.buttonPrimary,
-  ghost: ui.buttonGhost,
-  danger: ui.buttonDanger,
+  primary: adminUi.buttonPrimary,
+  ghost: adminUi.buttonGhost,
+  danger: adminUi.buttonDanger,
 }
 
 const sizes = {

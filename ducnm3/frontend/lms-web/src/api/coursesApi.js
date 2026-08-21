@@ -1,4 +1,5 @@
 import { httpClient } from '@/api/httpClient'
+import { loggedFetch } from '@/api/httpLoggingInterceptors'
 import { unwrapEnvelope } from '@/api/unwrapEnvelope'
 import { API_ROUTES } from '@/constants/apiRoutes'
 
@@ -47,7 +48,7 @@ export async function exportCoursesRequest(query = {}, onProgress) {
   const params = new URLSearchParams()
   if (query.status) params.set('status', query.status)
   if (query.limit != null && query.limit !== '') params.set('limit', String(query.limit))
-  const response = await fetch(`${httpClient.defaults.baseURL}${API_ROUTES.courses.export}${params.size ? `?${params}` : ''}`, { signal: query.signal })
+  const response = await loggedFetch(`${httpClient.defaults.baseURL}${API_ROUTES.courses.export}${params.size ? `?${params}` : ''}`, { signal: query.signal })
   if (!response.ok) throw await response.json()
   const reader = response.body.getReader()
   const chunks = []

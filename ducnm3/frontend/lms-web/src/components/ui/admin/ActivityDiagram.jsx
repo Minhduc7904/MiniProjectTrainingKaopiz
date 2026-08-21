@@ -6,22 +6,22 @@ import {
   resolveActivityRun,
 } from '@/constants/activity'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const nodeClass = {
-  [ACTIVITY_RUN.idle]: ui.diagramIdle,
-  [ACTIVITY_RUN.pending]: ui.diagramPending,
-  [ACTIVITY_RUN.success]: ui.diagramSuccess,
-  [ACTIVITY_RUN.failed]: ui.diagramFailed,
-  [ACTIVITY_RUN.skipped]: ui.diagramSkipped,
+  [ACTIVITY_RUN.idle]: adminUi.diagramIdle,
+  [ACTIVITY_RUN.pending]: adminUi.diagramPending,
+  [ACTIVITY_RUN.success]: adminUi.diagramSuccess,
+  [ACTIVITY_RUN.failed]: adminUi.diagramFailed,
+  [ACTIVITY_RUN.skipped]: adminUi.diagramSkipped,
 }
 
 const edgeClass = {
-  [ACTIVITY_RUN.idle]: ui.diagramEdgeIdle,
-  [ACTIVITY_RUN.pending]: ui.diagramEdgePending,
-  [ACTIVITY_RUN.success]: ui.diagramEdgeSuccess,
-  [ACTIVITY_RUN.failed]: ui.diagramEdgeFailed,
-  [ACTIVITY_RUN.skipped]: ui.diagramEdgeSkipped,
+  [ACTIVITY_RUN.idle]: adminUi.diagramEdgeIdle,
+  [ACTIVITY_RUN.pending]: adminUi.diagramEdgePending,
+  [ACTIVITY_RUN.success]: adminUi.diagramEdgeSuccess,
+  [ACTIVITY_RUN.failed]: adminUi.diagramEdgeFailed,
+  [ACTIVITY_RUN.skipped]: adminUi.diagramEdgeSkipped,
 }
 
 function nodeBox(node) {
@@ -128,7 +128,7 @@ function wrapLabel(label, max = 22) {
 }
 
 function NodeShape({ node, box, status }) {
-  const className = nodeClass[status] ?? ui.diagramIdle
+  const className = nodeClass[status] ?? adminUi.diagramIdle
 
   if (node.kind === ACTIVITY_NODE_KIND.start) {
     return <circle cx={box.cx} cy={box.cy} r={8} className={className} />
@@ -182,22 +182,22 @@ export function ActivityDiagram({ diagram, run }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className={`flex shrink-0 items-center justify-between gap-3 px-5 py-3 ${ui.hairlineB}`}>
+      <div className={`flex shrink-0 items-center justify-between gap-3 px-5 py-3 ${adminUi.hairlineB}`}>
         <div>
-          <p className={`font-mono text-[12px] ${ui.title}`}>
+          <p className={`font-mono text-[12px] ${adminUi.title}`}>
             {diagram.method} {diagram.path}
           </p>
-          <p className={`mt-0.5 text-[12px] ${ui.body}`}>{diagram.title}</p>
+          <p className={`mt-0.5 text-[12px] ${adminUi.body}`}>{diagram.title}</p>
         </div>
         <p
           className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
             run?.error
-              ? ui.badgeDanger
+              ? adminUi.badgeDanger
               : run?.success
-                ? ui.badgeSuccess
+                ? adminUi.badgeSuccess
                 : run?.loading
-                  ? ui.badgeWarning
-                  : ui.badgeMuted
+                  ? adminUi.badgeWarning
+                  : adminUi.badgeMuted
           }`}
         >
           {statusLabel}
@@ -236,7 +236,7 @@ export function ActivityDiagram({ diagram, run }) {
                   width={ACTIVITY_LAYOUT.laneWidth - 8}
                   height={height}
                   rx={10}
-                  className={isFault ? ui.diagramLaneFault : ui.diagramLane}
+                  className={isFault ? adminUi.diagramLaneFault : adminUi.diagramLane}
                 />
                 <text
                   x={x + (ACTIVITY_LAYOUT.laneWidth - 8) / 2}
@@ -266,7 +266,7 @@ export function ActivityDiagram({ diagram, run }) {
                   fill="none"
                   strokeLinecap="round"
                   markerEnd="url(#activity-arrow)"
-                  className={edgeClass[status] ?? ui.diagramEdgeIdle}
+                  className={edgeClass[status] ?? adminUi.diagramEdgeIdle}
                 />
                 {edge.guard ? (
                   <text
@@ -327,10 +327,10 @@ export function ActivityDiagram({ diagram, run }) {
           })}
         </svg>
         {diagram.notes?.empty ? (
-          <p className={`mt-3 text-[12px] ${ui.caption}`}>{diagram.notes.empty}</p>
+          <p className={`mt-3 text-[12px] ${adminUi.caption}`}>{diagram.notes.empty}</p>
         ) : null}
         {run?.error ? (
-          <p className={`mt-2 text-[13px] ${ui.body}`}>
+          <p className={`mt-2 text-[13px] ${adminUi.body}`}>
             {run.error.message}
           </p>
         ) : null}

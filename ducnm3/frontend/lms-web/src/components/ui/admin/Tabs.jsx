@@ -1,9 +1,9 @@
-import { Icon } from '@/components/ui/Icon'
-import { ui } from '@/theme'
+import { Icon } from '@/components/ui/admin/Icon'
+import { adminUi } from '@/theme/admin'
 
 export function Tabs({ tabs, value, onChange }) {
   return (
-    <div role="tablist" className={ui.tabList}>
+    <div role="tablist" className={adminUi.tabList}>
       {tabs.map((tab) => {
         const active = tab.id === value
 
@@ -16,7 +16,7 @@ export function Tabs({ tabs, value, onChange }) {
             onClick={() => onChange(tab.id)}
             className={[
               'inline-flex cursor-pointer items-center gap-1.5 px-3 py-2.5 text-[13px] font-medium',
-              active ? ui.tabActive : ui.tabIdle,
+              active ? adminUi.tabActive : adminUi.tabIdle,
             ].join(' ')}
           >
             {tab.icon ? <Icon icon={tab.icon} /> : null}

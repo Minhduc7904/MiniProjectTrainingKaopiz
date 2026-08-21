@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Braces, Table2, Workflow } from 'lucide-react'
-import { ActivityDiagram } from '@/components/ui/ActivityDiagram'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { JsonView } from '@/components/ui/JsonView'
-import { Tabs } from '@/components/ui/Tabs'
+import { ActivityDiagram } from '@/components/ui/admin/ActivityDiagram'
+import { EmptyState } from '@/components/ui/admin/EmptyState'
+import { JsonView } from '@/components/ui/admin/JsonView'
+import { Tabs } from '@/components/ui/admin/Tabs'
 import { OUTPUT_TAB_LABELS, OUTPUT_TABS } from '@/constants/outputTabs'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 const TABS = [
   { id: OUTPUT_TABS.json, label: OUTPUT_TAB_LABELS[OUTPUT_TABS.json], icon: Braces },
@@ -19,9 +19,9 @@ export function OutputPanel({ json, activity, run, children }) {
 
   return (
     <>
-      <header className={`flex shrink-0 items-center justify-between px-3 ${ui.hairlineB}`}>
+      <header className={`flex shrink-0 items-center justify-between px-3 ${adminUi.hairlineB}`}>
         <p
-          className={`px-2 py-3 font-display text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}
+          className={`px-2 py-3 font-display text-[11px] font-medium tracking-[0.18em] uppercase ${adminUi.eyebrow}`}
         >
           {UI_LABELS.output}
         </p>

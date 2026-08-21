@@ -1,4 +1,4 @@
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (
@@ -6,18 +6,18 @@ export function PageHeader({ eyebrow, title, description, actions }) {
       <div>
         {eyebrow ? (
           <p
-            className={`font-display text-[11px] font-medium tracking-[0.2em] uppercase ${ui.eyebrow}`}
+            className={`font-display text-[11px] font-medium tracking-[0.2em] uppercase ${adminUi.eyebrow}`}
           >
             {eyebrow}
           </p>
         ) : null}
         <h2
-          className={`mt-1 font-display text-[22px] leading-none font-semibold ${ui.title}`}
+          className={`mt-1 font-display text-[22px] leading-none font-semibold ${adminUi.title}`}
         >
           {title}
         </h2>
         {description ? (
-          <p className={`mt-2 max-w-[52ch] text-[14px] ${ui.body}`}>
+          <p className={`mt-2 max-w-[52ch] text-[14px] ${adminUi.body}`}>
             {description}
           </p>
         ) : null}

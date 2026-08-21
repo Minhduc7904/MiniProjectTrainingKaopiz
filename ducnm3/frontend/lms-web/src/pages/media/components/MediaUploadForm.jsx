@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/Button'
-import { FieldLabel, FileInput } from '@/components/ui/Field'
+import { Button } from '@/components/ui/admin/Button'
+import { FieldLabel, FileInput } from '@/components/ui/admin/Field'
 import { POST_MEDIA_FIELDS } from '@/constants/media'
 import { MEDIA_COPY } from '@/constants/mediaCopy'
 import { UI_LABELS } from '@/constants/ui'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 
 export function MediaUploadForm({
   file,
@@ -33,7 +33,7 @@ export function MediaUploadForm({
           />
         </div>
       </div>
-      <div className={`shrink-0 px-5 py-3 ${ui.hairlineT}`}>
+      <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}>
         <Button type="submit" disabled={loading}>
           {UI_LABELS.callApi}
         </Button>

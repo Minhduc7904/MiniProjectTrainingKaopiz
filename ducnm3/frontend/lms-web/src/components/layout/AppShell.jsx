@@ -1,11 +1,11 @@
 import { Sidebar } from '@/components/layout/Sidebar'
 import { LAYOUT } from '@/constants/layout'
-import { ui } from '@/theme'
+import { adminUi } from '@/theme/admin'
 import { Outlet } from 'react-router-dom'
 
 export function AppShell() {
   return (
-    <div className={`h-full ${ui.page}`}>
+    <div className={`h-full ${adminUi.page}`}>
       <Sidebar />
       <main
         className="h-full min-w-0"
