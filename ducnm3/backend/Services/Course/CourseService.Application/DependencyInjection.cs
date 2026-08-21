@@ -10,7 +10,9 @@ using CourseService.Application.UseCases.Lessons.GetDetail;
 using CourseService.Application.UseCases.Lessons.Reorder;
 using CourseService.Application.UseCases.Courses.Create;
 using CourseService.Application.UseCases.Courses.Update;
+using CourseService.Application.Services.Content;
 using CourseService.Application.UseCases.Courses.Delete;
+using CourseService.Application.UseCases.Lessons.Delete;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CourseService.Application;
@@ -20,6 +22,7 @@ public static class DependencyInjection
     public static IServiceCollection AddCourseApplication(this IServiceCollection services)
     {
         services.AddScoped<GetCoursesHandler>();
+        services.AddSingleton<IMarkdownHtmlRenderer, SanitizedMarkdownHtmlRenderer>();
         services.AddScoped<ExportCoursesHandler>();
         services.AddScoped<BufferedCourseExportHandler>();
         services.AddScoped<GetCourseDetailsHandler>();
@@ -27,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<CreateCourseHandler>();
         services.AddScoped<UpdateCourseHandler>();
         services.AddScoped<DeleteCourseHandler>();
+        services.AddScoped<DeleteLessonHandler>();
         services.AddScoped<UpdateLessonHandler>();
         services.AddScoped<GetLessonDetailHandler>();
         services.AddScoped<ReorderLessonsHandler>();

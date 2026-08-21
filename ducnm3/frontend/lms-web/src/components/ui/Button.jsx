@@ -3,6 +3,7 @@ import { ui } from '@/theme'
 const variants = {
   primary: ui.buttonPrimary,
   ghost: ui.buttonGhost,
+  danger: ui.buttonDanger,
 }
 
 const sizes = {

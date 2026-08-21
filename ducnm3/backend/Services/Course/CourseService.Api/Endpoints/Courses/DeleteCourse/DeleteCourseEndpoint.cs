@@ -1,5 +1,5 @@
 using BuildingBlocks.Contracts.Api;
-using CourseService.Api.Endpoints.Courses.CreateCourse;
+using static CourseService.Api.Endpoints.Courses.CreateCourse.CreateCourseEndpoint;
 using CourseService.Application.UseCases.Courses.Delete;
 
 namespace CourseService.Api.Endpoints.Courses.DeleteCourse;

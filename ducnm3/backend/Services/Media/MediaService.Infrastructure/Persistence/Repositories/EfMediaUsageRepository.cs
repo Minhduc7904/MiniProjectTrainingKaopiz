@@ -157,24 +157,20 @@ public sealed class EfMediaUsageRepository(
         }
 
         var distinctOwners = owners.Distinct().ToArray();
-        var ownerServices = distinctOwners.Select(owner => owner.OwnerService).Distinct().ToArray();
-        var ownerTypes = distinctOwners.Select(owner => owner.OwnerType).Distinct().ToArray();
-        var ownerIds = distinctOwners.Select(owner => owner.OwnerId).Distinct().ToArray();
-        var ownerKeys = distinctOwners
-            .Select(owner => (owner.OwnerService, owner.OwnerType, owner.OwnerId))
-            .ToHashSet();
-        var candidates = await dbContext.MediaUsages.AsNoTracking()
-            .Where(item => item.DeletedAt == null &&
-                ownerServices.Contains(item.OwnerService) &&
-                ownerTypes.Contains(item.OwnerType) &&
-                ownerIds.Contains(item.OwnerId))
-            .Select(item => new { item.Id, item.OwnerService, item.OwnerType, item.OwnerId })
-            .ToListAsync(cancellationToken);
-        return candidates
-            .Where(item => ownerKeys.Contains((item.OwnerService, item.OwnerType, item.OwnerId)))
-            .Select(item => item.Id)
-            .Distinct()
-            .ToArray();
+        var usageIds = new HashSet<Guid>();
+        foreach (var owner in distinctOwners)
+        {
+            var ownerUsageIds = await dbContext.MediaUsages.AsNoTracking()
+                .Where(item => item.DeletedAt == null &&
+                    item.OwnerService == owner.OwnerService &&
+                    item.OwnerType == owner.OwnerType &&
+                    item.OwnerId == owner.OwnerId)
+                .Select(item => item.Id)
+                .ToListAsync(cancellationToken);
+            usageIds.UnionWith(ownerUsageIds);
+        }
+
+        return usageIds.ToArray();
     }
 
     public Task<DomainMediaUsage> ReplaceStudentAvatarAsync(

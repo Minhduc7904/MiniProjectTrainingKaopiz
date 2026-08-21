@@ -5,6 +5,7 @@ using CourseService.Api.Contracts.Courses;
 using CourseService.Application.Repositories;
 using CourseService.Application.Services.Media;
 using CourseService.Application.UseCases.Courses.GetDetails;
+using CourseService.Application.Services.Content;
 
 namespace CourseService.Api.Mappers;
 
@@ -19,11 +20,13 @@ public static class CourseResponseMapper
 
     public static CourseDetailsResponse ToDetailsResponse(
         CourseDetailsResult result,
-        CourseMediaSet media) =>
+        CourseMediaSet media,
+        IMarkdownHtmlRenderer markdownRenderer) =>
         new(
             result.Id,
             result.Name,
             result.DescriptionMarkdown,
+            markdownRenderer.Render(result.DescriptionMarkdown),
             result.Status,
             result.CreatedAtUtc,
             ToOptionalMediaResponse(media.Thumbnail),
@@ -32,6 +35,7 @@ public static class CourseResponseMapper
                 lesson.Id,
                 lesson.Title,
                 lesson.ContentMarkdown,
+                markdownRenderer.Render(lesson.ContentMarkdown),
                 lesson.DisplayOrder,
                 lesson.Progresses.Select(progress => new LessonProgressResponse(
                     progress.StudentId,

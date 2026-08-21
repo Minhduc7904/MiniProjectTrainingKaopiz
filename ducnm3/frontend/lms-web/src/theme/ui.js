@@ -54,7 +54,12 @@ export const ui = {
     'bg-accent text-on-accent hover:bg-accent-hover disabled:bg-accent/40',
   buttonGhost:
     'border border-line bg-surface text-fg hover:border-accent hover:text-accent-hover disabled:text-fg-subtle',
+  buttonDanger: 'bg-danger text-on-accent hover:bg-danger/85 disabled:bg-danger/40',
   modal: 'fixed inset-0 m-auto max-h-[calc(100svh-2rem)] w-[min(100%-2rem,32rem)] overflow-y-auto rounded-lg border border-line bg-surface p-0 text-fg shadow-[0_12px_32px_color-mix(in_oklab,var(--color-fg)_18%,transparent)] backdrop:bg-fg/20',
+  confirmInfo: 'bg-accent-soft text-accent-hover',
+  confirmWarning: 'bg-warning-soft text-warning',
+  confirmDelete: 'bg-danger-soft text-danger',
+  markdown: 'course-markdown text-[14px] leading-6 text-fg-muted',
   mediaStage: 'bg-fg',
   mediaAction: 'bg-fg/65 text-on-accent',
   choiceIdle: 'border border-line bg-surface text-fg-muted hover:border-accent',

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, File, FileText, GripVertical, Image, ImagePlus, Music2, Pencil, Plus, Trash2, Video } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
@@ -15,9 +15,11 @@ import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
 import { MediaLibraryModal } from '@/components/media/MediaLibraryModal'
 import { MediaPreviewModal } from '@/components/media/MediaPreviewModal'
 import { createMediaUsageRequest, createMediaUsagesBatchRequest, removeMediaUsageRequest, reorderMediaUsagesRequest } from '@/api/mediaApi'
-import { createCourseLessonRequest, createCourseRequest, fetchCourseLessonDetailRequest, reorderCourseLessonsRequest, updateCourseLessonRequest, updateCourseRequest } from '@/api/coursesApi'
+import { createCourseLessonRequest, createCourseRequest, deleteCourseLessonRequest, deleteCourseRequest, fetchCourseLessonDetailRequest, reorderCourseLessonsRequest, updateCourseLessonRequest, updateCourseRequest } from '@/api/coursesApi'
 import { RightPanel } from '@/components/layout/RightPanel'
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor'
+import { RenderedMarkdown } from '@/components/markdown/RenderedMarkdown'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseDetails, fetchCoursesList } from '@/features/courses/coursesSlice'
 import { APP_ROUTES } from '@/constants/appRoutes'
@@ -28,9 +30,12 @@ import { GET_COURSES_ACTIVITY } from '@/constants/activities/getCourses'
 import { ui } from '@/theme'
 import { buildChangedPayload } from '@/pages/courses/courseUpdatePayload'
 import { buildCourseCreatePayload, COURSE_CREATE_INITIAL_FORM, isCourseCreateFormValid } from '@/pages/courses/courseCreatePayload'
+import { createLessonDeleteConfirmation } from '@/pages/courses/courseLessonDeleteConfirmation'
+import { canLoadSelectedLessonDetail } from '@/pages/courses/courseLessonSelection'
 
 export function CourseDetailPage() {
   const { courseId } = useParams()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const detail = useSelector((state) => state.courses.detail)
   const [mediaMode, setMediaMode] = useState(null)
@@ -60,6 +65,8 @@ export function CourseDetailPage() {
   const [lessonMediaSaving, setLessonMediaSaving] = useState(false)
   const [lessonMediaError, setLessonMediaError] = useState(null)
   const [previewMedia, setPreviewMedia] = useState(null)
+  const [confirm, setConfirm] = useState(null)
+  const [deleting, setDeleting] = useState(false)
   useEffect(() => { dispatch(fetchCourseDetails(courseId)) }, [dispatch, courseId])
   useEffect(() => { setSelectedGalleryIndex(0) }, [courseId, detail.data?.gallery?.length])
   useEffect(() => {
@@ -67,15 +74,16 @@ export function CourseDetailPage() {
     setSelectedLessonId((current) => detail.data?.lessons?.some((lesson) => lesson.id === current) ? current : firstLessonId)
   }, [detail.data?.lessons])
   useEffect(() => {
-    if (!selectedLessonId) {
+    if (!canLoadSelectedLessonDetail(detail.data, courseId, selectedLessonId)) {
       setSelectedLessonDetail(null)
+      setSelectedLessonLoading(false)
       return undefined
     }
     let active = true
     setSelectedLessonLoading(true)
     setLessonMediaError(null)
     fetchCourseLessonDetailRequest(courseId, selectedLessonId)
-      .then(({ data }) => { if (active) setSelectedLessonDetail(data) })
+      .then(({ data }) => { if (active) setSelectedLessonDetail({ ...data, contentMarkdown: <RenderedMarkdown html={data.contentHtml} emptyLabel="Lesson chưa có nội dung." /> }) })
       .catch((error) => {
         if (active) {
           setSelectedLessonDetail(null)
@@ -84,7 +92,7 @@ export function CourseDetailPage() {
       })
       .finally(() => { if (active) setSelectedLessonLoading(false) })
     return () => { active = false }
-  }, [courseId, selectedLessonId])
+  }, [courseId, detail.data, selectedLessonId])
 
   if (detail.loading) return <main className={`min-h-svh p-8 ${ui.page}`}><LoadingState label="Đang tải khóa học..." /></main>
   if (detail.error) return <main className={`min-h-svh p-8 ${ui.page}`}><EmptyState title="Không tải được khóa học" description={detail.error.message} /></main>
@@ -203,6 +211,16 @@ export function CourseDetailPage() {
       setCourseSaving(false)
     }
   }
+  const deleteCourse = async () => {
+    setDeleting(true)
+    try {
+      await deleteCourseRequest(courseId)
+      navigate(APP_ROUTES.courses)
+    } catch (error) {
+      setCourseError(error?.message ?? 'Không thể xóa khóa học.')
+      setConfirm(null)
+    } finally { setDeleting(false) }
+  }
   const openLessonEditor = async (lessonId) => {
     setLessonEditError(null)
     setLessonEdit({ loading: true })
@@ -225,11 +243,26 @@ export function CourseDetailPage() {
       await updateCourseLessonRequest(courseId, lessonEdit.id, payload)
       setLessonEdit(null)
       dispatch(fetchCourseDetails(courseId))
+      const { data } = await fetchCourseLessonDetailRequest(courseId, lessonEdit.id)
+      setSelectedLessonDetail({ ...data, contentMarkdown: <RenderedMarkdown html={data.contentHtml} emptyLabel="Lesson chưa có nội dung." /> })
     } catch (error) {
       setLessonEditError(error?.message ?? 'Không thể cập nhật lesson.')
     } finally {
       setLessonEditSaving(false)
     }
+  }
+  const deleteLesson = async (lessonId) => {
+    setDeleting(true)
+    try {
+      await deleteCourseLessonRequest(courseId, lessonId)
+      setSelectedLessonId(null)
+      setSelectedLessonDetail(null)
+      setConfirm(null)
+      dispatch(fetchCourseDetails(courseId))
+    } catch (error) {
+      setLessonMediaError(error?.message ?? 'Không thể xóa lesson.')
+      setConfirm(null)
+    } finally { setDeleting(false) }
   }
   const reorderLessons = async (targetIndex) => {
     if (draggedLessonIndex === null || draggedLessonIndex === targetIndex) return
@@ -263,7 +296,7 @@ export function CourseDetailPage() {
       })))
       setLessonMediaOpen(false)
       const { data } = await fetchCourseLessonDetailRequest(courseId, selectedLessonId)
-      setSelectedLessonDetail(data)
+      setSelectedLessonDetail({ ...data, contentMarkdown: <RenderedMarkdown html={data.contentHtml} emptyLabel="Lesson chưa có nội dung." /> })
     } catch (error) {
       setLessonMediaError(error?.message ?? 'Không thể gắn media vào lesson.')
     } finally {
@@ -276,7 +309,7 @@ export function CourseDetailPage() {
     try {
       await removeMediaUsageRequest(usageId)
       const { data } = await fetchCourseLessonDetailRequest(courseId, selectedLessonId)
-      setSelectedLessonDetail(data)
+      setSelectedLessonDetail({ ...data, contentMarkdown: <RenderedMarkdown html={data.contentHtml} emptyLabel="Lesson chưa có nội dung." /> })
     } catch (error) {
       setLessonMediaError(error?.message ?? 'Không thể gỡ media khỏi lesson.')
     } finally {
@@ -314,8 +347,8 @@ export function CourseDetailPage() {
                 <div className="min-w-0">
                   <p className={`text-[11px] font-medium tracking-[0.2em] uppercase ${ui.eyebrow}`}>Course detail</p>
                   <h1 className={`mt-2 max-w-3xl font-display text-[30px] font-semibold leading-tight ${ui.title}`}>{course.name}</h1>
-                  <div className="mt-3 flex flex-wrap items-center gap-3"><Dropdown value={course.status} disabled={courseSaving} options={Object.values(COURSE_STATUS).map((value) => ({ value, label: COURSE_STATUS_LABELS[value] }))} triggerClassName={`${course.status === COURSE_STATUS.draft ? ui.statusDraft : course.status === COURSE_STATUS.published ? ui.statusPublished : ui.statusArchived} h-8 min-w-[150px] px-3 text-[12px] font-medium`} onChange={async (status) => { if (status === course.status) return; setCourseSaving(true); try { await updateCourseRequest(courseId, { status }); dispatch(fetchCourseDetails(courseId)) } catch (error) { setCourseError(error?.message ?? 'Không thể cập nhật trạng thái khóa học.') } finally { setCourseSaving(false) } }} /><p className={`text-[14px] ${ui.body}`}>Tạo ngày {new Date(course.createdAtUtc).toLocaleDateString('vi-VN')}</p><Button type="button" size="sm" variant="ghost" onClick={openCourseEditor}><Icon icon={Pencil} size={15} />Chỉnh sửa</Button></div>
-                  {course.descriptionMarkdown ? <p className={`mt-5 max-w-2xl whitespace-pre-wrap text-[14px] leading-6 ${ui.body}`}>{course.descriptionMarkdown}</p> : null}
+                  <div className="mt-3 flex flex-wrap items-center gap-3"><Dropdown value={course.status} disabled={courseSaving} options={Object.values(COURSE_STATUS).map((value) => ({ value, label: COURSE_STATUS_LABELS[value] }))} triggerClassName={`${course.status === COURSE_STATUS.draft ? ui.statusDraft : course.status === COURSE_STATUS.published ? ui.statusPublished : ui.statusArchived} h-8 min-w-[150px] px-3 text-[12px] font-medium`} onChange={async (status) => { if (status === course.status) return; setCourseSaving(true); try { await updateCourseRequest(courseId, { status }); dispatch(fetchCourseDetails(courseId)) } catch (error) { setCourseError(error?.message ?? 'Không thể cập nhật trạng thái khóa học.') } finally { setCourseSaving(false) } }} /><p className={`text-[14px] ${ui.body}`}>Tạo ngày {new Date(course.createdAtUtc).toLocaleDateString('vi-VN')}</p><Button type="button" size="sm" variant="ghost" onClick={openCourseEditor}><Icon icon={Pencil} size={15} />Chỉnh sửa</Button><Button type="button" size="sm" variant="danger" onClick={() => setConfirm({ kind: 'course', title: 'Xóa khóa học?', description: `Khóa học “${course.name}”, toàn bộ lesson và media usage liên quan sẽ bị xóa.` })}><Icon icon={Trash2} size={15} />Xóa</Button></div>
+                  <div className="mt-5 max-w-2xl"><RenderedMarkdown html={course.descriptionHtml} emptyLabel="Chưa có mô tả." /></div>
                 </div>
               </section>
 
@@ -332,7 +365,7 @@ export function CourseDetailPage() {
                 {mediaError ? <p className={`mt-3 rounded-md px-3 py-2 text-[12px] ${ui.badgeDanger}`}>{mediaError}</p> : null}
               </section>
 
-              <section className="mt-10 pb-8"><div className="flex items-end justify-between gap-4"><div><p className={`text-[11px] font-medium tracking-[0.2em] uppercase ${ui.eyebrow}`}>Course content</p><h2 className={`mt-1 font-display text-[22px] font-semibold ${ui.title}`}>Lessons</h2><p className={`mt-1 text-[12px] ${ui.caption}`}>Chọn lesson để xem nội dung; kéo biểu tượng chấm để đổi thứ tự.</p></div><Button type="button" onClick={() => { setLessonError(null); setLessonPanelOpen(true) }}><Icon icon={Plus} />Thêm lesson</Button></div><div className="mt-4 grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className={`overflow-hidden rounded-lg ${ui.card}`} aria-label="Danh sách lesson">{course.lessons.map((lesson, index) => <div key={lesson.id} onDragOver={(event) => event.preventDefault()} onDrop={() => void reorderLessons(index)} className={`flex items-center gap-1 border-b border-line last:border-b-0 ${selectedLessonId === lesson.id ? 'bg-accent-soft' : ''}`}><button type="button" draggable={!reorderingLessons} aria-label={`Kéo ${lesson.title} để đổi thứ tự`} onDragStart={() => setDraggedLessonIndex(index)} onDragEnd={() => setDraggedLessonIndex(null)} className={`cursor-grab p-3 ${ui.caption} active:cursor-grabbing ${draggedLessonIndex === index ? 'opacity-40' : ''}`}><Icon icon={GripVertical} size={17} /></button><button type="button" onClick={() => setSelectedLessonId(lesson.id)} className={`min-w-0 flex-1 px-1 py-3 text-left ${selectedLessonId === lesson.id ? ui.title : ui.body}`}><span className={`mr-2 font-mono text-[11px] ${ui.caption}`}>{String(index + 1).padStart(2, '0')}</span><span className="text-[13px] font-medium">{lesson.title}</span></button></div>)}{!course.lessons.length ? <p className={`p-4 text-[13px] ${ui.body}`}>Chưa có lesson.</p> : null}</aside><div className={`min-h-[360px] rounded-lg p-5 ${ui.card}`}>{selectedLessonLoading ? <LoadingState label="Đang tải nội dung lesson..." /> : selectedLessonDetail ? <><div className="flex items-start justify-between gap-3"><div><p className={`text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>Lesson {String(course.lessons.findIndex((lesson) => lesson.id === selectedLessonId) + 1).padStart(2, '0')}</p><h3 className={`mt-1 font-display text-[20px] font-semibold ${ui.title}`}>{selectedLessonDetail.title}</h3></div><Button type="button" size="sm" variant="ghost" onClick={() => void openLessonEditor(selectedLessonDetail.id)}><Icon icon={Pencil} size={15} />Sửa</Button></div><div className={`mt-5 whitespace-pre-wrap text-[14px] leading-6 ${ui.body}`}>{selectedLessonDetail.contentMarkdown || 'Lesson chưa có nội dung.'}</div><div className={`mt-7 pt-5 ${ui.hairlineT}`}><div className="flex items-center justify-between gap-3"><div><p className={`text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>Media đính kèm</p><p className={`mt-1 text-[12px] ${ui.caption}`}>Hỗ trợ ảnh, video, audio, tài liệu và tệp khác.</p></div><Button type="button" size="sm" disabled={lessonMediaSaving} onClick={() => setLessonMediaOpen(true)}><Icon icon={ImagePlus} size={15} />Thêm tài liệu</Button></div>{selectedLessonDetail.attachments?.length ? <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{selectedLessonDetail.attachments.map((media) => { const MediaIcon = lessonMediaIcon(media.mediaType); const previewUrl = media.thumbnailUrl || (media.mediaType === 'IMAGE' ? media.contentUrl : null); return <article key={media.usageId} className={`group relative overflow-hidden rounded-md ${ui.choiceIdle}`}><button type="button" className="w-full cursor-pointer text-left" aria-label={`Xem trước ${media.originalFileName}`} onClick={() => setPreviewMedia(media)}><div className="aspect-video bg-surface-muted">{previewUrl ? <MediaImagePreview contentUrl={previewUrl} alt={media.originalFileName} /> : <div className={`flex h-full flex-col items-center justify-center gap-2 ${ui.caption}`}><Icon icon={MediaIcon} size={30} /><span className="text-[11px]">{media.mediaType}</span></div>}</div><div className="min-w-0 p-3"><p className={`truncate text-[12px] font-medium ${ui.title}`}>{media.originalFileName}</p><p className={`mt-1 text-[11px] ${ui.caption}`}>{media.mediaType} · {media.contentType}</p></div></button><button type="button" aria-label={`Gỡ ${media.originalFileName}`} disabled={lessonMediaSaving} onClick={(event) => { event.stopPropagation(); void removeLessonMedia(media.usageId) }} className={`absolute right-2 top-2 rounded-full p-1.5 opacity-0 transition group-hover:opacity-100 focus:opacity-100 ${ui.mediaAction}`}><Icon icon={Trash2} size={14} /></button></article> })}</div> : <p className={`mt-4 rounded-md border border-dashed p-4 text-[13px] ${ui.body}`}>Chưa có media đính kèm.</p>}{lessonMediaError ? <p className={`mt-3 rounded-md px-3 py-2 text-[12px] ${ui.badgeDanger}`}>{lessonMediaError}</p> : null}</div></> : <EmptyState title="Chọn một lesson" description="Nội dung và media đính kèm sẽ hiển thị tại đây." />}</div></div></section>
+              <section className="mt-10 pb-8"><div className="flex items-end justify-between gap-4"><div><p className={`text-[11px] font-medium tracking-[0.2em] uppercase ${ui.eyebrow}`}>Course content</p><h2 className={`mt-1 font-display text-[22px] font-semibold ${ui.title}`}>Lessons</h2><p className={`mt-1 text-[12px] ${ui.caption}`}>Chọn lesson để xem nội dung; kéo biểu tượng chấm để đổi thứ tự.</p></div><Button type="button" onClick={() => { setLessonError(null); setLessonPanelOpen(true) }}><Icon icon={Plus} />Thêm lesson</Button></div><div className="mt-4 grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className={`overflow-hidden rounded-lg ${ui.card}`} aria-label="Danh sách lesson">{course.lessons.map((lesson, index) => <div key={lesson.id} onDragOver={(event) => event.preventDefault()} onDrop={() => void reorderLessons(index)} className={`flex items-center gap-1 border-b border-line last:border-b-0 ${selectedLessonId === lesson.id ? 'bg-accent-soft' : ''}`}><button type="button" draggable={!reorderingLessons} aria-label={`Kéo ${lesson.title} để đổi thứ tự`} onDragStart={() => setDraggedLessonIndex(index)} onDragEnd={() => setDraggedLessonIndex(null)} className={`cursor-grab p-3 ${ui.caption} active:cursor-grabbing ${draggedLessonIndex === index ? 'opacity-40' : ''}`}><Icon icon={GripVertical} size={17} /></button><button type="button" onClick={() => setSelectedLessonId(lesson.id)} className={`min-w-0 flex-1 px-1 py-3 text-left ${selectedLessonId === lesson.id ? ui.title : ui.body}`}><span className={`mr-2 font-mono text-[11px] ${ui.caption}`}>{String(index + 1).padStart(2, '0')}</span><span className="text-[13px] font-medium">{lesson.title}</span></button></div>)}{!course.lessons.length ? <p className={`p-4 text-[13px] ${ui.body}`}>Chưa có lesson.</p> : null}</aside><div className={`min-h-[360px] rounded-lg p-5 ${ui.card}`}>{selectedLessonLoading ? <LoadingState label="Đang tải nội dung lesson..." /> : selectedLessonDetail ? <><div className="flex items-start justify-between gap-3"><div><p className={`text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>Lesson {String(course.lessons.findIndex((lesson) => lesson.id === selectedLessonId) + 1).padStart(2, '0')}</p><h3 className={`mt-1 font-display text-[20px] font-semibold ${ui.title}`}>{selectedLessonDetail.title}</h3></div><div className="flex shrink-0 items-center gap-2"><Button type="button" size="sm" variant="ghost" onClick={() => void openLessonEditor(selectedLessonDetail.id)}><Icon icon={Pencil} size={15} />Sửa</Button><Button type="button" size="sm" variant="danger" onClick={() => setConfirm(createLessonDeleteConfirmation(selectedLessonDetail))}><Icon icon={Trash2} size={15} />Xóa lesson</Button></div></div><div className={`mt-5 whitespace-pre-wrap text-[14px] leading-6 ${ui.body}`}>{selectedLessonDetail.contentMarkdown || 'Lesson chưa có nội dung.'}</div><div className={`mt-7 pt-5 ${ui.hairlineT}`}><div className="flex items-center justify-between gap-3"><div><p className={`text-[11px] font-medium tracking-[0.18em] uppercase ${ui.eyebrow}`}>Media đính kèm</p><p className={`mt-1 text-[12px] ${ui.caption}`}>Hỗ trợ ảnh, video, audio, tài liệu và tệp khác.</p></div><Button type="button" size="sm" disabled={lessonMediaSaving} onClick={() => setLessonMediaOpen(true)}><Icon icon={ImagePlus} size={15} />Thêm tài liệu</Button></div>{selectedLessonDetail.attachments?.length ? <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{selectedLessonDetail.attachments.map((media) => { const MediaIcon = lessonMediaIcon(media.mediaType); const previewUrl = media.thumbnailUrl || (media.mediaType === 'IMAGE' ? media.contentUrl : null); return <article key={media.usageId} className={`group relative overflow-hidden rounded-md ${ui.choiceIdle}`}><button type="button" className="w-full cursor-pointer text-left" aria-label={`Xem trước ${media.originalFileName}`} onClick={() => setPreviewMedia(media)}><div className="aspect-video bg-surface-muted">{previewUrl ? <MediaImagePreview contentUrl={previewUrl} alt={media.originalFileName} /> : <div className={`flex h-full flex-col items-center justify-center gap-2 ${ui.caption}`}><Icon icon={MediaIcon} size={30} /><span className="text-[11px]">{media.mediaType}</span></div>}</div><div className="min-w-0 p-3"><p className={`truncate text-[12px] font-medium ${ui.title}`}>{media.originalFileName}</p><p className={`mt-1 text-[11px] ${ui.caption}`}>{media.mediaType} · {media.contentType}</p></div></button><button type="button" aria-label={`Gỡ ${media.originalFileName}`} disabled={lessonMediaSaving} onClick={(event) => { event.stopPropagation(); void removeLessonMedia(media.usageId) }} className={`absolute right-2 top-2 rounded-full p-1.5 opacity-0 transition group-hover:opacity-100 focus:opacity-100 ${ui.mediaAction}`}><Icon icon={Trash2} size={14} /></button></article> })}</div> : <p className={`mt-4 rounded-md border border-dashed p-4 text-[13px] ${ui.body}`}>Chưa có media đính kèm.</p>}{lessonMediaError ? <p className={`mt-3 rounded-md px-3 py-2 text-[12px] ${ui.badgeDanger}`}>{lessonMediaError}</p> : null}</div></> : <EmptyState title="Chọn một lesson" description="Nội dung và media đính kèm sẽ hiển thị tại đây." />}</div></div></section>
             </div>
       <RightPanel open={lessonPanelOpen} title="Thêm lesson" description={`Lesson mới sẽ được thêm vào cuối khóa học.`} onClose={() => { if (!lessonSaving) setLessonPanelOpen(false) }} footer={<div className="flex justify-end gap-2"><Button type="button" variant="ghost" disabled={lessonSaving} onClick={() => setLessonPanelOpen(false)}>Hủy</Button><Button type="submit" form="create-lesson-form" disabled={lessonSaving || !lessonForm.title.trim()}>Lưu lesson</Button></div>}>
         <form id="create-lesson-form" className="space-y-4" onSubmit={submitLesson}>
@@ -349,7 +382,7 @@ export function CourseDetailPage() {
           {courseError ? <p className={`rounded-md px-3 py-2 text-[12px] ${ui.badgeDanger}`}>{courseError}</p> : null}
         </form>
       </RightPanel>
-      <RightPanel open={lessonEdit !== null} title="Chỉnh sửa lesson" description={lessonEdit?.loading ? 'Đang tải chi tiết lesson...' : 'Chỉ các trường đã thay đổi mới được gửi.'} onClose={() => { if (!lessonEditSaving) setLessonEdit(null) }} footer={lessonEdit?.loading ? null : <div className="flex justify-end gap-2"><Button type="button" variant="ghost" disabled={lessonEditSaving} onClick={() => setLessonEdit(null)}>Hủy</Button><Button type="submit" form="update-lesson-form" disabled={lessonEditSaving}>Lưu thay đổi</Button></div>}>
+      <RightPanel open={lessonEdit !== null} title="Chỉnh sửa lesson" description={lessonEdit?.loading ? 'Đang tải chi tiết lesson...' : 'Chỉ các trường đã thay đổi mới được gửi.'} onClose={() => { if (!lessonEditSaving) setLessonEdit(null) }} footer={lessonEdit?.loading ? null : <div className="flex justify-end gap-2"><Button type="button" variant="danger" disabled={lessonEditSaving} onClick={() => setConfirm(createLessonDeleteConfirmation({ id: lessonEdit.id, title: lessonEdit.form.title }))}>Xóa</Button><Button type="button" variant="ghost" disabled={lessonEditSaving} onClick={() => setLessonEdit(null)}>Hủy</Button><Button type="submit" form="update-lesson-form" disabled={lessonEditSaving}>Lưu thay đổi</Button></div>}>
         {lessonEdit?.loading ? <LoadingState label="Đang tải lesson..." /> : lessonEdit?.form ? <form id="update-lesson-form" className="space-y-4" onSubmit={submitLessonUpdate}>
           <label className={`block text-[13px] ${ui.body}`}>Tiêu đề lesson<input className={`${ui.control} mt-1 w-full py-2`} maxLength={200} value={lessonEdit.form.title} onChange={(event) => setLessonEdit((current) => ({ ...current, form: { ...current.form, title: event.target.value } }))} /></label>
           <MarkdownEditor id="lesson-content-markdown" value={lessonEdit.form.contentMarkdown} disabled={lessonEditSaving} onChange={(contentMarkdown) => setLessonEdit((current) => ({ ...current, form: { ...current.form, contentMarkdown } }))} placeholder="Nội dung Markdown (để trống để xóa)" />
@@ -375,6 +408,7 @@ export function CourseDetailPage() {
         media={previewMedia}
         onClose={() => setPreviewMedia(null)}
       />
+      <ConfirmModal open={confirm !== null} mode="delete" title={confirm?.title} description={confirm?.description} confirmLabel="Xóa" busy={deleting} onClose={() => setConfirm(null)} onConfirm={() => { if (confirm?.kind === 'course') void deleteCourse(); if (confirm?.kind === 'lesson') void deleteLesson(confirm.lessonId) }} />
     </main>
   )
 }

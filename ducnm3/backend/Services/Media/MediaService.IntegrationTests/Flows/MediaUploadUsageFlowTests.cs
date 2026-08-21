@@ -8,6 +8,7 @@ using BuildingBlocks.DatabaseMigration;
 using BuildingBlocks.Messaging.Abstractions;
 using MediaService.Application;
 using MediaService.Application.Common.Errors;
+using MediaService.Application.Repositories;
 using MediaService.Application.Services.Actors;
 using MediaService.Application.Services.Storage;
 using MediaService.Application.Services.Students;
@@ -134,6 +135,42 @@ public sealed class MediaUploadUsageFlowTests
                 Is.EqualTo(new DateTime(2026, 8, 16, 4, 0, 0, DateTimeKind.Utc)));
             Assert.That(indexColumnCount, Is.EqualTo(4));
         });
+    }
+
+    [Test]
+    public async Task GetActiveUsageIdsByOwnersAsync_MultipleOwnerScopes_ReturnsOnlyExactActiveUsageIds()
+    {
+        var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                mysql.GetConnectionString(),
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        var courseId = Guid.NewGuid();
+        var lessonId = Guid.NewGuid();
+        var courseUsageId = Guid.NewGuid();
+        var lessonUsageId = Guid.NewGuid();
+        var unrelatedUsageId = Guid.NewGuid();
+
+        await using (var setupContext = new MediaDbContext(dbOptions))
+        {
+            setupContext.MediaUsages.AddRange(
+                CreateUsage(courseUsageId, courseId, "COURSE", "COURSE_THUMBNAIL"),
+                CreateUsage(lessonUsageId, lessonId, "COURSE", "LESSON_ATTACHMENT"),
+                CreateUsage(unrelatedUsageId, courseId, "STUDENT", "STUDENT_AVATAR"));
+            await setupContext.SaveChangesAsync();
+        }
+
+        await using var queryContext = new MediaDbContext(dbOptions);
+        var repository = new EfMediaUsageRepository(queryContext, TimeProvider.System);
+
+        var result = await repository.GetActiveUsageIdsByOwnersAsync(
+            [
+                new MediaUsageOwnerScope("COURSE", "COURSE_THUMBNAIL", courseId),
+                new MediaUsageOwnerScope("COURSE", "LESSON_ATTACHMENT", lessonId),
+            ],
+            TestContext.CurrentContext.CancellationToken);
+
+        Assert.That(result, Is.EquivalentTo([courseUsageId, lessonUsageId]));
     }
 
     [OneTimeTearDown]
@@ -470,6 +507,25 @@ public sealed class MediaUploadUsageFlowTests
             MediaUsageTypes.Avatar,
             0,
             new ActorReference(ActorTypes.Student, actorId));
+
+    private static MediaService.Infrastructure.Persistence.Scaffolded.MediaUsage CreateUsage(
+        Guid usageId,
+        Guid ownerId,
+        string ownerService,
+        string ownerType) =>
+        new()
+        {
+            Id = usageId,
+            MediaId = LegacyUsedMediaId,
+            OwnerId = ownerId,
+            OwnerService = ownerService,
+            OwnerType = ownerType,
+            UsageType = "ATTACHMENT",
+            DisplayOrder = 0,
+            CreatedBy = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+            CreatedByType = ActorTypes.Student,
+            CreatedAt = DateTime.UtcNow,
+        };
 
     private static MinioStorageOptions CreateStorageOptions(string endpoint) =>
         new()

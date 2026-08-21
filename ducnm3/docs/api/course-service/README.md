@@ -7,6 +7,7 @@
 - [Tạo bài học](endpoints/post-course-lessons.md)
 - [Cập nhật Course](endpoints/put-course.md)
 - [Xóa Course](endpoints/delete-course.md)
+- [Xóa Lesson](endpoints/delete-course-lesson.md)
 - [Cập nhật Lesson](endpoints/put-course-lesson.md)
 - [Lấy chi tiết Lesson](endpoints/get-course-lesson-by-id.md)
 - [Đổi thứ tự Lessons](endpoints/put-course-lessons-reorder.md)

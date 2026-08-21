@@ -4,6 +4,12 @@ namespace CourseService.Application.Services.Media;
 
 public static class CourseMediaUsageScopes
 {
+    public static IReadOnlyList<CourseMediaUsageOwnerScope> ForLesson(Guid lessonId) =>
+    [
+        new(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.LessonContent, lessonId),
+        new(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.LessonAttachment, lessonId),
+    ];
+
     public static IReadOnlyList<CourseMediaUsageOwnerScope> ForCourse(
         Guid courseId,
         IReadOnlyList<Guid> lessonIds)
@@ -14,11 +20,7 @@ public static class CourseMediaUsageScopes
             new(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.CourseThumbnail, courseId),
             new(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.CourseGallery, courseId),
         };
-        scopes.AddRange(lessonIds.SelectMany(lessonId => new[]
-        {
-            new CourseMediaUsageOwnerScope(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.LessonContent, lessonId),
-            new CourseMediaUsageOwnerScope(MarkdownMediaUsageOwnerServices.Course, MarkdownMediaUsageOwnerTypes.LessonAttachment, lessonId),
-        }));
+        scopes.AddRange(lessonIds.SelectMany(ForLesson));
         return scopes;
     }
 }

@@ -14,6 +14,7 @@ public interface ILessonCommandRepository
     Task<LessonCreateRecord?> UpdateAsync(Guid courseId, Guid lessonId, string title, string? contentMarkdown, CancellationToken cancellationToken);
 
     Task<bool> ReorderAsync(Guid courseId, IReadOnlyList<Guid> lessonIds, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid courseId, Guid lessonId, CancellationToken cancellationToken);
 }
 
 public sealed record LessonCreateRecord(

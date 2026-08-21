@@ -23,12 +23,20 @@ export async function updateCourseRequest(courseId, payload) {
   return unwrapEnvelope(await httpClient.put(API_ROUTES.courses.byId(courseId), payload))
 }
 
+export async function deleteCourseRequest(courseId) {
+  await httpClient.delete(API_ROUTES.courses.byId(courseId))
+}
+
 export async function fetchCourseLessonDetailRequest(courseId, lessonId) {
   return unwrapEnvelope(await httpClient.get(API_ROUTES.courses.lessonById(courseId, lessonId)))
 }
 
 export async function updateCourseLessonRequest(courseId, lessonId, payload) {
   return unwrapEnvelope(await httpClient.put(API_ROUTES.courses.lessonById(courseId, lessonId), payload))
+}
+
+export async function deleteCourseLessonRequest(courseId, lessonId) {
+  await httpClient.delete(API_ROUTES.courses.lessonById(courseId, lessonId))
 }
 
 export async function reorderCourseLessonsRequest(courseId, lessonIds) {

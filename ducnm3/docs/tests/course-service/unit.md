@@ -21,6 +21,7 @@ dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTe
 | Export CSV | Test `CsvRowWriter`, export query/chunk và handler với repository double. | BOM/header đúng, escaping RFC 4180, status được validate và export chỉ gọi chunk reader với cancellation token. |
 | `HandleAsyncCreatesDraftAndSynchronizesMediaEmbeddedInDescription` | Gọi `CreateCourseHandler` với tên có khoảng trắng và Markdown image Media public. | Handler trim tên, luôn gọi repository với `DRAFT` và gửi đúng command `COURSE_DESCRIPTION` đến Media Service. |
 | `HandleAsync_ExistingCourse_DeletesAggregateAndQueuesEveryUsageId` | Repository double trả một Lesson và Media reader trả usage của Course/Lesson. | Handler snapshot đủ năm owner scope, hard-delete Course rồi gửi một `DeleteMediaUsagesByIdsV1` chứa toàn bộ usage ID. |
+| `Render_RelativeMediaContentPath_PrefixesConfiguredGatewayPublicBaseUrl` | Renderer nhận Markdown image với URL Media tương đối và biến môi trường Gateway cố định. | HTML trả về có `img src` tuyệt đối, bắt đầu bằng `Gateway__PublicBaseUrl`. |
 | Course details (cần bổ sung) | Repository có path batch và path N+1 riêng. | Handler chỉ gọi path batch không N+1; component test xác nhận `400` với UUID sai và `404` khi không có Course. |
 
 Ca này bảo đảm thao tác tắt/hủy yêu cầu được tôn trọng. Nó không kiểm tra tính

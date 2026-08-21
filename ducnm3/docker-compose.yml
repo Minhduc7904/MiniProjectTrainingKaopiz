@@ -153,6 +153,7 @@ services:
       ConnectionStrings__Database: ${COURSE_DB_CONNECTION_STRING:?COURSE_DB_CONNECTION_STRING must be set}
       ServiceEndpoints__student-service: http://student-service:8080/
       ServiceEndpoints__media-service: http://media-service:8080/
+      Gateway__PublicBaseUrl: ${GATEWAY_PUBLIC_BASE_URL:-http://localhost:5100}
     ports:
       - "5101:8080"
 

@@ -15,6 +15,7 @@ public sealed record CourseDetailsResponse(
     Guid Id,
     string Name,
     string? DescriptionMarkdown,
+    string? DescriptionHtml,
     string Status,
     DateTime CreatedAtUtc,
     CourseMediaResponse? Thumbnail,
@@ -25,6 +26,7 @@ public sealed record LessonDetailsResponse(
     Guid Id,
     string Title,
     string? ContentMarkdown,
+    string? ContentHtml,
     uint DisplayOrder,
     IReadOnlyList<LessonProgressResponse> Progresses);
 

@@ -35,6 +35,17 @@ public sealed class EfLessonCommandRepository(CourseDbContext db) : ILessonComma
         return true;
     }
 
+    public async Task<bool> DeleteAsync(Guid courseId, Guid lessonId, CancellationToken cancellationToken)
+    {
+        var lesson = await db.Lessons.SingleOrDefaultAsync(
+            item => item.CourseId == courseId && item.Id == lessonId,
+            cancellationToken);
+        if (lesson is null) return false;
+        db.Lessons.Remove(lesson);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     public async Task<LessonCreateRecord?> CreateAsync(
         Guid courseId,
         string title,

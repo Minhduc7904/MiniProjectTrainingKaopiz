@@ -8,6 +8,10 @@ Trả Course, toàn bộ Lessons theo `displayOrder` và toàn bộ Progress c�
 Lesson. Direct path là `GET /api/courses/{courseId}/details`; endpoint chỉ đọc,
 safe và idempotent.
 
+Response giữ Markdown gốc tại `descriptionMarkdown` và trả thêm `descriptionHtml`
+đã render/sanitize. Mỗi Lesson cũng có `contentHtml`; FE chỉ render trường HTML
+này, không tự chuyển Markdown thành HTML.
+
 ```mermaid
 sequenceDiagram
     participant Client

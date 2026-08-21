@@ -3,6 +3,7 @@ using BuildingBlocks.Presentation.Api;
 using CourseService.Application.Common.Errors;
 using CourseService.Application.UseCases.Courses.GetDetails;
 using CourseService.Application.Services.Media;
+using CourseService.Application.Services.Content;
 using CourseService.Api.Contracts.Courses;
 using CourseService.Api.Mappers;
 
@@ -18,6 +19,7 @@ public static class GetCourseDetailsEndpoint
                     HttpContext context,
                     GetCourseDetailsHandler handler,
                     ICourseMediaReader mediaReader,
+                    IMarkdownHtmlRenderer markdownRenderer,
                     CancellationToken cancellationToken) =>
                 {
                     if (!Guid.TryParse(courseId, out var parsedCourseId) || parsedCourseId == Guid.Empty)
@@ -31,7 +33,7 @@ public static class GetCourseDetailsEndpoint
                     var result = await handler.HandleAsync(parsedCourseId, cancellationToken);
                     var media = await mediaReader.GetAsync(parsedCourseId, cancellationToken);
                     return Results.Ok(ApiResponseFactory.Success(
-                        CourseResponseMapper.ToDetailsResponse(result, media),
+                        CourseResponseMapper.ToDetailsResponse(result, media, markdownRenderer),
                         context.TraceIdentifier));
                 })
             .WithName("get-course-details")
