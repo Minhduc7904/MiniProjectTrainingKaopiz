@@ -1,5 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
@@ -36,7 +38,7 @@ public static class CreateMediaUsagesBatchEndpoint
                                 MediaRequestParser.ParseGuid(item.OwnerId, "ownerId"),
                                 item.UsageType,
                                 item.DisplayOrder,
-                                MediaRequestParser.ReadActor(context.Request)),
+                                MediaRequestParser.ReadActor(context)),
                             cancellationToken);
                         results.Add(MediaResponseMapper.ToResponse(result));
                     }
@@ -52,5 +54,7 @@ public static class CreateMediaUsagesBatchEndpoint
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
             .Produces<ApiErrorResponse>(StatusCodes.Status409Conflict)
-            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable);
+            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 }

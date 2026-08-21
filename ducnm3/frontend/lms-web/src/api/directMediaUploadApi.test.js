@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { httpClient } from '@/api/httpClient'
+import { SILENT_TOAST_CONFIG } from '@/constants/toast'
 import {
   buildSignedUploadForm,
   completeDirectUploadRequest,
@@ -23,6 +24,7 @@ describe('Media Service direct upload requests', () => {
     expect(get).toHaveBeenCalledWith('/media/api/media/media-1/content', {
       signal: undefined,
       responseType: 'blob',
+      apiToast: SILENT_TOAST_CONFIG,
     })
   })
 
@@ -37,19 +39,16 @@ describe('Media Service direct upload requests', () => {
     expect(get).toHaveBeenCalledWith('/media/api/media/media-1/thumbnail', { signal: undefined })
   })
 
-  it('retries a failed thumbnail with the retry actor', async () => {
+  it('retries a failed thumbnail with actor headers from the HTTP interceptor', async () => {
     const post = vi.spyOn(httpClient, 'post').mockResolvedValue({
       data: { data: { status: 'QUEUED' }, meta: { traceId: 'trace-4' } },
     })
 
-    await retryMediaThumbnailRequest('media-1', {
-      requestedByType: 'STUDENT',
-      requestedBy: 'actor-1',
-    })
+    await retryMediaThumbnailRequest('media-1')
 
     expect(post).toHaveBeenCalledWith(
       expect.stringContaining('media-1/thumbnail/retry'),
-      { requestedByType: 'STUDENT', requestedBy: 'actor-1' },
+      undefined,
       { signal: undefined },
     )
   })
@@ -75,15 +74,11 @@ describe('Media Service direct upload requests', () => {
       data: { data: { id: 'media-1', status: 'READY' }, meta: { traceId: 'trace-2' } },
     })
 
-    await completeDirectUploadRequest(
-      'media-1',
-      { uploadedBy: 'actor-1', uploadedByType: 'STUDENT' },
-      { signal: controller.signal },
-    )
+    await completeDirectUploadRequest('media-1', undefined, { signal: controller.signal })
 
     expect(post).toHaveBeenCalledWith(
       expect.stringContaining('media-1'),
-      { uploadedBy: 'actor-1', uploadedByType: 'STUDENT' },
+      undefined,
       { signal: controller.signal },
     )
   })

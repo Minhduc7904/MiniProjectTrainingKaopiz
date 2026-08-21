@@ -1,5 +1,6 @@
 using BuildingBlocks.Contracts.Api;
-using StudentService.Application.Features.Students.GetList;
+using StudentService.Application.Common.Errors;
+using StudentService.Application.UseCases.Students.GetList;
 
 namespace StudentService.UnitTests;
 
@@ -52,7 +53,7 @@ public sealed class GetStudentsQueryTests
     [Test]
     public void InvalidValuesReturnAllValidationDetails()
     {
-        var exception = Assert.Throws<StudentListValidationException>(() =>
+        var exception = Assert.Throws<StudentApplicationException>(() =>
             GetStudentsQuery.Create("unknown", "id", "sideways", 0, 101));
 
         Assert.Multiple(() =>
@@ -69,7 +70,7 @@ public sealed class GetStudentsQueryTests
     [Test]
     public void PageOffsetExceedsProviderLimitReturnsValidationError()
     {
-        var exception = Assert.Throws<StudentListValidationException>(() =>
+        var exception = Assert.Throws<StudentApplicationException>(() =>
             GetStudentsQuery.Create(null, null, null, int.MaxValue, 100));
 
         Assert.That(

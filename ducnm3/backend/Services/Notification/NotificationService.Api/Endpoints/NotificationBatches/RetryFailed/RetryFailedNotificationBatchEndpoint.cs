@@ -3,7 +3,8 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
-using NotificationService.Api.Contracts.NotificationBatches.Requests;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using NotificationService.Api.Contracts.NotificationBatches.Responses;
 using NotificationService.Api.Mappers;
 using NotificationService.Application.Common.Errors;
@@ -13,33 +14,34 @@ namespace NotificationService.Api.Endpoints.NotificationBatches.RetryFailed;
 
 public static class RetryFailedNotificationBatchEndpoint
 {
-    public static IEndpointRouteBuilder MapRetryFailedNotificationBatchEndpoint(this IEndpointRouteBuilder endpoints)
+    public static RouteHandlerBuilder MapRetryFailedNotificationBatchEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost(ApiRoutes.Notifications.BatchRetryFailedTemplate, HandleAsync)
+        return endpoints.MapPost(ApiRoutes.Notifications.BatchRetryFailedTemplate, HandleAsync)
             .WithName("retry-failed-notification-batch")
             .WithTags(ServiceNames.Notification)
-            .Accepts<RetryFailedNotificationBatchRequest>("application/json")
             .Produces<ApiResponse<NotificationBatchResponse>>(StatusCodes.Status202Accepted)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
-            .Produces<ApiErrorResponse>(StatusCodes.Status409Conflict);
-        return endpoints;
+            .Produces<ApiErrorResponse>(StatusCodes.Status409Conflict)
+            .RequireActor(ActorAccess.Admin);
     }
 
     private static async Task<IResult> HandleAsync(
         string batchId,
-        RetryFailedNotificationBatchRequest request,
         HttpContext context,
         RetryFailedNotificationBatchHandler handler,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(batchId, out var id) || id == Guid.Empty ||
-            !Guid.TryParse(request.CreatedBy, out var createdBy) || createdBy == Guid.Empty)
+        if (!Guid.TryParse(batchId, out var id) || id == Guid.Empty)
         {
-            throw NotificationErrors.Validation("batchId and createdBy must be valid UUIDs.");
+            throw NotificationErrors.Validation("batchId must be a valid UUID.");
         }
 
-        var result = await handler.HandleAsync(id, createdBy, cancellationToken);
+        var result = await handler.HandleAsync(
+            id,
+            context.GetRequiredActor().Id,
+            cancellationToken);
         context.Response.Headers.Location = ApiRoutes.Notifications.BatchByIdPublicPath(result.Id);
         return Results.Json(
             ApiResponseFactory.Success(NotificationResponseMapper.ToResponse(result), context.TraceIdentifier),

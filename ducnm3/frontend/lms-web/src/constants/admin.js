@@ -1,5 +1,7 @@
+import { ENV } from '@/constants/env'
+
 export const ADMIN_ACTOR = {
-  type: 'ADMIN',
-  id: '00000000-0000-0000-0000-000000000001',
+  type: ENV.adminActorType,
+  id: ENV.adminActorId,
   displayName: 'Development Admin',
 }

@@ -31,7 +31,6 @@ public sealed class NotificationBatchEndpointsComponentTests
     public async Task PostThenGet_ReturnsAcceptedLocationAndBatchSummary()
     {
         await using var fixture = await NotificationBatchApiFixture.CreateAsync();
-        var createdBy = Guid.NewGuid();
 
         var post = await fixture.Client.PostAsJsonAsync(
             "/api/notification-batches",
@@ -39,7 +38,6 @@ public sealed class NotificationBatchEndpointsComponentTests
                 "Title",
                 "Body",
                 "ALL_STUDENTS",
-                createdBy.ToString(),
                 500,
                 3000,
                 null));
@@ -78,7 +76,6 @@ public sealed class NotificationBatchEndpointsComponentTests
                 "Title",
                 "Body",
                 "STUDENT_IDS",
-                Guid.NewGuid().ToString(),
                 null,
                 null,
                 null));
@@ -135,7 +132,7 @@ public sealed class NotificationBatchEndpointsComponentTests
 
         using var response = await fixture.Client.PostAsJsonAsync(
             ApiRoutes.Notifications.BatchRetryFailedServicePath(sourceId),
-            new RetryFailedNotificationBatchRequest(Guid.NewGuid().ToString()));
+            new { });
         var body = await response.Content.ReadAsStringAsync();
 
         Assert.Multiple(() =>
@@ -145,6 +142,18 @@ public sealed class NotificationBatchEndpointsComponentTests
                 "/notification/api/notification-batches/"));
             Assert.That(body, Does.Contain(sourceId.ToString()));
         });
+    }
+
+    [Test]
+    public async Task Post_NonAdminActor_ReturnsForbidden()
+    {
+        await using var fixture = await NotificationBatchApiFixture.CreateAsync("STUDENT");
+
+        using var response = await fixture.Client.PostAsJsonAsync(
+            "/api/notification-batches",
+            new CreateNotificationBatchRequest("Title", "Body", "ALL_STUDENTS", null, null, null));
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
 
     [Test]
@@ -190,7 +199,7 @@ internal sealed class NotificationBatchApiFixture : IAsyncDisposable
 
     internal EndpointBatchRepository Repository { get; }
 
-    public static async Task<NotificationBatchApiFixture> CreateAsync()
+    public static async Task<NotificationBatchApiFixture> CreateAsync(string actorType = "ADMIN")
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -209,7 +218,10 @@ internal sealed class NotificationBatchApiFixture : IAsyncDisposable
         app.MapGetNotificationBatchSnapshotStatusEndpoint();
         app.MapGetNotificationBatchDeliveryStatusEndpoint();
         await app.StartAsync();
-        return new NotificationBatchApiFixture(app, app.GetTestClient(), repository);
+        var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Add(ApiHeaderNames.ActorType, actorType);
+        client.DefaultRequestHeaders.Add(ApiHeaderNames.ActorId, Guid.NewGuid().ToString());
+        return new NotificationBatchApiFixture(app, client, repository);
     }
 
     public async ValueTask DisposeAsync()

@@ -6,9 +6,10 @@ using BuildingBlocks.Presentation.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using StudentService.Api.Endpoints;
+using StudentService.Api.Endpoints.Students.GetList;
 using StudentService.Application;
-using StudentService.Application.Features.Students.GetList;
+using StudentService.Application.Repositories;
+using StudentService.Application.UseCases.Students.GetList;
 
 namespace StudentService.ComponentTests.Endpoints;
 
@@ -22,15 +23,15 @@ public sealed class GetStudentsEndpointComponentTests
     public async Task SetUpAsync()
     {
         repository = new StubStudentListRepository(
-            new GetStudentsResult(
+            new StudentListPage(
                 [
-                    new StudentListItem(
+                    new StudentListRecord(
                         Guid.Parse("11111111-1111-1111-1111-111111111111"),
                         "first@example.com",
                         "First Student",
                         "ACTIVE",
                         new DateTime(2026, 8, 13, 1, 0, 0, DateTimeKind.Utc)),
-                    new StudentListItem(
+                    new StudentListRecord(
                         Guid.Parse("22222222-2222-2222-2222-222222222222"),
                         "second@example.com",
                         "Second Student",
@@ -134,7 +135,7 @@ public sealed class GetStudentsEndpointComponentTests
     [Test]
     public async Task EmptyPageReturnsSuccessWithZeroTotals()
     {
-        repository.Result = new GetStudentsResult([], 0, 0);
+        repository.Result = new StudentListPage([], 0, 0);
 
         using var response = await client.GetAsync(
             string.Concat(
@@ -172,15 +173,15 @@ public sealed class GetStudentsEndpointComponentTests
     }
 
     private sealed class StubStudentListRepository(
-        GetStudentsResult result) : IStudentListRepository
+        StudentListPage result) : IStudentListRepository
     {
         public int CallCount { get; private set; }
 
         public GetStudentsQuery? Query { get; private set; }
 
-        public GetStudentsResult Result { get; set; } = result;
+        public StudentListPage Result { get; set; } = result;
 
-        public Task<GetStudentsResult> GetListAsync(
+        public Task<StudentListPage> GetListAsync(
             GetStudentsQuery query,
             CancellationToken cancellationToken)
         {

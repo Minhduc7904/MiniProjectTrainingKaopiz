@@ -13,6 +13,7 @@ using CourseService.Application.UseCases.Courses.Update;
 using CourseService.Application.Services.Content;
 using CourseService.Application.UseCases.Courses.Delete;
 using CourseService.Application.UseCases.Lessons.Delete;
+using CourseService.Application.UseCases.Learning;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CourseService.Application;
@@ -34,6 +35,8 @@ public static class DependencyInjection
         services.AddScoped<UpdateLessonHandler>();
         services.AddScoped<GetLessonDetailHandler>();
         services.AddScoped<ReorderLessonsHandler>();
+        services.AddScoped<EnrollCourseHandler>();
+        services.AddScoped<CompleteLessonProgressHandler>();
         return services;
     }
 }

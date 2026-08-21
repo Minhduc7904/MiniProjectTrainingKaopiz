@@ -3,6 +3,8 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using NotificationService.Api.Contracts.NotificationBatches.Requests;
 using NotificationService.Api.Contracts.NotificationBatches.Responses;
 using NotificationService.Api.Mappers;
@@ -13,16 +15,17 @@ namespace NotificationService.Api.Endpoints.NotificationBatches.Create;
 
 public static class CreateNotificationBatchEndpoint
 {
-    public static IEndpointRouteBuilder MapCreateNotificationBatchEndpoint(this IEndpointRouteBuilder endpoints)
+    public static RouteHandlerBuilder MapCreateNotificationBatchEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost(ApiRoutes.Notifications.Batches, HandleAsync)
+        return endpoints.MapPost(ApiRoutes.Notifications.Batches, HandleAsync)
             .WithName("create-notification-batch")
             .WithTags(ServiceNames.Notification)
             .Accepts<CreateNotificationBatchRequest>("application/json")
             .Produces<ApiResponse<NotificationBatchResponse>>(StatusCodes.Status202Accepted)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable);
-        return endpoints;
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable)
+            .RequireActor(ActorAccess.Admin);
     }
 
     private static async Task<IResult> HandleAsync(
@@ -31,11 +34,6 @@ public static class CreateNotificationBatchEndpoint
         CreateNotificationBatchHandler handler,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(request.CreatedBy, out var createdBy) || createdBy == Guid.Empty)
-        {
-            throw NotificationErrors.Validation("createdBy must be a valid UUID.");
-        }
-
         Guid? courseId = null;
         if (!string.IsNullOrWhiteSpace(request.CourseId))
         {
@@ -48,7 +46,7 @@ public static class CreateNotificationBatchEndpoint
 
         var result = await handler.HandleAsync(
             new CreateNotificationBatchCommand(request.Title, request.BodyMarkdown,
-                request.TargetScope, createdBy, request.BatchSize, request.RequestedCount, courseId),
+                request.TargetScope, context.GetRequiredActor().Id, request.BatchSize, request.RequestedCount, courseId),
             cancellationToken);
         context.Response.Headers.Location = ApiRoutes.Notifications.BatchByIdPublicPath(result.Id);
         return Results.Json(

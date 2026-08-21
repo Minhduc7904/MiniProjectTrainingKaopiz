@@ -30,6 +30,9 @@ public static class ApiRoutes
         public const string ByIdTemplate = "/api/courses/{courseId}";
         public const string LessonByIdTemplate = "/api/courses/{courseId}/lessons/{lessonId}";
         public const string LessonReorderTemplate = "/api/courses/{courseId}/lessons/reorder";
+        public const string EnrollmentsTemplate = "/api/courses/{courseId}/enrollments";
+        public const string CompleteLessonProgressTemplate =
+            "/api/courses/{courseId}/lessons/{lessonId}/progress/complete";
 
         public static string ListServicePath() =>
             BuildServicePath(List);
@@ -50,6 +53,29 @@ public static class ApiRoutes
 
         public static string LessonReorderServicePath(Guid courseId) =>
             BuildServicePath(FormatGuidRoute(LessonReorderTemplate, "courseId", courseId));
+
+        public static string EnrollmentsServicePath(Guid courseId) =>
+            BuildServicePath(FormatGuidRoute(EnrollmentsTemplate, "courseId", courseId));
+
+        public static string EnrollmentsPublicPath(Guid courseId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(EnrollmentsTemplate, "courseId", courseId));
+
+        public static string CompleteLessonProgressServicePath(Guid courseId, Guid lessonId) =>
+            BuildServicePath(
+                FormatGuidRoute(
+                    FormatGuidRoute(CompleteLessonProgressTemplate, "courseId", courseId),
+                    "lessonId",
+                    lessonId));
+
+        public static string CompleteLessonProgressPublicPath(Guid courseId, Guid lessonId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(
+                    FormatGuidRoute(CompleteLessonProgressTemplate, "courseId", courseId),
+                    "lessonId",
+                    lessonId));
 
         public static string ExportServicePath() =>
             BuildServicePath(Export);
@@ -191,6 +217,19 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Student,
                 FormatGuidRoute(GetByIdTemplate, "studentId", studentId));
+    }
+
+    /// <summary>Route contract do Student Service sở hữu cho demo auth.</summary>
+    public static class StudentAuth
+    {
+        public const string Register = "/api/auth/register";
+        public const string Login = "/api/auth/login";
+        public const string Me = "/api/auth/me";
+
+        public static string MeServicePath() => BuildServicePath(Me);
+
+        public static string MePublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Student, Me);
     }
 
     /// <summary>Route contract do Notification Service sở hữu.</summary>

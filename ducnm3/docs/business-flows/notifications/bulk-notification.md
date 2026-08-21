@@ -11,7 +11,7 @@ Quản trị viên; Notification API; Student Service; MySQL Notification; Rabbi
 ## Điều kiện đầu vào
 
 - `targetScope` là `ALL_STUDENTS`.
-- `createdBy`, `title` và `bodyMarkdown` hợp lệ.
+- Header `X-Actor-Type` là `ADMIN`, `X-Actor-Id` là UUID hợp lệ; cùng với `title` và `bodyMarkdown` hợp lệ.
 - `requestedCount` bỏ trống hoặc nằm trong `1..100000`; bỏ trống nghĩa là toàn bộ.
 - Notification database và MassTransit outbox sẵn sàng nhận batch command.
 
@@ -27,8 +27,8 @@ sequenceDiagram
     participant Bus as RabbitMQ
 
     Admin->>API: POST batch (ALL_STUDENTS)
-    API->>API: Validate body, scope, createdBy
-    alt Scope sai
+    API->>API: Validate actor header, body và scope
+    alt Actor không phải ADMIN hoặc dữ liệu sai
         API-->>Admin: 400 VALIDATION_FAILED
     else Hợp lệ
         API->>DB: INSERT batch PENDING + SnapshotNotificationBatchV1 outbox

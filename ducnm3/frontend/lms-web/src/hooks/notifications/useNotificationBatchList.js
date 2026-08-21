@@ -28,9 +28,7 @@ export function useNotificationBatchList() {
     return () => window.clearTimeout(timer)
   }, [list.data, load])
 
-  const retryFailed = useCallback((batchId) => dispatch(
-    retryNotificationBatchFailures({ batchId, createdBy: crypto.randomUUID() }),
-  ), [dispatch])
+  const retryFailed = useCallback((batchId) => dispatch(retryNotificationBatchFailures(batchId)), [dispatch])
 
   return { ...list, clock, load, retryFailed, reset: () => load({ page: 1, pageSize: 20, status: '' }) }
 }

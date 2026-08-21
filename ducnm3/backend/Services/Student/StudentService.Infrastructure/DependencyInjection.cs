@@ -2,10 +2,10 @@ using BuildingBlocks.Contracts.Health;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using StudentService.Application.Features.Students.GetById;
-using StudentService.Application.Features.Students.GetList;
+using StudentService.Application.Repositories;
 using StudentService.Infrastructure.Health;
 using StudentService.Infrastructure.Persistence;
+using StudentService.Infrastructure.Persistence.Repositories;
 
 namespace StudentService.Infrastructure;
 

@@ -3,6 +3,8 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
@@ -31,7 +33,7 @@ public static class UploadMediaEndpoint
                         cancellationToken);
                     var file = form.Files.GetFile("file") ??
                         throw MediaErrors.InvalidMedia("file is required.");
-                    var actor = MediaRequestParser.ReadActor(context.Request);
+                    var actor = MediaRequestParser.ReadActor(context);
 
                     await using var stream = file.OpenReadStream();
                     var result = await handler.HandleAsync(
@@ -63,5 +65,7 @@ public static class UploadMediaEndpoint
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
             .Produces<ApiErrorResponse>(StatusCodes.Status413PayloadTooLarge)
             .Produces<ApiErrorResponse>(StatusCodes.Status415UnsupportedMediaType)
-            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable);
+            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 }

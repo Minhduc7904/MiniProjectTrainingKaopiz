@@ -1,5 +1,6 @@
 using BuildingBlocks.Contracts.Api;
-using static CourseService.Api.Endpoints.Courses.CreateCourse.CreateCourseEndpoint;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using CourseService.Application.UseCases.Courses.Delete;
 
 namespace CourseService.Api.Endpoints.Courses.DeleteCourse;
@@ -20,12 +21,14 @@ public static class DeleteCourseEndpoint
                         throw new ArgumentException("courseId must be a valid UUID.");
                     }
 
-                    await handler.HandleAsync(id, ReadActor(context.Request), cancellationToken);
+                    await handler.HandleAsync(id, context.GetRequiredActor().Id, cancellationToken);
                     return Results.Accepted();
                 })
             .WithName("delete-course")
             .WithTags(ServiceNames.Course)
             .Produces(StatusCodes.Status202Accepted)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
+            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Admin);
 }

@@ -30,6 +30,18 @@ public sealed class ApiRoutesTests
     }
 
     [Test]
+    public void StudentAuthPathsUseServiceAndGatewayShapes()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ApiRoutes.StudentAuth.Register, Is.EqualTo("/api/auth/register"));
+            Assert.That(ApiRoutes.StudentAuth.Login, Is.EqualTo("/api/auth/login"));
+            Assert.That(ApiRoutes.StudentAuth.MeServicePath(), Is.EqualTo("api/auth/me"));
+            Assert.That(ApiRoutes.StudentAuth.MePublicPath(), Is.EqualTo("/student/api/auth/me"));
+        });
+    }
+
+    [Test]
     public void MediaPathsUseServiceAndGatewayShapes()
     {
         Assert.Multiple(() =>

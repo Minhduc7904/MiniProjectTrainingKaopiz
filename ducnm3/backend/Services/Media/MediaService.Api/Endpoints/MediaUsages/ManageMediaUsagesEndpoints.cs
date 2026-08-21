@@ -1,5 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Requests;
 using MediaService.Application.Repositories;
 using MediaService.Domain.Constants;
@@ -18,7 +20,7 @@ public static class ManageMediaUsagesEndpoints
                     IMediaUsageRepository repository,
                     CancellationToken cancellationToken) =>
                 {
-                    var actor = MediaRequestParser.ReadActor(context.Request);
+                    var actor = MediaRequestParser.ReadActor(context);
                     await repository.RemoveAsync(
                         MediaRequestParser.ParseGuid(usageId, "usageId"),
                         actor,
@@ -29,7 +31,9 @@ public static class ManageMediaUsagesEndpoints
             .WithTags(ServiceNames.Media)
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
+            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 
         endpoints.MapPost(
                 ApiRoutes.Media.UsageReorder,
@@ -48,7 +52,7 @@ public static class ManageMediaUsagesEndpoints
                         request.OwnerType.Trim().ToUpperInvariant(),
                         MediaRequestParser.ParseGuid(request.OwnerId, "ownerId"),
                         usageIds,
-                        MediaRequestParser.ReadActor(context.Request),
+                        MediaRequestParser.ReadActor(context),
                         cancellationToken);
                     return Results.Json(
                         ApiResponseFactory.Success(
@@ -60,6 +64,8 @@ public static class ManageMediaUsagesEndpoints
             .Accepts<ReorderMediaUsagesRequest>("application/json")
             .Produces<ApiResponse<object>>(StatusCodes.Status200OK)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
+            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
     }
 }

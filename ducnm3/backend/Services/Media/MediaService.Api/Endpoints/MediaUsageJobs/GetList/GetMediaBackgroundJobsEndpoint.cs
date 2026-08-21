@@ -3,6 +3,8 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.MediaUsageJobs;
 using MediaService.Api.Endpoints.Media;
 using MediaService.Application.UseCases.MediaUsageJobs.GetList;
@@ -27,7 +29,7 @@ public static class GetMediaBackgroundJobsEndpoint
                     var result = await handler.HandleAsync(
                         new GetMediaBackgroundJobsQuery(
                             jobType, status, correlationId, page ?? 1, pageSize ?? 20,
-                            MediaRequestParser.ReadActor(context.Request)),
+                            MediaRequestParser.ReadActor(context)),
                         cancellationToken);
                     context.Response.Headers.CacheControl = "no-store";
                     var items = result.Items.Select(ToResponse).ToArray();
@@ -41,7 +43,9 @@ public static class GetMediaBackgroundJobsEndpoint
             .WithTags(ServiceNames.Media)
             .Produces<ApiResponse<IReadOnlyList<MediaBackgroundJobListResponse>>>(StatusCodes.Status200OK)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
+            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Admin);
 
     private static MediaBackgroundJobListResponse ToResponse(
         MediaService.Application.Repositories.MediaBackgroundJobListRecord item)

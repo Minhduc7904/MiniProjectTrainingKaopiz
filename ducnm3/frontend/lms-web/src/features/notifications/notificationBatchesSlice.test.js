@@ -62,7 +62,7 @@ describe('notification batch management state', () => {
   it('tracks the source row while retry is pending', () => {
     const state = notificationBatchesReducer(undefined, {
       type: retryNotificationBatchFailures.pending.type,
-      meta: { arg: { batchId: 'source-batch' } },
+      meta: { arg: 'source-batch' },
     })
     expect(state.list.retryingBatchId).toBe('source-batch')
   })

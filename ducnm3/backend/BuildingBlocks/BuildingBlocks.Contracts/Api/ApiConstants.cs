@@ -13,6 +13,7 @@ public static class ApiErrorCodes
     public const string UnexpectedError = "UNEXPECTED_ERROR";
     public const string ValidationFailed = "VALIDATION_FAILED";
     public const string PayloadTooLarge = "PAYLOAD_TOO_LARGE";
+    public const string Forbidden = "FORBIDDEN";
 }
 
 /// <summary>Thông điệp an toàn có thể trả về cho client tương ứng với <see cref="ApiErrorCodes"/>.</summary>
@@ -34,6 +35,16 @@ public static class ApiHeaderNames
     public const string ActorType = "X-Actor-Type";
     public const string ActorId = "X-Actor-Id";
 }
+
+/// <summary>Actor type được API demo chấp nhận qua actor headers.</summary>
+public static class ActorHeaderTypes
+{
+    public const string Admin = "ADMIN";
+    public const string Student = "STUDENT";
+}
+
+/// <summary>Actor đã được chuẩn hóa từ <c>X-Actor-Type</c> và <c>X-Actor-Id</c>.</summary>
+public sealed record ActorContext(string Type, Guid Id);
 
 /// <summary>Tên header metadata được gắn vào message RabbitMQ.</summary>
 public static class MessagingHeaderNames

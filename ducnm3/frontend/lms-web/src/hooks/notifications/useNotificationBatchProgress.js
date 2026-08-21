@@ -75,7 +75,7 @@ export function useNotificationBatchProgress() {
     ),
     watch,
     retryFailed: useCallback(
-      (batchId) => dispatch(retryNotificationBatchFailures({ batchId, createdBy: crypto.randomUUID() })),
+      (batchId) => dispatch(retryNotificationBatchFailures(batchId)),
       [dispatch],
     ),
     pause: useCallback(() => dispatch(setNotificationBatchPollingPaused(true)), [dispatch]),

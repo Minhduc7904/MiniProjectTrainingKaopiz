@@ -48,8 +48,8 @@ export const fetchNotificationBatches = createAsyncThunk('notificationBatches/li
   catch (error) { return rejectWithValue(toApiError(error)) }
 })
 
-export const retryNotificationBatchFailures = createAsyncThunk('notificationBatches/retryFailures', async ({ batchId, createdBy }, { rejectWithValue }) => {
-  try { const { data, meta, location } = await retryNotificationBatchFailuresRequest(batchId, createdBy); return { data, traceId: meta.traceId, location } }
+export const retryNotificationBatchFailures = createAsyncThunk('notificationBatches/retryFailures', async (batchId, { rejectWithValue }) => {
+  try { const { data, meta, location } = await retryNotificationBatchFailuresRequest(batchId); return { data, traceId: meta.traceId, location } }
   catch (error) { return rejectWithValue(toApiError(error)) }
 })
 
@@ -87,7 +87,7 @@ const notificationBatchesSlice = createSlice({
     .addCase(fetchNotificationBatches.pending, (state, action) => { state.list.loading = true; state.list.error = null; state.list.query = action.meta.arg })
     .addCase(fetchNotificationBatches.fulfilled, (state, action) => { state.list.loading = false; state.list.success = true; state.list.data = action.payload.data; state.list.pagination = action.payload.pagination; state.list.traceId = action.payload.traceId })
     .addCase(fetchNotificationBatches.rejected, (state, action) => { state.list.loading = false; state.list.success = false; state.list.error = action.payload ?? { code: 'UNEXPECTED_ERROR', message: 'Không đọc được danh sách batch.' } })
-    .addCase(retryNotificationBatchFailures.pending, (state, action) => { state.progress.retryLoading = true; state.progress.retryError = null; state.list.retryingBatchId = action.meta.arg.batchId; state.list.retryError = null })
+    .addCase(retryNotificationBatchFailures.pending, (state, action) => { state.progress.retryLoading = true; state.progress.retryError = null; state.list.retryingBatchId = action.meta.arg; state.list.retryError = null })
     .addCase(retryNotificationBatchFailures.fulfilled, (state, action) => { state.progress = { ...initialProgress, activeBatchId: action.payload.data.id, query: { batchId: action.payload.data.id }, traceId: action.payload.traceId }; state.list.retryingBatchId = null })
     .addCase(retryNotificationBatchFailures.rejected, (state, action) => { const error = action.payload ?? { code: 'UNEXPECTED_ERROR', message: 'Không retry được batch.' }; state.progress.retryLoading = false; state.progress.retryError = error; state.list.retryingBatchId = null; state.list.retryError = error }),
 })

@@ -1,6 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using StudentService.Application.Features.Students.GetById;
-using StudentService.Application.Features.Students.GetList;
+using StudentService.Application.UseCases.Auth.Register;
+using StudentService.Application.UseCases.Auth.Login;
+using StudentService.Application.UseCases.Auth.GetMe;
+using StudentService.Application.UseCases.Students.GetById;
+using StudentService.Application.UseCases.Students.GetList;
 
 namespace StudentService.Application;
 
@@ -11,6 +14,9 @@ public static class DependencyInjection
     {
         services.AddScoped<GetStudentByIdHandler>();
         services.AddScoped<GetStudentsHandler>();
+        services.AddScoped<RegisterStudentHandler>();
+        services.AddScoped<LoginStudentHandler>();
+        services.AddScoped<GetCurrentStudentHandler>();
         return services;
     }
 }

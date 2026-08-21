@@ -19,6 +19,7 @@ using CourseService.Api.Endpoints.Courses.UpdateLesson;
 using CourseService.Api.Endpoints.Courses.GetLessonDetail;
 using CourseService.Api.Endpoints.Courses.ReorderLessons;
 using CourseService.Api.Endpoints.Performance;
+using CourseService.Api.Endpoints.Learning;
 using CourseService.Application;
 using CourseService.Infrastructure;
 
@@ -90,6 +91,8 @@ app.MapUpdateLesson();
 app.MapGetLessonDetail();
 app.MapReorderLessons();
 app.MapExportCourses();
+app.MapEnrollCourse();
+app.MapCompleteLessonProgress();
 if (app.Environment.IsDevelopment())
 {
     app.MapBufferedCourseExportBenchmark();

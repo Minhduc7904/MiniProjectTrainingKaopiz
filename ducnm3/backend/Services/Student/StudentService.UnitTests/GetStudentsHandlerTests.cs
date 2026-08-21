@@ -1,4 +1,5 @@
-using StudentService.Application.Features.Students.GetList;
+using StudentService.Application.Repositories;
+using StudentService.Application.UseCases.Students.GetList;
 
 namespace StudentService.UnitTests;
 
@@ -7,9 +8,9 @@ public sealed class GetStudentsHandlerTests
     [Test]
     public async Task ValidQueryReturnsRepositoryPage()
     {
-        var expected = new GetStudentsResult(
+        var expected = new StudentListPage(
             [
-                new StudentListItem(
+                new StudentListRecord(
                     Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     "student@example.com",
                     "Student",
@@ -32,7 +33,8 @@ public sealed class GetStudentsHandlerTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(actual, Is.SameAs(expected));
+            Assert.That(actual.Items, Is.SameAs(expected.Items));
+            Assert.That(actual.TotalItems, Is.EqualTo(expected.TotalItems));
             Assert.That(repository.Query, Is.SameAs(query));
             Assert.That(repository.CancellationToken, Is.EqualTo(cancellation.Token));
             Assert.That(repository.CallCount, Is.EqualTo(1));
@@ -40,7 +42,7 @@ public sealed class GetStudentsHandlerTests
     }
 
     private sealed class SpyStudentListRepository(
-        GetStudentsResult result) : IStudentListRepository
+        StudentListPage result) : IStudentListRepository
     {
         public int CallCount { get; private set; }
 
@@ -48,7 +50,7 @@ public sealed class GetStudentsHandlerTests
 
         public CancellationToken CancellationToken { get; private set; }
 
-        public Task<GetStudentsResult> GetListAsync(
+        public Task<StudentListPage> GetListAsync(
             GetStudentsQuery query,
             CancellationToken cancellationToken)
         {

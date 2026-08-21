@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using CourseService.Application.UseCases.Learning;
 
 namespace CourseService.Infrastructure;
 
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddServiceQueryClient<ICourseMediaReader, CourseMediaReader>(configuration, ServiceNames.Media);
         services.AddScoped<ILessonCommandRepository, EfLessonCommandRepository>();
         services.AddScoped<ICourseCommandRepository, EfCourseCommandRepository>();
+        services.AddScoped<ILearningCommandRepository, EfLearningCommandRepository>();
         services.AddSingleton<IDatabaseHealthProbe>(provider => new CourseDatabaseHealthProbe(connectionString, provider.GetRequiredService<ILogger<CourseDatabaseHealthProbe>>()));
         return services;
     }

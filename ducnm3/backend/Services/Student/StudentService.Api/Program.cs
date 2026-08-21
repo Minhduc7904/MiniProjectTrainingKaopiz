@@ -4,7 +4,11 @@ using BuildingBlocks.Messaging;
 using BuildingBlocks.Presentation.Extensions;
 using BuildingBlocks.Observability.Logging;
 using Microsoft.Extensions.Logging;
-using StudentService.Api.Endpoints;
+using StudentService.Api.Endpoints.Auth.GetMe;
+using StudentService.Api.Endpoints.Auth.Login;
+using StudentService.Api.Endpoints.Auth.Register;
+using StudentService.Api.Endpoints.Students.GetById;
+using StudentService.Api.Endpoints.Students.GetList;
 using StudentService.Application;
 using StudentService.Infrastructure;
 
@@ -65,5 +69,8 @@ app.MapServiceInfoEndpoint(ServiceNames.Student);
 app.MapDatabaseHealthEndpoint(ServiceNames.Student);
 app.MapGetStudents();
 app.MapGetStudentById();
+app.MapRegisterStudent();
+app.MapLoginStudent();
+app.MapGetCurrentStudent();
 
 app.Run();

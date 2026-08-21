@@ -3,12 +3,12 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
-using MediaService.Api.Contracts.Requests;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
 using MediaService.Application.UseCases.MediaDerivations.RetryThumbnail;
 using MediaService.Domain.Constants;
-using MediaService.Domain.ValueObjects;
 
 namespace MediaService.Api.Endpoints.Media;
 
@@ -21,19 +21,13 @@ public static class RetryMediaThumbnailEndpoint
                 ApiRoutes.Media.ThumbnailRetryTemplate,
                 async (
                     string mediaId,
-                    RetryMediaThumbnailRequest request,
                     HttpContext context,
                     RetryMediaThumbnailHandler handler,
                     CancellationToken cancellationToken) =>
                 {
-                    ArgumentNullException.ThrowIfNull(request);
                     var result = await handler.HandleAsync(
                         MediaRequestParser.ParseGuid(mediaId, "mediaId"),
-                        new ActorReference(
-                            request.RequestedByType,
-                            MediaRequestParser.ParseGuid(
-                                request.RequestedBy,
-                                "requestedBy")),
+                        MediaRequestParser.ReadActor(context),
                         cancellationToken);
                     context.Response.Headers.Location =
                         ApiRoutes.Media.ThumbnailStatusPublicPath(
@@ -46,11 +40,12 @@ public static class RetryMediaThumbnailEndpoint
                 })
             .WithName("retry-media-thumbnail")
             .WithTags(ServiceNames.Media)
-            .Accepts<RetryMediaThumbnailRequest>("application/json")
             .Produces<ApiResponse<MediaThumbnailStatusResponse>>(
                 StatusCodes.Status202Accepted)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
             .Produces<ApiErrorResponse>(StatusCodes.Status409Conflict)
-            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable);
+            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 }

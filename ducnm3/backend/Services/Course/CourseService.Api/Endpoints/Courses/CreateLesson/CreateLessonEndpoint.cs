@@ -1,5 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using CourseService.Api.Contracts.Courses;
 using CourseService.Application.UseCases.Lessons.Create;
 
@@ -30,7 +32,7 @@ public static class CreateLessonEndpoint
                         request.Title,
                         request.ContentMarkdown,
                         request.DisplayOrder,
-                        ReadActor(context.Request),
+                        context.GetRequiredActor().Id,
                         cancellationToken);
                     var response = new CreateLessonResponse(
                         result.Id,
@@ -49,16 +51,7 @@ public static class CreateLessonEndpoint
             .Accepts<CreateLessonRequest>("application/json")
             .Produces<ApiResponse<CreateLessonResponse>>(StatusCodes.Status201Created)
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
-
-    private static Guid ReadActor(HttpRequest request)
-    {
-        var actorType = request.Headers[ApiHeaderNames.ActorType].ToString();
-        var actorIdText = request.Headers[ApiHeaderNames.ActorId].ToString();
-        if (string.IsNullOrWhiteSpace(actorType) || !Guid.TryParse(actorIdText, out var actorId) || actorId == Guid.Empty)
-        {
-            throw new InvalidOperationException("Actor headers are required.");
-        }
-        return actorId;
-    }
+            .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Admin);
 }

@@ -6,8 +6,11 @@ Tạo batch con chỉ gồm recipient có item `FAILED` trong batch nguồn; kh�
 
 ## Yêu cầu
 
-```json
-{ "createdBy": "2e71fdd3-a599-46d5-93e8-041e3b25b2b2" }
+Không có body. Chỉ actor có `X-Actor-Type: ADMIN` và `X-Actor-Id` UUID hợp lệ được tạo batch retry; ID trong header được lưu để audit batch con.
+
+```http
+X-Actor-Type: ADMIN
+X-Actor-Id: 2e71fdd3-a599-46d5-93e8-041e3b25b2b2
 ```
 
 Batch nguồn phải terminal và có `failedCount > 0`.
@@ -18,5 +21,6 @@ Batch nguồn phải terminal và có `failedCount > 0`.
 - `404 NOTIFICATION_BATCH_NOT_FOUND` nếu nguồn không tồn tại.
 - `409 NOTIFICATION_BATCH_NOT_TERMINAL` nếu nguồn còn chạy.
 - `409 NOTIFICATION_BATCH_HAS_NO_FAILED_ITEMS` nếu không có lỗi.
+- `403 FORBIDDEN` nếu actor không phải `ADMIN`.
 
 `source_batch_id` là unique: gọi lại trực tiếp trên cùng nguồn trả cùng batch con. Batch retry có thể tiếp tục được retry, tạo thành chuỗi. Snapshot dùng `INSERT ... SELECT` chỉ lấy item `FAILED`, không gọi Student Service.

@@ -6,7 +6,12 @@ Tạo operation gửi thông báo hàng loạt. API chỉ ghi batch `PENDING` v�
 
 ## Xác thực và phân quyền
 
-MVP hiện chưa có auth. Bên gọi gửi `createdBy` UUID để lưu người tạo lô. Khi có auth, API phải lấy giá trị này từ principal thay vì body.
+Chỉ actor có `X-Actor-Type: ADMIN` được tạo batch. `X-Actor-Id` phải là UUID khác rỗng; API lưu giá trị này là người tạo batch. Frontend gửi hai header này từ actor hiện tại qua HTTP interceptor, không gửi UUID trong body.
+
+```http
+X-Actor-Type: ADMIN
+X-Actor-Id: 2e71fdd3-a599-46d5-93e8-041e3b25b2b2
+```
 
 ## Yêu cầu
 
@@ -17,7 +22,6 @@ Không có tham số đường dẫn hoặc truy vấn.
   "title": "Course update",
   "bodyMarkdown": "New material is available.",
   "targetScope": "ALL_STUDENTS",
-  "createdBy": "2e71fdd3-a599-46d5-93e8-041e3b25b2b2",
   "batchSize": 500,
   "requestedCount": 10000
 }
@@ -26,7 +30,6 @@ Không có tham số đường dẫn hoặc truy vấn.
 - `title`: chuỗi bắt buộc, tối đa 200 ký tự.
 - `bodyMarkdown`: Markdown bắt buộc.
 - `targetScope`: MVP chỉ nhận chính xác `ALL_STUDENTS`.
-- `createdBy`: UUID bắt buộc.
 - `batchSize`: số nguyên từ 1 đến 1000; mặc định `500`.
 - `requestedCount`: bỏ qua/null nghĩa là toàn bộ; nếu có phải từ 1 đến 100000. Khi số học viên active ít hơn yêu cầu, `totalCount` là số thực tế.
 - Không gửi `courseId`; các scope `COURSE_ENROLLED` và `STUDENT_IDS` chưa thuộc MVP.
@@ -65,7 +68,8 @@ Poll `GET /api/notification-batches/{batchId}` qua gateway tại URL trong `Loca
 ## Mã trạng thái HTTP
 
 - `202`: batch và durable snapshot command đã được chấp nhận. `totalCount` là `0` cho tới khi Worker hoàn tất snapshot.
-- `400 VALIDATION_FAILED`: body không hợp lệ, scope khác `ALL_STUDENTS`, có `courseId`, hoặc `requestedCount` ngoài `1..100000`.
+- `400 VALIDATION_FAILED`: body không hợp lệ, `X-Actor-Id` không phải UUID, scope khác `ALL_STUDENTS`, có `courseId`, hoặc `requestedCount` ngoài `1..100000`.
+- `403 FORBIDDEN`: không có `X-Actor-Type: ADMIN`.
 - `500 UNEXPECTED_ERROR`: phản hồi an toàn cho lỗi không mong đợi.
 
 ## Điều kiện nghiệp vụ và tác động phụ

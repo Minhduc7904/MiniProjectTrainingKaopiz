@@ -1,4 +1,5 @@
 export const STORAGE_KEYS = {
-  actor: 'lms.actor',
+  adminActor: 'lms.admin.actor',
+  studentActor: 'lms.student.actor',
   admin: 'lms.admin',
 }

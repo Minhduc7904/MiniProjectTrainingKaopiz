@@ -3,6 +3,8 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Api.Mappers;
 using MediaService.Application.UseCases.Media.DirectUpload.Complete;
@@ -23,7 +25,7 @@ public static class CompleteDirectUploadEndpoint
                     var result = await handler.HandleAsync(
                         new CompleteDirectUploadCommand(
                             MediaRequestParser.ParseGuid(mediaId, "mediaId"),
-                            MediaRequestParser.ReadActor(context.Request)),
+                            MediaRequestParser.ReadActor(context)),
                         cancellationToken);
                     return Results.Ok(
                         ApiResponseFactory.Success(
@@ -36,5 +38,7 @@ public static class CompleteDirectUploadEndpoint
             .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
             .Produces<ApiErrorResponse>(StatusCodes.Status409Conflict)
-            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable);
+            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 }

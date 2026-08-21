@@ -24,4 +24,6 @@ export const ENV = {
   ),
   isDev: import.meta.env.DEV,
   httpLog: parseFlag(import.meta.env.VITE_HTTP_LOG, import.meta.env.DEV),
+  adminActorType: requiredEnv('VITE_ADMIN_ACTOR_TYPE').toUpperCase(),
+  adminActorId: requiredEnv('VITE_ADMIN_ACTOR_ID'),
 }

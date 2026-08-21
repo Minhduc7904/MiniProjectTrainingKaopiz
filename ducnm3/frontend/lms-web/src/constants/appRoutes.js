@@ -1,17 +1,7 @@
 export const APP_ROUTES = {
   home: '/',
-  students: '/student/students',
-  courses: '/course/courses',
-  courseDetails: '/course/courses/:courseId',
-  courseExport: '/course/courses/export',
-  mediaUpload: '/media/upload',
-  mediaUploadDirect: '/media/upload-direct',
-  mediaJobs: '/media/jobs',
-  notificationSend: '/notification/batches/send',
-  notificationBatches: '/notification/batches',
-  notificationProgress: '/notification/batches/progress',
-  notificationProgressDetail: '/notification/batches/:batchId/progress',
-  schedulerJobs: '/scheduler/jobs',
+  students: '/admin/student/students', courses: '/admin/course/courses', courseDetails: '/admin/course/courses/:courseId', courseExport: '/admin/course/courses/export', mediaUpload: '/admin/media/upload', mediaUploadDirect: '/admin/media/upload-direct', mediaJobs: '/admin/media/jobs', notificationSend: '/admin/notification/batches/send', notificationBatches: '/admin/notification/batches', notificationProgress: '/admin/notification/batches/progress', notificationProgressDetail: '/admin/notification/batches/:batchId/progress', schedulerJobs: '/admin/scheduler/jobs',
+  studentRegister: '/student/register', studentLogin: '/student/login', studentLoading: '/student/loading', studentLogout: '/student/logout', studentHome: '/student/home',
 }
 
 export const SERVICE_IDS = {

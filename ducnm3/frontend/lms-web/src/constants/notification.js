@@ -2,7 +2,6 @@ export const NOTIFICATION_BATCH_FIELDS = {
   title: 'title',
   bodyMarkdown: 'bodyMarkdown',
   targetScope: 'targetScope',
-  createdBy: 'createdBy',
   batchSize: 'batchSize',
   requestedCount: 'requestedCount',
 }
@@ -48,7 +47,6 @@ export function createNotificationBatchDefaultQuery() {
     [NOTIFICATION_BATCH_FIELDS.title]: '',
     [NOTIFICATION_BATCH_FIELDS.bodyMarkdown]: '',
     [NOTIFICATION_BATCH_FIELDS.targetScope]: 'ALL_STUDENTS',
-    [NOTIFICATION_BATCH_FIELDS.createdBy]: crypto.randomUUID(),
     [NOTIFICATION_BATCH_FIELDS.batchSize]: NOTIFICATION_BATCH_DEFAULT_SIZE,
     [NOTIFICATION_BATCH_FIELDS.requestedCount]: null,
   }

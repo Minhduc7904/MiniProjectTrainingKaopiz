@@ -17,8 +17,8 @@ dotnet test backend/Services/Notification/NotificationService.ComponentTests/Not
 
 | Nhóm endpoint | Đạt khi |
 | --- | --- |
-| `POST /api/notifications` và `GET /api/notifications/{id}` | POST trả `201` cùng public `Location`; GET trả `200`, `UNREAD` và `Cache-Control: no-store`; UUID sai trả `400`. |
-| `POST /api/notification-batches` và `GET /api/notification-batches/{id}` | POST trả `202` cùng public `Location`; GET trả summary `PENDING`; target scope chưa hỗ trợ trả `400`. |
+| `POST /api/notifications` và `GET /api/notifications/{id}` | POST với header `ADMIN` trả `201` cùng public `Location`; GET trả `200`, `UNREAD` và `Cache-Control: no-store`; UUID sai trả `400`. |
+| `POST /api/notification-batches` và `GET /api/notification-batches/{id}` | POST với header `ADMIN` trả `202` cùng public `Location`; GET trả summary `PENDING`; target scope chưa hỗ trợ trả `400`; actor khác ADMIN trả `403`. |
 | `GET /api/notification-batches/{id}/failed-items` | Trả envelope cursor, `items` và `Cache-Control: no-store` đúng contract. |
 | Snapshot/delivery status | Hai route status trả `200`, `no-store`, snapshot count và delivery remaining qua TestServer. |
 

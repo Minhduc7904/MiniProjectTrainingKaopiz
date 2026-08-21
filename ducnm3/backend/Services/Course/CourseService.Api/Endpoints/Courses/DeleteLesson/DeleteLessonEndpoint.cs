@@ -1,5 +1,6 @@
 using BuildingBlocks.Contracts.Api;
-using static CourseService.Api.Endpoints.Courses.CreateCourse.CreateCourseEndpoint;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using CourseService.Application.Common.Errors;
 using CourseService.Application.UseCases.Lessons.Delete;
 
@@ -14,10 +15,12 @@ public static class DeleteLessonEndpoint
             if (!Guid.TryParse(courseId, out var parsedCourseId) || parsedCourseId == Guid.Empty ||
                 !Guid.TryParse(lessonId, out var parsedLessonId) || parsedLessonId == Guid.Empty)
                 throw CourseErrors.ValidationFailed([]);
-            await handler.HandleAsync(parsedCourseId, parsedLessonId, ReadActor(context.Request), cancellationToken);
+            await handler.HandleAsync(parsedCourseId, parsedLessonId, context.GetRequiredActor().Id, cancellationToken);
             return Results.Accepted();
         }).WithName("delete-course-lesson").WithTags(ServiceNames.Course)
           .Produces(StatusCodes.Status202Accepted)
           .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
-          .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound);
+          .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
+          .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+          .RequireActor(ActorAccess.Admin);
 }

@@ -1,5 +1,7 @@
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Application.UseCases.Media.Library;
 
@@ -19,7 +21,7 @@ public static class GetMediaLibraryEndpoint
                     GetMediaLibraryHandler handler,
                     CancellationToken cancellationToken) =>
                 {
-                    var actor = MediaRequestParser.ReadActor(context.Request);
+                    var actor = MediaRequestParser.ReadActor(context);
                     var result = await handler.HandleAsync(
                         new GetMediaLibraryQuery(
                             mediaType ?? string.Empty,
@@ -52,5 +54,7 @@ public static class GetMediaLibraryEndpoint
             .WithName("get-media-library")
             .WithTags(ServiceNames.Media)
             .Produces<ApiResponse<MediaLibraryPageResponse>>(StatusCodes.Status200OK)
-            .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest);
+            .Produces<ApiErrorResponse>(StatusCodes.Status400BadRequest)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 }

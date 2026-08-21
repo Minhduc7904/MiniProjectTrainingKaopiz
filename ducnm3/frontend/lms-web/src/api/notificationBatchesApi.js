@@ -34,11 +34,8 @@ export async function fetchNotificationBatchesRequest(query) {
   return unwrapEnvelope(response)
 }
 
-export async function retryNotificationBatchFailuresRequest(batchId, createdBy) {
-  const response = await httpClient.post(
-    API_ROUTES.notifications.retryBatchFailures(batchId),
-    { createdBy },
-  )
+export async function retryNotificationBatchFailuresRequest(batchId) {
+  const response = await httpClient.post(API_ROUTES.notifications.retryBatchFailures(batchId))
   return { ...unwrapEnvelope(response), location: response.headers?.location ?? null }
 }
 

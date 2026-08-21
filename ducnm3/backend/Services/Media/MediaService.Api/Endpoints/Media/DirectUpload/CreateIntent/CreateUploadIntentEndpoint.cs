@@ -3,6 +3,8 @@
 
 using BuildingBlocks.Contracts.Api;
 using BuildingBlocks.Presentation.Api;
+using BuildingBlocks.Presentation.Actors;
+using BuildingBlocks.Presentation.Extensions;
 using MediaService.Api.Contracts.Requests;
 using MediaService.Api.Contracts.Responses;
 using MediaService.Application.UseCases.Media.DirectUpload.CreateIntent;
@@ -26,7 +28,7 @@ public static class CreateUploadIntentEndpoint
                             request.ContentType,
                             request.SizeBytes,
                             request.ChecksumSha256,
-                            MediaRequestParser.ReadActor(context.Request)),
+                            MediaRequestParser.ReadActor(context)),
                         cancellationToken);
                     context.Response.Headers.Location =
                         ApiRoutes.Media.ResourcePublicPath(result.MediaId);
@@ -46,5 +48,7 @@ public static class CreateUploadIntentEndpoint
             .Produces<ApiErrorResponse>(StatusCodes.Status404NotFound)
             .Produces<ApiErrorResponse>(StatusCodes.Status413PayloadTooLarge)
             .Produces<ApiErrorResponse>(StatusCodes.Status415UnsupportedMediaType)
-            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable);
+            .Produces<ApiErrorResponse>(StatusCodes.Status503ServiceUnavailable)
+            .Produces<ApiErrorResponse>(StatusCodes.Status403Forbidden)
+            .RequireActor(ActorAccess.Any);
 }

@@ -11,6 +11,8 @@ import { CourseDetailPage, CoursesPage } from '@/pages/courses/CourseDetailPage'
 import { NotificationBatchCreatePage } from '@/pages/notifications/NotificationBatchCreatePage'
 import { NotificationBatchProgressPage } from '@/pages/notifications/NotificationBatchProgressPage'
 import { NotificationBatchListPage } from '@/pages/notifications/NotificationBatchListPage'
+import { StudentRouteGuard } from '@/auth/StudentRouteGuard'
+import { StudentHomePage, StudentLoadingPage, StudentLoginPage, StudentLogoutPage, StudentRegisterPage } from '@/pages/student-auth/StudentAuthPages'
 
 export function AppRouter() {
   return (
@@ -32,6 +34,13 @@ export function AppRouter() {
         <Route path={APP_ROUTES.notificationProgress} element={<NotificationBatchProgressPage />} />
         <Route path={APP_ROUTES.notificationProgressDetail} element={<NotificationBatchProgressPage />} />
         <Route path={APP_ROUTES.schedulerJobs} element={<PlaceholderPage />} />
+      </Route>
+      <Route path={APP_ROUTES.studentRegister} element={<StudentRegisterPage />} />
+      <Route path={APP_ROUTES.studentLogin} element={<StudentLoginPage />} />
+      <Route path={APP_ROUTES.studentLoading} element={<StudentLoadingPage />} />
+      <Route path={APP_ROUTES.studentLogout} element={<StudentLogoutPage />} />
+      <Route element={<StudentRouteGuard />}>
+        <Route path={APP_ROUTES.studentHome} element={<StudentHomePage />} />
       </Route>
     </Routes>
   )

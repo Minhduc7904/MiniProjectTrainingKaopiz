@@ -1,14 +1,15 @@
 using System.Net;
 using System.Net.Http.Json;
 using BuildingBlocks.Contracts.Api;
-using BuildingBlocks.Contracts.Students;
 using BuildingBlocks.Presentation.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using StudentService.Api.Endpoints;
+using StudentService.Api.Contracts.Students;
+using StudentService.Api.Endpoints.Students.GetById;
 using StudentService.Application;
-using StudentService.Application.Features.Students.GetById;
+using StudentService.Application.Repositories;
+using StudentService.Domain.Entities;
 
 namespace StudentService.UnitTests;
 
@@ -60,7 +61,7 @@ public sealed class StudentEndpointTests
         using var response = await client.GetAsync(
             ApiRoutes.Students.GetByIdServicePath(existingStudentId));
         var envelope = await response.Content.ReadFromJsonAsync<
-            ApiResponse<StudentQueryResponse>>();
+            ApiResponse<StudentResponse>>();
 
         Assert.Multiple(() =>
         {
@@ -88,16 +89,29 @@ public sealed class StudentEndpointTests
     private sealed class EndpointRepository(Guid existingStudentId)
         : IStudentRepository
     {
-        public Task<StudentQueryResponse?> GetByIdAsync(
+        public Task<Student?> GetByIdAsync(
             Guid studentId,
             CancellationToken cancellationToken) =>
-            Task.FromResult<StudentQueryResponse?>(
+            Task.FromResult<Student?>(
                 studentId == existingStudentId
-                    ? new StudentQueryResponse(
+                    ? new Student(
                         studentId,
                         "student@example.com",
                         "Student",
-                        "ACTIVE")
+                        "ACTIVE",
+                        DateTime.UtcNow,
+                        DateTime.UtcNow)
                     : null);
+
+        public Task<Student?> GetByNormalizedEmailAsync(
+            string normalizedEmail,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<Student?>(null);
+
+        public Task<Student> CreateAsync(
+            string normalizedEmail,
+            string displayName,
+            CancellationToken cancellationToken) =>
+            Task.FromException<Student>(new NotSupportedException());
     }
 }

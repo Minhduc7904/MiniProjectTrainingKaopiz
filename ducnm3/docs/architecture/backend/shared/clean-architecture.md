@@ -12,3 +12,7 @@ Domain → không phụ thuộc layer nào
 - **API/Worker**: transport, middleware và DI composition root; không đặt business rule.
 
 BuildingBlocks cung cấp response envelope, middleware, messaging, HTTP client và migration runner dùng chung. Xem chi tiết dependency và từng nhóm tại [kiến trúc BuildingBlocks](../building-blocks/architecture.md). Unit test nằm cạnh service/layer; cross-service/E2E nằm ở tests.
+
+`BuildingBlocks.Presentation` cũng cung cấp `RequireActor(Any|Admin|Student)` cho
+Minimal API. Filter chuẩn hóa `X-Actor-Type`/`X-Actor-Id`, trả lỗi HTTP chuẩn và
+lưu `ActorContext` cho endpoint; Application chỉ nhận actor đã được API kiểm tra.

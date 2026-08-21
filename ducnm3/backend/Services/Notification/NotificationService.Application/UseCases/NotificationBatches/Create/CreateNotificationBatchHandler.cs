@@ -24,7 +24,7 @@ public sealed class CreateNotificationBatchHandler(
         ArgumentNullException.ThrowIfNull(command);
         if (!string.Equals(command.TargetScope?.Trim(), NotificationTargetScopes.AllStudents, StringComparison.Ordinal) || command.CourseId is not null || command.CreatedBy == Guid.Empty || string.IsNullOrWhiteSpace(command.Title) || command.Title.Length > 200 || string.IsNullOrWhiteSpace(command.BodyMarkdown))
         {
-            throw NotificationErrors.Validation("Only ALL_STUDENTS, title, bodyMarkdown and createdBy are accepted.");
+            throw NotificationErrors.Validation("Only ALL_STUDENTS, title and bodyMarkdown are accepted.");
         }
 
         var batchSize = command.BatchSize ?? 500;

@@ -32,8 +32,7 @@ public sealed class NotificationEndpointsComponentTests
             new CreateNotificationRequest(
                 Guid.NewGuid().ToString(),
                 "Title",
-                "Body",
-                Guid.NewGuid().ToString()));
+                "Body"));
 
         Assert.Multiple(() =>
         {
@@ -60,7 +59,7 @@ public sealed class NotificationEndpointsComponentTests
         await using var fixture = await NotificationApiFixture.CreateAsync();
         var response = await fixture.Client.PostAsJsonAsync(
             ApiRoutes.Notifications.Items,
-            new CreateNotificationRequest("invalid", "Title", "Body", Guid.NewGuid().ToString()));
+            new CreateNotificationRequest("invalid", "Title", "Body"));
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
@@ -91,7 +90,10 @@ internal sealed class NotificationApiFixture : IAsyncDisposable
         app.MapCreateNotificationEndpoint();
         app.MapGetNotificationByIdEndpoint();
         await app.StartAsync();
-        return new NotificationApiFixture(app, app.GetTestClient());
+        var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
+        client.DefaultRequestHeaders.Add(ApiHeaderNames.ActorId, Guid.NewGuid().ToString());
+        return new NotificationApiFixture(app, client);
     }
 
     public async ValueTask DisposeAsync()

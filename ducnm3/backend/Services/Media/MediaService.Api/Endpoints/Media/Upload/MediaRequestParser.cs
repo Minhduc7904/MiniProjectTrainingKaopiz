@@ -6,22 +6,16 @@ using MediaService.Application;
 using MediaService.Application.Common.Errors;
 using MediaService.Domain.ValueObjects;
 using BuildingBlocks.Contracts.Api;
+using BuildingBlocks.Presentation.Extensions;
 
 namespace MediaService.Api.Endpoints.Media;
 
 public static class MediaRequestParser
 {
-    public static ActorReference ReadActor(HttpRequest request)
+    public static ActorReference ReadActor(HttpContext context)
     {
-        var actorType = request.Headers[ApiHeaderNames.ActorType].ToString();
-        var actorId = request.Headers[ApiHeaderNames.ActorId].ToString();
-        if (string.IsNullOrWhiteSpace(actorType) || string.IsNullOrWhiteSpace(actorId))
-        {
-            throw MediaErrors.InvalidActorType(
-                $"{ApiHeaderNames.ActorType} and {ApiHeaderNames.ActorId} headers are required.");
-        }
-
-        return new ActorReference(actorType, ParseGuid(actorId, ApiHeaderNames.ActorId));
+        var actor = context.GetRequiredActor();
+        return new ActorReference(actor.Type, actor.Id);
     }
 
     public static async Task<IFormCollection> ReadMultipartFormAsync(

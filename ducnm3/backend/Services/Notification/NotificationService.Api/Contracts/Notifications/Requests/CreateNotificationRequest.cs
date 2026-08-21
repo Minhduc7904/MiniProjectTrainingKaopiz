@@ -6,5 +6,4 @@ namespace NotificationService.Api.Contracts.Notifications.Requests;
 public sealed record CreateNotificationRequest(
     string StudentId,
     string Title,
-    string BodyMarkdown,
-    string CreatedBy);
+    string BodyMarkdown);

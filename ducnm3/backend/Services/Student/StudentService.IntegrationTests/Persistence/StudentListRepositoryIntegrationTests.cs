@@ -1,7 +1,8 @@
 using BuildingBlocks.DatabaseMigration;
 using Microsoft.EntityFrameworkCore;
-using StudentService.Application.Features.Students.GetList;
+using StudentService.Application.UseCases.Students.GetList;
 using StudentService.Infrastructure.Persistence;
+using StudentService.Infrastructure.Persistence.Repositories;
 using StudentService.Infrastructure.Persistence.Scaffolded;
 using Testcontainers.MySql;
 

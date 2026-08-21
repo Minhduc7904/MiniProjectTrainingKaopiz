@@ -27,3 +27,7 @@ dotnet test backend/BuildingBlocks/BuildingBlocks.Presentation.Tests/BuildingBlo
 Health endpoint xác nhận `MapDatabaseHealthEndpoint` ánh xạ đúng kết quả kiểm tra sang
 vỏ phản hồi HTTP dùng chung. Nó không kiểm tra kết nối MySQL thật; kiểm tra đó
 thuộc kiểm thử tích hợp dịch vụ khi được bổ sung.
+
+`ActorPolicyEndpointTests` kiểm tra `RequireActor`: chuẩn hóa `ADMIN`, cho phép
+`Any`, từ chối actor sai policy bằng `403 FORBIDDEN`, và trả `400 VALIDATION_FAILED`
+khi header type/UUID không hợp lệ.

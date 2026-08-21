@@ -6,18 +6,18 @@ Tạo ngay một thông báo `SINGLE`/`UNREAD` cho đúng một Học viên. Pub
 
 ## Yêu cầu
 
-MVP chưa có auth, vì vậy `createdBy` là UUID bắt buộc trong body.
+Chỉ `X-Actor-Type: ADMIN` được tạo notification. `X-Actor-Id` là UUID khác rỗng
+và được lưu làm `createdBy`; body không nhận UUID người tạo.
 
 ```json
 {
   "studentId": "11111111-1111-1111-1111-111111111111",
   "title": "Course update",
-  "bodyMarkdown": "![Sơ đồ](/media/api/media/22222222-2222-2222-2222-222222222222/content)",
-  "createdBy": "33333333-3333-3333-3333-333333333333"
+  "bodyMarkdown": "![Sơ đồ](/media/api/media/22222222-2222-2222-2222-222222222222/content)"
 }
 ```
 
-- `studentId`, `createdBy`: UUID khác rỗng.
+- `studentId`: UUID khác rỗng.
 - `title`: bắt buộc, tối đa 200 ký tự.
 - `bodyMarkdown`: bắt buộc. Markdown link tới media phải có đúng `contentUrl` dạng `/media/api/media/{mediaId}/content`.
 - `![alt](contentUrl)` tạo usage `EMBED`; `[tệp](contentUrl)` tạo usage `ATTACHMENT`. Một cặp `(mediaId, usageType)` chỉ được giữ một lần theo thứ tự xuất hiện.
@@ -48,7 +48,8 @@ Location: /notification/api/notifications/44444444-4444-4444-4444-444444444444
 
 ## Quy tắc và lỗi
 
-- `400 VALIDATION_FAILED`: UUID, title, bodyMarkdown hoặc media `contentUrl` không hợp lệ.
+- `400 VALIDATION_FAILED`: UUID, actor header, title, bodyMarkdown hoặc media `contentUrl` không hợp lệ.
+- `403 FORBIDDEN`: actor không phải `ADMIN`.
 - `503 SERVICE_UNAVAILABLE`: dependency hoặc hạ tầng tạm thời không sẵn sàng.
 - Notification được ghi cùng transactional outbox. Chỉ khi tạo notification thành công, command `RegisterNotificationMediaUsageV1` mới được Media Worker tiêu thụ để tạo `media_usages` theo `owner_id = notification.id`.
 - Nếu Media Worker xử lý thất bại, command được retry/redeliver; notification đã tạo không bị rollback.
