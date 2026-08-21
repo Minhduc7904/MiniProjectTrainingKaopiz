@@ -32,6 +32,7 @@ import { buildChangedPayload } from '@/pages/courses/courseUpdatePayload'
 import { buildCourseCreatePayload, COURSE_CREATE_INITIAL_FORM, isCourseCreateFormValid } from '@/pages/courses/courseCreatePayload'
 import { createLessonDeleteConfirmation } from '@/pages/courses/courseLessonDeleteConfirmation'
 import { canLoadSelectedLessonDetail } from '@/pages/courses/courseLessonSelection'
+import { buildCourseThumbnailUsage } from '@/pages/courses/courseThumbnailUsage'
 
 export function CourseDetailPage() {
   const { courseId } = useParams()
@@ -109,16 +110,9 @@ export function CourseDetailPage() {
     setMediaError(null)
     try {
       if (mediaMode === 'thumbnail') {
-        const thumbnailMediaId = selected[0]?.thumbnailMediaId
-        if (!thumbnailMediaId) throw new Error('Thumbnail WebP chưa READY. Hãy chọn ảnh đã xử lý xong.')
-        await createMediaUsageRequest({
-          mediaId: thumbnailMediaId,
-          ownerService: 'COURSE',
-          ownerType: 'COURSE_THUMBNAIL',
-          ownerId: courseId,
-          usageType: 'THUMBNAIL',
-          displayOrder: 0,
-        })
+        const usage = buildCourseThumbnailUsage(courseId, selected)
+        if (!usage) throw new Error('Hãy chọn ảnh gốc đã ở trạng thái READY.')
+        await createMediaUsageRequest(usage)
       } else {
         await createMediaUsagesBatchRequest(selected.map((media, index) => ({
           mediaId: media.id,

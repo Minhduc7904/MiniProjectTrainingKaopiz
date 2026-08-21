@@ -210,7 +210,7 @@ public sealed class EfMediaUsageRepository(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)
     {
-        await EnsureCourseMediaAsync(usage, requireThumbnail: true, cancellationToken);
+        await EnsureCourseOriginalImageAsync(usage, cancellationToken);
         return await ReplaceExclusiveUsageAsync(usage, cancellationToken);
     }
 
@@ -218,7 +218,7 @@ public sealed class EfMediaUsageRepository(
         CreateMediaUsageRecord usage,
         CancellationToken cancellationToken)
     {
-        await EnsureCourseMediaAsync(usage, requireThumbnail: false, cancellationToken);
+        await EnsureCourseOriginalImageAsync(usage, cancellationToken);
         await EnsureMediaUsagesAsync([usage], cancellationToken);
         return new DomainMediaUsage(
             usage.Id,
@@ -399,9 +399,8 @@ public sealed class EfMediaUsageRepository(
         await transaction.CommitAsync(cancellationToken);
     }
 
-    private async Task EnsureCourseMediaAsync(
+    private async Task EnsureCourseOriginalImageAsync(
         CreateMediaUsageRecord usage,
-        bool requireThumbnail,
         CancellationToken cancellationToken)
     {
         var media = await dbContext.MediaObjects
@@ -418,16 +417,9 @@ public sealed class EfMediaUsageRepository(
             throw MediaErrors.MediaNotReady();
         }
 
-        var valid = requireThumbnail
-            ? media.SourceMediaId is not null &&
-              media.DerivationType == MediaDerivationTypes.Thumbnail &&
-              string.Equals(media.ContentType, "image/webp", StringComparison.OrdinalIgnoreCase)
-            : media.MediaType == MediaTypes.Image && media.SourceMediaId is null;
-        if (!valid)
+        if (media.MediaType != MediaTypes.Image || media.SourceMediaId is not null)
         {
-            throw MediaErrors.InvalidMedia(requireThumbnail
-                ? "Course thumbnail must be a READY WebP thumbnail owned by the actor."
-                : "Course gallery media must be a READY original image owned by the actor.");
+            throw MediaErrors.InvalidMedia("Course media must be a READY original image owned by the actor.");
         }
     }
 

@@ -138,7 +138,7 @@ public sealed class MediaUploadUsageFlowTests
     }
 
     [Test]
-    public async Task GetActiveUsageIdsByOwnersAsync_MultipleOwnerScopes_ReturnsOnlyExactActiveUsageIds()
+    public async Task GetActiveUsageIdsByOwnersAsyncMultipleOwnerScopesReturnsOnlyExactActiveUsageIds()
     {
         var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
             .UseMySql(
@@ -173,6 +173,98 @@ public sealed class MediaUploadUsageFlowTests
         Assert.That(result, Is.EquivalentTo([courseUsageId, lessonUsageId]));
     }
 
+    [Test]
+    public async Task ReplaceCourseThumbnailAsyncReadyOriginalImageCreatesUsageForOriginalMedia()
+    {
+        var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                mysql.GetConnectionString(),
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        var adminId = Guid.NewGuid();
+        var courseId = Guid.NewGuid();
+        var originalMediaId = Guid.NewGuid();
+
+        await using (var setupContext = new MediaDbContext(dbOptions))
+        {
+            setupContext.MediaObjects.Add(CreateReadyOriginalImage(originalMediaId, adminId));
+            await setupContext.SaveChangesAsync();
+        }
+
+        await using var usageContext = new MediaDbContext(dbOptions);
+        var repository = new EfMediaUsageRepository(usageContext, TimeProvider.System);
+
+        var usage = await repository.ReplaceCourseThumbnailAsync(
+            new CreateMediaUsageRecord(
+                Guid.NewGuid(),
+                originalMediaId,
+                MediaOwnerServices.Course,
+                MediaOwnerTypes.CourseThumbnail,
+                courseId,
+                MediaUsageTypes.Thumbnail,
+                0,
+                new ActorReference(ActorTypes.Admin, adminId)),
+            TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(usage.MediaId, Is.EqualTo(originalMediaId));
+            Assert.That(usage.OwnerType, Is.EqualTo(MediaOwnerTypes.CourseThumbnail));
+        });
+    }
+
+    [Test]
+    public async Task ListByActorAsyncReturnsOnlyOriginalMedia()
+    {
+        var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                mysql.GetConnectionString(),
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        var adminId = Guid.NewGuid();
+        var originalMediaId = Guid.NewGuid();
+        var derivativeMediaId = Guid.NewGuid();
+
+        await using (var setupContext = new MediaDbContext(dbOptions))
+        {
+            setupContext.MediaObjects.Add(CreateReadyOriginalImage(originalMediaId, adminId));
+            setupContext.MediaObjects.Add(new MediaService.Infrastructure.Persistence.Scaffolded.MediaObject
+            {
+                Id = derivativeMediaId,
+                SourceMediaId = originalMediaId,
+                DerivationType = MediaDerivationTypes.Thumbnail,
+                Bucket = "images",
+                ObjectKey = $"integration/{derivativeMediaId:N}.webp",
+                MediaType = MediaTypes.Image,
+                ContentType = "image/webp",
+                OriginalFileName = "course-thumbnail.thumbnail.webp",
+                SizeBytes = 1,
+                ChecksumSha256 = new string('d', 64),
+                UploadedBy = adminId,
+                UploadedByType = ActorTypes.Admin,
+                Status = MediaObjectStatuses.Ready,
+                IsDraft = true,
+                DraftedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+                CompletedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+                UpdatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+                CreatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+            });
+            await setupContext.SaveChangesAsync();
+        }
+
+        await using var queryContext = new MediaDbContext(dbOptions);
+        var repository = new EfMediaRepository(queryContext, TimeProvider.System);
+
+        var result = await repository.ListByActorAsync(
+            new ActorReference(ActorTypes.Admin, adminId),
+            MediaTypes.Image,
+            null,
+            20,
+            TestContext.CurrentContext.CancellationToken);
+
+        Assert.That(result.Select(item => item.Id), Is.EqualTo([originalMediaId]));
+    }
+
     [OneTimeTearDown]
     public async Task StopDependenciesAsync()
     {
@@ -199,7 +291,6 @@ public sealed class MediaUploadUsageFlowTests
         var actorValidation = new ActorValidationService(
             [new StudentActorValidator(studentLookup)]);
         var uploadHandler = new UploadMediaHandler(
-            actorValidation,
             allocator,
             storage,
             repository,
@@ -400,7 +491,6 @@ public sealed class MediaUploadUsageFlowTests
         Guid actorId,
         string fileName) =>
         new(
-            MediaTypes.Image,
             "image/png",
             fileName,
             content,
@@ -524,7 +614,30 @@ public sealed class MediaUploadUsageFlowTests
             DisplayOrder = 0,
             CreatedBy = Guid.Parse("44444444-4444-4444-4444-444444444444"),
             CreatedByType = ActorTypes.Student,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+        };
+
+    private static MediaService.Infrastructure.Persistence.Scaffolded.MediaObject CreateReadyOriginalImage(
+        Guid mediaId,
+        Guid adminId) =>
+        new()
+        {
+            Id = mediaId,
+            Bucket = "images",
+            ObjectKey = $"integration/{mediaId:N}.png",
+            MediaType = MediaTypes.Image,
+            ContentType = "image/png",
+            OriginalFileName = "course-thumbnail.png",
+            SizeBytes = 1,
+            ChecksumSha256 = new string('c', 64),
+            UploadedBy = adminId,
+            UploadedByType = ActorTypes.Admin,
+            Status = MediaObjectStatuses.Ready,
+            IsDraft = true,
+            DraftedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+            CompletedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+            UpdatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
         };
 
     private static MinioStorageOptions CreateStorageOptions(string endpoint) =>

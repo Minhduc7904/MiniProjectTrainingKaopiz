@@ -420,6 +420,41 @@
           "response": []
         },
         {
+          "name": "GET Media Library originals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"OK\", function () { pm.response.to.have.status(200); });",
+                  "const payload = pm.response.json();",
+                  "pm.test(\"Returns selectable original items\", function () { pm.expect(payload.data.items).to.be.an(\"array\"); payload.data.items.forEach(function (item) { pm.expect(item.contentUrl).to.contain(\"/content\"); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Actor-Type", "value": "STUDENT", "type": "text" },
+              { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" },
+              { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/media/api/media/library?mediaType=IMAGE&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "api", "media", "library"],
+              "query": [
+                { "key": "mediaType", "value": "IMAGE" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            },
+            "description": "Business flow: docs/business-flows/media/get-media-library.md. Each item id/contentUrl is the original; thumbnailUrl is preview-only."
+          },
+          "response": []
+        },
+        {
           "name": "POST Complete direct media upload",
           "event": [
             {
