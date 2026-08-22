@@ -214,7 +214,7 @@ public sealed class MediaUploadUsageFlowTests
     }
 
     [Test]
-    public async Task ListByActorAsyncReturnsOnlyOriginalMedia()
+    public async Task ListByActorAsyncReturnsOnlyReadyOriginalMedia()
     {
         var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
             .UseMySql(
@@ -224,6 +224,7 @@ public sealed class MediaUploadUsageFlowTests
         var adminId = Guid.NewGuid();
         var originalMediaId = Guid.NewGuid();
         var derivativeMediaId = Guid.NewGuid();
+        var pendingMediaId = Guid.NewGuid();
 
         await using (var setupContext = new MediaDbContext(dbOptions))
         {
@@ -249,6 +250,11 @@ public sealed class MediaUploadUsageFlowTests
                 UpdatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
                 CreatedAt = new DateTime(2026, 8, 21, 0, 0, 0, DateTimeKind.Utc),
             });
+            var pending = CreateReadyOriginalImage(pendingMediaId, adminId);
+            pending.Status = MediaObjectStatuses.Pending;
+            pending.ChecksumSha256 = null;
+            pending.CompletedAt = null;
+            setupContext.MediaObjects.Add(pending);
             await setupContext.SaveChangesAsync();
         }
 
@@ -261,6 +267,7 @@ public sealed class MediaUploadUsageFlowTests
         var result = await repository.ListByActorAsync(
             new ActorReference(ActorTypes.Admin, adminId),
             MediaTypes.Image,
+            MediaObjectStatuses.Ready,
             null,
             20,
             TestContext.CurrentContext.CancellationToken);

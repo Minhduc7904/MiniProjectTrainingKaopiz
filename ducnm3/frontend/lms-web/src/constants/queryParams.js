@@ -1,9 +1,11 @@
 export const QUERY_PARAMS = {
+  mediaType: 'mediaType',
   status: 'status',
   sortBy: 'sortBy',
   sortDirection: 'sortDirection',
   page: 'page',
   pageSize: 'pageSize',
+  cursor: 'cursor',
   ownerService: 'ownerService',
   ownerType: 'ownerType',
   usageType: 'usageType',

@@ -4,6 +4,10 @@ import { toApiError } from '@/api/toApiError'
 
 export const MEDIA_LIBRARY_ALL = 'ALL'
 
+function getBucketKey(mediaType = '', status = '') {
+  return `${mediaType || MEDIA_LIBRARY_ALL}:${status || MEDIA_LIBRARY_ALL}`
+}
+
 function createBucket() {
   return {
     data: [],
@@ -21,22 +25,23 @@ function createInitialState() {
   return { buckets: {} }
 }
 
-function getBucket(state, mediaType) {
-  const key = mediaType || MEDIA_LIBRARY_ALL
+function getBucket(state, mediaType, status = '') {
+  const key = getBucketKey(mediaType, status)
   state.buckets[key] ??= createBucket()
   return state.buckets[key]
 }
 
 export const fetchMediaLibrary = createAsyncThunk(
   'mediaLibrary/fetch',
-  async ({ mediaType = '', cursor = null, pageSize = 24 }, { rejectWithValue }) => {
+  async ({ mediaType = '', status = '', cursor = null, pageSize = 24 }, { rejectWithValue }) => {
     try {
-      const response = await fetchMediaLibraryRequest({ mediaType, cursor, pageSize })
-      return { ...response, mediaType: mediaType || MEDIA_LIBRARY_ALL, cursor }
+      const response = await fetchMediaLibraryRequest({ mediaType, status, cursor, pageSize })
+      return { ...response, mediaType, status, cursor }
     } catch (error) {
       return rejectWithValue({
         error: toApiError(error),
-        mediaType: mediaType || MEDIA_LIBRARY_ALL,
+        mediaType,
+        status,
       })
     }
   },
@@ -49,8 +54,14 @@ const mediaLibrarySlice = createSlice({
     appendMedia(state, action) {
       const media = action.payload
       if (!media?.id) return
-      const mediaType = media.mediaType ?? MEDIA_LIBRARY_ALL
-      const keys = new Set([MEDIA_LIBRARY_ALL, mediaType, ...Object.keys(state.buckets)])
+      const mediaType = media.mediaType ?? ''
+      const status = media.status ?? ''
+      const keys = new Set([
+        getBucketKey(),
+        getBucketKey(mediaType),
+        getBucketKey('', status),
+        getBucketKey(mediaType, status),
+      ])
       keys.forEach((key) => {
         const bucket = state.buckets[key] ?? (state.buckets[key] = createBucket())
         if (!bucket.data.some((item) => item.id === media.id)) bucket.data.unshift(media)
@@ -63,8 +74,8 @@ const mediaLibrarySlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMediaLibrary.pending, (state, action) => {
-        const { mediaType = '', cursor = null } = action.meta.arg ?? {}
-        const bucket = getBucket(state, mediaType)
+        const { mediaType = '', status = '', cursor = null } = action.meta.arg ?? {}
+        const bucket = getBucket(state, mediaType, status)
         bucket.loading = true
         bucket.error = null
         if (!cursor) {
@@ -74,8 +85,8 @@ const mediaLibrarySlice = createSlice({
         }
       })
       .addCase(fetchMediaLibrary.fulfilled, (state, action) => {
-        const { mediaType, cursor } = action.payload
-        const bucket = getBucket(state, mediaType)
+        const { mediaType, status, cursor } = action.payload
+        const bucket = getBucket(state, mediaType, status)
         const incoming = action.payload.data?.items ?? []
         const existing = cursor ? bucket.data : []
         bucket.data = [...existing, ...incoming.filter((item) => !existing.some((known) => known.id === item.id))]
@@ -86,8 +97,9 @@ const mediaLibrarySlice = createSlice({
         bucket.error = null
       })
       .addCase(fetchMediaLibrary.rejected, (state, action) => {
-        const mediaType = action.payload?.mediaType ?? MEDIA_LIBRARY_ALL
-        const bucket = getBucket(state, mediaType)
+        const mediaType = action.payload?.mediaType ?? ''
+        const status = action.payload?.status ?? ''
+        const bucket = getBucket(state, mediaType, status)
         bucket.loading = false
         bucket.error = action.payload?.error ?? { code: 'UNEXPECTED_ERROR', message: 'Không tải được thư viện media.' }
       })
@@ -96,5 +108,5 @@ const mediaLibrarySlice = createSlice({
 
 export const { appendMedia, clearMediaLibrary } = mediaLibrarySlice.actions
 export const mediaLibraryReducer = mediaLibrarySlice.reducer
-export const selectMediaLibraryBucket = (state, mediaType = '') =>
-  state.mediaLibrary.buckets[mediaType || MEDIA_LIBRARY_ALL] ?? EMPTY_BUCKET
+export const selectMediaLibraryBucket = (state, mediaType = '', status = '') =>
+  state.mediaLibrary.buckets[getBucketKey(mediaType, status)] ?? EMPTY_BUCKET

@@ -313,6 +313,7 @@ public sealed class DirectMediaUploadEndpointsComponentTests
         public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
             ActorReference actor,
             string? mediaType,
+            string? status,
             (DateTime CreatedAtUtc, Guid Id)? cursor,
             int take,
             CancellationToken token) => throw new NotSupportedException();

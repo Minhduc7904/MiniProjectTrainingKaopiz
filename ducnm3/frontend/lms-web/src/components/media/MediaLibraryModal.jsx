@@ -2,10 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, FileUp, Grid2X2, Images, List, LoaderCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/admin/Button'
+import { Dropdown } from '@/components/ui/admin/Dropdown'
 import { FileInput } from '@/components/ui/admin/Field'
 import { Icon } from '@/components/ui/admin/Icon'
 import { Tabs } from '@/components/ui/admin/Tabs'
-import { MEDIA_TYPES, MEDIA_TYPE_LABELS } from '@/constants/media'
+import {
+  MEDIA_STATUSES,
+  MEDIA_STATUS_LABELS,
+  MEDIA_TYPES,
+  MEDIA_TYPE_LABELS,
+} from '@/constants/media'
 import { useDirectMediaUpload } from '@/hooks/media/useDirectMediaUpload'
 import { useMediaLibrary } from '@/hooks/media/useMediaLibrary'
 import { adminUi } from '@/theme/admin'
@@ -15,6 +21,14 @@ import { getMediaTypeIcon, getMediaTypeLabel } from '@/components/media/mediaPre
 const LIBRARY_TABS = [
   { id: '', label: 'Tất cả', icon: Images },
   ...Object.values(MEDIA_TYPES).map((id) => ({ id, label: MEDIA_TYPE_LABELS[id] })),
+]
+
+const STATUS_OPTIONS = [
+  { value: '', label: 'Tất cả trạng thái' },
+  ...Object.values(MEDIA_STATUSES).map((value) => ({
+    value,
+    label: MEDIA_STATUS_LABELS[value],
+  })),
 ]
 
 const EMPTY_SELECTION = []
@@ -39,11 +53,12 @@ export function MediaLibraryModal({
   const dialogRef = useRef(null)
   const [tab, setTab] = useState('library')
   const [mediaType, setMediaType] = useState('')
+  const [status, setStatus] = useState('')
   const [selected, setSelected] = useState(initialSelection)
   const [file, setFile] = useState(null)
   const [fileKey, setFileKey] = useState(0)
   const [viewMode, setViewMode] = useState('grid')
-  const library = useMediaLibrary(mediaType, open && tab === 'library')
+  const library = useMediaLibrary(mediaType, status, open && tab === 'library')
   const upload = useDirectMediaUpload()
 
   useEffect(() => {
@@ -129,10 +144,20 @@ export function MediaLibraryModal({
                 >{item.label}</button>
               ))}
             </div>
+            <div className={`mt-4 border-t pt-4 ${adminUi.hairlineT}`}>
+              <Dropdown
+                id="media-library-status"
+                label="Trạng thái"
+                value={status}
+                options={STATUS_OPTIONS}
+                className="min-w-0"
+                onChange={setStatus}
+              />
+            </div>
           </aside>
           <section className="min-h-0 min-w-0 flex-1 overflow-y-auto p-4">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <p className={`text-[12px] ${adminUi.body}`}>{library.data.length} media đã tải</p>
+              <p className={`text-[12px] ${adminUi.body}`}>{library.data.length} media phù hợp</p>
               <div className={`flex items-center gap-1 rounded-md p-1 ${adminUi.choiceIdle}`} role="group" aria-label="Kiểu hiển thị">
                 <Button
                   type="button"

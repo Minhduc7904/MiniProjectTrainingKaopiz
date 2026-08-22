@@ -20,7 +20,7 @@ describe('media library cache', () => {
     let state = mediaLibraryReducer(undefined, appendMedia(image))
     state = mediaLibraryReducer(state, appendMedia(image))
 
-    expect(state.buckets.ALL.data).toHaveLength(1)
+    expect(state.buckets['ALL:ALL'].data).toHaveLength(1)
   })
 
   it('appends a fetched cursor page to the cached filter', () => {
@@ -36,7 +36,22 @@ describe('media library cache', () => {
       { mediaType: 'IMAGE', cursor: 'cursor-1' },
     ))
 
-    expect(state.buckets.IMAGE.data.map((item) => item.id)).toEqual(['image-1', 'image-2'])
-    expect(state.buckets.IMAGE.hasMore).toBe(false)
+    expect(state.buckets['IMAGE:ALL'].data.map((item) => item.id)).toEqual(['image-1', 'image-2'])
+    expect(state.buckets['IMAGE:ALL'].hasMore).toBe(false)
+  })
+
+  it('keeps status-filtered results in separate cache buckets', () => {
+    let state = mediaLibraryReducer(undefined, fetchMediaLibrary.pending('request-ready', {
+      mediaType: 'IMAGE',
+      status: 'READY',
+    }))
+    state = mediaLibraryReducer(state, fetchMediaLibrary.fulfilled(
+      { data: { items: [image], nextCursor: null, hasMore: false }, mediaType: 'IMAGE', status: 'READY', cursor: null },
+      'request-ready',
+      { mediaType: 'IMAGE', status: 'READY' },
+    ))
+
+    expect(selectMediaLibraryBucket({ mediaLibrary: state }, 'IMAGE', 'READY').data).toEqual([image])
+    expect(selectMediaLibraryBucket({ mediaLibrary: state }, 'IMAGE', 'PENDING').data).toEqual([])
   })
 })

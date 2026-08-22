@@ -23,9 +23,15 @@ public sealed class GetMediaLibraryHandler(IMediaRepository repository)
         if (mediaType is not null && !MediaTypes.All.Contains(mediaType))
             throw MediaErrors.InvalidMedia("mediaType is not supported.");
 
+        var status = string.IsNullOrWhiteSpace(query.Status)
+            ? null
+            : query.Status.Trim().ToUpperInvariant();
+        if (status is not null && !MediaObjectStatuses.All.Contains(status))
+            throw MediaErrors.InvalidMedia("status is not supported.");
+
         var cursor = DecodeCursor(query.Cursor);
         var page = await repository.ListByActorAsync(
-            query.Actor, mediaType, cursor, query.PageSize + 1, cancellationToken);
+            query.Actor, mediaType, status, cursor, query.PageSize + 1, cancellationToken);
         var hasMore = page.Count > query.PageSize;
         var items = page.Take(query.PageSize).ToArray();
         var nextCursor = hasMore && items.Length > 0

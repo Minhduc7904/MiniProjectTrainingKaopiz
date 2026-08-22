@@ -106,6 +106,7 @@ public sealed class EfMediaRepository(
     public async Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
         ActorReference actor,
         string? mediaType,
+        string? status,
         (DateTime CreatedAtUtc, Guid Id)? cursor,
         int take,
         CancellationToken cancellationToken)
@@ -118,6 +119,8 @@ public sealed class EfMediaRepository(
                 item.DeletedAt == null);
         if (mediaType is not null)
             query = query.Where(item => item.MediaType == mediaType);
+        if (status is not null)
+            query = query.Where(item => item.Status == status);
         if (cursor is { } value)
         {
             query = query.Where(item => item.CreatedAt < value.CreatedAtUtc ||

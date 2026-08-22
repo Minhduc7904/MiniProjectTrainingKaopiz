@@ -15,6 +15,7 @@ public static class GetMediaLibraryEndpoint
                 ApiRoutes.Media.Library,
                 async (
                     string? mediaType,
+                    string? status,
                     string? cursor,
                     int? pageSize,
                     HttpContext context,
@@ -25,6 +26,7 @@ public static class GetMediaLibraryEndpoint
                     var result = await handler.HandleAsync(
                         new GetMediaLibraryQuery(
                             mediaType ?? string.Empty,
+                            status ?? string.Empty,
                             cursor,
                             pageSize ?? 20,
                             actor),

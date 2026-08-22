@@ -22,6 +22,10 @@ dotnet test backend/Services/Media/MediaService.ComponentTests/MediaService.Comp
 
 `GetMediaSummaryEndpointComponentTests` gửi `GET /api/media/summary` với actor ADMIN; đạt khi trả `200`, `totalMedia`, envelope chuẩn và `Cache-Control: no-store`.
 
+`GetMediaLibraryEndpointComponentTests` gửi `GET /api/media/library` với actor
+ADMIN, `mediaType=IMAGE` và `status=pending`; đạt khi route bind đúng filter,
+handler nhận `PENDING` đã normalize và trả `200` envelope an toàn.
+
 `HealthEndpointReportsEachDependencyCombination` chạy bốn ca dựa trên dữ liệu:
 
 | Trình kiểm tra cơ sở dữ liệu | Trình kiểm tra lưu trữ | HTTP dự kiến | Đạt khi phản hồi |

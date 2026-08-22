@@ -3,6 +3,7 @@ import { unwrapEnvelope } from '@/api/unwrapEnvelope'
 import { API_ROUTES } from '@/constants/apiRoutes'
 import { HTTP_HEADERS } from '@/constants/http'
 import { POST_MEDIA_FIELDS } from '@/constants/media'
+import { QUERY_PARAMS } from '@/constants/queryParams'
 import { SILENT_TOAST_CONFIG } from '@/constants/toast'
 
 export async function uploadMediaRequest({
@@ -26,10 +27,11 @@ export async function uploadMediaRequest({
   }
 }
 
-export async function fetchMediaLibraryRequest({ mediaType = '', cursor = null, pageSize = 24 } = {}) {
-  const params = { pageSize }
-  if (mediaType) params.mediaType = mediaType
-  if (cursor) params.cursor = cursor
+export async function fetchMediaLibraryRequest({ mediaType = '', status = '', cursor = null, pageSize = 24 } = {}) {
+  const params = { [QUERY_PARAMS.pageSize]: pageSize }
+  if (mediaType) params[QUERY_PARAMS.mediaType] = mediaType
+  if (status) params[QUERY_PARAMS.status] = status
+  if (cursor) params[QUERY_PARAMS.cursor] = cursor
   const response = await httpClient.get(API_ROUTES.media.library, { params })
   return unwrapEnvelope(response)
 }

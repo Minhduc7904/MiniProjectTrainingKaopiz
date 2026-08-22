@@ -13,6 +13,18 @@ export const MEDIA_TYPES = {
   other: 'OTHER',
 }
 
+export const MEDIA_STATUSES = {
+  pending: 'PENDING',
+  ready: 'READY',
+  failed: 'FAILED',
+}
+
+export const MEDIA_STATUS_LABELS = {
+  [MEDIA_STATUSES.pending]: 'Đang chờ hoàn tất',
+  [MEDIA_STATUSES.ready]: 'Đã sẵn sàng',
+  [MEDIA_STATUSES.failed]: 'Tải lên thất bại',
+}
+
 export const MEDIA_TYPE_LABELS = {
   [MEDIA_TYPES.image]: 'Ảnh',
   [MEDIA_TYPES.video]: 'Video',

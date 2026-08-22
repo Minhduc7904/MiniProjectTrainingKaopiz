@@ -10,17 +10,20 @@ Cho actor chọn media original đã upload để gán usage hoặc chèn vào M
 
 1. Client gửi `GET /media/api/media/library` kèm actor header và filter tùy chọn.
 2. Media Service lọc ownership của actor, media chưa xóa và chỉ nhận record
-   original (`sourceMediaId = null`).
+   original (`sourceMediaId = null`). Nếu client gửi `status`, service chỉ trả
+   trạng thái `PENDING`, `READY` hoặc `FAILED` tương ứng.
 3. Service sắp xếp `createdAtUtc DESC, id DESC`, áp dụng cursor và trả item.
 4. UI hiển thị `thumbnailUrl` nếu thumbnail derivative đã `READY`; nếu không
    dùng `contentUrl` của original để preview.
-5. Khi người dùng chọn, client luôn truyền `item.id` (original) vào media usage
-   hoặc dùng `item.contentUrl` (original) để chèn Markdown.
+5. Khi người dùng chọn, client chỉ dùng item `READY`: truyền `item.id`
+   (original) vào media usage hoặc dùng `item.contentUrl` (original) để chèn
+   Markdown.
 
 ## Trường hợp rỗng và lỗi
 
 - Không có media khớp: `200` với `items: []`.
-- Filter, cursor hoặc kích thước trang không hợp lệ: `400 INVALID_MEDIA`.
+- Filter `mediaType`/`status`, cursor hoặc kích thước trang không hợp lệ:
+  `400 INVALID_MEDIA`.
 
 ## Dữ liệu thay đổi
 

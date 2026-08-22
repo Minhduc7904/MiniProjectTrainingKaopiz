@@ -16,6 +16,10 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
 
     public MediaRecord? ExistingMedia { get; set; }
 
+    public IReadOnlyList<MediaLibraryRecord> LibraryRecords { get; set; } = [];
+
+    public string? LastLibraryStatus { get; private set; }
+
     public CreateMediaUsageRecord? CreatedUsage { get; private set; }
 
     public MediaUsageUrlRecord? ExistingUsageUrl { get; set; }
@@ -35,10 +39,14 @@ public sealed class StubMediaRepository(List<string>? sharedEvents = null)
     public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
         Domain.ValueObjects.ActorReference actor,
         string? mediaType,
+        string? status,
         (DateTime CreatedAtUtc, Guid Id)? cursor,
         int take,
-        CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<MediaLibraryRecord>>([]);
+        CancellationToken cancellationToken)
+    {
+        LastLibraryStatus = status;
+        return Task.FromResult(LibraryRecords);
+    }
 
     public Task EnsureMediaUsagesAsync(
         IReadOnlyList<CreateMediaUsageRecord> usages,

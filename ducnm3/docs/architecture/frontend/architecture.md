@@ -60,6 +60,11 @@ attachment, preview/gỡ media và mở `MediaLibraryModal` ở Thư viện ho�
 Upload hoàn tất trở về thư viện để Admin chọn rồi gắn media vào Lesson; không
 thêm request trực tiếp từ component UI.
 
+`MediaLibraryModal` dùng chung cho Course, Lesson và Markdown có filter loại ở
+panel trái, dropdown `status` (`PENDING`/`READY`/`FAILED`) và hai chế độ xem
+Grid/List. Redux cache tách theo cặp loại + trạng thái, nên đổi filter không
+hiển thị lại dữ liệu của filter trước.
+
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.

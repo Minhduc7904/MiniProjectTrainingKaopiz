@@ -32,6 +32,7 @@ stub trong bộ nhớ để test không phụ thuộc Student Service qua mạng
 | Kiểm thử | Dữ liệu / thao tác | Đạt khi |
 | --- | --- | --- |
 | `CountAsync_NewMediaObjects_ReturnsEveryPersistedRow` | Ghi hai `media_objects` bằng DbContext production trong MySQL Testcontainer. | Repository production trả tổng tăng đúng hai, không lọc status. |
+| `ListByActorAsyncReturnsOnlyReadyOriginalMedia` | Ghi original `READY`, original `PENDING` và thumbnail derivative `READY` của cùng ADMIN vào MySQL Testcontainer, rồi lọc `status=READY`. | Query Media Library trả đúng original `READY`, không lẫn `PENDING` hoặc derivative. |
 | `StorageLifecycleWorksForEachMediaCategory` — IMAGE | Tải lên các byte `integration-Image` với `image/png`, phần mở rộng `png`; kiểm tra tồn tại, siêu dữ liệu, tải xuống và xóa. | Tải lên `images`; khóa kết thúc bằng `.png`; kích thước đúng; trạng thái tồn tại là `true`; MIME/kích thước trong siêu dữ liệu đúng; các byte tải xuống giống byte tải lên; sau khi xóa, trạng thái tồn tại là `false`. |
 | `StorageLifecycleWorksForEachMediaCategory` — VIDEO | Cùng vòng đời với `video/mp4`, phần mở rộng `mp4`. | Bucket `videos`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
 | `StorageLifecycleWorksForEachMediaCategory` — DOCUMENT | Cùng vòng đời với `application/pdf`, phần mở rộng `pdf`. | Bucket `documents`, siêu dữ liệu và dữ liệu tải xuống/xóa đúng theo hợp đồng. |
