@@ -24,8 +24,43 @@ public sealed class MySqlSeedRunner(
         var plan = data.CalculatePlan();
 
         await using var studentConnection = new MySqlConnection(options.StudentConnectionString);
-        await using var courseConnection = new MySqlConnection(options.CourseConnectionString);
         await studentConnection.OpenAsync(cancellationToken);
+
+        if (options.StudentsOnly)
+        {
+            await AcquireLockAsync(studentConnection, cancellationToken);
+            try
+            {
+                var existingStudents = await PreflightStudentsOnlyAsync(
+                    studentConnection,
+                    plan,
+                    cancellationToken);
+
+                if (options.DryRun)
+                {
+                    return new SeedRunSummary(plan, 0, existingStudents, stopwatch.Elapsed);
+                }
+
+                await SeedStudentsAsync(studentConnection, existingStudents, cancellationToken);
+                await ValidateStudentsOnlyResultAsync(
+                    studentConnection,
+                    plan,
+                    cancellationToken);
+
+                stopwatch.Stop();
+                return new SeedRunSummary(
+                    plan,
+                    plan.Students - existingStudents,
+                    existingStudents,
+                    stopwatch.Elapsed);
+            }
+            finally
+            {
+                await ReleaseLockAsync(studentConnection);
+            }
+        }
+
+        await using var courseConnection = new MySqlConnection(options.CourseConnectionString);
         await courseConnection.OpenAsync(cancellationToken);
         await AcquireLockAsync(courseConnection, cancellationToken);
 
@@ -115,6 +150,32 @@ public sealed class MySqlSeedRunner(
         }
 
         return existing;
+    }
+
+    private async Task<long> PreflightStudentsOnlyAsync(
+        MySqlConnection studentConnection,
+        SeedPlan plan,
+        CancellationToken cancellationToken)
+    {
+        await EnsureSchemaReadyAsync(
+            studentConnection,
+            ["schema_migrations", "students"],
+            cancellationToken);
+
+        var existingStudents = await CountSeedStudentsAsync(studentConnection, cancellationToken);
+        if (!options.Resume && existingStudents > 0)
+        {
+            throw new SeedValidationException(
+                "Student seed rows for this random seed already exist. Rerun with --resume and the same options.");
+        }
+
+        if (existingStudents > plan.Students)
+        {
+            throw new SeedValidationException(
+                "Existing Student seed rows exceed the requested deterministic dataset.");
+        }
+
+        return existingStudents;
     }
 
     private async Task SeedStudentsAsync(
@@ -362,6 +423,26 @@ public sealed class MySqlSeedRunner(
             cancellationToken);
         progress.PhaseAdvanced(SeedPhase.Validation, 4, 4, 4, 0);
         progress.PhaseCompleted(SeedPhase.Validation, 4, 4, 0, stopwatch.Elapsed);
+    }
+
+    private async Task ValidateStudentsOnlyResultAsync(
+        MySqlConnection studentConnection,
+        SeedPlan plan,
+        CancellationToken cancellationToken)
+    {
+        progress.PhaseStarted(SeedPhase.Validation, 1);
+        var stopwatch = Stopwatch.StartNew();
+        var actualStudents = await CountSeedStudentsAsync(studentConnection, cancellationToken);
+
+        if (actualStudents != plan.Students)
+        {
+            throw new InvalidOperationException(
+                "Student-only seed validation failed because final seed row count does not match the deterministic plan. " +
+                $"Expected students={plan.Students}, actual students={actualStudents}.");
+        }
+
+        progress.PhaseAdvanced(SeedPhase.Validation, 1, 1, 1, 0);
+        progress.PhaseCompleted(SeedPhase.Validation, 1, 1, 0, stopwatch.Elapsed);
     }
 
     private async Task ValidateEnrollmentStudentIdsAsync(
@@ -624,6 +705,15 @@ public sealed class MySqlSeedRunner(
             connection,
             $"SELECT COUNT(*) FROM `{table}`;",
             cancellationToken);
+
+    private Task<long> CountSeedStudentsAsync(
+        MySqlConnection connection,
+        CancellationToken cancellationToken) =>
+        ExecuteScalarAsync<long>(
+            connection,
+            "SELECT COUNT(*) FROM students WHERE email LIKE @emailPattern;",
+            cancellationToken,
+            ("@emailPattern", $"seed.{options.RandomSeed}.student.%@example.test"));
 
     private static async Task<Distribution> GetDistributionAsync(
         MySqlConnection connection,

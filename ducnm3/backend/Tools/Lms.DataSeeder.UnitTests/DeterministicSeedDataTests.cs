@@ -98,6 +98,26 @@ public class DeterministicSeedDataTests
     }
 
     [Test]
+    public void CalculatePlanStudentsOnlyExcludesCourseOwnedRows()
+    {
+        var generator = new DeterministicSeedData(CreateOptions(randomSeed: 123) with
+        {
+            StudentsOnly = true,
+        });
+
+        var plan = generator.CalculatePlan();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(plan.Students, Is.EqualTo(50));
+            Assert.That(plan.Courses, Is.Zero);
+            Assert.That(plan.Lessons, Is.Zero);
+            Assert.That(plan.Enrollments, Is.Zero);
+            Assert.That(plan.LessonProgresses, Is.Zero);
+        });
+    }
+
+    [Test]
     public void CourseApiLargeProfilePlansOneProgressPerCourse()
     {
         var generator = new DeterministicSeedData(CreateOptions(randomSeed: 123) with

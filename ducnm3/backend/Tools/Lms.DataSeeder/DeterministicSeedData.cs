@@ -74,6 +74,11 @@ public sealed class DeterministicSeedData(SeedOptions options)
 
     public SeedPlan CalculatePlan()
     {
+        if (options.StudentsOnly)
+        {
+            return new SeedPlan(options.StudentCount, 0, 0, 0, 0);
+        }
+
         long lessonCount = 0;
         for (var courseIndex = 1; courseIndex <= options.CourseCount; courseIndex++)
         {

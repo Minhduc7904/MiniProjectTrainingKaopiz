@@ -58,6 +58,24 @@ scripts/seed/run-development-seed.sh \
   --random-seed 12345
 ```
 
+## Chỉ seed Student vào database hiện tại
+
+Dùng `--students-only` để chỉ tạo Student trong `lms_student_db.students`; công cụ
+không mở kết nối hoặc ghi vào Course database. Chế độ này có thể giữ lại Student
+thủ công đang có trong database hiện tại. Nó chỉ kiểm tra số bản ghi mang email
+deterministic của đúng `random-seed`, nên không trộn hai tập seed khác nhau.
+
+```bash
+scripts/seed/run-development-seed.sh \
+  --confirm \
+  --students-only \
+  --students 100000 \
+  --random-seed 20260813
+```
+
+Nếu lần chạy bị ngắt, dùng lại toàn bộ tùy chọn trên kèm `--resume`. Không dùng
+`--resume` với `random-seed` khác.
+
 Giới hạn:
 
 - Học viên: `1-100,000`; Khóa học: `1-300,000` (mặc định vẫn là `100,000`).

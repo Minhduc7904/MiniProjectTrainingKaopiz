@@ -32,6 +32,11 @@ Mã nguồn: `DeterministicSeedDataTests.cs`.
 - Thiết lập: tính kế hoạch và liệt kê độc lập các quan hệ được sinh.
 - Đạt: tổng cố định của học viên/khóa học và tổng tính toán của bài học/ghi danh khớp nhau.
 
+### `CalculatePlanStudentsOnlyExcludesCourseOwnedRows`
+
+- Thiết lập: `StudentsOnly = true` với số Student xác định.
+- Đạt: kế hoạch chỉ có Student; Course, Lesson, Enrollment và LessonProgress đều bằng `0`.
+
 ## Kiểm tra tùy chọn an toàn
 
 Mã nguồn: `SeedOptionsTests.cs`.
@@ -40,6 +45,10 @@ Mã nguồn: `SeedOptionsTests.cs`.
 - `ValidateRejectsEnvironmentOtherThanDevelopment`: Production bị từ chối.
 - `ValidateRejectsWriteWithoutConfirmation`: thao tác ghi không có `--confirm` bị từ chối.
 - `ValidateAllowsDryRunWithoutConfirmation`: cho phép chạy thử chỉ đọc.
+- `ValidateStudentsOnlyWithoutCourseConnectionAcceptsConfiguration`: mode
+  `--students-only` chỉ yêu cầu connection string của Student database.
+- `ParseOptionsStudentsOnlyDoesNotRequireCourseConnection`: CLI nhận
+  `--students-only` và không yêu cầu Course connection string.
 - `ValidateRejectsUnexpectedDatabaseName`: kết nối không trỏ đến `lms_course_db` bị từ chối.
 - `ValidateRejectsInvalidCourseAssignmentRange`: khoảng gán bằng không, đảo ngược
   hoặc nằm ngoài giới hạn bị từ chối.

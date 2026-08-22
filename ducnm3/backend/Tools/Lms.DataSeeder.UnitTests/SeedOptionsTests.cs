@@ -45,6 +45,57 @@ public class SeedOptionsTests
     }
 
     [Test]
+    public void ValidateStudentsOnlyWithoutCourseConnectionAcceptsConfiguration()
+    {
+        var options = CreateValidOptions() with
+        {
+            CourseConnectionString = string.Empty,
+            StudentsOnly = true,
+        };
+
+        Assert.DoesNotThrow(() => options.Validate("Development"));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void ParseOptionsStudentsOnlyDoesNotRequireCourseConnection()
+    {
+        const string studentConnection =
+            "Server=localhost;Database=lms_student_db;User ID=test;Password=test;";
+        var originalStudentConnection =
+            Environment.GetEnvironmentVariable("SEED_STUDENT_DB_CONNECTION_STRING");
+        var originalCourseConnection =
+            Environment.GetEnvironmentVariable("SEED_COURSE_DB_CONNECTION_STRING");
+
+        try
+        {
+            Environment.SetEnvironmentVariable(
+                "SEED_STUDENT_DB_CONNECTION_STRING",
+                studentConnection);
+            Environment.SetEnvironmentVariable("SEED_COURSE_DB_CONNECTION_STRING", null);
+
+            var options = Program.ParseOptions(
+                ["--confirm", "--students-only", "--students", "100000"]);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(options.StudentsOnly, Is.True);
+                Assert.That(options.StudentCount, Is.EqualTo(100_000));
+                Assert.That(options.CourseConnectionString, Is.Empty);
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(
+                "SEED_STUDENT_DB_CONNECTION_STRING",
+                originalStudentConnection);
+            Environment.SetEnvironmentVariable(
+                "SEED_COURSE_DB_CONNECTION_STRING",
+                originalCourseConnection);
+        }
+    }
+
+    [Test]
     public void ValidateRejectsUnexpectedDatabaseName()
     {
         var options = CreateValidOptions() with
@@ -81,6 +132,8 @@ public class SeedOptionsTests
         var options = CreateValidOptions() with
         {
             CourseCount = SeedOptions.MaximumCourseApiLargeCourseCount,
+            MinLessonsPerCourse = 1,
+            MaxLessonsPerCourse = 1,
             CourseApiLarge = true,
         };
 

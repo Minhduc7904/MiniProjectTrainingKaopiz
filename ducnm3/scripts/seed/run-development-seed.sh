@@ -15,6 +15,7 @@ fi
 
 confirmed=false
 dry_run=false
+students_only=false
 for argument in "$@"; do
   case "$argument" in
     --confirm)
@@ -22,6 +23,9 @@ for argument in "$@"; do
       ;;
     --dry-run)
       dry_run=true
+      ;;
+    --students-only)
+      students_only=true
       ;;
   esac
 done
@@ -47,7 +51,7 @@ if [[ "$student_db_name" != lms_student*_db ]]; then
   exit 1
 fi
 
-if [[ "$course_db_name" != lms_course*_db ]]; then
+if [ "$students_only" != true ] && [[ "$course_db_name" != lms_course*_db ]]; then
   echo "Refusing to seed unexpected Course database." >&2
   exit 1
 fi
@@ -55,32 +59,45 @@ fi
 cd "$project_root"
 
 echo "Starting MySQL and the services that own seed target schemas..."
-docker compose --env-file "$env_file" up -d --build mysql-init course-service student-service
+if [ "$students_only" = true ]; then
+  docker compose --env-file "$env_file" up -d --build mysql-init student-service
+else
+  docker compose --env-file "$env_file" up -d --build mysql-init course-service student-service
+fi
 
 attempt=0
+required_schema_tables=4
+schema_query="
+  SELECT
+    (SELECT COUNT(*) FROM information_schema.tables
+      WHERE table_schema = '$student_db_name' AND table_name = 'students') +
+    (SELECT COUNT(*) FROM information_schema.tables
+      WHERE table_schema = '$course_db_name'
+        AND table_name IN ('courses', 'lessons', 'enrollments'));
+"
+if [ "$students_only" = true ]; then
+  required_schema_tables=1
+  schema_query="
+    SELECT COUNT(*) FROM information_schema.tables
+    WHERE table_schema = '$student_db_name' AND table_name = 'students';
+  "
+fi
 schema_ready=0
-while [ "$schema_ready" != "4" ]; do
+while [ "$schema_ready" != "$required_schema_tables" ]; do
   schema_ready="$(
     docker compose --env-file "$env_file" exec -T mysql \
       mysql --batch --skip-column-names --protocol=tcp --host=localhost \
       --user=root "--password=$mysql_root_password" \
-      --execute="
-        SELECT
-          (SELECT COUNT(*) FROM information_schema.tables
-            WHERE table_schema = '$student_db_name' AND table_name = 'students') +
-          (SELECT COUNT(*) FROM information_schema.tables
-            WHERE table_schema = '$course_db_name'
-              AND table_name IN ('courses', 'lessons', 'enrollments'));
-      " 2>/dev/null || true
+      --execute="$schema_query" 2>/dev/null || true
   )"
 
   attempt=$((attempt + 1))
   if [ "$attempt" -ge 60 ]; then
-    echo "Student and Course schemas did not become ready in time." >&2
+    echo "Seed target schema did not become ready in time." >&2
     exit 1
   fi
 
-  if [ "$schema_ready" != "4" ]; then
+  if [ "$schema_ready" != "$required_schema_tables" ]; then
     sleep 2
   fi
 done

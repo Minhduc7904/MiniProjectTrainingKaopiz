@@ -45,6 +45,9 @@ không rỗng.
 8. Kiểm tra tổng số chính xác, phạm vi quan hệ và một tham chiếu logic học viên
    xuyên database.
 
+Với cờ `--students-only`, tool chỉ thực hiện bước 1, 3 và kiểm tra tổng Student
+deterministic; không kết nối Course database và không tạo Course/Lesson/Enrollment.
+
 Mỗi lô được tham số hóa và thực thi trong transaction. Kích thước lô mặc định
 là `1,000`; công cụ tạo và giải phóng từng lô một.
 

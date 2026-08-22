@@ -93,7 +93,7 @@ public static class Program
             ],
             StringComparer.Ordinal);
         var flagOptions = new HashSet<string>(
-            ["--confirm", "--resume", "--dry-run"],
+            ["--confirm", "--resume", "--dry-run", "--students-only"],
             StringComparer.Ordinal);
 
         for (var index = 0; index < args.Count; index++)
@@ -125,13 +125,22 @@ public static class Program
         }
 
         var courseApiLarge = profile == "course-api-large";
+        var studentsOnly = flags.Contains("--students-only");
+        if (studentsOnly && courseApiLarge)
+        {
+            throw new SeedValidationException(
+                "--students-only cannot be combined with --profile course-api-large.");
+        }
+
         return new SeedOptions(
             RequiredEnvironmentVariable(
                 "SEED_STUDENT_DB_CONNECTION_STRING",
                 "STUDENT_DB_CONNECTION_STRING"),
-            RequiredEnvironmentVariable(
-                "SEED_COURSE_DB_CONNECTION_STRING",
-                "COURSE_DB_CONNECTION_STRING"),
+            studentsOnly
+                ? string.Empty
+                : RequiredEnvironmentVariable(
+                    "SEED_COURSE_DB_CONNECTION_STRING",
+                    "COURSE_DB_CONNECTION_STRING"),
             ParseInteger(values, "--students", SeedOptions.DefaultStudentCount),
             ParseInteger(values, "--courses", courseApiLarge ? 3_000_000 : SeedOptions.DefaultCourseCount),
             ParseInteger(values, "--min-lessons", 1),
@@ -143,7 +152,8 @@ public static class Program
             flags.Contains("--confirm"),
             flags.Contains("--resume"),
             flags.Contains("--dry-run"),
-            courseApiLarge);
+            courseApiLarge,
+            studentsOnly);
     }
 
     private static int ParseInteger(
@@ -190,24 +200,32 @@ public static class Program
     private static void PrintConfiguration(SeedOptions options)
     {
         var student = new MySqlConnectionStringBuilder(options.StudentConnectionString);
-        var course = new MySqlConnectionStringBuilder(options.CourseConnectionString);
         var table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Setting")
             .AddColumn("Value")
             .AddRow("Student database", $"{student.Server}:{student.Port}/{student.Database}")
-            .AddRow("Course database", $"{course.Server}:{course.Port}/{course.Database}")
             .AddRow("Students", $"{options.StudentCount:N0}")
-            .AddRow("Courses", $"{options.CourseCount:N0}")
-            .AddRow(
-                "Lessons per course",
-                $"{options.MinLessonsPerCourse}-{options.MaxLessonsPerCourse}")
-            .AddRow(
-                "Courses per student",
-                $"{options.MinCoursesPerStudent}-{options.MaxCoursesPerStudent}")
             .AddRow("Batch size", $"{options.BatchSize:N0}")
             .AddRow("Random seed", options.RandomSeed.ToString(CultureInfo.InvariantCulture))
             .AddRow("Mode", options.DryRun ? "dry-run" : options.Resume ? "resume" : "fresh");
+
+        if (options.StudentsOnly)
+        {
+            table.AddRow("Scope", "students only");
+        }
+        else
+        {
+            var course = new MySqlConnectionStringBuilder(options.CourseConnectionString);
+            table.AddRow("Course database", $"{course.Server}:{course.Port}/{course.Database}")
+                .AddRow("Courses", $"{options.CourseCount:N0}")
+                .AddRow(
+                    "Lessons per course",
+                    $"{options.MinLessonsPerCourse}-{options.MaxLessonsPerCourse}")
+                .AddRow(
+                    "Courses per student",
+                    $"{options.MinCoursesPerStudent}-{options.MaxCoursesPerStudent}");
+        }
 
         AnsiConsole.Write(new Rule("[green]LMS Development Data Seeder[/]"));
         AnsiConsole.Write(table);
@@ -243,6 +261,7 @@ public static class Program
                   --confirm                         Required for writes
                   --resume                          Resume the same deterministic dataset
                   --dry-run                         Validate schema and show planned counts only
+                  --students-only                   Seed only lms_student_db.students
                   --profile course-api-large        3M courses with lessons and progress
                   --students <1..100000>            Default: 100000
                   --courses <1..300000>             Default: 100000; profile: up to 3000000

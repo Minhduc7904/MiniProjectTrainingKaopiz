@@ -105,6 +105,49 @@ public class MySqlSeedRunnerTests
         Assert.That(exception!.Message, Does.Contain("--resume"));
     }
 
+    [Test]
+    public async Task RunAsyncStudentsOnlyPreservesCourseDatabaseAndManualStudents()
+    {
+        const int studentCount = 30;
+        const int randomSeed = 67_890;
+        var options = CreateOptions(resume: false) with
+        {
+            CourseConnectionString = string.Empty,
+            StudentCount = studentCount,
+            RandomSeed = randomSeed,
+            StudentsOnly = true,
+        };
+
+        await using var studentConnection =
+            new MySqlConnection(studentDatabase.GetConnectionString());
+        await using var courseConnection =
+            new MySqlConnection(courseDatabase.GetConnectionString());
+        await studentConnection.OpenAsync();
+        await courseConnection.OpenAsync();
+        await InsertManualStudentAsync(studentConnection);
+        var coursesBefore = await CountAsync(courseConnection, "courses");
+
+        var result = await new MySqlSeedRunner(options).RunAsync("Development");
+
+        var seedStudents = await ScalarAsync(
+            studentConnection,
+            $"SELECT COUNT(*) FROM students WHERE email LIKE 'seed.{randomSeed}.student.%@example.test';");
+        var coursesAfter = await CountAsync(courseConnection, "courses");
+        var manualStudents = await ScalarAsync(
+            studentConnection,
+            "SELECT COUNT(*) FROM students WHERE email = 'manual.student@example.test';");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Plan.Students, Is.EqualTo(studentCount));
+            Assert.That(result.Plan.Courses, Is.Zero);
+            Assert.That(result.InsertedRows, Is.EqualTo(studentCount));
+            Assert.That(seedStudents, Is.EqualTo(studentCount));
+            Assert.That(manualStudents, Is.EqualTo(1));
+            Assert.That(coursesAfter, Is.EqualTo(coursesBefore));
+        });
+    }
+
     private SeedOptions CreateOptions(bool resume) =>
         new(
             studentDatabase.GetConnectionString(),
@@ -133,5 +176,16 @@ public class MySqlSeedRunnerTests
         await using var command = new MySqlCommand(sql, connection);
         var result = await command.ExecuteScalarAsync();
         return Convert.ToInt64(result, CultureInfo.InvariantCulture);
+    }
+
+    private static async Task InsertManualStudentAsync(MySqlConnection connection)
+    {
+        await using var command = new MySqlCommand(
+            """
+            INSERT INTO students (id, email, display_name, status)
+            VALUES ('00000000-0000-0000-0000-000000000099', 'manual.student@example.test', 'Manual Student', 'ACTIVE');
+            """,
+            connection);
+        await command.ExecuteNonQueryAsync();
     }
 }

@@ -36,6 +36,12 @@ viên logic xuyên hai cơ sở dữ liệu.
 Điều kiện đạt: kiểm thử NUnit hoàn tất mà không có lỗi xác nhận, migration, ràng
 buộc MySQL hoặc kiểm tra dữ liệu, đồng thời cả hai container đều được giải phóng.
 
+## `RunAsyncStudentsOnlyPreservesCourseDatabaseAndManualStudents`
+
+Kiểm thử thêm một Student thủ công vào Testcontainer Student rồi chạy mode
+`StudentsOnly = true`. Đạt khi tool tạo đúng tập Student deterministic, giữ bản
+ghi thủ công và không làm thay đổi số Course trong Testcontainer Course.
+
 Chạy:
 
 ```bash

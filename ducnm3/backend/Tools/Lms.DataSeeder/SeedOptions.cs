@@ -16,7 +16,8 @@ public sealed record SeedOptions(
     bool Confirmed,
     bool Resume,
     bool DryRun,
-    bool CourseApiLarge = false)
+    bool CourseApiLarge = false,
+    bool StudentsOnly = false)
 {
     public const int DefaultStudentCount = 100_000;
     public const int DefaultCourseCount = 100_000;
@@ -40,12 +41,29 @@ public sealed record SeedOptions(
         }
 
         ValidateRange(StudentCount, 1, DefaultStudentCount, nameof(StudentCount));
+        ValidateRange(BatchSize, 1, 2_000, nameof(BatchSize));
+
+        ValidateConnectionString(
+            StudentConnectionString,
+            "lms_student_db",
+            nameof(StudentConnectionString));
+
+        if (StudentsOnly)
+        {
+            if (CourseApiLarge)
+            {
+                throw new SeedValidationException(
+                    "--students-only cannot be combined with --profile course-api-large.");
+            }
+
+            return;
+        }
+
         ValidateRange(CourseCount, 1, CourseApiLarge ? MaximumCourseApiLargeCourseCount : MaximumCourseCount, nameof(CourseCount));
         ValidateRange(MinLessonsPerCourse, 1, 5, nameof(MinLessonsPerCourse));
         ValidateRange(MaxLessonsPerCourse, MinLessonsPerCourse, 5, nameof(MaxLessonsPerCourse));
         ValidateRange(MinCoursesPerStudent, 1, 10, nameof(MinCoursesPerStudent));
         ValidateRange(MaxCoursesPerStudent, MinCoursesPerStudent, 10, nameof(MaxCoursesPerStudent));
-        ValidateRange(BatchSize, 1, 2_000, nameof(BatchSize));
 
         if (CourseApiLarge && (MinLessonsPerCourse != 1 || MaxLessonsPerCourse != 1))
         {
@@ -59,10 +77,6 @@ public sealed record SeedOptions(
                 "MaxCoursesPerStudent cannot exceed CourseCount.");
         }
 
-        ValidateConnectionString(
-            StudentConnectionString,
-            "lms_student_db",
-            nameof(StudentConnectionString));
         ValidateConnectionString(
             CourseConnectionString,
             "lms_course_db",
