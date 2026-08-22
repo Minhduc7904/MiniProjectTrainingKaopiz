@@ -407,7 +407,9 @@ services:
       ServiceEndpoints__scheduler-service: http://scheduler-service:8080/
       ServiceEndpoints__admin-service: http://admin-service:8080/
       Proxy__MaxRequestBodySize: ${MEDIA_UPLOAD_REQUEST_MAX_BYTES:-550502400}
-      Cors__AllowedOrigins__2: ${GATEWAY_CORS_ALLOWED_ORIGIN:-https://mini-project-training-kaopiz.vercel.app}
+      Cors__AllowedOrigins__0: ${GATEWAY_CORS_LOCAL_ORIGIN:?GATEWAY_CORS_LOCAL_ORIGIN must be set}
+      Cors__AllowedOrigins__1: ${GATEWAY_CORS_LOOPBACK_ORIGIN:?GATEWAY_CORS_LOOPBACK_ORIGIN must be set}
+      Cors__AllowedOrigins__2: ${GATEWAY_CORS_DEPLOYED_ORIGIN:?GATEWAY_CORS_DEPLOYED_ORIGIN must be set}
     ports:
       - "5100:8080"
 

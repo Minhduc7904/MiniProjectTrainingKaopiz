@@ -75,10 +75,10 @@ Các command Media đã triển khai dùng:
 
 Gateway giữ nguyên multipart body khi bỏ tiền tố `/media`.
 
-Gateway CORS lấy origin deploy từ `GATEWAY_CORS_ALLOWED_ORIGIN`; giá trị mặc định
-là `https://mini-project-training-kaopiz.vercel.app`. Origin phải khớp tuyệt đối
-scheme, host và port của frontend. Các origin local trong `appsettings.json` vẫn
-được giữ cho Vite development.
+Gateway không lưu CORS origin trong `appsettings.json`. Compose lấy toàn bộ
+origin từ `GATEWAY_CORS_LOCAL_ORIGIN`, `GATEWAY_CORS_LOOPBACK_ORIGIN` và
+`GATEWAY_CORS_DEPLOYED_ORIGIN`. Origin phải khớp tuyệt đối scheme, host và port
+của frontend.
 
 ## Swagger UI dùng chung
 
@@ -117,10 +117,12 @@ MINIO_ROOT_USER=minio-root-user
 MINIO_ROOT_PASSWORD=replace-with-a-long-root-secret
 MINIO_APP_ACCESS_KEY=media-storage-app
 MINIO_APP_SECRET_KEY=replace-with-a-long-app-secret
-MINIO_PUBLIC_ENDPOINT=localhost:9000
-MINIO_PUBLIC_USE_SSL=false
-MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:5173
-GATEWAY_CORS_ALLOWED_ORIGIN=https://mini-project-training-kaopiz.vercel.app
+MINIO_PUBLIC_ENDPOINT=your-public-minio-host
+MINIO_PUBLIC_USE_SSL=true
+MINIO_API_CORS_ALLOW_ORIGIN=https://mini-project-training-kaopiz.vercel.app
+GATEWAY_CORS_LOCAL_ORIGIN=http://localhost:5173
+GATEWAY_CORS_LOOPBACK_ORIGIN=http://127.0.0.1:5173
+GATEWAY_CORS_DEPLOYED_ORIGIN=https://mini-project-training-kaopiz.vercel.app
 MINIO_IMAGE_BUCKET=images
 MINIO_VIDEO_BUCKET=videos
 MINIO_DOCUMENT_BUCKET=documents
@@ -152,11 +154,12 @@ restart MinIO để áp dụng. Có thể chạy lại an toàn và Media Servic
 ```mermaid
 flowchart LR
   API[Media API/Worker] -->|Endpoint=minio:9000| MinIO
-  Browser -->|PublicEndpoint=localhost:9000 + CORS| MinIO
+  Browser -->|PublicEndpoint=public URL + CORS| MinIO
 ```
 
-Không dùng `minio:9000` trong URL browser. Expiry mặc định 900 giây; public SSL
-và endpoint phải khớp URL thực tế.
+Không dùng `minio:9000` trong URL browser. `MINIO_PUBLIC_ENDPOINT` chỉ chứa host
+(không gồm `https://` hoặc dấu `/` cuối); bật `MINIO_PUBLIC_USE_SSL=true` khi
+browser dùng HTTPS. Expiry mặc định 900 giây; public SSL và endpoint phải khớp URL thực tế.
 
 Upload ghi database `PENDING` trước khi gọi MinIO, tính checksum SHA-256 trong
 stream rồi chuyển `READY`; lỗi được compensation bằng xóa object và chuyển

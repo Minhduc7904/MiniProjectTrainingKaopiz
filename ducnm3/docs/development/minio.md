@@ -62,8 +62,8 @@ MINIO_ROOT_PASSWORD=replace-with-a-long-root-secret
 MINIO_APP_ACCESS_KEY=media-storage-app
 MINIO_APP_SECRET_KEY=replace-with-a-long-app-secret
 MINIO_USE_SSL=false
-MINIO_PUBLIC_ENDPOINT=localhost:9000
-MINIO_PUBLIC_USE_SSL=false
+MINIO_PUBLIC_ENDPOINT=your-public-minio-host
+MINIO_PUBLIC_USE_SSL=true
 MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:5173
 MINIO_HEALTH_TIMEOUT_SECONDS=3
 MINIO_IMAGE_BUCKET=images
@@ -85,8 +85,8 @@ MEDIA_THUMBNAIL_PROCESS_TIMEOUT_SECONDS=120
 ```
 
 Docker Compose ánh xạ sang `Storage__Minio__*`. `Endpoint=minio:9000` dành cho
-API/Worker; `PublicEndpoint=localhost:9000` dành cho browser và phải khớp
-`PublicUseSsl`. Policy mặc định hết hạn sau 900 giây. Không commit `.env` hoặc
+API/Worker; `PublicEndpoint` là host browser truy cập được, không bao gồm scheme
+hoặc slash cuối, và phải khớp `PublicUseSsl=true` khi dùng HTTPS. Policy mặc định hết hạn sau 900 giây. Không commit `.env` hoặc
 credential production.
 
 ## Khởi tạo tài nguyên và khởi động
@@ -172,6 +172,6 @@ dotnet test backend/Services/Media/MediaService.IntegrationTests/MediaService.In
 | Hiện tượng | Cách xử lý |
 | --- | --- |
 | Browser báo CORS | Kiểm tra exact origin trong `MINIO_API_CORS_ALLOW_ORIGIN`, chạy lại `minio-init`. |
-| `uploadUrl` dùng hostname `minio` | Đặt `MINIO_PUBLIC_ENDPOINT=localhost:9000`; giữ internal endpoint cho container. |
+| `uploadUrl` dùng hostname `minio` | Đặt `MINIO_PUBLIC_ENDPOINT` bằng host browser truy cập được; giữ internal endpoint cho container. |
 | Signature/policy expired | Kiểm tra public host/SSL/clock và tạo intent mới; không sửa signed fields. |
 | Worker fail options validation | Worker bind cùng options nên Compose truyền public fields dù worker không ký policy. |

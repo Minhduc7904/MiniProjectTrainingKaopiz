@@ -98,22 +98,34 @@ public class GatewayCorsTests
 
     private static async Task<WebApplication> StartAsync()
     {
+        var configurationPrefix = $"GatewayCorsTests_{Guid.NewGuid():N}_";
+        Environment.SetEnvironmentVariable(
+            $"{configurationPrefix}Cors__AllowedOrigins__0",
+            FrontendOrigin);
+        Environment.SetEnvironmentVariable(
+            $"{configurationPrefix}Cors__AllowedOrigins__1",
+            VercelOrigin);
+
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
-        builder.Configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>
-            {
-                [$"{ConfigurationSectionNames.Cors}:AllowedOrigins:0"] = FrontendOrigin,
-                [$"{ConfigurationSectionNames.Cors}:AllowedOrigins:1"] = VercelOrigin,
-            });
-        builder.Services.AddLmsCors(builder.Configuration);
+        builder.Configuration.AddEnvironmentVariables(configurationPrefix);
 
-        var app = builder.Build();
-        app.UseLmsCors();
-        app.MapGet(
-            ApiRoutes.Students.ListPublicPath(),
-            () => Results.Ok());
-        await app.StartAsync();
-        return app;
+        try
+        {
+            builder.Services.AddLmsCors(builder.Configuration);
+
+            var app = builder.Build();
+            app.UseLmsCors();
+            app.MapGet(
+                ApiRoutes.Students.ListPublicPath(),
+                () => Results.Ok());
+            await app.StartAsync();
+            return app;
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable($"{configurationPrefix}Cors__AllowedOrigins__0", null);
+            Environment.SetEnvironmentVariable($"{configurationPrefix}Cors__AllowedOrigins__1", null);
+        }
     }
 }
