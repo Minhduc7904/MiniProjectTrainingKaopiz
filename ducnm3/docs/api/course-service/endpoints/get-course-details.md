@@ -10,7 +10,9 @@ safe và idempotent.
 
 Response giữ Markdown gốc tại `descriptionMarkdown` và trả thêm `descriptionHtml`
 đã render/sanitize. Mỗi Lesson cũng có `contentHtml`; FE chỉ render trường HTML
-này, không tự chuyển Markdown thành HTML.
+này, không tự chuyển Markdown thành HTML. `$...$` là công thức inline, còn
+`$$...$$` và `\\[...\\]` là công thức block; server chỉ phát placeholder
+`course-math` và frontend typeset bằng KaTeX với `trust: false`.
 
 ```mermaid
 sequenceDiagram

@@ -6,5 +6,7 @@ Business flow: [`get-course-lesson-by-id.md`](../../../business-flows/course-lea
 # Nội dung đã xử lý
 
 Response giữ `contentMarkdown` gốc và thêm `contentHtml` do Course Service render
-bằng Markdig rồi sanitize bằng HtmlSanitizer. FE hiển thị `contentHtml` trong CSS
-scoped, không render Markdown thô thành HTML ở trình duyệt.
+bằng Markdig rồi sanitize bằng HtmlSanitizer. Các công thức `$...$` (inline),
+`$$...$$` và `\\[...\\]` (block) được chuyển thành phần tử `course-math` do server
+tạo; frontend render phần tử này bằng KaTeX với `trust: false`, không render
+Markdown thô thành HTML ở trình duyệt.

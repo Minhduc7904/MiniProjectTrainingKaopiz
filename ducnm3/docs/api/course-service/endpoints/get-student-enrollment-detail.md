@@ -49,7 +49,7 @@ Cache-Control: no-store
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Endpoint chỉ đọc Course, Lesson và Media metadata. Markdown mô tả được render rồi sanitize trước response. Không có side effect.
+Endpoint chỉ đọc Course, Lesson và Media metadata. Markdown mô tả được render rồi sanitize trước response. Công thức `$...$`, `$$...$$` và `\\[...\\]` được thay bằng placeholder `course-math` an toàn để frontend typeset KaTeX với `trust: false`. Không có side effect.
 
 ## Đồng bộ artifact
 

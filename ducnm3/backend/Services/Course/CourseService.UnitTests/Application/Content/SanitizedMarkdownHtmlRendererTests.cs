@@ -4,6 +4,46 @@ namespace CourseService.UnitTests.Application.Content;
 
 public sealed class SanitizedMarkdownHtmlRendererTests
 {
+    [TestCase("Tính $f'(x)$.", "inline")]
+    [TestCase("$$\\boxed{f'(x)}$$", "block")]
+    [TestCase("\\[\\boxed{f'(x)}\\]", "block")]
+    public void RenderSupportedMathDelimiterEmitsSafeMathElement(
+        string markdown,
+        string displayMode)
+    {
+        // Arrange
+        var sut = new SanitizedMarkdownHtmlRenderer();
+
+        // Act
+        var html = sut.Render(markdown);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(html, Does.Contain("class=\"course-math\""));
+            Assert.That(html, Does.Contain($"data-math-display=\"{displayMode}\""));
+            Assert.That(html, Does.Not.Contain("<sup>"));
+        });
+    }
+
+    [Test]
+    public void RenderMathContainsHtmlLikeTextEncodesItInsideMathData()
+    {
+        // Arrange
+        var sut = new SanitizedMarkdownHtmlRenderer();
+
+        // Act
+        var html = sut.Render("$\\text{<script>alert(1)</script>}$");
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(html, Does.Contain("class=\"course-math\""));
+            Assert.That(html, Does.Not.Contain("<script>"));
+            Assert.That(html, Does.Contain("&lt;script&gt;"));
+        });
+    }
+
     [Test]
     public void Render_RelativeMediaContentPath_PrefixesConfiguredGatewayPublicBaseUrl()
     {

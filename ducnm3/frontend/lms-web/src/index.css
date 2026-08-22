@@ -109,4 +109,7 @@ body {
   .course-markdown pre { overflow-x: auto; border: 1px solid var(--color-line); border-radius: 0.375rem; background: var(--color-control); padding: 0.75rem; color: var(--color-fg); }
   .course-markdown code { font-family: var(--font-mono); font-size: 0.9em; }
   .course-markdown blockquote { border-left: 3px solid var(--color-accent); padding-left: 0.85rem; color: var(--color-fg-muted); }
+  .course-math[data-math-display='inline'] { display: inline; }
+  .course-math[data-math-display='block'] { display: block; max-width: 100%; margin: 1.25rem 0; overflow-x: auto; overflow-y: hidden; text-align: center; }
+  .course-math .katex-display { margin: 0; }
 }

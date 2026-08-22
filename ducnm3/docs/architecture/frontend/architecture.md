@@ -50,6 +50,9 @@ Player Student tại `/student/courses/:courseId/learn/:lessonId` không dùng
 `StudentShell`: header, sidebar Lesson và media rail đứng yên trong viewport;
 chỉ list Lesson và content panel cuộn độc lập. Redux giữ Course preview, Lesson
 detail và completion state; HTML Lesson luôn do Course Service render/sanitize.
+`RenderedMarkdown` dùng chung cho Admin và Student, chỉ typeset các placeholder
+`course-math` do server tạo (`$...$`, `$$...$$`, `\\[...\\]`) bằng KaTeX với
+`trust: false`; công thức block có vùng cuộn ngang trên màn hình hẹp.
 
 ## Định hướng/chưa triển khai
 

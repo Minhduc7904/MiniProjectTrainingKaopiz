@@ -41,7 +41,7 @@ Không có query parameter hay request body.
 }
 ```
 
-`contentHtml` do Course Service render bằng Markdig và sanitize; frontend không render Markdown thô thành HTML.
+`contentHtml` do Course Service render bằng Markdig và sanitize; frontend không render Markdown thô thành HTML. Công thức `$...$` (inline), `$$...$$` và `\\[...\\]` (block) được server thay bằng phần tử `course-math` an toàn. Frontend chỉ typeset phần tử đó bằng KaTeX với `trust: false`.
 
 ## Mã trạng thái HTTP
 
