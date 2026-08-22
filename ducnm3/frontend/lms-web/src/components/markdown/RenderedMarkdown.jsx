@@ -6,7 +6,7 @@ import { adminUi } from '@/theme/admin'
 const mathRenderOptions = Object.freeze({
   throwOnError: false,
   trust: false,
-  strict: 'warn',
+  strict: 'ignore',
 })
 
 export function RenderedMarkdown({ html, emptyLabel = 'Chưa có nội dung.', className = adminUi.markdown }) {

@@ -54,6 +54,12 @@ detail và completion state; HTML Lesson luôn do Course Service render/sanitize
 `course-math` do server tạo (`$...$`, `$$...$$`, `\\[...\\]`) bằng KaTeX với
 `trust: false`; công thức block có vùng cuộn ngang trên màn hình hẹp.
 
+Lesson detail của Admin tách thành hai tab trong `LessonDetailTabs`: tab **Nội
+dung** là mặc định và chỉ hiển thị HTML đã sanitize; tab **Tài liệu** hiển thị
+attachment, preview/gỡ media và mở `MediaLibraryModal` ở Thư viện hoặc Upload.
+Upload hoàn tất trở về thư viện để Admin chọn rồi gắn media vào Lesson; không
+thêm request trực tiếp từ component UI.
+
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.

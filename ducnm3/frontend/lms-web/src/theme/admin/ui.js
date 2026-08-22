@@ -70,6 +70,7 @@ export const adminUi = {
   markdown: 'course-markdown text-[14px] leading-6 text-fg-muted',
   mediaStage: 'bg-fg',
   mediaAction: 'bg-fg/65 text-on-accent',
+  emptyDropzone: 'rounded-md border border-dashed border-line bg-surface text-fg-muted',
   choiceIdle: 'border border-line bg-surface text-fg-muted hover:border-accent',
   choiceActive: 'border border-accent bg-accent-soft text-accent-hover',
   spinner: 'animate-spin text-accent',

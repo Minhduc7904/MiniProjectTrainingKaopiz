@@ -31,6 +31,7 @@ export function MediaLibraryModal({
   open,
   selectionMode = 'single',
   initialSelection = EMPTY_SELECTION,
+  initialTab = 'library',
   showUpload = true,
   onClose,
   onConfirm,
@@ -54,8 +55,10 @@ export function MediaLibraryModal({
   }, [open])
 
   useEffect(() => {
-    if (open) setSelected(initialSelection)
-  }, [initialSelection, open])
+    if (!open) return
+    setSelected(initialSelection)
+    setTab(showUpload && initialTab === 'upload' ? 'upload' : 'library')
+  }, [initialSelection, initialTab, open, showUpload])
 
   const close = () => {
     upload.reset()
