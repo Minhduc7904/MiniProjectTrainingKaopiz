@@ -33,6 +33,10 @@ describe('course menu routing', () => {
 })
 
 describe('media menu routing', () => {
+  it('exposes the media library menu', () => {
+    expect(getMenuByPath(APP_ROUTES.mediaLibrary).label).toBe('Thư viện Media')
+  })
+
   it('exposes the media job management menu', () => {
     expect(getMenuByPath(APP_ROUTES.mediaJobs).label).toBe('Quản lý job')
   })

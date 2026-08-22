@@ -65,6 +65,12 @@ panel trái, dropdown `status` (`PENDING`/`READY`/`FAILED`) và hai chế độ 
 Grid/List. Redux cache tách theo cặp loại + trạng thái, nên đổi filter không
 hiển thị lại dữ liệu của filter trước.
 
+Menu **Thư viện Media** tại `/admin/media/library` là màn hình duyệt độc lập:
+vẫn dùng endpoint thư viện và cache Redux theo filter, nhưng bố cục master-detail
+với danh sách Grid/List ở panel trái và preview cùng metadata ở panel phải. Chọn
+một media không phát sinh request thứ hai; chỉ media `READY` mới có thể đọc
+content để preview. Màn hình này không có chức năng upload.
+
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.

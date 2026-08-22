@@ -53,6 +53,7 @@ const menuIcons = {
   batches: ListTodo,
   jobs: Timer,
   mediaJobs: ListChecks,
+  mediaLibrary: Images,
 }
 
 export function Sidebar() {

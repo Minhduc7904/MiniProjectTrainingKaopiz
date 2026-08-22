@@ -4,6 +4,7 @@ import { APP_ROUTES } from '@/constants/appRoutes'
 import { MediaUploadPage } from '@/pages/media/MediaUploadPage'
 import { MediaDirectUploadPage } from '@/pages/media/MediaDirectUploadPage'
 import { MediaJobsPage } from '@/pages/media/MediaJobsPage'
+import { MediaLibraryPage } from '@/pages/media/MediaLibraryPage'
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage'
 import { StudentsPage } from '@/pages/students/StudentsPage'
 import { CourseExportPage } from '@/pages/courses/CourseExportPage'
@@ -29,6 +30,7 @@ export function AppRouter() {
         <Route path={APP_ROUTES.courses} element={<CoursesPage />} />
         <Route path={APP_ROUTES.courseDetails} element={<CourseDetailPage />} />
         <Route path={APP_ROUTES.courseExport} element={<CourseExportPage />} />
+        <Route path={APP_ROUTES.mediaLibrary} element={<MediaLibraryPage />} />
         <Route path={APP_ROUTES.mediaUpload} element={<MediaUploadPage />} />
         <Route path={APP_ROUTES.mediaUploadDirect} element={<MediaDirectUploadPage />} />
         <Route path={APP_ROUTES.mediaJobs} element={<MediaJobsPage />} />

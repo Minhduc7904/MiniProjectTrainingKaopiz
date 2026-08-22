@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { fetchMediaLibraryRequest } from '@/api/mediaApi'
 import { toApiError } from '@/api/toApiError'
+import { GET_MEDIA_LIBRARY_DEFAULT_QUERY } from '@/constants/inputs/getMediaLibrary'
 
 export const MEDIA_LIBRARY_ALL = 'ALL'
 
@@ -22,7 +23,13 @@ function createBucket() {
 const EMPTY_BUCKET = createBucket()
 
 function createInitialState() {
-  return { buckets: {} }
+  return {
+    buckets: {},
+    explorer: {
+      query: GET_MEDIA_LIBRARY_DEFAULT_QUERY,
+      selectedId: null,
+    },
+  }
 }
 
 function getBucket(state, mediaType, status = '') {
@@ -51,6 +58,16 @@ const mediaLibrarySlice = createSlice({
   name: 'mediaLibrary',
   initialState: createInitialState(),
   reducers: {
+    setMediaLibraryExplorerQuery(state, action) {
+      state.explorer.query = {
+        ...GET_MEDIA_LIBRARY_DEFAULT_QUERY,
+        ...action.payload,
+      }
+      state.explorer.selectedId = null
+    },
+    setMediaLibraryExplorerSelectedId(state, action) {
+      state.explorer.selectedId = action.payload ?? null
+    },
     appendMedia(state, action) {
       const media = action.payload
       if (!media?.id) return
@@ -106,7 +123,13 @@ const mediaLibrarySlice = createSlice({
   },
 })
 
-export const { appendMedia, clearMediaLibrary } = mediaLibrarySlice.actions
+export const {
+  appendMedia,
+  clearMediaLibrary,
+  setMediaLibraryExplorerQuery,
+  setMediaLibraryExplorerSelectedId,
+} = mediaLibrarySlice.actions
 export const mediaLibraryReducer = mediaLibrarySlice.reducer
 export const selectMediaLibraryBucket = (state, mediaType = '', status = '') =>
   state.mediaLibrary.buckets[getBucketKey(mediaType, status)] ?? EMPTY_BUCKET
+export const selectMediaLibraryExplorer = (state) => state.mediaLibrary.explorer
