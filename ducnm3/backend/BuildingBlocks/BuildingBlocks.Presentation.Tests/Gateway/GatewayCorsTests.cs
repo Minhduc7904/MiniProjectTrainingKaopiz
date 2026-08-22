@@ -12,6 +12,7 @@ namespace BuildingBlocks.Presentation.Tests.Gateway;
 public class GatewayCorsTests
 {
     private const string FrontendOrigin = "http://localhost:5173";
+    private const string VercelOrigin = "https://mini-project-training-kaopiz.vercel.app";
 
     [Test]
     public async Task OptionsPreflightAllowedOriginReturnsNoContentWithCorsHeaders()
@@ -59,6 +60,26 @@ public class GatewayCorsTests
     }
 
     [Test]
+    public async Task OptionsPreflightVercelOriginReturnsNoContentWithCorsHeaders()
+    {
+        await using var app = await StartAsync();
+        using var client = app.GetTestClient();
+
+        using var request = new HttpRequestMessage(
+            HttpMethod.Options,
+            ApiRoutes.Students.ListPublicPath());
+        request.Headers.TryAddWithoutValidation("Origin", VercelOrigin);
+        request.Headers.TryAddWithoutValidation("Access-Control-Request-Method", "GET");
+
+        using var response = await client.SendAsync(request);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        Assert.That(
+            response.Headers.GetValues("Access-Control-Allow-Origin").Single(),
+            Is.EqualTo(VercelOrigin));
+    }
+
+    [Test]
     public async Task GetUnknownOriginDoesNotEchoOrigin()
     {
         await using var app = await StartAsync();
@@ -83,6 +104,7 @@ public class GatewayCorsTests
             new Dictionary<string, string?>
             {
                 [$"{ConfigurationSectionNames.Cors}:AllowedOrigins:0"] = FrontendOrigin,
+                [$"{ConfigurationSectionNames.Cors}:AllowedOrigins:1"] = VercelOrigin,
             });
         builder.Services.AddLmsCors(builder.Configuration);
 

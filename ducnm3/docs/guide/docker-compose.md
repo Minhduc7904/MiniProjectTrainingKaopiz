@@ -75,6 +75,11 @@ Các command Media đã triển khai dùng:
 
 Gateway giữ nguyên multipart body khi bỏ tiền tố `/media`.
 
+Gateway CORS lấy origin deploy từ `GATEWAY_CORS_ALLOWED_ORIGIN`; giá trị mặc định
+là `https://mini-project-training-kaopiz.vercel.app`. Origin phải khớp tuyệt đối
+scheme, host và port của frontend. Các origin local trong `appsettings.json` vẫn
+được giữ cho Vite development.
+
 ## Swagger UI dùng chung
 
 `api-gateway` cung cấp một NSwag UI duy nhất tại `http://localhost:5100/swagger`. Dùng trình chọn tài liệu để tải API của từng dịch vụ:
@@ -115,6 +120,7 @@ MINIO_APP_SECRET_KEY=replace-with-a-long-app-secret
 MINIO_PUBLIC_ENDPOINT=localhost:9000
 MINIO_PUBLIC_USE_SSL=false
 MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:5173
+GATEWAY_CORS_ALLOWED_ORIGIN=https://mini-project-training-kaopiz.vercel.app
 MINIO_IMAGE_BUCKET=images
 MINIO_VIDEO_BUCKET=videos
 MINIO_DOCUMENT_BUCKET=documents

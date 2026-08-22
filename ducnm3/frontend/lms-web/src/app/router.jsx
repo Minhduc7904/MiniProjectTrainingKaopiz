@@ -23,7 +23,7 @@ export function AppRouter() {
       <Route element={<AppShell />}>
         <Route
           path={APP_ROUTES.home}
-          element={<Navigate to={APP_ROUTES.students} replace />}
+          element={<Navigate to={APP_ROUTES.studentLogin} replace />}
         />
         <Route path={APP_ROUTES.students} element={<StudentsPage />} />
         <Route path={APP_ROUTES.courses} element={<CoursesPage />} />

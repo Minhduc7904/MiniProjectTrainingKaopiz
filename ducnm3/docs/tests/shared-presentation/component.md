@@ -21,6 +21,7 @@ dotnet test backend/BuildingBlocks/BuildingBlocks.Presentation.Tests/BuildingBlo
 | Cơ sở dữ liệu khỏe mạnh | `IDatabaseHealthProbe.CheckAsync` trả `IsHealthy = true`. | `GET /health` qua `TestServer`. | HTTP `200`; `data.database.status = healthy`. |
 | Cơ sở dữ liệu không khả dụng | `IDatabaseHealthProbe.CheckAsync` trả `IsHealthy = false`. | `GET /health` qua `TestServer`. | HTTP `503`; `error.code = DATABASE_UNAVAILABLE`. |
 | Preflight CORS origin được phép | Policy `frontend` với `http://localhost:5173`. | `OPTIONS /student/api/students` kèm `Origin` và `Access-Control-Request-Method: GET`. | HTTP `204`; có `Access-Control-Allow-Origin` đúng origin; allow headers gồm `X-Correlation-Id`. |
+| Preflight CORS Vercel được phép | Policy `frontend` với `https://mini-project-training-kaopiz.vercel.app`. | `OPTIONS /student/api/students` kèm origin Vercel và `Access-Control-Request-Method: GET`. | HTTP `204`; `Access-Control-Allow-Origin` echo đúng origin Vercel. |
 | GET kèm origin được phép | Cùng policy. | `GET /student/api/students` với `Origin: http://localhost:5173`. | HTTP `200`; có `Access-Control-Allow-Origin`. |
 | GET kèm origin lạ | Cùng policy. | `GET` với `Origin: http://evil.example`. | HTTP `200`; không echo origin lạ. |
 

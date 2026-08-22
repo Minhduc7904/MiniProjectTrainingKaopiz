@@ -1,6 +1,9 @@
 # Kiến trúc Frontend
 
 Frontend là React SPA gọi Backend qua YARP Gateway; không gọi microservice trực tiếp.
+Route gốc `/` chuyển tới `/student/login`; các route quản trị và Student còn lại
+được React Router xử lý ở client. Khi deploy Vercel, `frontend/lms-web/vercel.json`
+rewrite mọi deep link về `index.html` để reload không nhận `404` từ host.
 
 ~~~mermaid
 flowchart LR
