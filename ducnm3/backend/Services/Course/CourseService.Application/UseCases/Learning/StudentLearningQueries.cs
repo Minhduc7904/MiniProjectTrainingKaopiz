@@ -8,7 +8,7 @@ public interface IStudentLearningRepository
     Task<StudentEnrollmentsResult> GetEnrollmentsAsync(Guid studentId, GetStudentEnrollmentsQuery query, CancellationToken cancellationToken);
     Task<StudentCourseCatalogResult> GetCatalogAsync(Guid studentId, GetStudentCourseCatalogQuery query, CancellationToken cancellationToken);
     Task<bool> IsEnrolledAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken);
-    Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, CancellationToken cancellationToken);
+    Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken);
     Task<StudentCourseProgressResult?> GetProgressAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken);
 }
 
@@ -81,7 +81,7 @@ public sealed record StudentCourseCatalogItem(Guid CourseId, string Name, string
 
 public sealed record StudentCourseCatalogResult(IReadOnlyList<StudentCourseCatalogItem> Items, long TotalItems, int TotalPages);
 
-public sealed record StudentLessonPreview(Guid Id, string Title, uint DisplayOrder);
+public sealed record StudentLessonPreview(Guid Id, string Title, uint DisplayOrder, decimal ProgressPercent, DateTime? CompletedAtUtc);
 
 public sealed record StudentCourseDetailResult(
     Guid Id,
@@ -124,7 +124,7 @@ public sealed class GetStudentEnrollmentDetailHandler(IStudentLearningRepository
     {
         if (courseId == Guid.Empty || studentId == Guid.Empty) throw CourseErrors.ValidationFailed([]);
         if (!await repository.IsEnrolledAsync(courseId, studentId, cancellationToken)) throw StudentNotEnrolled();
-        return await repository.GetDetailAsync(courseId, cancellationToken) ?? throw CourseErrors.CourseNotFound();
+        return await repository.GetDetailAsync(courseId, studentId, cancellationToken) ?? throw CourseErrors.CourseNotFound();
     }
 
     private static CourseApplicationException StudentNotEnrolled() =>

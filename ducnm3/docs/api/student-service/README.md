@@ -1,6 +1,7 @@
 # API của Student Service
 
 - [Liệt kê học viên](endpoints/get-students.md)
+- [Lấy tổng học viên](endpoints/get-students-summary.md)
 - [Lấy học viên](endpoints/get-student-by-id.md)
 - [Lấy học viên đã đăng ký khóa học](endpoints/get-course-students.md)
 - [Đăng ký identity Học viên demo](endpoints/post-student-auth-register.md)

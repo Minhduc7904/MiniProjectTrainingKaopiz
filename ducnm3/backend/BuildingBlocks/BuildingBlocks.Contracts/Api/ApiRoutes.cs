@@ -23,6 +23,7 @@ public static class ApiRoutes
     public static class Courses
     {
         public const string List = "/api/courses";
+        public const string Summary = "/api/courses/summary";
         public const string Export = "/api/courses/export";
         public const string BufferedExportBenchmark = "/api/performance/courses/export-buffered";
         public const string DetailsTemplate = "/api/courses/{courseId}/details";
@@ -34,6 +35,7 @@ public static class ApiRoutes
         public const string StudentEnrollments = "/api/student/enrollments";
         public const string StudentCourseCatalog = "/api/student/courses";
         public const string StudentEnrollmentDetailTemplate = "/api/student/enrollments/{courseId}";
+        public const string StudentLessonDetailTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}";
         public const string MyProgressTemplate = "/api/courses/{courseId}/my-progress";
         public const string CompleteLessonProgressTemplate =
             "/api/courses/{courseId}/lessons/{lessonId}/progress/complete";
@@ -43,6 +45,12 @@ public static class ApiRoutes
 
         public static string ListPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Course, List);
+
+        public static string SummaryServicePath() =>
+            BuildServicePath(Summary);
+
+        public static string SummaryPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, Summary);
 
         public static string ByIdServicePath(Guid courseId) =>
             BuildServicePath(FormatGuidRoute(ByIdTemplate, "courseId", courseId));
@@ -86,6 +94,12 @@ public static class ApiRoutes
                 GatewayRoutePrefixes.Course,
                 FormatGuidRoute(StudentEnrollmentDetailTemplate, "courseId", courseId));
 
+        public static string StudentLessonDetailServicePath(Guid courseId, Guid lessonId) =>
+            BuildServicePath(FormatGuidRoute(FormatGuidRoute(StudentLessonDetailTemplate, "courseId", courseId), "lessonId", lessonId));
+
+        public static string StudentLessonDetailPublicPath(Guid courseId, Guid lessonId) =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, FormatGuidRoute(FormatGuidRoute(StudentLessonDetailTemplate, "courseId", courseId), "lessonId", lessonId));
+
         public static string MyProgressServicePath(Guid courseId) =>
             BuildServicePath(FormatGuidRoute(MyProgressTemplate, "courseId", courseId));
 
@@ -126,6 +140,7 @@ public static class ApiRoutes
     public static class Media
     {
         public const string Upload = "/api/media";
+        public const string Summary = "/api/media/summary";
         public const string Library = "/api/media/library";
         public const string UploadIntents = "/api/media/upload-intents";
         public const string UploadCompleteTemplate = "/api/media/{mediaId}/upload-complete";
@@ -148,6 +163,11 @@ public static class ApiRoutes
             BuildPublicPath(GatewayRoutePrefixes.Media, Jobs);
 
         public static string JobsServicePath() => BuildServicePath(Jobs);
+
+        public static string SummaryPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Media, Summary);
+
+        public static string SummaryServicePath() => BuildServicePath(Summary);
 
         public static string ResourcePublicPath(Guid mediaId) =>
             BuildPublicPath(
@@ -229,6 +249,7 @@ public static class ApiRoutes
     public static class Students
     {
         public const string List = "/api/students";
+        public const string Summary = "/api/students/summary";
         public const string GetByIdTemplate = "/api/students/{studentId}";
 
         /// <summary>Trả path nội bộ của endpoint danh sách học viên.</summary>
@@ -238,6 +259,12 @@ public static class ApiRoutes
         /// <summary>Trả path public của endpoint danh sách học viên.</summary>
         public static string ListPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Student, List);
+
+        public static string SummaryServicePath() =>
+            BuildServicePath(Summary);
+
+        public static string SummaryPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Student, Summary);
 
         /// <summary>Nhận student ID hợp lệ và trả path nội bộ lấy chi tiết học viên.</summary>
         public static string GetByIdServicePath(Guid studentId) =>

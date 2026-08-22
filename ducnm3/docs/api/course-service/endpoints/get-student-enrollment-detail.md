@@ -32,13 +32,13 @@ Cache-Control: no-store
     "createdAtUtc": "2026-08-01T00:00:00Z",
     "thumbnail": { "contentUrl": "/media/api/media/.../content" },
     "gallery": [],
-    "lessons": [{ "id": "22222222-2222-2222-2222-222222222222", "title": "Bắt đầu", "displayOrder": 1 }]
+    "lessons": [{ "id": "22222222-2222-2222-2222-222222222222", "title": "Bắt đầu", "displayOrder": 1, "progressPercent": 100, "completedAtUtc": "2026-08-22T00:00:00Z" }]
   },
   "meta": { "traceId": "01J..." }
 }
 ```
 
-`thumbnail` có thể `null`; mỗi Lesson chỉ có ID, title và display order, không trả nội dung Lesson hoặc progress của Student khác.
+`thumbnail` có thể `null`; mỗi Lesson chỉ có preview, progress của current Student và không trả nội dung Lesson hoặc progress của Student khác.
 
 ## Mã trạng thái HTTP
 

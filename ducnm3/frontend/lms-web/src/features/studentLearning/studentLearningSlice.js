@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { enrollStudentInCourseRequest, fetchMyCourseProgressRequest, fetchStudentCourseCatalogRequest, fetchStudentEnrollmentDetailRequest, fetchStudentEnrollmentsRequest } from '@/api/studentLearningApi'
+import { completeStudentLessonRequest, enrollStudentInCourseRequest, fetchMyCourseProgressRequest, fetchStudentCourseCatalogRequest, fetchStudentEnrollmentDetailRequest, fetchStudentEnrollmentsRequest, fetchStudentLessonDetailRequest } from '@/api/studentLearningApi'
 import { toApiError } from '@/api/toApiError'
 import { createInitialListState, listRequestFulfilled, listRequestPending, listRequestRejected } from '@/features/createApiListSlice'
 
@@ -30,12 +30,22 @@ export const fetchStudentEnrollmentDetail = createAsyncThunk('studentLearning/fe
   try { const { data, meta } = await fetchStudentEnrollmentDetailRequest(courseId); return { data, traceId: meta.traceId } } catch (error) { return rejectWithValue(toApiError(error)) }
 })
 
+export const fetchStudentLessonDetail = createAsyncThunk('studentLearning/fetchLessonDetail', async ({ courseId, lessonId }, { rejectWithValue }) => {
+  try { const { data, meta } = await fetchStudentLessonDetailRequest(courseId, lessonId); return { data, traceId: meta.traceId } } catch (error) { return rejectWithValue(toApiError(error)) }
+})
+
+export const completeStudentLesson = createAsyncThunk('studentLearning/completeLesson', async ({ courseId, lessonId }, { rejectWithValue }) => {
+  try { const { data, meta } = await completeStudentLessonRequest(courseId, lessonId); return { data, traceId: meta.traceId } } catch (error) { return rejectWithValue(toApiError(error)) }
+})
+
 const slice = createSlice({
   name: 'studentLearning',
   initialState: {
     enrollments: createInitialListState(STUDENT_ENROLLMENTS_DEFAULT_QUERY),
     catalog: createInitialListState(STUDENT_COURSE_CATALOG_DEFAULT_QUERY),
     detail: { data: null, loading: false, error: null, traceId: null },
+    lessonDetail: { data: null, loading: false, error: null, traceId: null },
+    completion: { loading: false, error: null, traceId: null },
     progressByCourseId: {},
     enrollmentByCourseId: {},
   },
@@ -55,7 +65,17 @@ const slice = createSlice({
     .addCase(fetchMyCourseProgress.rejected, (state, action) => { const { courseId, error } = action.payload ?? {}; if (courseId) state.progressByCourseId[courseId] = { loading: false, data: null, error } })
     .addCase(fetchStudentEnrollmentDetail.pending, (state) => { state.detail = { data: null, loading: true, error: null, traceId: null } })
     .addCase(fetchStudentEnrollmentDetail.fulfilled, (state, action) => { state.detail = { data: action.payload.data, loading: false, error: null, traceId: action.payload.traceId } })
-    .addCase(fetchStudentEnrollmentDetail.rejected, (state, action) => { state.detail.loading = false; state.detail.error = action.payload ?? { message: 'Không tải được khóa học.' } }),
+    .addCase(fetchStudentEnrollmentDetail.rejected, (state, action) => { state.detail.loading = false; state.detail.error = action.payload ?? { message: 'Không tải được khóa học.' } })
+    .addCase(fetchStudentLessonDetail.pending, (state) => { state.lessonDetail = { data: null, loading: true, error: null, traceId: null } })
+    .addCase(fetchStudentLessonDetail.fulfilled, (state, action) => { state.lessonDetail = { data: action.payload.data, loading: false, error: null, traceId: action.payload.traceId } })
+    .addCase(fetchStudentLessonDetail.rejected, (state, action) => { state.lessonDetail.loading = false; state.lessonDetail.error = action.payload ?? { message: 'Không tải được bài học.' } })
+    .addCase(completeStudentLesson.pending, (state) => { state.completion = { loading: true, error: null, traceId: null } })
+    .addCase(completeStudentLesson.fulfilled, (state, action) => {
+      state.completion = { loading: false, error: null, traceId: action.payload.traceId }
+      const lesson = state.detail.data?.lessons?.find((item) => item.id === action.payload.data.lessonId)
+      if (lesson) { lesson.progressPercent = action.payload.data.progressPercent; lesson.completedAtUtc = action.payload.data.completedAtUtc }
+    })
+    .addCase(completeStudentLesson.rejected, (state, action) => { state.completion.loading = false; state.completion.error = action.payload ?? { message: 'Không thể hoàn thành bài học.' } }),
 })
 
 export const studentLearningReducer = slice.reducer

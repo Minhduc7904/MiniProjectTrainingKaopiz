@@ -10,6 +10,7 @@ using BuildingBlocks.Observability.Logging;
 using CourseService.Api.Endpoints.Courses.Export;
 using CourseService.Api.Endpoints.Courses.GetDetails;
 using CourseService.Api.Endpoints.Courses.GetList;
+using CourseService.Api.Endpoints.Courses.GetSummary;
 using CourseService.Api.Endpoints.Courses.CreateLesson;
 using CourseService.Api.Endpoints.Courses.CreateCourse;
 using CourseService.Api.Endpoints.Courses.DeleteCourse;
@@ -81,6 +82,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 app.MapServiceInfoEndpoint(ServiceNames.Course);
 app.MapDatabaseHealthEndpoint(ServiceNames.Course);
 app.MapGetCourses();
+app.MapGetCoursesSummary();
 app.MapGetCourseDetails();
 app.MapCreateLesson();
 app.MapCreateCourse();
@@ -96,6 +98,7 @@ app.MapCompleteLessonProgress();
 app.MapGetStudentEnrollments();
 app.MapGetStudentCourseCatalog();
 app.MapGetStudentEnrollmentDetail();
+app.MapGetStudentLessonDetail();
 app.MapGetMyCourseProgress();
 if (app.Environment.IsDevelopment())
 {

@@ -20,6 +20,14 @@ export async function fetchStudentEnrollmentDetailRequest(courseId) {
   return unwrapEnvelope(await studentHttpClient.get(API_ROUTES.studentLearning.enrollmentDetail(courseId)))
 }
 
+export async function fetchStudentLessonDetailRequest(courseId, lessonId) {
+  return unwrapEnvelope(await studentHttpClient.get(API_ROUTES.studentLearning.lessonDetail(courseId, lessonId)))
+}
+
+export async function completeStudentLessonRequest(courseId, lessonId) {
+  return unwrapEnvelope(await studentHttpClient.post(API_ROUTES.studentLearning.completeLesson(courseId, lessonId)))
+}
+
 export async function fetchMyCourseProgressRequest(courseId) {
   return unwrapEnvelope(await studentHttpClient.get(API_ROUTES.studentLearning.progress(courseId)))
 }

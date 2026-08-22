@@ -19,6 +19,8 @@ dotnet test backend/Services/Student/StudentService.ComponentTests/StudentServic
 
 ## Ca kiểm thử
 
+- `GetStudentsSummaryEndpointComponentTests`: `GET /api/students/summary` với actor ADMIN trả `200`, `totalStudents`, envelope chuẩn và `Cache-Control: no-store`; thiếu actor trả `400 VALIDATION_FAILED`.
+
 - `DefaultQueryReturnsOffsetPaginationEnvelope`: gọi `GET /api/students` không
   query; đạt khi response là `200`, `data` là array, `Cache-Control: no-store`
   và `meta.pagination` có đầy đủ type/page/pageSize/totalItems/totalPages.

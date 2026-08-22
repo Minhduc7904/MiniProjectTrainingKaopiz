@@ -4,6 +4,14 @@
  */
 export const adminUi = {
   page: 'bg-canvas text-fg',
+  dashboardPage: 'h-svh overflow-y-auto bg-canvas text-fg',
+  dashboardHeader: 'border-b border-line bg-surface/90',
+  dashboardHero: 'border border-line bg-surface',
+  dashboardMetric: 'border border-line bg-surface',
+  dashboardHealthHealthy: 'bg-accent-soft text-accent-hover',
+  dashboardHealthFailed: 'bg-danger-soft text-danger',
+  dashboardHealthPending: 'bg-warning-soft text-warning',
+  dashboardManagement: 'border border-line bg-surface hover:border-accent',
   sidebar:
     'fixed inset-y-0 left-0 z-20 flex flex-col border-r border-line bg-canvas',
   sidebarHeader: 'shrink-0 border-b border-line',

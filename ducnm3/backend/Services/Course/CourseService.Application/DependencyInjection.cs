@@ -4,6 +4,7 @@
 using CourseService.Application.UseCases.Courses.Export;
 using CourseService.Application.UseCases.Courses.GetDetails;
 using CourseService.Application.UseCases.Courses.GetList;
+using CourseService.Application.UseCases.Courses.GetSummary;
 using CourseService.Application.UseCases.Lessons.Create;
 using CourseService.Application.UseCases.Lessons.Update;
 using CourseService.Application.UseCases.Lessons.GetDetail;
@@ -23,6 +24,7 @@ public static class DependencyInjection
     public static IServiceCollection AddCourseApplication(this IServiceCollection services)
     {
         services.AddScoped<GetCoursesHandler>();
+        services.AddScoped<GetCoursesSummaryHandler>();
         services.AddSingleton<IMarkdownHtmlRenderer, SanitizedMarkdownHtmlRenderer>();
         services.AddScoped<ExportCoursesHandler>();
         services.AddScoped<BufferedCourseExportHandler>();
@@ -40,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<GetStudentEnrollmentsHandler>();
         services.AddScoped<GetStudentCourseCatalogHandler>();
         services.AddScoped<GetStudentEnrollmentDetailHandler>();
+        services.AddScoped<GetStudentLessonDetailHandler>();
         services.AddScoped<GetMyCourseProgressHandler>();
         return services;
     }

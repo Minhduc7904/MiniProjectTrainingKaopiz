@@ -4,6 +4,7 @@ using StudentService.Application.UseCases.Auth.Login;
 using StudentService.Application.UseCases.Auth.GetMe;
 using StudentService.Application.UseCases.Students.GetById;
 using StudentService.Application.UseCases.Students.GetList;
+using StudentService.Application.UseCases.Students.GetSummary;
 
 namespace StudentService.Application;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
     {
         services.AddScoped<GetStudentByIdHandler>();
         services.AddScoped<GetStudentsHandler>();
+        services.AddScoped<GetStudentsSummaryHandler>();
         services.AddScoped<RegisterStudentHandler>();
         services.AddScoped<LoginStudentHandler>();
         services.AddScoped<GetCurrentStudentHandler>();

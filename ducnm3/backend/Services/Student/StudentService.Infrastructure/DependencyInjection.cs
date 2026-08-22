@@ -24,6 +24,8 @@ public static class DependencyInjection
             serviceProvider.GetRequiredService<EfStudentRepository>());
         services.AddScoped<IStudentListRepository>(serviceProvider =>
             serviceProvider.GetRequiredService<EfStudentRepository>());
+        services.AddScoped<IStudentSummaryRepository>(serviceProvider =>
+            serviceProvider.GetRequiredService<EfStudentRepository>());
         services.AddSingleton<IDatabaseHealthProbe>(serviceProvider =>
             new StudentDatabaseHealthProbe(
                 connectionString,

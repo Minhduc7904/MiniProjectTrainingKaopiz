@@ -24,6 +24,7 @@ dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTe
 | `Render_RelativeMediaContentPath_PrefixesConfiguredGatewayPublicBaseUrl` | Renderer nhận Markdown image với URL Media tương đối và biến môi trường Gateway cố định. | HTML trả về có `img src` tuyệt đối, bắt đầu bằng `Gateway__PublicBaseUrl`. |
 | Course details (cần bổ sung) | Repository có path batch và path N+1 riêng. | Handler chỉ gọi path batch không N+1; component test xác nhận `400` với UUID sai và `404` khi không có Course. |
 | `StudentLearningHandlersTests` | Query page/pageSize sai, catalog Course available, Student chưa ghi danh và Student có progress. | Pagination sai trả `400`; catalog chuyển nguyên result repository; chưa ghi danh trả `403 STUDENT_NOT_ENROLLED`; progress chỉ chứa dữ liệu Student hiện tại. |
+| `GetStudentLessonDetailHandlerTests` | Student có/không có enrollment và repository Lesson double. | Enrollment được kiểm tra trước khi đọc Lesson; không có enrollment trả `403 STUDENT_NOT_ENROLLED`; Lesson hợp lệ được trả nguyên projection. |
 
 Ca này bảo đảm thao tác tắt/hủy yêu cầu được tôn trọng. Nó không kiểm tra tính
 khả dụng của MySQL thật. Ca list bảo vệ việc endpoint phân trang không vô tình

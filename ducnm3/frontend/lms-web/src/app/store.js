@@ -10,6 +10,7 @@ import { coursesReducer } from '@/features/courses/coursesSlice'
 import { notificationBatchesReducer } from '@/features/notifications/notificationBatchesSlice'
 import { toastsReducer } from '@/features/toasts/toastsSlice'
 import { studentLearningReducer } from '@/features/studentLearning/studentLearningSlice'
+import { dashboardReducer } from '@/features/dashboard/dashboardSlice'
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     notificationBatches: notificationBatchesReducer,
     toasts: toastsReducer,
     studentLearning: studentLearningReducer,
+    dashboard: dashboardReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -12,11 +12,14 @@ import { NotificationBatchCreatePage } from '@/pages/notifications/NotificationB
 import { NotificationBatchProgressPage } from '@/pages/notifications/NotificationBatchProgressPage'
 import { NotificationBatchListPage } from '@/pages/notifications/NotificationBatchListPage'
 import { StudentRouteGuard } from '@/auth/StudentRouteGuard'
-import { StudentCourseDetailPage, StudentCoursesPage, StudentHomePage, StudentLoadingPage, StudentLoginPage, StudentLogoutPage, StudentProfilePage, StudentRegisterPage } from '@/pages/student-auth/StudentAuthPages'
+import { AdminDashboardPage } from '@/pages/dashboard/AdminDashboardPage'
+import { StudentCourseDetailPage, StudentCourseLearnPage, StudentCoursesPage, StudentHomePage, StudentLoadingPage, StudentLoginPage, StudentLogoutPage, StudentProfilePage, StudentRegisterPage } from '@/pages/student-auth/StudentAuthPages'
 
 export function AppRouter() {
   return (
     <Routes>
+      <Route path={APP_ROUTES.admin} element={<Navigate to={APP_ROUTES.adminDashboard} replace />} />
+      <Route path={APP_ROUTES.adminDashboard} element={<AdminDashboardPage />} />
       <Route element={<AppShell />}>
         <Route
           path={APP_ROUTES.home}
@@ -43,6 +46,7 @@ export function AppRouter() {
         <Route path={APP_ROUTES.studentHome} element={<StudentHomePage />} />
         <Route path={APP_ROUTES.studentCourses} element={<StudentCoursesPage />} />
         <Route path={APP_ROUTES.studentCourseDetail} element={<StudentCourseDetailPage />} />
+        <Route path={APP_ROUTES.studentCourseLearn} element={<StudentCourseLearnPage />} />
         <Route path={APP_ROUTES.studentProfile} element={<StudentProfilePage />} />
       </Route>
     </Routes>

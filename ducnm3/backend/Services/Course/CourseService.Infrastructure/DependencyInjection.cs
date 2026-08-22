@@ -26,6 +26,7 @@ public static class DependencyInjection
             options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 4, 0))));
         services.AddScoped<EfCourseListRepository>();
         services.AddScoped<ICourseListRepository>(provider => provider.GetRequiredService<EfCourseListRepository>());
+        services.AddScoped<ICourseSummaryRepository>(provider => provider.GetRequiredService<EfCourseListRepository>());
         services.AddScoped<ICourseDetailsRepository, EfCourseDetailsRepository>();
         services.AddServiceQueryClient<ICourseMediaReader, CourseMediaReader>(configuration, ServiceNames.Media);
         services.AddScoped<ILessonCommandRepository, EfLessonCommandRepository>();

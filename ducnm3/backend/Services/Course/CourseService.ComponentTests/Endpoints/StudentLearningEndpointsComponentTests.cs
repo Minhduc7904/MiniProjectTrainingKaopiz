@@ -6,6 +6,7 @@ using BuildingBlocks.Presentation.Extensions;
 using CourseService.Api.Endpoints.Learning;
 using CourseService.Application;
 using CourseService.Application.Services.Media;
+using CourseService.Application.Repositories;
 using CourseService.Application.UseCases.Learning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -17,6 +18,7 @@ public sealed class StudentLearningEndpointsComponentTests
 {
     private static readonly Guid StudentId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid CourseId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private static readonly Guid LessonId = Guid.Parse("22222222-2222-2222-2222-222222222222");
     private WebApplication app = null!;
     private HttpClient client = null!;
 
@@ -26,6 +28,7 @@ public sealed class StudentLearningEndpointsComponentTests
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<IStudentLearningRepository>(new StubStudentLearningRepository());
+        builder.Services.AddSingleton<ILessonCommandRepository>(new StubLessonCommandRepository());
         builder.Services.AddSingleton<ICourseMediaReader>(new StubCourseMediaReader());
         builder.Services.AddCourseApplication();
         app = builder.Build();
@@ -33,6 +36,7 @@ public sealed class StudentLearningEndpointsComponentTests
         app.MapGetStudentEnrollments();
         app.MapGetStudentCourseCatalog();
         app.MapGetStudentEnrollmentDetail();
+        app.MapGetStudentLessonDetail();
         app.MapGetMyCourseProgress();
         await app.StartAsync();
         client = app.GetTestClient();
@@ -86,6 +90,68 @@ public sealed class StudentLearningEndpointsComponentTests
         });
     }
 
+    [Test]
+    public async Task StudentLessonDetailReturnsAttachmentEnvelopeAndNoStore()
+    {
+        using var request = StudentRequest(HttpMethod.Get, ApiRoutes.Courses.StudentLessonDetailServicePath(CourseId, LessonId));
+        using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.CurrentContext.CancellationToken));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(document.RootElement.GetProperty("data").GetProperty("id").GetGuid(), Is.EqualTo(LessonId));
+            Assert.That(document.RootElement.GetProperty("data").GetProperty("contentHtml").GetString(), Does.Contain("Nội dung"));
+            Assert.That(document.RootElement.GetProperty("data").GetProperty("attachments").GetArrayLength(), Is.EqualTo(1));
+            Assert.That(document.RootElement.GetProperty("meta").GetProperty("traceId").GetString(), Is.Not.Empty);
+        });
+    }
+
+    [Test]
+    public async Task StudentLessonDetailRejectsMalformedIds()
+    {
+        using var request = StudentRequest(HttpMethod.Get, $"/api/student/enrollments/not-a-guid/lessons/{LessonId}");
+        using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);
+        var envelope = await response.Content.ReadFromJsonAsync<ApiErrorResponse>(TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(envelope?.Error.Code, Is.EqualTo(ApiErrorCodes.ValidationFailed));
+        });
+    }
+
+    [Test]
+    public async Task StudentLessonDetailRejectsAdminActor()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, ApiRoutes.Courses.StudentLessonDetailServicePath(CourseId, LessonId));
+        request.Headers.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
+        request.Headers.Add(ApiHeaderNames.ActorId, StudentId.ToString());
+        using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);
+        var envelope = await response.Content.ReadFromJsonAsync<ApiErrorResponse>(TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+            Assert.That(envelope?.Error.Code, Is.EqualTo(ApiErrorCodes.Forbidden));
+        });
+    }
+
+    [Test]
+    public async Task StudentLessonDetailReturnsNotFoundEnvelopeWhenLessonDoesNotExist()
+    {
+        using var request = StudentRequest(HttpMethod.Get, ApiRoutes.Courses.StudentLessonDetailServicePath(CourseId, Guid.NewGuid()));
+        using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);
+        var envelope = await response.Content.ReadFromJsonAsync<ApiErrorResponse>(TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(envelope?.Error.Code, Is.EqualTo("LESSON_NOT_FOUND"));
+        });
+    }
+
     [TearDown]
     public async Task TearDownAsync()
     {
@@ -115,7 +181,7 @@ public sealed class StudentLearningEndpointsComponentTests
 
         public Task<bool> IsEnrolledAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) => Task.FromResult(true);
 
-        public Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, CancellationToken cancellationToken) =>
+        public Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) =>
             Task.FromResult<StudentCourseDetailResult?>(new StudentCourseDetailResult(CourseId, "Backend Fundamentals", "Mô tả", "PUBLISHED", DateTime.UtcNow, []));
 
         public Task<StudentCourseProgressResult?> GetProgressAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) =>
@@ -129,7 +195,18 @@ public sealed class StudentLearningEndpointsComponentTests
         public Task<CourseMediaSet> GetAsync(Guid courseId, CancellationToken cancellationToken) => Task.FromResult(new CourseMediaSet(Thumbnail, []));
         public Task<IReadOnlyDictionary<Guid, CourseMediaSet>> GetManyAsync(IReadOnlyList<Guid> courseIds, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyDictionary<Guid, CourseMediaSet>>(new Dictionary<Guid, CourseMediaSet> { [CourseId] = new(Thumbnail, []) });
-        public Task<IReadOnlyList<CourseMediaAsset>> GetLessonAttachmentsAsync(Guid lessonId, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<IReadOnlyList<CourseMediaAsset>> GetLessonAttachmentsAsync(Guid lessonId, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CourseMediaAsset>>([new CourseMediaAsset(Guid.NewGuid(), Guid.NewGuid(), lessonId, "https://example.test/lesson.jpg", null, null, 1, "IMAGE", "image/jpeg", "lesson.jpg")]);
         public Task<IReadOnlyList<Guid>> GetActiveUsageIdsAsync(IReadOnlyList<CourseMediaUsageOwnerScope> owners, CancellationToken cancellationToken) => throw new NotSupportedException();
+    }
+
+    private sealed class StubLessonCommandRepository : ILessonCommandRepository
+    {
+        public Task<LessonCreateRecord?> GetAsync(Guid courseId, Guid lessonId, CancellationToken cancellationToken) =>
+            Task.FromResult<LessonCreateRecord?>(lessonId == LessonId ? new LessonCreateRecord(LessonId, CourseId, "Bắt đầu", "# Nội dung", 1, DateTime.UtcNow, DateTime.UtcNow) : null);
+        public Task<LessonCreateRecord?> CreateAsync(Guid courseId, string title, string? contentMarkdown, uint? displayOrder, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<LessonCreateRecord?> UpdateAsync(Guid courseId, Guid lessonId, string title, string? contentMarkdown, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<bool> ReorderAsync(Guid courseId, IReadOnlyList<Guid> lessonIds, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<bool> DeleteAsync(Guid courseId, Guid lessonId, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }

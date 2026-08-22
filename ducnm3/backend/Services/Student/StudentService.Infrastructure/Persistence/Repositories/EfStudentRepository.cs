@@ -8,8 +8,11 @@ using StudentDomain = StudentService.Domain.Entities.Student;
 namespace StudentService.Infrastructure.Persistence.Repositories;
 
 public sealed class EfStudentRepository(StudentDbContext dbContext)
-    : IStudentRepository, IStudentListRepository
+    : IStudentRepository, IStudentListRepository, IStudentSummaryRepository
 {
+    public Task<long> CountAsync(CancellationToken cancellationToken) =>
+        dbContext.Students.AsNoTracking().LongCountAsync(cancellationToken);
+
     public async Task<StudentDomain?> GetByIdAsync(Guid studentId, CancellationToken cancellationToken)
     {
         var student = await dbContext.Students

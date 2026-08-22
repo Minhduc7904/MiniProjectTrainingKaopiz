@@ -44,18 +44,30 @@ public sealed class EfStudentLearningRepository(CourseDbContext db) : IStudentLe
             row.Id, row.Name, row.Status, ToUtc(row.CreatedAt))).ToArray(), totalItems, totalPages);
     }
 
-    public async Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, CancellationToken cancellationToken)
+    public async Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken)
     {
         var course = await db.Courses.AsNoTracking()
             .Where(item => item.Id == courseId)
             .Select(item => new CourseRow(item.Id, item.Name, item.DescriptionMarkdown, item.Status, item.CreatedAt))
             .SingleOrDefaultAsync(cancellationToken);
         if (course is null) return null;
-        var lessons = await db.Lessons.AsNoTracking()
-            .Where(item => item.CourseId == courseId)
-            .OrderBy(item => item.DisplayOrder)
-            .Select(item => new StudentLessonPreview(item.Id, item.Title, item.DisplayOrder))
+        var lessonRows = await (
+            from lesson in db.Lessons.AsNoTracking()
+            join progress in db.LessonProgresses.AsNoTracking().Where(item => item.StudentId == studentId)
+                on lesson.Id equals progress.LessonId into progressGroup
+            from progress in progressGroup.DefaultIfEmpty()
+            where lesson.CourseId == courseId
+            orderby lesson.DisplayOrder
+            select new StudentLessonPreview(
+                lesson.Id,
+                lesson.Title,
+                lesson.DisplayOrder,
+                progress == null ? 0 : progress.ProgressPercent,
+                progress == null ? null : progress.CompletedAt))
             .ToListAsync(cancellationToken);
+        var lessons = lessonRows.Select(item => item.CompletedAtUtc is null
+            ? item
+            : item with { CompletedAtUtc = ToUtc(item.CompletedAtUtc.Value) }).ToArray();
         return new StudentCourseDetailResult(course.Id, course.Name, course.DescriptionMarkdown, course.Status, ToUtc(course.CreatedAt), lessons);
     }
 
@@ -65,7 +77,7 @@ public sealed class EfStudentLearningRepository(CourseDbContext db) : IStudentLe
         var lessons = await db.Lessons.AsNoTracking()
             .Where(item => item.CourseId == courseId)
             .OrderBy(item => item.DisplayOrder)
-            .Select(item => new StudentLessonPreview(item.Id, item.Title, item.DisplayOrder))
+            .Select(item => new StudentLessonPreview(item.Id, item.Title, item.DisplayOrder, 0, null))
             .ToListAsync(cancellationToken);
         var lessonIds = lessons.Select(item => item.Id).ToArray();
         var completedLessonIds = lessonIds.Length == 0

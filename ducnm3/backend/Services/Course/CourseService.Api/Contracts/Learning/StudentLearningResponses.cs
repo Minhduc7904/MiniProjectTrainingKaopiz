@@ -18,7 +18,7 @@ public sealed record StudentCourseCatalogResponse(
     DateTime CreatedAtUtc,
     string? ThumbnailUrl);
 
-public sealed record StudentLessonPreviewResponse(Guid Id, string Title, uint DisplayOrder);
+public sealed record StudentLessonPreviewResponse(Guid Id, string Title, uint DisplayOrder, decimal ProgressPercent, DateTime? CompletedAtUtc);
 
 public sealed record StudentEnrollmentDetailResponse(
     Guid Id,

@@ -1,9 +1,9 @@
 import { GraduationCap } from 'lucide-react'
 import { studentUi } from '@/theme/student'
 
-export function StudentShell({ children, action, compact = false, navigation }) {
+export function StudentShell({ children, action, compact = false, navigation, scrollable = false }) {
   return (
-    <main className={`student-theme ${studentUi.page}`}>
+    <main className={`student-theme ${studentUi.page} ${scrollable ? studentUi.scrollPage : ''}`}>
       <a className={studentUi.skipLink} href="#student-content">Chuyển đến nội dung chính</a>
       <div className={`${studentUi.shell} ${compact ? 'max-w-xl justify-center' : ''}`}>
         <header className={`${studentUi.topbar} ${compact ? studentUi.topbarCompact : ''}`}>

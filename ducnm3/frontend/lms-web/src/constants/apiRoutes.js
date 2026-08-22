@@ -21,8 +21,17 @@ function joinPath(...parts) {
 }
 
 export const API_ROUTES = {
+  health: {
+    gateway: '/health',
+    course: joinPath(GATEWAY_PREFIXES.course, '/health'),
+    student: joinPath(GATEWAY_PREFIXES.student, '/health'),
+    media: joinPath(GATEWAY_PREFIXES.media, '/health'),
+    notification: joinPath(GATEWAY_PREFIXES.notification, '/health'),
+    scheduler: joinPath(GATEWAY_PREFIXES.scheduler, '/health'),
+  },
   courses: {
     list: joinPath(GATEWAY_PREFIXES.course, '/api/courses'),
+    summary: joinPath(GATEWAY_PREFIXES.course, '/api/courses/summary'),
     byId: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId),
     detail: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'details'),
     lessons: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons'),
@@ -32,6 +41,7 @@ export const API_ROUTES = {
   },
   students: {
     list: joinPath(GATEWAY_PREFIXES.student, '/api/students'),
+    summary: joinPath(GATEWAY_PREFIXES.student, '/api/students/summary'),
     detail: (studentId) =>
       joinPath(GATEWAY_PREFIXES.student, '/api/students', studentId),
   },
@@ -39,11 +49,14 @@ export const API_ROUTES = {
     enrollments: joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments'),
     catalog: joinPath(GATEWAY_PREFIXES.course, '/api/student/courses'),
     enrollmentDetail: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId),
+    lessonDetail: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId),
     enroll: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'enrollments'),
     progress: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'my-progress'),
+    completeLesson: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'progress', 'complete'),
   },
   media: {
     upload: joinPath(GATEWAY_PREFIXES.media, '/api/media'),
+    summary: joinPath(GATEWAY_PREFIXES.media, '/api/media/summary'),
     library: joinPath(GATEWAY_PREFIXES.media, '/api/media/library'),
     uploadIntents: joinPath(GATEWAY_PREFIXES.media, '/api/media/upload-intents'),
     uploadComplete: (mediaId) =>

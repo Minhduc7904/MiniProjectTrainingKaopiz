@@ -51,7 +51,7 @@ public static class StudentLearningResponseMapper
             result.NextLesson is null ? null : ToLessonPreview(result.NextLesson));
 
     private static StudentLessonPreviewResponse ToLessonPreview(StudentLessonPreview lesson) =>
-        new(lesson.Id, lesson.Title, lesson.DisplayOrder);
+        new(lesson.Id, lesson.Title, lesson.DisplayOrder, lesson.ProgressPercent, lesson.CompletedAtUtc);
 
     private static CourseMediaResponse? ToOptionalMediaResponse(CourseMediaAsset? media) =>
         media is null ? null : ToMediaResponse(media);

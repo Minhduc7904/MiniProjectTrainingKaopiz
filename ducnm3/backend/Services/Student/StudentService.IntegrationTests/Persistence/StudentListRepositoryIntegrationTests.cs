@@ -113,6 +113,24 @@ public sealed class StudentListRepositoryIntegrationTests
         });
     }
 
+    [Test]
+    public async Task CountAsync_AllStudentStatuses_ReturnsEveryRow()
+    {
+        var dbOptions = new DbContextOptionsBuilder<StudentDbContext>()
+            .UseMySql(mysql.GetConnectionString(), new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        await using var dbContext = new StudentDbContext(dbOptions);
+        await dbContext.Students.ExecuteDeleteAsync();
+        dbContext.Students.AddRange(
+            CreateStudent("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "active@example.com", "Active", "ACTIVE", DateTime.UtcNow),
+            CreateStudent("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "blocked@example.com", "Blocked", "BLOCKED", DateTime.UtcNow));
+        await dbContext.SaveChangesAsync();
+
+        var result = await new EfStudentRepository(dbContext).CountAsync(TestContext.CurrentContext.CancellationToken);
+
+        Assert.That(result, Is.EqualTo(2));
+    }
+
     [OneTimeTearDown]
     public async Task StopMySqlAsync()
     {

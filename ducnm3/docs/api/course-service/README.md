@@ -3,6 +3,7 @@
 - [Tạo khóa học](endpoints/post-courses.md)
 - [Lấy khóa học](endpoints/get-course-by-id.md)
 - [Liệt kê khóa học](endpoints/get-courses.md)
+- [Lấy tổng Course và Lesson](endpoints/get-courses-summary.md)
 - [Liệt kê khóa học theo con trỏ](endpoints/get-courses-cursor.md)
 - [Tạo bài học](endpoints/post-course-lessons.md)
 - [Cập nhật Course](endpoints/put-course.md)
@@ -16,4 +17,5 @@
 - [Khóa học đã ghi danh của Student](endpoints/get-student-enrollments.md)
 - [Danh mục khóa học chưa ghi danh của Student](endpoints/get-student-course-catalog.md)
 - [Chi tiết khóa học đã ghi danh](endpoints/get-student-enrollment-detail.md)
+- [Chi tiết Lesson dành cho Student](endpoints/get-student-lesson-detail.md)
 - [Tiến độ Course của Student](endpoints/get-course-my-progress.md)

@@ -76,6 +76,7 @@ public static class DependencyInjection
             serviceProvider.GetRequiredService<MinioStorageService>());
         services.AddSingleton<IStorageUploadPolicyProvider, MinioUploadPolicyProvider>();
         services.AddScoped<IMediaRepository, EfMediaRepository>();
+        services.AddScoped<IMediaSummaryRepository, EfMediaRepository>();
         services.AddScoped<IMediaUsageRepository, EfMediaUsageRepository>();
         services.AddScoped<EfMediaBackgroundJobRepository>();
         services.AddScoped<IMediaBackgroundJobListRepository>(serviceProvider =>

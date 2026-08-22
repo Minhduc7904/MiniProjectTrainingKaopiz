@@ -33,6 +33,21 @@ Media có menu Quản lý job tương ứng duy nhất `GET /media/api/media/job
 dùng Redux list state, Workbench Mẫu/Thủ công và table vận hành; không gộp retry
 hoặc detail payload vào trang list.
 
+Trang chi tiết Course của Student truyền `scrollable` cho `StudentShell` để
+cuộn độc lập trong viewport (root không cuộn). Gallery Course là carousel điều
+hướng bằng nút trước/sau hoặc chỉ mục ảnh; ảnh vào bằng transition transform và
+opacity, đồng thời tắt chuyển động khi người dùng bật reduced motion.
+
+Dashboard quản trị ở `/admin/dashboard` dùng shell riêng không có sidebar.
+Dashboard là màn hình tổng hợp nhiều API nên không dùng Workbench một-API: hook
+điều phối ba summary request và sáu health request song song, Redux giữ trạng
+thái từng card để một lỗi không chặn phần còn lại.
+
+Player Student tại `/student/courses/:courseId/learn/:lessonId` không dùng
+`StudentShell`: header, sidebar Lesson và media rail đứng yên trong viewport;
+chỉ list Lesson và content panel cuộn độc lập. Redux giữ Course preview, Lesson
+detail và completion state; HTML Lesson luôn do Course Service render/sanitize.
+
 ## Định hướng/chưa triển khai
 
 Trang mới tuân theo Page → Hook → Redux → API; không thêm Axios call trực tiếp trong UI component.

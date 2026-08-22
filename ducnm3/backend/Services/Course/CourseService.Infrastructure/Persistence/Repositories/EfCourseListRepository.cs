@@ -9,8 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseService.Infrastructure.Persistence.Repositories;
 
-public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseListRepository
+public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseListRepository, ICourseSummaryRepository
 {
+    public async Task<(long TotalCourses, long TotalLessons)> CountAsync(CancellationToken cancellationToken)
+    {
+        var totalCourses = await dbContext.Courses.AsNoTracking().LongCountAsync(cancellationToken);
+        var totalLessons = await dbContext.Lessons.AsNoTracking().LongCountAsync(cancellationToken);
+        return (totalCourses, totalLessons);
+    }
+
     public async Task<IReadOnlyList<CourseListItemRecord>> GetAllAsync(CancellationToken cancellationToken)
     {
         var rows = await ApplyStableOrder(dbContext.Courses.AsNoTracking(), CourseSortField.CreatedAt, true)

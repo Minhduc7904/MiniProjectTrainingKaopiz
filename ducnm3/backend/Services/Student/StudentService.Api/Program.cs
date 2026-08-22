@@ -9,6 +9,7 @@ using StudentService.Api.Endpoints.Auth.Login;
 using StudentService.Api.Endpoints.Auth.Register;
 using StudentService.Api.Endpoints.Students.GetById;
 using StudentService.Api.Endpoints.Students.GetList;
+using StudentService.Api.Endpoints.Students.GetSummary;
 using StudentService.Application;
 using StudentService.Infrastructure;
 
@@ -68,6 +69,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 app.MapServiceInfoEndpoint(ServiceNames.Student);
 app.MapDatabaseHealthEndpoint(ServiceNames.Student);
 app.MapGetStudents();
+app.MapGetStudentsSummary();
 app.MapGetStudentById();
 app.MapRegisterStudent();
 app.MapLoginStudent();

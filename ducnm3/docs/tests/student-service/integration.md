@@ -30,6 +30,8 @@ Không sử dụng MySQL Docker Compose hoặc dữ liệu seed của developer.
 
 ## Ca kiểm thử
 
+- `CountAsync_AllStudentStatuses_ReturnsEveryRow`: thêm Student ACTIVE và BLOCKED vào MySQL Testcontainer; đạt khi repository production đếm cả hai row.
+
 - `StatusAndDuplicateSortValuesReturnStablePages`: tạo ba Học viên `ACTIVE`,
   trong đó hai row có cùng `created_at`, và một Học viên `BLOCKED`; query hai
   page theo `createdAt desc`.

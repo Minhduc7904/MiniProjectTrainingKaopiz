@@ -1,7 +1,7 @@
 export const APP_ROUTES = {
-  home: '/',
+  home: '/', admin: '/admin', adminDashboard: '/admin/dashboard',
   students: '/admin/student/students', courses: '/admin/course/courses', courseDetails: '/admin/course/courses/:courseId', courseExport: '/admin/course/courses/export', mediaUpload: '/admin/media/upload', mediaUploadDirect: '/admin/media/upload-direct', mediaJobs: '/admin/media/jobs', notificationSend: '/admin/notification/batches/send', notificationBatches: '/admin/notification/batches', notificationProgress: '/admin/notification/batches/progress', notificationProgressDetail: '/admin/notification/batches/:batchId/progress', schedulerJobs: '/admin/scheduler/jobs',
-  studentRegister: '/student/register', studentLogin: '/student/login', studentLoading: '/student/loading', studentLogout: '/student/logout', studentHome: '/student/home', studentCourses: '/student/courses', studentCourseDetail: '/student/courses/:courseId', studentProfile: '/student/profile',
+  studentRegister: '/student/register', studentLogin: '/student/login', studentLoading: '/student/loading', studentLogout: '/student/logout', studentHome: '/student/home', studentCourses: '/student/courses', studentCourseDetail: '/student/courses/:courseId', studentCourseLearn: '/student/courses/:courseId/learn/:lessonId', studentProfile: '/student/profile',
 }
 
 export const SERVICE_IDS = {

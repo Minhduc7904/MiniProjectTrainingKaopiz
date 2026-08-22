@@ -57,7 +57,7 @@ public sealed class StudentLearningHandlersTests
     public async Task ProgressHandlerReturnsStudentSpecificProgress()
     {
         var expected = new StudentCourseProgressResult(CourseId, 4, 2, 50, new StudentLessonPreview(
-            Guid.Parse("22222222-2222-2222-2222-222222222222"), "Tiếp theo", 3));
+            Guid.Parse("22222222-2222-2222-2222-222222222222"), "Tiếp theo", 3, 0, null));
         var handler = new GetMyCourseProgressHandler(new StubRepository { Progress = expected });
 
         var result = await handler.HandleAsync(CourseId, StudentId, TestContext.CurrentContext.CancellationToken);
@@ -77,7 +77,7 @@ public sealed class StudentLearningHandlersTests
         public Task<bool> IsEnrolledAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) =>
             Task.FromResult(IsEnrolled);
 
-        public Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, CancellationToken cancellationToken) =>
+        public Task<StudentCourseDetailResult?> GetDetailAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) =>
             Task.FromResult<StudentCourseDetailResult?>(null);
 
         public Task<StudentCourseProgressResult?> GetProgressAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) =>

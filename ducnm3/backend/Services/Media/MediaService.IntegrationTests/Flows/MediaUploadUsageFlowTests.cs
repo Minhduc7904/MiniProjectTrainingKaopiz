@@ -253,7 +253,10 @@ public sealed class MediaUploadUsageFlowTests
         }
 
         await using var queryContext = new MediaDbContext(dbOptions);
-        var repository = new EfMediaRepository(queryContext, TimeProvider.System);
+        var repository = new EfMediaRepository(
+            queryContext,
+            new EfMediaBackgroundJobRepository(queryContext),
+            TimeProvider.System);
 
         var result = await repository.ListByActorAsync(
             new ActorReference(ActorTypes.Admin, adminId),
@@ -263,6 +266,30 @@ public sealed class MediaUploadUsageFlowTests
             TestContext.CurrentContext.CancellationToken);
 
         Assert.That(result.Select(item => item.Id), Is.EqualTo([originalMediaId]));
+    }
+
+    [Test]
+    public async Task CountAsync_NewMediaObjects_ReturnsEveryPersistedRow()
+    {
+        var dbOptions = new DbContextOptionsBuilder<MediaDbContext>()
+            .UseMySql(
+                mysql.GetConnectionString(),
+                new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        await using var dbContext = new MediaDbContext(dbOptions);
+        var repository = new EfMediaRepository(
+            dbContext,
+            new EfMediaBackgroundJobRepository(dbContext),
+            TimeProvider.System);
+        var before = await repository.CountAsync(TestContext.CurrentContext.CancellationToken);
+        dbContext.MediaObjects.AddRange(
+            CreateReadyOriginalImage(Guid.NewGuid(), Guid.NewGuid()),
+            CreateReadyOriginalImage(Guid.NewGuid(), Guid.NewGuid()));
+        await dbContext.SaveChangesAsync(TestContext.CurrentContext.CancellationToken);
+
+        var result = await repository.CountAsync(TestContext.CurrentContext.CancellationToken);
+
+        Assert.That(result, Is.EqualTo(before + 2));
     }
 
     [OneTimeTearDown]
@@ -282,7 +309,10 @@ public sealed class MediaUploadUsageFlowTests
                 new MySqlServerVersion(new Version(8, 4, 0)))
             .Options;
         await using var dbContext = new MediaDbContext(dbOptions);
-        var repository = new EfMediaRepository(dbContext, TimeProvider.System);
+        var repository = new EfMediaRepository(
+            dbContext,
+            new EfMediaBackgroundJobRepository(dbContext),
+            TimeProvider.System);
         var mediaUsageRepository = new EfMediaUsageRepository(dbContext, TimeProvider.System);
         var uploadFinalizer = new EfMediaUploadFinalizer(
             dbContext,

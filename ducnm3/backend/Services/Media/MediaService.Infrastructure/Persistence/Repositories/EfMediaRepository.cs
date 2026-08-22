@@ -14,8 +14,11 @@ namespace MediaService.Infrastructure.Persistence.Repositories;
 public sealed class EfMediaRepository(
     MediaDbContext dbContext,
     EfMediaBackgroundJobRepository backgroundJobs,
-    TimeProvider timeProvider) : IMediaRepository
+    TimeProvider timeProvider) : IMediaRepository, IMediaSummaryRepository
 {
+    public Task<long> CountAsync(CancellationToken cancellationToken) =>
+        dbContext.MediaObjects.AsNoTracking().LongCountAsync(cancellationToken);
+
     public async Task AddPendingAsync(
         PendingMediaRecord media,
         CancellationToken cancellationToken)

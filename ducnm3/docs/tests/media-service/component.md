@@ -20,6 +20,8 @@ dotnet test backend/Services/Media/MediaService.ComponentTests/MediaService.Comp
 
 ## Ca kiểm thử
 
+`GetMediaSummaryEndpointComponentTests` gửi `GET /api/media/summary` với actor ADMIN; đạt khi trả `200`, `totalMedia`, envelope chuẩn và `Cache-Control: no-store`.
+
 `HealthEndpointReportsEachDependencyCombination` chạy bốn ca dựa trên dữ liệu:
 
 | Trình kiểm tra cơ sở dữ liệu | Trình kiểm tra lưu trữ | HTTP dự kiến | Đạt khi phản hồi |

@@ -16,7 +16,7 @@ import {
   ListChecks,
   Users,
 } from 'lucide-react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Dropdown } from '@/components/ui/admin/Dropdown'
 import { Icon } from '@/components/ui/admin/Icon'
 import { readAdmin } from '@/auth/actorStorage'
@@ -24,6 +24,7 @@ import { ENV } from '@/constants/env'
 import { ICON } from '@/constants/icons'
 import { LAYOUT } from '@/constants/layout'
 import {
+  APP_ROUTES,
   SERVICES,
   getServiceById,
   getServiceByPath,
@@ -72,15 +73,15 @@ export function Sidebar() {
         >
           Sổ lớp
         </p>
-        <h1
-          className={`mt-2 flex items-center gap-2 font-display text-[20px] leading-none font-semibold ${adminUi.title}`}
-        >
-          <Icon
-            icon={BookOpen}
-            size={ICON.size.md}
-            className={adminUi.brand}
-          />
-          {ENV.appName}
+        <h1 className={`mt-2 font-display text-[20px] leading-none font-semibold ${adminUi.title}`}>
+          <Link to={APP_ROUTES.adminDashboard} className="inline-flex cursor-pointer items-center gap-2 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-accent">
+            <Icon
+              icon={BookOpen}
+              size={ICON.size.md}
+              className={adminUi.brand}
+            />
+            {ENV.appName}
+          </Link>
         </h1>
       </div>
 

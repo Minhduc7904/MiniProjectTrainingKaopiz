@@ -11,6 +11,7 @@ import { StudentDashboard } from './components/StudentDashboard'
 import { StudentProfile } from './components/StudentProfile'
 import { StudentCourseCatalog } from './components/StudentCourseCatalog'
 import { StudentCourseDetail } from './components/StudentCourseDetail'
+import { StudentLearningPage } from './components/StudentLearningPage'
 
 function AuthError({ error }) {
   return error ? <p aria-live="polite" className={`mt-4 ${studentUi.error}`}>{error.message ?? 'Không thể xử lý yêu cầu. Hãy thử lại.'}</p> : null
@@ -43,3 +44,4 @@ export function StudentProfilePage() { return <StudentProfile student={getVerifi
 export function StudentCoursesPage() { return <StudentCourseCatalog student={getVerifiedStudentProfile()} /> }
 
 export function StudentCourseDetailPage() { return <StudentCourseDetail student={getVerifiedStudentProfile()} /> }
+export function StudentCourseLearnPage() { return <StudentLearningPage student={getVerifiedStudentProfile()} /> }
