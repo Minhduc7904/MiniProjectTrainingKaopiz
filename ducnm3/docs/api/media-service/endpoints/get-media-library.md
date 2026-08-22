@@ -40,7 +40,16 @@ Không có request body. Kết quả có total order `createdAtUtc DESC, id DESC
         "contentUrl": "/media/api/media/8c2bf508-60bb-44d4-91aa-1baad98db09c/content",
         "thumbnailMediaId": "7b920767-6924-42b1-889f-5e59d3e8f69f",
         "thumbnailUrl": "/media/api/media/7b920767-6924-42b1-889f-5e59d3e8f69f/content",
-        "thumbnailStatus": "READY"
+        "thumbnailStatus": "READY",
+        "thumbnail": {
+          "id": "7b920767-6924-42b1-889f-5e59d3e8f69f",
+          "status": "READY",
+          "contentType": "image/webp",
+          "sizeBytes": 8192,
+          "createdAtUtc": "2026-08-22T09:00:02Z",
+          "completedAtUtc": "2026-08-22T09:00:05Z",
+          "contentUrl": "/media/api/media/7b920767-6924-42b1-889f-5e59d3e8f69f/content"
+        }
       }
     ],
     "nextCursor": null,
@@ -52,8 +61,14 @@ Không có request body. Kết quả có total order `createdAtUtc DESC, id DESC
 
 `id` và `contentUrl` luôn thuộc media original. Client chỉ được dùng media có
 `status = READY` khi gán usage hoặc chèn Markdown; `PENDING` và `FAILED` chỉ để
-theo dõi trong thư viện. `thumbnailMediaId`/`thumbnailUrl` chỉ dùng để render
-preview trong Media Library; không được gửi làm `mediaId` cho usage.
+theo dõi trong thư viện. `thumbnail` là metadata WebP dẫn xuất dùng riêng cho
+cover Grid/List: có với `IMAGE`, `VIDEO` và `DOCUMENT` MIME `application/pdf`.
+Khi mở panel chi tiết, client dùng `contentUrl` của original để xem file; không
+dùng thumbnail thay cho nội dung gốc.
+`thumbnail.contentUrl` và field tương thích ngược `thumbnailUrl` chỉ có khi
+thumbnail `READY`; `QUEUED`, `PROCESSING`, `FAILED` không public URL.
+`thumbnailMediaId`/`thumbnailUrl` hoặc `thumbnail.id`/`thumbnail.contentUrl`
+không được gửi làm `mediaId` cho usage.
 
 ## Mã trạng thái và side effects
 

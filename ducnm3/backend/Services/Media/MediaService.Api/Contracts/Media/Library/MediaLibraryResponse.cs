@@ -14,7 +14,17 @@ public sealed record MediaLibraryResponse(
     Guid? ThumbnailMediaId,
     string ContentUrl,
     string ThumbnailStatus,
-    string? ThumbnailUrl);
+    string? ThumbnailUrl,
+    MediaLibraryThumbnailResponse? Thumbnail);
+
+public sealed record MediaLibraryThumbnailResponse(
+    Guid Id,
+    string Status,
+    string ContentType,
+    long SizeBytes,
+    DateTime CreatedAtUtc,
+    DateTime? CompletedAtUtc,
+    string? ContentUrl);
 
 public sealed record MediaLibraryPageResponse(
     IReadOnlyList<MediaLibraryResponse> Items,

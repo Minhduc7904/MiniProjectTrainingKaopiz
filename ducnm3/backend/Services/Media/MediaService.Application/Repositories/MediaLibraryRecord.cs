@@ -1,5 +1,3 @@
-using MediaService.Application.Services.Storage;
-
 namespace MediaService.Application.Repositories;
 
 public sealed record MediaLibraryRecord(
@@ -13,5 +11,13 @@ public sealed record MediaLibraryRecord(
     DateTime? DraftedAtUtc,
     DateTime CreatedAtUtc,
     DateTime? CompletedAtUtc,
-    Guid? ThumbnailMediaId,
-    string? ThumbnailStatus);
+    MediaLibraryThumbnailRecord? Thumbnail);
+
+public sealed record MediaLibraryThumbnailRecord(
+    Guid Id,
+    string MediaStatus,
+    string? BackgroundJobStatus,
+    string ContentType,
+    long SizeBytes,
+    DateTime CreatedAtUtc,
+    DateTime? CompletedAtUtc);

@@ -272,7 +272,13 @@ public sealed class MediaUploadUsageFlowTests
             20,
             TestContext.CurrentContext.CancellationToken);
 
-        Assert.That(result.Select(item => item.Id), Is.EqualTo([originalMediaId]));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Select(item => item.Id), Is.EqualTo([originalMediaId]));
+            Assert.That(result.Single().Thumbnail, Is.Not.Null);
+            Assert.That(result.Single().Thumbnail!.Id, Is.EqualTo(derivativeMediaId));
+            Assert.That(result.Single().Thumbnail!.ContentType, Is.EqualTo("image/webp"));
+        });
     }
 
     [Test]

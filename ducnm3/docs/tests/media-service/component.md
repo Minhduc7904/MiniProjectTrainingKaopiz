@@ -26,6 +26,15 @@ dotnet test backend/Services/Media/MediaService.ComponentTests/MediaService.Comp
 ADMIN, `mediaType=IMAGE` và `status=pending`; đạt khi route bind đúng filter,
 handler nhận `PENDING` đã normalize và trả `200` envelope an toàn.
 
+`GetReadyThumbnailReturnsNestedThumbnailMetadataAndContentUrl` dùng
+repository double trả thumbnail WebP `READY`; đạt khi response có metadata
+thumbnail lồng nhau, ID/MIME/kích thước đúng và chỉ public `contentUrl` qua
+Gateway path.
+
+`GetFailedThumbnailHidesThumbnailContentUrl` trả thumbnail `FAILED`; đạt khi
+metadata vẫn có trạng thái nhưng nested và field tương thích `thumbnailUrl`
+đều không trả content URL.
+
 `HealthEndpointReportsEachDependencyCombination` chạy bốn ca dựa trên dữ liệu:
 
 | Trình kiểm tra cơ sở dữ liệu | Trình kiểm tra lưu trữ | HTTP dự kiến | Đạt khi phản hồi |

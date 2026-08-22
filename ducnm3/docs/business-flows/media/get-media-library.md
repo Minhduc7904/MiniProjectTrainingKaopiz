@@ -13,11 +13,15 @@ Cho actor chọn media original đã upload để gán usage hoặc chèn vào M
    original (`sourceMediaId = null`). Nếu client gửi `status`, service chỉ trả
    trạng thái `PENDING`, `READY` hoặc `FAILED` tương ứng.
 3. Service sắp xếp `createdAtUtc DESC, id DESC`, áp dụng cursor và trả item.
-4. UI hiển thị `thumbnailUrl` nếu thumbnail derivative đã `READY`; nếu không
-   dùng `contentUrl` của original để preview.
-5. Khi người dùng chọn, client chỉ dùng item `READY`: truyền `item.id`
-   (original) vào media usage hoặc dùng `item.contentUrl` (original) để chèn
-   Markdown.
+4. Với ảnh, video và PDF, danh sách Grid/List dùng `thumbnail.contentUrl` (hoặc
+   field tương thích ngược `thumbnailUrl`) khi derivative đã `READY`. Thumbnail
+   `QUEUED`, `PROCESSING` hoặc `FAILED` hiển thị trạng thái thay vì tải file
+   original để dựng cover. Audio, Other và document không phải PDF là
+   `NOT_REQUIRED`.
+5. Khi người dùng chọn item `READY`, panel chi tiết xem `item.contentUrl` của
+   file original; thumbnail chỉ còn dùng cho cover danh sách và metadata. Client
+   truyền `item.id` (original) vào media usage hoặc dùng `item.contentUrl`
+   (original) để chèn Markdown.
 
 ## Trường hợp rỗng và lỗi
 

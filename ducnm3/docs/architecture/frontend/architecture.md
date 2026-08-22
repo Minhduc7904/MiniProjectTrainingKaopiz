@@ -69,7 +69,11 @@ Menu **Thư viện Media** tại `/admin/media/library` là màn hình duyệt �
 vẫn dùng endpoint thư viện và cache Redux theo filter, nhưng bố cục master-detail
 với danh sách Grid/List ở panel trái và preview cùng metadata ở panel phải. Chọn
 một media không phát sinh request thứ hai; chỉ media `READY` mới có thể đọc
-content để preview. Màn hình này không có chức năng upload.
+content để preview. Preview Grid/List của ảnh, video, PDF dùng thumbnail WebP
+derivative khi `thumbnail.status = READY`, không tải original để dựng cover;
+panel phải xem file original qua `contentUrl` và hiển thị metadata thumbnail độc
+lập với file gốc.
+Màn hình này không có chức năng upload.
 
 ## Định hướng/chưa triển khai
 

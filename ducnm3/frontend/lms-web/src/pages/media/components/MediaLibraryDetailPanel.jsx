@@ -5,6 +5,10 @@ import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
 import { getMediaPreviewKind, MEDIA_PREVIEW_KIND } from '@/components/media/mediaPreviewKind'
 import { getMediaTypeIcon, getMediaTypeLabel } from '@/components/media/mediaPresentation'
 import { resolveMediaContentUrl } from '@/components/media/mediaContentUrl'
+import {
+  getMediaLibraryThumbnail,
+  getThumbnailStatusLabel,
+} from '@/components/media/mediaLibraryThumbnail'
 import { MEDIA_STATUS_LABELS } from '@/constants/media'
 import { adminUi } from '@/theme/admin'
 
@@ -28,6 +32,19 @@ function statusTone(status) {
   return adminUi.badgeMuted
 }
 
+function MetadataList({ rows }) {
+  return (
+    <dl className={`overflow-hidden rounded-lg ${adminUi.card}`}>
+      {rows.map(([label, value], index) => (
+        <div key={label} className={`flex items-start justify-between gap-4 px-4 py-3 ${index ? adminUi.hairlineT : ''}`}>
+          <dt className={`shrink-0 text-[12px] ${adminUi.caption}`}>{label}</dt>
+          <dd className={`min-w-0 break-all text-right text-[12px] ${label.endsWith('ID') ? `font-mono ${adminUi.body}` : adminUi.title}`}>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 function MediaPreview({ media, fileName }) {
   if (media.status !== 'READY') {
     return (
@@ -47,7 +64,7 @@ function MediaPreview({ media, fileName }) {
   }
 
   if (previewKind === MEDIA_PREVIEW_KIND.video) {
-    return <video className={`max-h-[52vh] w-full rounded-lg ${adminUi.mediaStage}`} controls preload="metadata"><source src={contentUrl} type={media.contentType} />Trình duyệt không hỗ trợ phát video.</video>
+    return <video className={`max-h-[52vh] min-h-48 w-full rounded-lg ${adminUi.choiceIdle}`} controls preload="metadata"><source src={contentUrl} type={media.contentType} />Trình duyệt không hỗ trợ phát video.</video>
   }
 
   if (previewKind === MEDIA_PREVIEW_KIND.audio) {
@@ -80,6 +97,7 @@ export function MediaLibraryDetailPanel({ media }) {
 
   const MediaIcon = getMediaTypeIcon(media.mediaType)
   const fileName = media.originalFileName || 'media'
+  const thumbnail = getMediaLibraryThumbnail(media)
 
   return (
     <aside className={`min-h-0 overflow-y-auto ${adminUi.panel}`}>
@@ -98,21 +116,33 @@ export function MediaLibraryDetailPanel({ media }) {
 
       <div className="space-y-5 p-5">
         <MediaPreview media={media} fileName={fileName} />
-        <dl className={`overflow-hidden rounded-lg ${adminUi.card}`}>
-          {[
+        <section>
+          <h2 className={`mb-2 text-[13px] font-semibold ${adminUi.title}`}>Thông tin file gốc</h2>
+          <MetadataList rows={[
             ['Media ID', media.id],
             ['Loại media', getMediaTypeLabel(media.mediaType)],
             ['MIME type', media.contentType || '—'],
             ['Dung lượng', formatBytes(media.sizeBytes)],
             ['Khởi tạo', formatDate(media.createdAtUtc)],
             ['Hoàn tất', formatDate(media.completedAtUtc)],
-          ].map(([label, value], index) => (
-            <div key={label} className={`flex items-start justify-between gap-4 px-4 py-3 ${index ? adminUi.hairlineT : ''}`}>
-              <dt className={`shrink-0 text-[12px] ${adminUi.caption}`}>{label}</dt>
-              <dd className={`min-w-0 break-all text-right text-[12px] ${label === 'Media ID' ? `font-mono ${adminUi.body}` : adminUi.title}`}>{value}</dd>
-            </div>
-          ))}
-        </dl>
+          ]} />
+        </section>
+        <section>
+          <h2 className={`mb-2 text-[13px] font-semibold ${adminUi.title}`}>Thông tin thumbnail</h2>
+          <MetadataList rows={thumbnail ? [
+            ['Thumbnail ID', thumbnail.id],
+            ['Trạng thái', getThumbnailStatusLabel(thumbnail.status)],
+            ['MIME type', thumbnail.contentType || '—'],
+            ['Dung lượng', formatBytes(thumbnail.sizeBytes)],
+            ['Khởi tạo', formatDate(thumbnail.createdAtUtc)],
+            ['Hoàn tất', formatDate(thumbnail.completedAtUtc)],
+          ] : [
+            ['Trạng thái', getThumbnailStatusLabel('NOT_REQUIRED')],
+          ]} />
+        </section>
+        <a className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-[13px] font-medium ${adminUi.buttonGhost}`} href={resolveMediaContentUrl(media.contentUrl)} download={fileName}>
+          <Icon icon={Download} size={16} />Tải file gốc
+        </a>
       </div>
     </aside>
   )

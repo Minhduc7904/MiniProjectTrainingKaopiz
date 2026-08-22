@@ -44,8 +44,62 @@ public sealed class GetMediaLibraryEndpointComponentTests
         });
     }
 
+    [Test]
+    public async Task GetReadyThumbnailReturnsNestedThumbnailMetadataAndContentUrl()
+    {
+        await using var fixture = await Fixture.CreateAsync();
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{ApiRoutes.BuildServicePath(ApiRoutes.Media.Library)}?mediaType=image&status=ready&pageSize=20");
+        request.Headers.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
+        request.Headers.Add(ApiHeaderNames.ActorId, "11111111-1111-1111-1111-111111111111");
+
+        using var response = await fixture.Client.SendAsync(request);
+        var envelope = await response.Content.ReadFromJsonAsync<
+            ApiResponse<MediaLibraryPageResponse>>();
+        var thumbnail = envelope?.Data.Items.Single().Thumbnail;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(thumbnail, Is.Not.Null);
+            Assert.That(thumbnail!.Id, Is.EqualTo(Repository.ThumbnailMediaId));
+            Assert.That(thumbnail.Status, Is.EqualTo(MediaDerivationStatuses.Ready));
+            Assert.That(thumbnail.ContentType, Is.EqualTo("image/webp"));
+            Assert.That(thumbnail.SizeBytes, Is.EqualTo(512));
+            Assert.That(
+                thumbnail.ContentUrl,
+                Is.EqualTo(ApiRoutes.Media.ContentPublicPath(Repository.ThumbnailMediaId)));
+        });
+    }
+
+    [Test]
+    public async Task GetFailedThumbnailHidesThumbnailContentUrl()
+    {
+        await using var fixture = await Fixture.CreateAsync();
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{ApiRoutes.BuildServicePath(ApiRoutes.Media.Library)}?mediaType=image&status=failed&pageSize=20");
+        request.Headers.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
+        request.Headers.Add(ApiHeaderNames.ActorId, "11111111-1111-1111-1111-111111111111");
+
+        using var response = await fixture.Client.SendAsync(request);
+        var envelope = await response.Content.ReadFromJsonAsync<
+            ApiResponse<MediaLibraryPageResponse>>();
+        var item = envelope?.Data.Items.Single();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(item?.Thumbnail?.Status, Is.EqualTo(MediaDerivationStatuses.Failed));
+            Assert.That(item?.Thumbnail?.ContentUrl, Is.Null);
+            Assert.That(item?.ThumbnailUrl, Is.Null);
+        });
+    }
+
     private sealed class Repository : IMediaRepository
     {
+        public static readonly Guid ThumbnailMediaId =
+            Guid.Parse("33333333-3333-3333-3333-333333333333");
+
         public string? LastStatus { get; private set; }
 
         public Task<IReadOnlyList<MediaLibraryRecord>> ListByActorAsync(
@@ -57,21 +111,33 @@ public sealed class GetMediaLibraryEndpointComponentTests
             CancellationToken cancellationToken)
         {
             LastStatus = status;
+            var ready = string.Equals(status, MediaObjectStatuses.Ready, StringComparison.Ordinal);
+            var failed = string.Equals(status, MediaObjectStatuses.Failed, StringComparison.Ordinal);
             return Task.FromResult<IReadOnlyList<MediaLibraryRecord>>(
             [
                 new MediaLibraryRecord(
                     Guid.Parse("22222222-2222-2222-2222-222222222222"),
                     MediaTypes.Image,
                     "image/png",
-                    "pending.png",
+                    ready ? "ready.png" : failed ? "failed.png" : "pending.png",
                     1,
-                    MediaObjectStatuses.Pending,
+                    ready
+                        ? MediaObjectStatuses.Ready
+                        : failed ? MediaObjectStatuses.Failed : MediaObjectStatuses.Pending,
                     true,
                     DateTime.UnixEpoch,
                     DateTime.UnixEpoch,
-                    null,
-                    null,
-                    null),
+                    ready ? DateTime.UnixEpoch : null,
+                    ready || failed
+                        ? new MediaLibraryThumbnailRecord(
+                            ThumbnailMediaId,
+                            ready ? MediaObjectStatuses.Ready : MediaObjectStatuses.Failed,
+                            ready ? MediaBackgroundJobStatuses.Completed : MediaBackgroundJobStatuses.Failed,
+                            "image/webp",
+                            512,
+                            DateTime.UnixEpoch,
+                            DateTime.UnixEpoch)
+                        : null),
             ]);
         }
 

@@ -1,6 +1,11 @@
 import { File } from 'lucide-react'
 import { Icon } from '@/components/ui/admin/Icon'
 import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
+import {
+  getMediaLibraryThumbnail,
+  getThumbnailStatusLabel,
+  hasReadyMediaLibraryThumbnail,
+} from '@/components/media/mediaLibraryThumbnail'
 import { getMediaTypeIcon, getMediaTypeLabel } from '@/components/media/mediaPresentation'
 import { MEDIA_STATUS_LABELS } from '@/constants/media'
 import { adminUi } from '@/theme/admin'
@@ -14,14 +19,16 @@ function statusTone(status) {
 
 function MediaThumb({ media }) {
   const MediaIcon = getMediaTypeIcon(media.mediaType)
+  const thumbnail = getMediaLibraryThumbnail(media)
 
-  if (media.mediaType === 'IMAGE' && media.status === 'READY') {
-    return <MediaImagePreview contentUrl={media.thumbnailUrl || media.contentUrl} alt="" />
+  if (hasReadyMediaLibraryThumbnail(media)) {
+    return <MediaImagePreview contentUrl={thumbnail.contentUrl} alt="" />
   }
 
   return (
-    <div className={`flex aspect-video items-center justify-center rounded-md ${adminUi.choiceIdle}`}>
-      <Icon icon={MediaIcon || File} size={28} className={adminUi.caption} />
+    <div className={`flex aspect-video flex-col items-center justify-center gap-1 rounded-md p-2 text-center ${adminUi.choiceIdle}`}>
+      <Icon icon={MediaIcon || File} size={24} className={adminUi.caption} />
+      {thumbnail ? <span className={`text-[10px] ${adminUi.caption}`}>{getThumbnailStatusLabel(thumbnail.status)}</span> : null}
     </div>
   )
 }
@@ -31,7 +38,6 @@ export function MediaLibraryExplorerList({ items, selectedId, viewMode, onSelect
     return (
       <div className="space-y-2 px-4 pb-4">
         {items.map((media) => {
-          const MediaIcon = getMediaTypeIcon(media.mediaType)
           const selected = media.id === selectedId
 
           return (
@@ -42,9 +48,7 @@ export function MediaLibraryExplorerList({ items, selectedId, viewMode, onSelect
               onClick={() => onSelect(media.id)}
               className={`flex w-full cursor-pointer items-center gap-3 rounded-md p-3 text-left ${selected ? adminUi.choiceActive : adminUi.choiceIdle}`}
             >
-              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${adminUi.badgeMuted}`}>
-                <Icon icon={MediaIcon} size={18} />
-              </span>
+              <span className="block w-16 shrink-0"><MediaThumb media={media} /></span>
               <span className="min-w-0 flex-1">
                 <span className={`block truncate text-[13px] font-medium ${adminUi.title}`}>
                   {media.originalFileName || 'media'}

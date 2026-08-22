@@ -127,11 +127,27 @@ public sealed class EfMediaRepository(
                 (item.CreatedAt == value.CreatedAtUtc && item.Id.CompareTo(value.Id) < 0));
         }
 
-        return await query
+        var thumbnails = dbContext.MediaObjects
+            .AsNoTracking()
+            .Where(item => item.SourceMediaId != null &&
+                item.DeletedAt == null &&
+                item.DerivationType == MediaDerivationTypes.Thumbnail);
+        var thumbnailJobs = backgroundJobs.Query()
+            .AsNoTracking()
+            .Where(job => job.JobType == MediaBackgroundJobTypes.ThumbnailDerivation);
+        var page = query
             .OrderByDescending(item => item.CreatedAt)
             .ThenByDescending(item => item.Id)
-            .Take(take)
-            .Select(item => new MediaLibraryRecord(
+            .Take(take);
+
+        return await (
+            from item in page
+            join thumbnail in thumbnails on (Guid?)item.Id equals thumbnail.SourceMediaId into thumbnailGroup
+            from thumbnail in thumbnailGroup.DefaultIfEmpty()
+            join thumbnailJob in thumbnailJobs on item.Id equals thumbnailJob.SubjectId into jobGroup
+            from thumbnailJob in jobGroup.DefaultIfEmpty()
+            orderby item.CreatedAt descending, item.Id descending
+            select new MediaLibraryRecord(
                 item.Id,
                 item.MediaType,
                 item.ContentType,
@@ -142,14 +158,16 @@ public sealed class EfMediaRepository(
                 item.DraftedAt,
                 item.CreatedAt,
                 item.CompletedAt,
-                backgroundJobs.Query()
-                    .Where(job => job.JobType == MediaBackgroundJobTypes.ThumbnailDerivation && job.SubjectId == item.Id)
-                    .Select(job => (Guid?)null)
-                    .FirstOrDefault(),
-                backgroundJobs.Query()
-                    .Where(job => job.JobType == MediaBackgroundJobTypes.ThumbnailDerivation && job.SubjectId == item.Id)
-                    .Select(job => job.Status)
-                    .FirstOrDefault()))
+                thumbnail == null
+                    ? null
+                    : new MediaLibraryThumbnailRecord(
+                        thumbnail.Id,
+                        thumbnail.Status,
+                        thumbnailJob == null ? null : thumbnailJob.Status,
+                        thumbnail.ContentType,
+                        (long)thumbnail.SizeBytes,
+                        thumbnail.CreatedAt,
+                        thumbnail.CompletedAt)))
             .ToArrayAsync(cancellationToken);
     }
 }
