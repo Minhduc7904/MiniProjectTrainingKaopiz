@@ -12,9 +12,9 @@ public static class GetStudentsEndpoint
     public static RouteHandlerBuilder MapGetStudents(this IEndpointRouteBuilder endpoints) =>
         endpoints.MapGet(
                 ApiRoutes.Students.List,
-                async (string? status, string? sortBy, string? sortDirection, int? page, int? pageSize, HttpContext context, [FromServices] GetStudentsHandler handler, CancellationToken cancellationToken) =>
+                async (string? status, string? search, string? sortBy, string? sortDirection, int? page, int? pageSize, HttpContext context, [FromServices] GetStudentsHandler handler, CancellationToken cancellationToken) =>
                 {
-                    var query = GetStudentsQuery.Create(status, sortBy, sortDirection, page, pageSize);
+                    var query = GetStudentsQuery.Create(status, search, sortBy, sortDirection, page, pageSize);
                     var result = await handler.HandleAsync(query, cancellationToken);
                     context.Response.Headers.CacheControl = "no-store";
                     return Results.Json(

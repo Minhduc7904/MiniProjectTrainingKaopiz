@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { studentHttpClient } from '@/api/studentHttpClient'
-import { completeStudentLessonRequest, fetchStudentLessonDetailRequest } from '@/api/studentLearningApi'
+import { completeStudentLessonRequest, fetchStudentCourseCatalogRequest, fetchStudentLessonDetailRequest } from '@/api/studentLearningApi'
 import { API_ROUTES } from '@/constants/apiRoutes'
 
 afterEach(() => vi.restoreAllMocks())
@@ -29,5 +29,17 @@ describe('Student learning requests', () => {
       data: { lessonId },
     })
     expect(post).toHaveBeenCalledWith(API_ROUTES.studentLearning.completeLesson(courseId, lessonId))
+  })
+
+  it('sends the Course search query to the Student catalog route', async () => {
+    const get = vi.spyOn(studentHttpClient, 'get').mockResolvedValue({
+      data: { data: [], meta: { traceId: 'trace-catalog', pagination: {} } },
+    })
+
+    await fetchStudentCourseCatalogRequest({ search: 'Backend', page: 1, pageSize: 12 })
+
+    expect(get).toHaveBeenCalledWith(API_ROUTES.studentLearning.catalog, {
+      params: { search: 'Backend', page: 1, pageSize: 12 },
+    })
   })
 })

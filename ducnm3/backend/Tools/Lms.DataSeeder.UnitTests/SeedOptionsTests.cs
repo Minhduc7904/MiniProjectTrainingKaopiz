@@ -11,6 +11,55 @@ public class SeedOptionsTests
     }
 
     [Test]
+    public void ValidateAcceptsConfirmedSeedDatabaseConfiguration()
+    {
+        var options = CreateValidOptions() with
+        {
+            StudentConnectionString =
+                "Server=localhost;Database=lms_student_seed_db;User ID=test;Password=test;",
+            CourseConnectionString =
+                "Server=localhost;Database=lms_course_seed_db;User ID=test;Password=test;",
+        };
+
+        Assert.DoesNotThrow(() => options.Validate("Development"));
+    }
+
+    [Test]
+    public void OptimizeCourseSeedSchemaFreshSeedDatabaseRunReturnsTrue()
+    {
+        var options = CreateValidOptions() with
+        {
+            CourseConnectionString =
+                "Server=localhost;Database=lms_course_seed_db;User ID=test;Password=test;",
+        };
+
+        Assert.That(options.OptimizeCourseSeedSchema, Is.True);
+    }
+
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public void OptimizeCourseSeedSchemaResumeOrDryRunReturnsFalse(bool resume, bool dryRun)
+    {
+        var options = CreateValidOptions() with
+        {
+            CourseConnectionString =
+                "Server=localhost;Database=lms_course_seed_db;User ID=test;Password=test;",
+            Resume = resume,
+            DryRun = dryRun,
+        };
+
+        Assert.That(options.OptimizeCourseSeedSchema, Is.False);
+    }
+
+    [Test]
+    public void OptimizeCourseSeedSchemaDevelopmentDatabaseReturnsFalse()
+    {
+        var options = CreateValidOptions();
+
+        Assert.That(options.OptimizeCourseSeedSchema, Is.False);
+    }
+
+    [Test]
     public void ValidateRejectsEnvironmentOtherThanDevelopment()
     {
         var options = CreateValidOptions();

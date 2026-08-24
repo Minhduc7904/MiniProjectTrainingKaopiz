@@ -15,7 +15,7 @@ Cho Student khám phá và ghi danh các Course mới; Course đã ghi danh khô
 ## Điều kiện trước
 
 - Actor header hợp lệ, type là `STUDENT`.
-- Pagination hợp lệ.
+- Search (nếu có) được trim và pagination hợp lệ.
 
 ## UML luồng chạy
 
@@ -26,9 +26,9 @@ sequenceDiagram
     participant Course as Course Service
     participant DB as MySQL Course
     participant Media as Media Service
-    Student->>Gateway: GET /course/api/student/courses?page=1&pageSize=12
+    Student->>Gateway: GET /course/api/student/courses?search=Backend&page=1&pageSize=12
     Gateway->>Course: Forward Student actor
-    Course->>DB: Read PUBLISHED courses without actor enrollment
+    Course->>DB: Read PUBLISHED courses matching name without actor enrollment
     Course->>Media: Read thumbnails by course IDs
     Media-->>Course: Thumbnail metadata
     Course-->>Student: Offset catalog envelope, no-store
@@ -41,7 +41,7 @@ sequenceDiagram
 
 ## Dữ liệu và side effects
 
-Chỉ đọc `courses`, `enrollments` và metadata Media. Ghi danh là thao tác riêng qua `POST /course/api/courses/{courseId}/enrollments`; frontend thay route sang detail khi POST thành công.
+Chỉ đọc `courses`, `enrollments` và metadata Media. Search tên Course kết hợp `AND` với điều kiện PUBLISHED/chưa ghi danh; chuỗi rỗng không lọc. Ghi danh là thao tác riêng qua `POST /course/api/courses/{courseId}/enrollments`; frontend thay route sang detail khi POST thành công.
 
 ## Test mapping
 

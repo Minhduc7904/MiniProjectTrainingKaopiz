@@ -57,12 +57,13 @@ public sealed record GetStudentCourseCatalogQuery
     public const int DefaultPageSize = GetStudentEnrollmentsQuery.DefaultPageSize;
     public const int MaximumPageSize = GetStudentEnrollmentsQuery.MaximumPageSize;
 
-    private GetStudentCourseCatalogQuery(int page, int pageSize) => (Page, PageSize) = (page, pageSize);
+    private GetStudentCourseCatalogQuery(string? search, int page, int pageSize) => (Search, Page, PageSize) = (search, page, pageSize);
 
+    public string? Search { get; }
     public int Page { get; }
     public int PageSize { get; }
 
-    public static GetStudentCourseCatalogQuery Create(int? page, int? pageSize)
+    public static GetStudentCourseCatalogQuery Create(string? search, int? page, int? pageSize)
     {
         var normalizedPage = page ?? DefaultPage;
         var normalizedPageSize = pageSize ?? DefaultPageSize;
@@ -73,7 +74,7 @@ public sealed record GetStudentCourseCatalogQuery
         if (((long)normalizedPage - 1) * normalizedPageSize > int.MaxValue)
             details.Add(new ApiErrorDetail("page", "The requested page is outside the supported range."));
         if (details.Count > 0) throw CourseErrors.ValidationFailed(details);
-        return new GetStudentCourseCatalogQuery(normalizedPage, normalizedPageSize);
+        return new GetStudentCourseCatalogQuery(string.IsNullOrWhiteSpace(search) ? null : search.Trim(), normalizedPage, normalizedPageSize);
     }
 }
 

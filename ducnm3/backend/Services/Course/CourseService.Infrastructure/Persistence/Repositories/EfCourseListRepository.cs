@@ -30,6 +30,7 @@ public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseL
     {
         var source = dbContext.Courses.AsNoTracking();
         if (query.Status is not null) source = source.Where(course => course.Status == query.Status);
+        if (query.Search is not null) source = source.Where(course => course.Name.Contains(query.Search));
         var totalItems = await source.LongCountAsync(cancellationToken);
         var rows = await ApplyStableOrder(source, query.SortBy, query.Descending)
             .Skip(checked((query.Page - 1) * query.PageSize))

@@ -1,4 +1,5 @@
 export const QUERY_PARAMS = {
+  search: 'search',
   mediaType: 'mediaType',
   status: 'status',
   sortBy: 'sortBy',

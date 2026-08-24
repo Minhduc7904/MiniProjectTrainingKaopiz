@@ -14,13 +14,14 @@ public sealed class GetCoursesHandlerTests
     {
         var repository = new StubCourseListRepository();
         var handler = new GetCoursesHandler(repository);
-        var query = GetCoursesQuery.Create(" published ", null, null, null, null);
+        var query = GetCoursesQuery.Create(" published ", " backend ", null, null, null, null);
 
         await handler.HandleAsync(query, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(query.Status, Is.EqualTo(CourseStatuses.Published));
+            Assert.That(query.Search, Is.EqualTo("backend"));
             Assert.That(query.SortBy, Is.EqualTo(CourseSortField.CreatedAt));
             Assert.That(query.Descending, Is.True);
             Assert.That(query.Page, Is.EqualTo(1));
@@ -28,6 +29,14 @@ public sealed class GetCoursesHandlerTests
             Assert.That(repository.PagedCallCount, Is.EqualTo(1));
             Assert.That(repository.AllCallCount, Is.Zero);
         });
+    }
+
+    [Test]
+    public void Create_WhitespaceSearch_NormalizesToNoFilter()
+    {
+        var query = GetCoursesQuery.Create(null, "   ", null, null, null, null);
+
+        Assert.That(query.Search, Is.Null);
     }
 
     private sealed class StubCourseListRepository : ICourseListRepository

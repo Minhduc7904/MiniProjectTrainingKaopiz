@@ -58,6 +58,40 @@ scripts/seed/run-development-seed.sh \
   --random-seed 12345
 ```
 
+## Tập dữ liệu API Course cho Development và seed
+
+Profile `course-api-large` tạo đúng một Lesson và một LessonProgress cho mỗi
+Course. Dùng hai lệnh sau khi các bảng đích đang rỗng:
+
+```bash
+# Database Development: 100,000 Student, 300,000 Course/Lesson/LessonProgress.
+scripts/seed/run-development-seed.sh \
+  --env-file .env \
+  --confirm \
+  --profile course-api-large \
+  --students 100000 \
+  --courses 300000 \
+  --min-lessons 1 \
+  --max-lessons 1 \
+  --batch-size 2000 \
+  --random-seed 20260825
+
+# Database seed: 100,000 Student, 3,000,000 Course/Lesson/LessonProgress.
+scripts/seed/run-development-seed.sh \
+  --env-file .env.seed \
+  --confirm \
+  --profile course-api-large \
+  --students 100000 \
+  --courses 3000000 \
+  --min-lessons 1 \
+  --max-lessons 1 \
+  --batch-size 2000 \
+  --random-seed 20260824
+```
+
+Hai lệnh còn tạo `1,000,000` Enrollment (10 Course/Student). Nếu cần kiểm tra
+schema và kế hoạch trước khi ghi, thay `--confirm` bằng `--dry-run`.
+
 ## Chỉ seed Student vào database hiện tại
 
 Dùng `--students-only` để chỉ tạo Student trong `lms_student_db.students`; công cụ
@@ -97,6 +131,22 @@ Trong khi chạy, giao diện hiển thị từng giai đoạn `Students`, `Cour
 
 Mỗi lô dùng một lệnh chèn nhiều bản ghi có tham số và một giao dịch. Công cụ không
 giữ toàn bộ tập dữ liệu trong RAM.
+
+### Tối ưu schema tạm thời cho database seed
+
+Fresh run ghi vào `lms_course_seed_db` tự động gỡ tạm thời toàn bộ foreign key,
+secondary index, unique index và primary key của `courses`, `lessons`,
+`enrollments`, `lesson_progresses`. Terminal hiển thị từng thao tác `Drop` và
+`Restore`; lỗi khi gỡ một mục được đánh dấu `FAILED — continue` và seed vẫn tiếp
+tục. Chỉ constraint/index thực sự gỡ thành công mới được khôi phục sau seed.
+
+Trước khi validation kết quả chạy, tool dựng lại primary key, index/unique index,
+rồi foreign key theo thứ tự này. Nếu một mục đã gỡ không thể khôi phục, tool kết
+thúc với lỗi để database không bị dùng khi schema còn thiếu.
+
+`lms_course_db`, `--dry-run`, `--resume` và `--students-only` không áp dụng tối
+ưu này. `--resume` giữ nguyên schema để bảo toàn idempotency của insert; chỉ dùng
+fresh run trên database seed rỗng khi cần tốc độ bulk insert cao.
 
 ## An toàn và tiếp tục
 

@@ -26,6 +26,15 @@ public sealed record SeedOptions(
     public const int DefaultRandomSeed = 20_260_813;
     public const int DefaultBatchSize = 1_000;
 
+    public bool OptimizeCourseSeedSchema =>
+        !StudentsOnly &&
+        !Resume &&
+        !DryRun &&
+        string.Equals(
+            new MySqlConnectionStringBuilder(CourseConnectionString).Database,
+            "lms_course_seed_db",
+            StringComparison.Ordinal);
+
     public void Validate(string environment)
     {
         if (!string.Equals(environment, "Development", StringComparison.Ordinal))
@@ -46,6 +55,7 @@ public sealed record SeedOptions(
         ValidateConnectionString(
             StudentConnectionString,
             "lms_student_db",
+            "lms_student_seed_db",
             nameof(StudentConnectionString));
 
         if (StudentsOnly)
@@ -80,6 +90,7 @@ public sealed record SeedOptions(
         ValidateConnectionString(
             CourseConnectionString,
             "lms_course_db",
+            "lms_course_seed_db",
             nameof(CourseConnectionString));
     }
 
@@ -94,7 +105,8 @@ public sealed record SeedOptions(
 
     private static void ValidateConnectionString(
         string connectionString,
-        string expectedDatabase,
+        string expectedDevelopmentDatabase,
+        string expectedSeedDatabase,
         string name)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -112,10 +124,12 @@ public sealed record SeedOptions(
             throw new SeedValidationException($"{name} is invalid.", exception);
         }
 
-        if (!string.Equals(builder.Database, expectedDatabase, StringComparison.Ordinal))
+        if (!string.Equals(builder.Database, expectedDevelopmentDatabase, StringComparison.Ordinal) &&
+            !string.Equals(builder.Database, expectedSeedDatabase, StringComparison.Ordinal))
         {
             throw new SeedValidationException(
-                $"{name} must target the Development database '{expectedDatabase}'.");
+                $"{name} must target either '{expectedDevelopmentDatabase}' or " +
+                $"'{expectedSeedDatabase}'.");
         }
     }
 }

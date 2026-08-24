@@ -5,6 +5,7 @@ import { COURSE_STATUS } from '@/constants/courseStatus'
 export const COURSE_SORT_BY = { createdAt: 'createdAt', name: 'name' }
 export const GET_COURSES_DEFAULT_QUERY = { sortBy: COURSE_SORT_BY.createdAt, sortDirection: SORT_DIRECTIONS.desc, page: PAGINATION.defaults.page, pageSize: PAGINATION.defaults.pageSize }
 export const GET_COURSES_INPUT_FIELDS = [
+  { key: QUERY_PARAMS.search, label: 'Tìm kiếm', type: 'string', required: false, nullable: true, defaultValue: null, allowlist: null, hint: 'Tìm một phần tên Course; bỏ trống để không lọc.' },
   { key: QUERY_PARAMS.status, label: 'Trạng thái', type: 'string', required: false, nullable: true, defaultValue: null, allowlist: Object.values(COURSE_STATUS), hint: 'DRAFT, PUBLISHED hoặc ARCHIVED.' },
   { key: QUERY_PARAMS.sortBy, label: 'Sắp xếp theo', type: 'string', required: false, nullable: false, defaultValue: COURSE_SORT_BY.createdAt, allowlist: Object.values(COURSE_SORT_BY), hint: 'createdAt hoặc name.' },
   { key: QUERY_PARAMS.sortDirection, label: 'Thứ tự', type: 'string', required: false, nullable: false, defaultValue: SORT_DIRECTIONS.desc, allowlist: Object.values(SORT_DIRECTIONS), hint: 'asc hoặc desc.' },

@@ -14,9 +14,9 @@ namespace CourseService.Api.Endpoints.Courses.GetList;
 public static class GetCoursesEndpoint
 {
     public static RouteHandlerBuilder MapGetCourses(this IEndpointRouteBuilder endpoints) =>
-        endpoints.MapGet(ApiRoutes.Courses.List, async (string? status, string? sortBy, string? sortDirection, int? page, int? pageSize, HttpContext context, [FromServices] GetCoursesHandler handler, ICourseMediaReader mediaReader, CancellationToken cancellationToken) =>
+        endpoints.MapGet(ApiRoutes.Courses.List, async (string? status, string? search, string? sortBy, string? sortDirection, int? page, int? pageSize, HttpContext context, [FromServices] GetCoursesHandler handler, [FromServices] ICourseMediaReader mediaReader, CancellationToken cancellationToken) =>
         {
-            var query = GetCoursesQuery.Create(status, sortBy, sortDirection, page, pageSize);
+            var query = GetCoursesQuery.Create(status, search, sortBy, sortDirection, page, pageSize);
             var result = await handler.HandleAsync(query, cancellationToken);
             var media = await mediaReader.GetManyAsync(result.Items.Select(item => item.Id).ToArray(), cancellationToken);
             var thumbnails = result.Items.ToDictionary(

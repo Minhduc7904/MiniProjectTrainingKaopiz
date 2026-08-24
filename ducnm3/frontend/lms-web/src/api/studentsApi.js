@@ -6,6 +6,10 @@ import { QUERY_PARAMS } from '@/constants/queryParams'
 export async function fetchStudentsListRequest(query = {}) {
   const params = {}
 
+  if (query.search) {
+    params[QUERY_PARAMS.search] = query.search
+  }
+
   if (query.status) {
     params[QUERY_PARAMS.status] = query.status
   }

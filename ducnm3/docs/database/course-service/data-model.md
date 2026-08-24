@@ -24,6 +24,10 @@ Ràng buộc/chỉ mục: `chk_courses_status`;
 `ix_courses_status_created_at(status, created_at DESC)` phục vụ lọc trạng thái,
 mốc thời gian và `ORDER BY created_at DESC` trong benchmark.
 
+List Course có thể tìm substring trên `name`. Đây không phải prefix/full-text
+search nên chưa thêm B-tree index hoặc migration mới; khi cần SLA cho dataset lớn,
+đánh giá Full-Text Search hoặc search service riêng trước khi thay đổi contract.
+
 ## `lessons`
 
 | Cột | Kiểu / null / mặc định | Ý nghĩa |

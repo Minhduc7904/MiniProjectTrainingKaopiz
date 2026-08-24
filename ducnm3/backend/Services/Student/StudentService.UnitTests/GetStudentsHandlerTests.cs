@@ -23,6 +23,7 @@ public sealed class GetStudentsHandlerTests
         var handler = new GetStudentsHandler(repository);
         var query = GetStudentsQuery.Create(
             "ACTIVE",
+            null,
             "createdAt",
             "desc",
             1,

@@ -95,7 +95,7 @@ public sealed class GetStudentsEndpointComponentTests
         using var response = await client.GetAsync(
             string.Concat(
                 ApiRoutes.Students.ListServicePath(),
-                "?status=inactive&sortBy=email&sortDirection=asc&page=2&pageSize=10"),
+                "?status=inactive&search=%20student%40example.com%20&sortBy=email&sortDirection=asc&page=2&pageSize=10"),
             TestContext.CurrentContext.CancellationToken);
 
         Assert.Multiple(() =>
@@ -103,6 +103,7 @@ public sealed class GetStudentsEndpointComponentTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(repository.Query, Is.Not.Null);
             Assert.That(repository.Query!.Status, Is.EqualTo("INACTIVE"));
+            Assert.That(repository.Query.Search, Is.EqualTo("student@example.com"));
             Assert.That(repository.Query.SortBy, Is.EqualTo(StudentSortField.Email));
             Assert.That(repository.Query.Descending, Is.False);
             Assert.That(repository.Query.Page, Is.EqualTo(2));

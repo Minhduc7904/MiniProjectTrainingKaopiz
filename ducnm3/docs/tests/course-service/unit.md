@@ -17,7 +17,8 @@ dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTe
 | Kiểm thử | Thiết lập và thao tác | Đạt khi |
 | --- | --- | --- |
 | `CheckAsyncPropagatesRequestCancellation` | Tạo `CourseDatabaseHealthProbe` với chuỗi kết nối trỏ tới cổng không hợp lệ; hủy `CancellationToken` trước khi gọi `CheckAsync`. | `CheckAsync` ném `OperationCanceledException`, không chuyển thao tác hủy thành trạng thái cơ sở dữ liệu không khỏe mạnh. |
-| `HandleAsync_ValidOffsetQuery_UsesPagedRepositoryOnly` | Tạo query `status=published` với repository double. | Query được normalize thành `PUBLISHED`; use case chỉ gọi `GetPagedAsync`, không gọi `GetAllAsync`. |
+| `HandleAsync_ValidOffsetQuery_UsesPagedRepositoryOnly` | Tạo query `status=published`, `search= backend ` với repository double. | Query được normalize thành `PUBLISHED` và `backend`; use case chỉ gọi `GetPagedAsync`, không gọi `GetAllAsync`. |
+| `Create_WhitespaceSearch_NormalizesToNoFilter` | Tạo query có `search` chỉ gồm khoảng trắng. | `Search` là `null`, không áp dụng filter tên. |
 | Export CSV | Test `CsvRowWriter`, export query/chunk và handler với repository double. | BOM/header đúng, escaping RFC 4180, status được validate và export chỉ gọi chunk reader với cancellation token. |
 | `HandleAsyncCreatesDraftAndSynchronizesMediaEmbeddedInDescription` | Gọi `CreateCourseHandler` với tên có khoảng trắng và Markdown image Media public. | Handler trim tên, luôn gọi repository với `DRAFT` và gửi đúng command `COURSE_DESCRIPTION` đến Media Service. |
 | `HandleAsync_ExistingCourse_DeletesAggregateAndQueuesEveryUsageId` | Repository double trả một Lesson và Media reader trả usage của Course/Lesson. | Handler snapshot đủ năm owner scope, hard-delete Course rồi gửi một `DeleteMediaUsagesByIdsV1` chứa toàn bộ usage ID. |
@@ -25,7 +26,7 @@ dotnet test backend/Services/Course/CourseService.UnitTests/CourseService.UnitTe
 | `RenderSupportedMathDelimiterEmitsSafeMathElement` | Renderer nhận lần lượt `$...$`, `$$...$$` và `\\[...\\]`. | HTML chỉ chứa placeholder `course-math` do server tạo, với display mode đúng; không tự diễn giải TeX thành HTML. |
 | `RenderMathContainsHtmlLikeTextEncodesItInsideMathData` | Renderer nhận TeX chứa chuỗi giống thẻ HTML. | Chuỗi được HTML-encode trong `data-math-tex`; không có thẻ script trong output. |
 | Course details (cần bổ sung) | Repository có path batch và path N+1 riêng. | Handler chỉ gọi path batch không N+1; component test xác nhận `400` với UUID sai và `404` khi không có Course. |
-| `StudentLearningHandlersTests` | Query page/pageSize sai, catalog Course available, Student chưa ghi danh và Student có progress. | Pagination sai trả `400`; catalog chuyển nguyên result repository; chưa ghi danh trả `403 STUDENT_NOT_ENROLLED`; progress chỉ chứa dữ liệu Student hiện tại. |
+| `StudentLearningHandlersTests` | Query page/pageSize sai, catalog Course available, Student chưa ghi danh và Student có progress. | Pagination sai trả `400`; catalog hỗ trợ `search` đã trim và chuyển nguyên result repository; chưa ghi danh trả `403 STUDENT_NOT_ENROLLED`; progress chỉ chứa dữ liệu Student hiện tại. |
 | `GetStudentLessonDetailHandlerTests` | Student có/không có enrollment và repository Lesson double. | Enrollment được kiểm tra trước khi đọc Lesson; không có enrollment trả `403 STUDENT_NOT_ENROLLED`; Lesson hợp lệ được trả nguyên projection. |
 
 Ca này bảo đảm thao tác tắt/hủy yêu cầu được tôn trọng. Nó không kiểm tra tính

@@ -1,4 +1,5 @@
 export const STUDENT_COPY = {
+  search: 'Tìm kiếm',
   status: 'Trạng thái',
   sortBy: 'Sắp xếp',
   direction: 'Chiều',

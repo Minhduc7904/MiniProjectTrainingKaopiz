@@ -17,6 +17,7 @@ import { adminUi } from '@/theme/admin'
 import { StudentsFilters } from './components/StudentsFilters'
 import { StudentsManualForm } from './components/StudentsManualForm'
 import { StudentsTable } from './components/StudentsTable'
+import { StudentsSearchForm } from './components/StudentsSearchForm'
 
 function toOutputJson({ data, pagination, traceId, error, success, query }) {
   if (error) {
@@ -70,7 +71,10 @@ export function StudentsPage() {
                   title="Danh sách học viên"
                   description="Chọn bộ lọc và trang, rồi đọc kết quả ở Output."
                 />
-                <StudentsFilters query={query} loading={loading} onChange={load} />
+                <div className="mt-5 flex flex-col gap-3">
+                  <StudentsSearchForm query={query} loading={loading} onChange={setQuery} onSubmit={load} />
+                  <StudentsFilters query={query} loading={loading} onChange={load} />
+                </div>
               </div>
               <div className={`shrink-0 px-5 py-3 ${adminUi.hairlineT}`}>
                 <Pagination

@@ -63,6 +63,8 @@ public sealed class MySqlSeedRunner(
         await using var courseConnection = new MySqlConnection(options.CourseConnectionString);
         await courseConnection.OpenAsync(cancellationToken);
         await AcquireLockAsync(courseConnection, cancellationToken);
+        CourseSeedSchemaOptimizer? schemaOptimizer = null;
+        var schemaRestored = false;
 
         try
         {
@@ -75,6 +77,12 @@ public sealed class MySqlSeedRunner(
             if (options.DryRun)
             {
                 return new SeedRunSummary(plan, 0, existing.TotalRows, stopwatch.Elapsed);
+            }
+
+            if (options.OptimizeCourseSeedSchema)
+            {
+                schemaOptimizer = new CourseSeedSchemaOptimizer(courseConnection, progress);
+                await schemaOptimizer.RemoveAsync(cancellationToken);
             }
 
             await SeedStudentsAsync(studentConnection, existing.Students, cancellationToken);
@@ -90,6 +98,18 @@ public sealed class MySqlSeedRunner(
                 plan.LessonProgresses,
                 existing.LessonProgresses,
                 cancellationToken);
+
+            if (schemaOptimizer is not null)
+            {
+                schemaRestored = await schemaOptimizer.RestoreAsync(CancellationToken.None);
+                if (!schemaRestored)
+                {
+                    throw new SeedValidationException(
+                        "Seed data was written, but one or more Course seed database constraints could not be restored. " +
+                        "Review the terminal schema status before using this database.");
+                }
+            }
+
             await ValidateResultAsync(
                 studentConnection,
                 courseConnection,
@@ -105,6 +125,11 @@ public sealed class MySqlSeedRunner(
         }
         finally
         {
+            if (schemaOptimizer is not null && !schemaRestored)
+            {
+                await schemaOptimizer.RestoreAsync(CancellationToken.None);
+            }
+
             await ReleaseLockAsync(courseConnection);
         }
     }

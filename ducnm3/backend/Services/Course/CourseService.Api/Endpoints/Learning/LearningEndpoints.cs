@@ -16,9 +16,9 @@ namespace CourseService.Api.Endpoints.Learning;
 public static class LearningEndpoints
 {
     public static RouteHandlerBuilder MapGetStudentCourseCatalog(this IEndpointRouteBuilder endpoints) =>
-        endpoints.MapGet(ApiRoutes.Courses.StudentCourseCatalog, async (int? page, int? pageSize, HttpContext context, [FromServices] GetStudentCourseCatalogHandler handler, ICourseMediaReader mediaReader, CancellationToken cancellationToken) =>
+        endpoints.MapGet(ApiRoutes.Courses.StudentCourseCatalog, async (string? search, int? page, int? pageSize, HttpContext context, [FromServices] GetStudentCourseCatalogHandler handler, ICourseMediaReader mediaReader, CancellationToken cancellationToken) =>
         {
-            var query = GetStudentCourseCatalogQuery.Create(page, pageSize);
+            var query = GetStudentCourseCatalogQuery.Create(search, page, pageSize);
             var result = await handler.HandleAsync(context.GetRequiredActor().Id, query, cancellationToken);
             var media = await mediaReader.GetManyAsync(result.Items.Select(item => item.CourseId).ToArray(), cancellationToken);
             context.Response.Headers.CacheControl = "no-store";

@@ -17,6 +17,19 @@ public interface ISeedProgress
         long insertedRows,
         long skippedRows,
         TimeSpan elapsed);
+
+    void SchemaActionCompleted(
+        SeedSchemaOperation operation,
+        string objectType,
+        string name,
+        bool succeeded,
+        string? failure);
+}
+
+public enum SeedSchemaOperation
+{
+    Remove,
+    Restore,
 }
 
 public enum SeedPhase
@@ -56,6 +69,15 @@ public sealed class NullSeedProgress : ISeedProgress
         long insertedRows,
         long skippedRows,
         TimeSpan elapsed)
+    {
+    }
+
+    public void SchemaActionCompleted(
+        SeedSchemaOperation operation,
+        string objectType,
+        string name,
+        bool succeeded,
+        string? failure)
     {
     }
 }

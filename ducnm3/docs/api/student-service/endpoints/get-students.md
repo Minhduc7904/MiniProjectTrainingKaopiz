@@ -6,7 +6,7 @@ Postman: `StudentService/GET Students`.
 
 ## Mục đích
 
-Liệt kê Học viên theo offset pagination, hỗ trợ lọc theo trạng thái, sắp xếp và
+Liệt kê Học viên theo offset pagination, hỗ trợ tìm theo tên/email, lọc theo trạng thái, sắp xếp và
 nhảy trực tiếp tới một page. Student Service sở hữu endpoint và chỉ đọc
 `lms_student_db`.
 
@@ -22,12 +22,13 @@ Endpoint không nhận request body.
 Ví dụ:
 
 ```http
-GET /student/api/students?status=ACTIVE&sortBy=createdAt&sortDirection=desc&page=1&pageSize=20
+GET /student/api/students?search=student%40example.com&status=ACTIVE&sortBy=createdAt&sortDirection=desc&page=1&pageSize=20
 X-Correlation-ID: 6af909e3-3c95-4ab2-b7f2-c4dcac6351e4
 ```
 
 | Query | Kiểu | Mặc định | Quy tắc |
 | --- | --- | --- | --- |
+| `search` | string | Không lọc | Trim; tìm khớp một phần `displayName` **hoặc** `email`, không phân biệt hoa/thường theo collation database. Chuỗi rỗng không lọc. |
 | `status` | string | Không lọc | Không phân biệt hoa/thường; `ACTIVE`, `INACTIVE`, `BLOCKED`. Chuỗi rỗng được xem như không truyền. |
 | `sortBy` | string | `createdAt` | Không phân biệt hoa/thường; `createdAt`, `displayName`, `email`. |
 | `sortDirection` | string | `desc` | `asc` hoặc `desc`. |
@@ -82,6 +83,8 @@ email asc -> email ASC, id ASC
 `ix_students_status_created_at`; `email` sử dụng unique index. Sort theo
 `displayName` có thể cần filesort và phải được đánh giá lại nếu trở thành query
 volume cao.
+
+`search` dùng substring trên hai cột `display_name` và `email`, nên B-tree hiện có không tăng tốc phần từ khóa ở giữa chuỗi. Chưa thêm migration/index; nếu cần SLA cho dữ liệu lớn, đánh giá Full-Text Search hoặc search service riêng.
 
 Offset pagination cung cấp totals và nhảy page nhưng row có thể dịch chuyển giữa
 các page nếu có insert/delete đồng thời. Client cần refresh page khi yêu cầu

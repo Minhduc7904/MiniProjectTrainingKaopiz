@@ -10,9 +10,10 @@ public sealed record GetStudentsQuery
     public const int DefaultPageSize = 20;
     public const int MaximumPageSize = 100;
 
-    private GetStudentsQuery(string? status, StudentSortField sortBy, bool descending, int page, int pageSize)
+    private GetStudentsQuery(string? status, string? search, StudentSortField sortBy, bool descending, int page, int pageSize)
     {
         Status = status;
+        Search = search;
         SortBy = sortBy;
         Descending = descending;
         Page = page;
@@ -20,15 +21,17 @@ public sealed record GetStudentsQuery
     }
 
     public string? Status { get; }
+    public string? Search { get; }
     public StudentSortField SortBy { get; }
     public bool Descending { get; }
     public int Page { get; }
     public int PageSize { get; }
 
-    public static GetStudentsQuery Create(string? status, string? sortBy, string? sortDirection, int? page, int? pageSize)
+    public static GetStudentsQuery Create(string? status, string? search, string? sortBy, string? sortDirection, int? page, int? pageSize)
     {
         var details = new List<ApiErrorDetail>();
         var normalizedStatus = NormalizeStatus(status, details);
+        var normalizedSearch = NormalizeSearch(search);
         var normalizedSort = NormalizeSort(sortBy, details);
         var descending = NormalizeDirection(sortDirection, details);
         var normalizedPage = page ?? DefaultPage;
@@ -37,7 +40,7 @@ public sealed record GetStudentsQuery
         if (normalizedPageSize is < 1 or > MaximumPageSize) details.Add(new ApiErrorDetail("pageSize", $"Page size must be between 1 and {MaximumPageSize}."));
         if (((long)normalizedPage - 1) * normalizedPageSize > int.MaxValue) details.Add(new ApiErrorDetail("page", "The requested page is outside the supported range."));
         if (details.Count > 0) throw StudentErrors.ValidationFailed(details);
-        return new GetStudentsQuery(normalizedStatus, normalizedSort, descending, normalizedPage, normalizedPageSize);
+        return new GetStudentsQuery(normalizedStatus, normalizedSearch, normalizedSort, descending, normalizedPage, normalizedPageSize);
     }
 
     private static string? NormalizeStatus(string? status, List<ApiErrorDetail> details)
@@ -48,6 +51,9 @@ public sealed record GetStudentsQuery
         details.Add(new ApiErrorDetail("status", "Status must be ACTIVE, INACTIVE, or BLOCKED."));
         return null;
     }
+
+    private static string? NormalizeSearch(string? search) =>
+        string.IsNullOrWhiteSpace(search) ? null : search.Trim();
 
     private static StudentSortField NormalizeSort(string? sortBy, List<ApiErrorDetail> details)
     {

@@ -13,6 +13,16 @@ export const GET_STUDENTS_DEFAULT_QUERY = {
 
 export const GET_STUDENTS_INPUT_FIELDS = [
   {
+    key: QUERY_PARAMS.search,
+    label: STUDENT_COPY.search,
+    type: 'string',
+    required: false,
+    nullable: true,
+    defaultValue: null,
+    allowlist: null,
+    hint: 'Tìm một phần tên hiển thị hoặc email; bỏ trống để không lọc.',
+  },
+  {
     key: QUERY_PARAMS.status,
     label: STUDENT_COPY.status,
     type: 'string',

@@ -27,6 +27,8 @@ Ràng buộc/chỉ mục hiện có:
 - `ix_students_status_created_at(status, created_at DESC)` phục vụ list/filter
   theo trạng thái.
 
+Student list hỗ trợ substring search trên `display_name` hoặc `email`. Không thêm B-tree index vì không tăng tốc từ khóa ở giữa chuỗi; khi có SLA lớn, đánh giá Full-Text Search hoặc search service trước khi đổi schema.
+
 Nếu endpoint Student dùng cursor `status + created_at DESC + id DESC`, tạo
 migration riêng bổ sung `(status, created_at DESC, id DESC)`. Không thêm trước
 khi query thật dùng nó vì chỉ mục làm tăng chi phí insert/update.

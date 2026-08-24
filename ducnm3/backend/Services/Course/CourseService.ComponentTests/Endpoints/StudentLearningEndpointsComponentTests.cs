@@ -21,13 +21,15 @@ public sealed class StudentLearningEndpointsComponentTests
     private static readonly Guid LessonId = Guid.Parse("22222222-2222-2222-2222-222222222222");
     private WebApplication app = null!;
     private HttpClient client = null!;
+    private StubStudentLearningRepository repository = null!;
 
     [SetUp]
     public async Task SetUpAsync()
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
-        builder.Services.AddSingleton<IStudentLearningRepository>(new StubStudentLearningRepository());
+        repository = new StubStudentLearningRepository();
+        builder.Services.AddSingleton<IStudentLearningRepository>(repository);
         builder.Services.AddSingleton<ILessonCommandRepository>(new StubLessonCommandRepository());
         builder.Services.AddSingleton<ICourseMediaReader>(new StubCourseMediaReader());
         builder.Services.AddCourseApplication();
@@ -87,6 +89,19 @@ public sealed class StudentLearningEndpointsComponentTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(document.RootElement.GetProperty("data")[0].GetProperty("courseId").GetGuid(), Is.EqualTo(CourseId));
             Assert.That(document.RootElement.GetProperty("meta").GetProperty("pagination").GetProperty("totalItems").GetInt64(), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task CatalogSearchNormalizesAndPassesCourseNameFilter()
+    {
+        using var request = StudentRequest(HttpMethod.Get, string.Concat(ApiRoutes.Courses.StudentCourseCatalogServicePath(), "?search=%20Backend%20"));
+        using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(repository.CatalogQuery?.Search, Is.EqualTo("Backend"));
         });
     }
 
@@ -169,15 +184,20 @@ public sealed class StudentLearningEndpointsComponentTests
 
     private sealed class StubStudentLearningRepository : IStudentLearningRepository
     {
+        public GetStudentCourseCatalogQuery? CatalogQuery { get; private set; }
+
         public Task<StudentEnrollmentsResult> GetEnrollmentsAsync(Guid studentId, GetStudentEnrollmentsQuery query, CancellationToken cancellationToken) =>
             Task.FromResult(new StudentEnrollmentsResult([
                 new StudentEnrollmentListItem(Guid.Parse("33333333-3333-3333-3333-333333333333"), CourseId, "Backend Fundamentals", "PUBLISHED", new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2026, 8, 20, 0, 0, 0, DateTimeKind.Utc)),
             ], 1, 1));
 
-        public Task<StudentCourseCatalogResult> GetCatalogAsync(Guid studentId, GetStudentCourseCatalogQuery query, CancellationToken cancellationToken) =>
-            Task.FromResult(new StudentCourseCatalogResult([
+        public Task<StudentCourseCatalogResult> GetCatalogAsync(Guid studentId, GetStudentCourseCatalogQuery query, CancellationToken cancellationToken)
+        {
+            CatalogQuery = query;
+            return Task.FromResult(new StudentCourseCatalogResult([
                 new StudentCourseCatalogItem(CourseId, "Backend Fundamentals", "PUBLISHED", new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc)),
             ], 1, 1));
+        }
 
         public Task<bool> IsEnrolledAsync(Guid courseId, Guid studentId, CancellationToken cancellationToken) => Task.FromResult(true);
 

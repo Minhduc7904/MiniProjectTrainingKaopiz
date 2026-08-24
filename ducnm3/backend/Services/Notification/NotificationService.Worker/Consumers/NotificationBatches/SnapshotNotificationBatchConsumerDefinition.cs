@@ -10,6 +10,8 @@ public sealed class SnapshotNotificationBatchConsumerDefinition
 {
     public SnapshotNotificationBatchConsumerDefinition()
     {
+        // Một snapshot đọc nhiều page Student và ghi nhiều batch item; xử lý tuần tự ở queue này giảm việc hai message
+        // cùng snapshot một batch. Repository vẫn phải idempotent vì RabbitMQ có thể redeliver message.
         ConcurrentMessageLimit = 1;
     }
 

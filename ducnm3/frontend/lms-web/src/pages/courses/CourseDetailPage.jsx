@@ -21,7 +21,7 @@ import { MarkdownEditor } from '@/components/markdown/MarkdownEditor'
 import { RenderedMarkdown } from '@/components/markdown/RenderedMarkdown'
 import { ConfirmModal } from '@/components/ui/admin/ConfirmModal'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCourseDetails, fetchCoursesList } from '@/features/courses/coursesSlice'
+import { fetchCourseDetails, fetchCoursesList, setCoursesQuery } from '@/features/courses/coursesSlice'
 import { APP_ROUTES } from '@/constants/appRoutes'
 import { COURSE_STATUS, COURSE_STATUS_LABELS } from '@/constants/courseStatus'
 import { COURSE_SORT_BY } from '@/constants/inputs/getCourses'
@@ -34,6 +34,7 @@ import { createLessonDeleteConfirmation } from '@/pages/courses/courseLessonDele
 import { canLoadSelectedLessonDetail } from '@/pages/courses/courseLessonSelection'
 import { buildCourseThumbnailUsage } from '@/pages/courses/courseThumbnailUsage'
 import { LessonDetailTabs } from '@/pages/courses/components/LessonDetailTabs'
+import { CourseSearchForm } from '@/pages/courses/components/CourseSearchForm'
 
 export function CourseDetailPage() {
   const { courseId } = useParams()
@@ -448,6 +449,7 @@ export function CoursesPage() {
     }
   }, [dispatch, list.query])
 
+  const setQuery = (query) => dispatch(setCoursesQuery(query))
   const load = (patch) => dispatch(fetchCoursesList({ ...list.query, ...patch }))
   const openCourseCreator = () => {
     setCourseForm(COURSE_CREATE_INITIAL_FORM)
@@ -481,6 +483,7 @@ export function CoursesPage() {
               <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
                 <PageHeader eyebrow="Course" title="Danh sách khóa học" description="Lọc và phân trang dữ liệu Course." />
                 <div className="mt-5 flex flex-col gap-3">
+                  <CourseSearchForm query={list.query} loading={list.loading} onChange={setQuery} onSubmit={load} />
                   <Dropdown label="Trạng thái" value={list.query.status ?? ''} disabled={list.loading} options={[{ value: '', label: 'Tất cả' }, ...Object.values(COURSE_STATUS).map((value) => ({ value, label: COURSE_STATUS_LABELS[value] }))]} onChange={(status) => load({ status: status || undefined, page: 1 })} />
                   <Dropdown label="Sắp xếp" value={list.query.sortBy} disabled={list.loading} options={[{ value: COURSE_SORT_BY.createdAt, label: 'Ngày tạo' }, { value: COURSE_SORT_BY.name, label: 'Tên khóa học' }]} onChange={(sortBy) => load({ sortBy, page: 1 })} />
                   <Dropdown label="Thứ tự" value={list.query.sortDirection} disabled={list.loading} options={[{ value: SORT_DIRECTIONS.desc, label: 'Giảm dần' }, { value: SORT_DIRECTIONS.asc, label: 'Tăng dần' }]} onChange={(sortDirection) => load({ sortDirection, page: 1 })} />

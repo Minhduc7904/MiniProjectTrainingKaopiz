@@ -81,10 +81,10 @@ public sealed class StudentListRepositoryIntegrationTests
         var repository = new EfStudentRepository(dbContext);
 
         var firstPage = await repository.GetListAsync(
-            GetStudentsQuery.Create("ACTIVE", "createdAt", "desc", 1, 2),
+            GetStudentsQuery.Create("ACTIVE", null, "createdAt", "desc", 1, 2),
             TestContext.CurrentContext.CancellationToken);
         var secondPage = await repository.GetListAsync(
-            GetStudentsQuery.Create("ACTIVE", "createdAt", "desc", 2, 2),
+            GetStudentsQuery.Create("ACTIVE", null, "createdAt", "desc", 2, 2),
             TestContext.CurrentContext.CancellationToken);
 
         Assert.Multiple(() =>
@@ -129,6 +129,30 @@ public sealed class StudentListRepositoryIntegrationTests
         var result = await new EfStudentRepository(dbContext).CountAsync(TestContext.CurrentContext.CancellationToken);
 
         Assert.That(result, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task SearchMatchesDisplayNameOrEmail()
+    {
+        var dbOptions = new DbContextOptionsBuilder<StudentDbContext>()
+            .UseMySql(mysql.GetConnectionString(), new MySqlServerVersion(new Version(8, 4, 0)))
+            .Options;
+        await using var dbContext = new StudentDbContext(dbOptions);
+        await dbContext.Students.ExecuteDeleteAsync();
+        dbContext.Students.AddRange(
+            CreateStudent("11111111-1111-1111-1111-111111111111", "backend@example.com", "Alice", "ACTIVE", DateTime.UnixEpoch),
+            CreateStudent("22222222-2222-2222-2222-222222222222", "other@example.com", "Backend Student", "ACTIVE", DateTime.UnixEpoch));
+        await dbContext.SaveChangesAsync();
+
+        var result = await new EfStudentRepository(dbContext).GetListAsync(
+            GetStudentsQuery.Create(null, "BACKEND", "email", "asc", 1, 20),
+            TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.TotalItems, Is.EqualTo(2));
+            Assert.That(result.Items.Select(item => item.Email), Is.EqualTo(["backend@example.com", "other@example.com"]));
+        });
     }
 
     [OneTimeTearDown]

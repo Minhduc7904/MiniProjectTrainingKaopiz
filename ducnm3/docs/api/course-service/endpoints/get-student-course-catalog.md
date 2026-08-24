@@ -15,12 +15,15 @@ Trả danh mục Course `PUBLISHED` mà Student hiện tại chưa ghi danh đ�
 
 Không có request body.
 
+Ví dụ: `GET /course/api/student/courses?search=backend&page=1&pageSize=12`.
+
 | Query | Kiểu | Mặc định | Quy tắc |
 | --- | --- | --- | --- |
+| `search` | string | Không lọc | Trim; tìm khớp một phần tên Course `name`, không phân biệt hoa/thường theo collation database. Chuỗi rỗng không lọc. |
 | `page` | integer | `1` | >= 1. |
 | `pageSize` | integer | `12` | 1–50. |
 
-Kết quả dùng total order `courses.created_at DESC, courses.id DESC`. Chỉ Course `PUBLISHED` và không có enrollment `(course_id, student_id)` của actor được trả về.
+Các filter kết hợp theo `AND`. Kết quả dùng total order `courses.created_at DESC, courses.id DESC`. Chỉ Course `PUBLISHED` và không có enrollment `(course_id, student_id)` của actor được trả về.
 
 ## Phản hồi thành công
 
@@ -52,7 +55,7 @@ Cache-Control: no-store
 
 ## Điều kiện nghiệp vụ và tác động phụ
 
-Endpoint chỉ đọc `courses`, `enrollments` và metadata thumbnail batch từ Media Service. Index hiện có `ix_courses_status_created_at` và `uq_enrollments_course_id_student_id` hỗ trợ filter/sort/exclusion; không cần migration. Không có side effect.
+Endpoint chỉ đọc `courses`, `enrollments` và metadata thumbnail batch từ Media Service. Index hiện có `ix_courses_status_created_at` và `uq_enrollments_course_id_student_id` hỗ trợ filter/sort/exclusion. Search substring trên `courses.name` không tận dụng B-tree, nên chưa thêm migration/index; đánh giá Full-Text Search nếu cần SLA lớn. Không có side effect.
 
 ## Đồng bộ artifact
 

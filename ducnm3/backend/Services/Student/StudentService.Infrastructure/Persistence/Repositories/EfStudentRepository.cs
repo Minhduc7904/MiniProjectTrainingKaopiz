@@ -28,6 +28,10 @@ public sealed class EfStudentRepository(StudentDbContext dbContext)
         {
             source = source.Where(student => student.Status == query.Status);
         }
+        if (query.Search is not null)
+        {
+            source = source.Where(student => student.DisplayName.Contains(query.Search) || student.Email.Contains(query.Search));
+        }
 
         var totalItems = await source.LongCountAsync(cancellationToken);
         var rows = await ApplyStableOrder(source, query)

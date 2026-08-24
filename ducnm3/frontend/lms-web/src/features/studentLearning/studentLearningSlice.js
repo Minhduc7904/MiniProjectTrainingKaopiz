@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { completeStudentLessonRequest, enrollStudentInCourseRequest, fetchMyCourseProgressRequest, fetchStudentCourseCatalogRequest, fetchStudentEnrollmentDetailRequest, fetchStudentEnrollmentsRequest, fetchStudentLessonDetailRequest } from '@/api/studentLearningApi'
 import { toApiError } from '@/api/toApiError'
-import { createInitialListState, listRequestFulfilled, listRequestPending, listRequestRejected } from '@/features/createApiListSlice'
+import { assignListQuery, createInitialListState, listRequestFulfilled, listRequestPending, listRequestRejected } from '@/features/createApiListSlice'
 
 export const STUDENT_ENROLLMENTS_DEFAULT_QUERY = { page: 1, pageSize: 12 }
 export const STUDENT_COURSE_CATALOG_DEFAULT_QUERY = { page: 1, pageSize: 12 }
@@ -49,7 +49,11 @@ const slice = createSlice({
     progressByCourseId: {},
     enrollmentByCourseId: {},
   },
-  reducers: {},
+  reducers: {
+    setStudentCourseCatalogQuery(state, action) {
+      assignListQuery(state.catalog, action.payload)
+    },
+  },
   extraReducers: (builder) => builder
     .addCase(fetchStudentEnrollments.pending, (state, action) => listRequestPending(state.enrollments, action))
     .addCase(fetchStudentEnrollments.fulfilled, (state, action) => listRequestFulfilled(state.enrollments, action))
@@ -78,4 +82,5 @@ const slice = createSlice({
     .addCase(completeStudentLesson.rejected, (state, action) => { state.completion.loading = false; state.completion.error = action.payload ?? { message: 'Không thể hoàn thành bài học.' } }),
 })
 
+export const { setStudentCourseCatalogQuery } = slice.actions
 export const studentLearningReducer = slice.reducer

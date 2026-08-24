@@ -37,6 +37,11 @@
       "type": "string"
     },
     {
+      "key": "studentSearch",
+      "value": "student",
+      "type": "string"
+    },
+    {
       "key": "studentSortBy",
       "value": "createdAt",
       "type": "string"
@@ -83,6 +88,12 @@
           "response": []
         },
         {
+          "name": "GET Courses search",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Course search OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data).to.be.an(\"array\"); pm.expect(body.meta.pagination.type).to.eql(\"offset\"); pm.expect(body.meta.pagination.page).to.eql(1); });"] } }],
+          "request": { "method": "GET", "header": [{ "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/courses?search=Backend&status=PUBLISHED&page=1&pageSize=20", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses"], "query": [{ "key": "search", "value": "Backend" }, { "key": "status", "value": "PUBLISHED" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "20" }] }, "description": "Business flow: docs/business-flows/courses/get-courses.md" },
+          "response": []
+        },
+        {
           "name": "GET Course details",
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Course details OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data.lessons).to.be.an(\"array\"); pm.expect(body.meta.traceId).to.be.a(\"string\"); });"] } }],
           "request": { "method": "GET", "header": [{ "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/courses/{{courseId}}/details", "host": ["{{baseUrl}}"], "path": ["course","api","courses","{{courseId}}","details"] }, "description": "Business flow: docs/business-flows/courses/get-course-details.md" },
@@ -97,7 +108,7 @@
         {
           "name": "GET Student course catalog",
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test(\"Student course catalog OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data).to.be.an(\"array\"); pm.expect(body.meta.pagination.type).to.eql(\"offset\"); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "X-Actor-Type", "value": "STUDENT", "type": "text" }, { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" }, { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/student/courses?page=1&pageSize=12", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "courses"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "12" }] }, "description": "Business flow: docs/business-flows/course-learning/get-student-course-catalog.md" },
+          "request": { "method": "GET", "header": [{ "key": "X-Actor-Type", "value": "STUDENT", "type": "text" }, { "key": "X-Actor-Id", "value": "{{studentId}}", "type": "text" }, { "key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text" }], "url": { "raw": "{{baseUrl}}/course/api/student/courses?search=Backend&page=1&pageSize=12", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "courses"], "query": [{ "key": "search", "value": "Backend" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "12" }] }, "description": "Business flow: docs/business-flows/course-learning/get-student-course-catalog.md" },
           "response": []
         },
         {
@@ -268,7 +279,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/student/api/students?status={{studentStatus}}&sortBy={{studentSortBy}}&sortDirection={{studentSortDirection}}&page={{studentPage}}&pageSize={{studentPageSize}}",
+              "raw": "{{baseUrl}}/student/api/students?search={{studentSearch}}&status={{studentStatus}}&sortBy={{studentSortBy}}&sortDirection={{studentSortDirection}}&page={{studentPage}}&pageSize={{studentPageSize}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -278,6 +289,10 @@
                 "students"
               ],
               "query": [
+                {
+                  "key": "search",
+                  "value": "{{studentSearch}}"
+                },
                 {
                   "key": "status",
                   "value": "{{studentStatus}}"

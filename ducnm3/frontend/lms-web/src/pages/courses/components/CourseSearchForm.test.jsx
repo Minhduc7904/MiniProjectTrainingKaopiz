@@ -1,0 +1,23 @@
+// @vitest-environment jsdom
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { CourseSearchForm } from '@/pages/courses/components/CourseSearchForm'
+
+describe('CourseSearchForm', () => {
+  it('keeps the search draft controlled and submits the entered term', () => {
+    const onChange = vi.fn()
+    const onSubmit = vi.fn()
+    const query = { page: 1, pageSize: 20, sortBy: 'createdAt', sortDirection: 'desc' }
+
+    const { rerender } = render(<CourseSearchForm query={query} loading={false} onChange={onChange} onSubmit={onSubmit} />)
+
+    fireEvent.change(screen.getByLabelText('Tìm kiếm'), { target: { value: 'Backend' } })
+    const searchedQuery = { ...query, search: 'Backend', page: 1 }
+    expect(onChange).toHaveBeenCalledWith(searchedQuery)
+
+    rerender(<CourseSearchForm query={searchedQuery} loading={false} onChange={onChange} onSubmit={onSubmit} />)
+
+    fireEvent.submit(screen.getByRole('button', { name: 'Tìm kiếm khóa học' }).closest('form'))
+    expect(onSubmit).toHaveBeenCalledWith(searchedQuery)
+  })
+})

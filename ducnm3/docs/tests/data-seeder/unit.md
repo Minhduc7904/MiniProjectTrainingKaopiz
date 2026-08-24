@@ -42,6 +42,8 @@ Mã nguồn: `DeterministicSeedDataTests.cs`.
 Mã nguồn: `SeedOptionsTests.cs`.
 
 - `ValidateAcceptsConfirmedDevelopmentConfiguration`: tùy chọn Development hợp lệ không gây ngoại lệ.
+- `ValidateAcceptsConfirmedSeedDatabaseConfiguration`: kết nối đến
+  `lms_student_seed_db` và `lms_course_seed_db` trong môi trường Development được chấp nhận.
 - `ValidateRejectsEnvironmentOtherThanDevelopment`: Production bị từ chối.
 - `ValidateRejectsWriteWithoutConfirmation`: thao tác ghi không có `--confirm` bị từ chối.
 - `ValidateAllowsDryRunWithoutConfirmation`: cho phép chạy thử chỉ đọc.
@@ -49,7 +51,14 @@ Mã nguồn: `SeedOptionsTests.cs`.
   `--students-only` chỉ yêu cầu connection string của Student database.
 - `ParseOptionsStudentsOnlyDoesNotRequireCourseConnection`: CLI nhận
   `--students-only` và không yêu cầu Course connection string.
-- `ValidateRejectsUnexpectedDatabaseName`: kết nối không trỏ đến `lms_course_db` bị từ chối.
+- `ValidateRejectsUnexpectedDatabaseName`: kết nối không trỏ đến `lms_course_db`
+  hoặc `lms_course_seed_db` bị từ chối.
+- `OptimizeCourseSeedSchemaFreshSeedDatabaseRunReturnsTrue`: chỉ fresh run trên
+  `lms_course_seed_db` mới bật tối ưu tạm thời schema Course.
+- `OptimizeCourseSeedSchemaResumeOrDryRunReturnsFalse`: `--resume` và
+  `--dry-run` luôn giữ nguyên constraint/index, kể cả với database seed.
+- `OptimizeCourseSeedSchemaDevelopmentDatabaseReturnsFalse`: `lms_course_db`
+  production-development không bao giờ bị gỡ constraint/index.
 - `ValidateRejectsInvalidCourseAssignmentRange`: khoảng gán bằng không, đảo ngược
   hoặc nằm ngoài giới hạn bị từ chối.
 

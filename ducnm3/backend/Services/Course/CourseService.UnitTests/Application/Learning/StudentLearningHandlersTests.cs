@@ -25,7 +25,7 @@ public sealed class StudentLearningHandlersTests
         ], 1, 1);
         var handler = new GetStudentCourseCatalogHandler(new StubRepository { Catalog = expected });
 
-        var result = await handler.HandleAsync(StudentId, GetStudentCourseCatalogQuery.Create(1, 12), TestContext.CurrentContext.CancellationToken);
+        var result = await handler.HandleAsync(StudentId, GetStudentCourseCatalogQuery.Create(null, 1, 12), TestContext.CurrentContext.CancellationToken);
 
         Assert.That(result, Is.EqualTo(expected));
     }

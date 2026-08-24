@@ -18,11 +18,12 @@ public sealed class GetStudentsQueryTests
     [Test]
     public void DefaultValuesReturnOffsetDefaults()
     {
-        var query = GetStudentsQuery.Create(null, null, null, null, null);
+        var query = GetStudentsQuery.Create(null, null, null, null, null, null);
 
         Assert.Multiple(() =>
         {
             Assert.That(query.Status, Is.Null);
+            Assert.That(query.Search, Is.Null);
             Assert.That(query.SortBy, Is.EqualTo(StudentSortField.CreatedAt));
             Assert.That(query.Descending, Is.True);
             Assert.That(query.Page, Is.EqualTo(1));
@@ -35,6 +36,7 @@ public sealed class GetStudentsQueryTests
     {
         var query = GetStudentsQuery.Create(
             " active ",
+            " student@example.com ",
             "displayName",
             "ASC",
             2,
@@ -43,6 +45,7 @@ public sealed class GetStudentsQueryTests
         Assert.Multiple(() =>
         {
             Assert.That(query.Status, Is.EqualTo("ACTIVE"));
+            Assert.That(query.Search, Is.EqualTo("student@example.com"));
             Assert.That(query.SortBy, Is.EqualTo(StudentSortField.DisplayName));
             Assert.That(query.Descending, Is.False);
             Assert.That(query.Page, Is.EqualTo(2));
@@ -54,7 +57,7 @@ public sealed class GetStudentsQueryTests
     public void InvalidValuesReturnAllValidationDetails()
     {
         var exception = Assert.Throws<StudentApplicationException>(() =>
-            GetStudentsQuery.Create("unknown", "id", "sideways", 0, 101));
+            GetStudentsQuery.Create("unknown", null, "id", "sideways", 0, 101));
 
         Assert.Multiple(() =>
         {
@@ -71,7 +74,7 @@ public sealed class GetStudentsQueryTests
     public void PageOffsetExceedsProviderLimitReturnsValidationError()
     {
         var exception = Assert.Throws<StudentApplicationException>(() =>
-            GetStudentsQuery.Create(null, null, null, int.MaxValue, 100));
+            GetStudentsQuery.Create(null, null, null, null, int.MaxValue, 100));
 
         Assert.That(
             exception!.Details,

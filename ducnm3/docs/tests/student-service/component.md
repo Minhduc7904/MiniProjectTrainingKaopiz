@@ -24,8 +24,8 @@ dotnet test backend/Services/Student/StudentService.ComponentTests/StudentServic
 - `DefaultQueryReturnsOffsetPaginationEnvelope`: gọi `GET /api/students` không
   query; đạt khi response là `200`, `data` là array, `Cache-Control: no-store`
   và `meta.pagination` có đầy đủ type/page/pageSize/totalItems/totalPages.
-- `AllowlistedQueryMapsNormalizedRepositoryQuery`: gửi status, sort, direction,
-  page và pageSize; đạt khi HTTP trả `200` và repository nhận query đã chuẩn hóa.
+- `AllowlistedQueryMapsNormalizedRepositoryQuery`: gửi search, status, sort, direction,
+  page và pageSize; đạt khi HTTP trả `200` và repository nhận query đã trim/chuẩn hóa.
 - `InvalidQueryReturnsValidationEnvelope`: gửi đồng thời năm parameter sai; đạt
   khi response là `400 VALIDATION_FAILED`, có năm details và repository không
   được gọi.

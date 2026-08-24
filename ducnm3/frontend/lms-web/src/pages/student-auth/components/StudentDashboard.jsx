@@ -17,7 +17,7 @@ export function StudentDashboard({ student }) {
   }
 
   return (
-    <StudentShell navigation={<StudentNavigation />} action={<StudentAccountMenu displayName={student.displayName} email={student.email} logoutTo={APP_ROUTES.studentLogout} profileTo={APP_ROUTES.studentProfile} />}>
+    <StudentShell scrollable navigation={<StudentNavigation />} action={<StudentAccountMenu displayName={student.displayName} email={student.email} logoutTo={APP_ROUTES.studentLogout} profileTo={APP_ROUTES.studentProfile} />}>
       <section className="grid gap-7 py-4 sm:gap-9 sm:py-10">
         <div className="student-enter grid max-w-2xl gap-3">
           <p className={studentUi.eyebrow}>Không gian học tập của bạn</p>

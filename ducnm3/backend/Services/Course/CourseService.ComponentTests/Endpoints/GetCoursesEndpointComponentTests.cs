@@ -6,6 +6,7 @@ using BuildingBlocks.Presentation.Extensions;
 using CourseService.Api.Endpoints.Courses.GetList;
 using CourseService.Application;
 using CourseService.Application.Repositories;
+using CourseService.Application.Services.Media;
 using CourseService.Application.UseCases.Courses.Export;
 using CourseService.Application.UseCases.Courses.GetList;
 using CourseService.Domain.Constants;
@@ -35,6 +36,7 @@ public sealed class GetCoursesEndpointComponentTests
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<ICourseListRepository>(repository);
+        builder.Services.AddSingleton<ICourseMediaReader>(new StubCourseMediaReader());
         builder.Services.AddCourseApplication();
         app = builder.Build();
         app.UseSharedApiMiddleware();
@@ -78,6 +80,20 @@ public sealed class GetCoursesEndpointComponentTests
         });
     }
 
+    [Test]
+    public async Task SearchQueryNormalizesAndPassesSearchFilterToRepository()
+    {
+        using var response = await client.GetAsync(
+            string.Concat(ApiRoutes.Courses.ListServicePath(), "?search=%20Backend%20"),
+            TestContext.CurrentContext.CancellationToken);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(repository.LastQuery?.Search, Is.EqualTo("Backend"));
+        });
+    }
+
     [TearDown]
     public async Task TearDownAsync()
     {
@@ -88,6 +104,7 @@ public sealed class GetCoursesEndpointComponentTests
     private sealed class StubCourseListRepository(GetCoursesResult result) : ICourseListRepository
     {
         public int PagedCallCount { get; private set; }
+        public GetCoursesQuery? LastQuery { get; private set; }
 
         public Task<IReadOnlyList<CourseListItemRecord>> GetAllAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<CourseListItemRecord>>([]);
@@ -95,6 +112,7 @@ public sealed class GetCoursesEndpointComponentTests
         public Task<GetCoursesResult> GetPagedAsync(GetCoursesQuery query, CancellationToken cancellationToken)
         {
             PagedCallCount++;
+            LastQuery = query;
             return Task.FromResult(result);
         }
 
@@ -106,5 +124,17 @@ public sealed class GetCoursesEndpointComponentTests
             CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<CourseExportRow>>([]);
 
+    }
+
+    private sealed class StubCourseMediaReader : ICourseMediaReader
+    {
+        public Task<CourseMediaSet> GetAsync(Guid courseId, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyDictionary<Guid, CourseMediaSet>> GetManyAsync(IReadOnlyList<Guid> courseIds, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyDictionary<Guid, CourseMediaSet>>(new Dictionary<Guid, CourseMediaSet>());
+
+        public Task<IReadOnlyList<CourseMediaAsset>> GetLessonAttachmentsAsync(Guid lessonId, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<Guid>> GetActiveUsageIdsAsync(IReadOnlyList<CourseMediaUsageOwnerScope> owners, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }

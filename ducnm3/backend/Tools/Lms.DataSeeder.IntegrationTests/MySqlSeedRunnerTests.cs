@@ -20,7 +20,7 @@ public class MySqlSeedRunnerTests
             .WithPassword("student_test_password")
             .Build();
         courseDatabase = new MySqlBuilder("mysql:8.4")
-            .WithDatabase("lms_course_db")
+            .WithDatabase("lms_course_seed_db")
             .WithUsername("course_test")
             .WithPassword("course_test_password")
             .Build();
@@ -79,6 +79,42 @@ public class MySqlSeedRunnerTests
                 HAVING COUNT(*) > 1
             ) AS duplicates;
             """);
+        var primaryKeyCount = await ScalarAsync(
+            courseConnection,
+            """
+            SELECT COUNT(*)
+            FROM information_schema.table_constraints
+            WHERE constraint_schema = DATABASE()
+              AND table_name IN ('courses', 'lessons', 'enrollments', 'lesson_progresses')
+              AND constraint_type = 'PRIMARY KEY';
+            """);
+        var uniqueConstraintCount = await ScalarAsync(
+            courseConnection,
+            """
+            SELECT COUNT(*)
+            FROM information_schema.table_constraints
+            WHERE constraint_schema = DATABASE()
+              AND table_name IN ('courses', 'lessons', 'enrollments', 'lesson_progresses')
+              AND constraint_type = 'UNIQUE';
+            """);
+        var foreignKeyCount = await ScalarAsync(
+            courseConnection,
+            """
+            SELECT COUNT(*)
+            FROM information_schema.table_constraints
+            WHERE constraint_schema = DATABASE()
+              AND table_name IN ('courses', 'lessons', 'enrollments', 'lesson_progresses')
+              AND constraint_type = 'FOREIGN KEY';
+            """);
+        var secondaryIndexCount = await ScalarAsync(
+            courseConnection,
+            """
+            SELECT COUNT(DISTINCT CONCAT(table_name, ':', index_name))
+            FROM information_schema.statistics
+            WHERE table_schema = DATABASE()
+              AND table_name IN ('courses', 'lessons', 'enrollments', 'lesson_progresses')
+              AND index_name <> 'PRIMARY';
+            """);
 
         Assert.Multiple(() =>
         {
@@ -87,6 +123,10 @@ public class MySqlSeedRunnerTests
             Assert.That(lessonCount, Is.EqualTo(firstRun.Plan.Lessons));
             Assert.That(enrollmentCount, Is.EqualTo(firstRun.Plan.Enrollments));
             Assert.That(duplicateEnrollmentGroups, Is.Zero);
+            Assert.That(primaryKeyCount, Is.EqualTo(4));
+            Assert.That(uniqueConstraintCount, Is.EqualTo(3));
+            Assert.That(foreignKeyCount, Is.EqualTo(3));
+            Assert.That(secondaryIndexCount, Is.EqualTo(6));
         });
 
         var resumeOptions = options with { Resume = true };

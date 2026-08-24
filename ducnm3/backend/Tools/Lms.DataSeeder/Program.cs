@@ -326,5 +326,23 @@ public static class Program
             task.StopTask();
             timers[phase].Stop();
         }
+
+        public void SchemaActionCompleted(
+            SeedSchemaOperation operation,
+            string objectType,
+            string name,
+            bool succeeded,
+            string? failure)
+        {
+            var verb = operation == SeedSchemaOperation.Remove ? "Drop" : "Restore";
+            var outcome = succeeded
+                ? "[green]OK[/]"
+                : $"[yellow]FAILED — continue[/] [grey]{Markup.Escape(failure ?? string.Empty)}[/]";
+            var task = context.AddTask(
+                $"[blue]{verb}[/] {Markup.Escape(objectType)} {Markup.Escape(name)} {outcome}",
+                maxValue: 1);
+            task.Value = 1;
+            task.StopTask();
+        }
     }
 }

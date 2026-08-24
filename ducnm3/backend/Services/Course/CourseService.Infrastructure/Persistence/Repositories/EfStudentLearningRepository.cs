@@ -31,6 +31,7 @@ public sealed class EfStudentLearningRepository(CourseDbContext db) : IStudentLe
         var source = db.Courses.AsNoTracking()
             .Where(course => course.Status == CourseStatuses.Published)
             .Where(course => !db.Enrollments.Any(enrollment => enrollment.CourseId == course.Id && enrollment.StudentId == studentId));
+        if (query.Search is not null) source = source.Where(course => course.Name.Contains(query.Search));
         var totalItems = await source.LongCountAsync(cancellationToken);
         var rows = await source
             .OrderByDescending(course => course.CreatedAt)

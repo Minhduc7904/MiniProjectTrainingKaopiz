@@ -5,7 +5,7 @@ API contract:
 
 ## Mục tiêu
 
-Client lấy một page Học viên, có thể lọc theo trạng thái và sắp xếp theo field
+Client lấy một page Học viên, có thể tìm theo tên/email, lọc theo trạng thái và sắp xếp theo field
 được cho phép, đồng thời nhận tổng số item/page để xây dựng UI phân trang.
 
 ## Actor và thành phần
@@ -19,6 +19,7 @@ Client lấy một page Học viên, có thể lọc theo trạng thái và sắ
 
 - Authentication/authorization chưa được triển khai.
 - `page >= 1`, `pageSize` từ `1` đến `100`.
+- `search` được trim; nếu có thì khớp một phần `displayName` hoặc `email`.
 - `status`, `sortBy`, `sortDirection` thuộc allowlist.
 
 ## UML luồng chạy
@@ -49,8 +50,8 @@ sequenceDiagram
 ## Luồng chính
 
 1. Client gửi GET không body qua Gateway.
-2. Application chuẩn hóa status/sort/direction và áp dụng defaults.
-3. Repository dùng cùng status predicate để đếm `totalItems` và lấy page.
+2. Application chuẩn hóa search/status/sort/direction và áp dụng defaults.
+3. Repository dùng cùng predicate search + status để đếm `totalItems` và lấy page.
 4. Repository sắp xếp theo field đã chọn, sau đó thêm `id` làm tie-breaker.
 5. API trả `data` array và `meta.pagination` kiểu `offset`.
 6. Client dùng `page`, `totalPages` để điều hướng tới page tiếp theo.
@@ -66,6 +67,7 @@ sequenceDiagram
 - Offset pagination có thể dịch chuyển item giữa các page khi có concurrent
   insert/delete.
 - Filter `status` kết hợp sort `createdAt` sử dụng index hiện có.
+- Search substring theo tên/email chưa dùng được B-tree hiện có; chưa thêm migration/index.
 - Sort `displayName` có thể cần filesort; không dùng cho workload lớn trước khi
   kiểm tra query plan.
 - Response dùng `Cache-Control: no-store`.

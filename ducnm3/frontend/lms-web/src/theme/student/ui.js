@@ -19,6 +19,7 @@ export const studentUi = {
   buttonQuiet: 'bg-student-surface text-student-primary-strong hover:bg-student-surface-muted focus-visible:ring-student-primary',
   control: 'student-control min-h-11 w-full rounded-2xl border border-student-line bg-student-control px-3.5 text-[16px] text-student-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-student-subtle focus:border-student-primary focus-visible:ring-4 focus-visible:ring-student-primary/15 disabled:cursor-not-allowed disabled:opacity-60',
   controlInvalid: 'border-student-danger focus:border-student-danger focus-visible:ring-student-danger/15',
+  searchAction: 'student-press inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-student-primary px-4 text-sm font-bold text-white outline-none hover:bg-student-primary-strong focus-visible:ring-4 focus-visible:ring-student-primary/20 disabled:cursor-not-allowed disabled:opacity-55',
   label: 'font-student-display text-sm font-semibold text-student-ink',
   error: 'text-sm font-medium text-student-danger',
   link: 'cursor-pointer font-semibold text-student-primary underline decoration-student-primary/30 underline-offset-4 hover:decoration-student-primary',

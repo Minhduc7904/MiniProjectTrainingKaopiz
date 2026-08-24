@@ -40,3 +40,4 @@ Không sử dụng MySQL Docker Compose hoặc dữ liệu seed của developer.
   - `totalPages` bằng `2` với pageSize `2`;
   - hai row cùng timestamp được sắp ổn định bằng `id DESC`;
   - page thứ hai không lặp item từ page thứ nhất.
+- `SearchMatchesDisplayNameOrEmail`: tạo một Học viên khớp email và một Học viên khớp `display_name`; tìm `BACKEND`. Đạt khi repository MySQL thật trả cả hai row, xác nhận phép `OR` và collation không phân biệt hoa/thường.
