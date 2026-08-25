@@ -28,8 +28,9 @@ Các xác nhận:
    mọi bản ghi theo kế hoạch đã tồn tại.
 5. Số bản ghi không đổi sau khi tiếp tục.
 6. Việc chạy lại ở chế độ mới bị từ chối vì các bảng đích không rỗng.
-7. Fresh run trên `lms_course_seed_db` khôi phục đủ 4 primary key, 3 unique
-   constraint, 3 foreign key và 6 secondary index sau khi seed hoàn tất.
+7. Fresh run trên `lms_course_seed_db` giữ nguyên cả ba foreign key và index
+   nền bắt buộc của chúng, đồng thời kết thúc với đủ 4 primary key, 3 unique
+   constraint và 6 secondary index.
 
 Bước kiểm tra cuối của trình chạy, được kiểm thử thực thi, cũng xác minh số lượng
 chính xác, khoảng bài học/khóa học, khoảng khóa học/học viên và một tham chiếu học

@@ -5,6 +5,7 @@ namespace CourseService.Api.Endpoints.Performance;
 
 public static class BufferedCourseExportBenchmarkEndpoint
 {
+    // Endpoint benchmark cố tình so sánh với streaming export; không public trong OpenAPI.
     private const string ContentDisposition = "attachment; filename=\"courses.csv\"";
 
     public static RouteHandlerBuilder MapBufferedCourseExportBenchmark(
@@ -16,6 +17,8 @@ public static class BufferedCourseExportBenchmarkEndpoint
                 BufferedCourseExportHandler handler,
                 CancellationToken cancellationToken) =>
             {
+                // Handler trả byte[] sau khi đã đọc và serialize toàn bộ CSV trong MemoryStream.
+                // Vì vậy endpoint này có peak memory theo kích thước file, chỉ dùng để đo chênh lệch.
                 var bytes = await handler.HandleAsync(
                     ExportCoursesQuery.Create(status, limit),
                     cancellationToken);

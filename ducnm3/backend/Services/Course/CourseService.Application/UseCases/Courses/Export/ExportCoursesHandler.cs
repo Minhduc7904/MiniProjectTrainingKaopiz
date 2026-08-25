@@ -12,6 +12,8 @@ public sealed class ExportCoursesHandler(ICourseListRepository courseListReposit
         CourseExportPosition? position,
         CancellationToken cancellationToken)
     {
+        // Application chỉ điều phối use case: không biết HTTP response, CSV bytes hay EF Core.
+        // position được Endpoint chuyển lại giữa các vòng để repository đọc trang keyset kế tiếp.
         ArgumentNullException.ThrowIfNull(query);
         return courseListRepository.ReadExportChunkAsync(query, position, cancellationToken);
     }

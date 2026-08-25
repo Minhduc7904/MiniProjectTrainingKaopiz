@@ -29,6 +29,10 @@ Test case này kiểm tra cùng một runtime foundation:
    message không requeue vô hạn.
 5. COMMAND, EVENT và các retry attempt giữ nguyên `X-Correlation-Id`.
 6. `IMessagingHealthProbe` trả healthy sau khi MassTransit bus kết nối broker.
+7. Worker observer ghi `Received`/`Completed` cho command thành công và ghi
+   `Failed` có exception khi consumer cố ý throw sau retry policy. Các log được
+   kiểm tra có `MessageId`, `CorrelationId`, queue, source service,
+   `RetryAttempt` và `RetryLimit`, không cần inspect payload.
 
 Test fail nếu Docker Engine không chạy, container không start được, topology sai,
 fan-out thiếu subscriber, retry lệch cấu hình, correlation bị mất hoặc error

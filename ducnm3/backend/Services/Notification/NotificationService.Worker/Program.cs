@@ -25,6 +25,8 @@ var connectionString =
     ?? throw new InvalidOperationException(
         "ConnectionStrings__Database is required for Notification Service Worker.");
 
+// Đăng ký use case handlers và các dịch vụ Application thuần. Khi consumer được resolve,
+// DI sẽ tạo SnapshotNotificationBatchHandler từ registration này.
 builder.Services.AddNotificationApplication();
 
 // Đăng ký repository, Student HTTP client và persistence adapter mà SnapshotNotificationBatchHandler dùng.
@@ -48,7 +50,7 @@ builder.Services.AddLmsMessagingWithConsumers(
             ServiceNames.Notification);
 
         // Đăng ký contract SnapshotNotificationBatchV1 với SnapshotNotificationBatchConsumer.
-        // Extension suy ra queue theo convention notification--snapshot-notification-batch-v1 và ConfigureEndpoints sẽ bind queue này với RabbitMQ.
+        // Extension suy ra queue theo convention notification-service--snapshot-notification-batch-v1 và ConfigureEndpoints sẽ bind queue này với RabbitMQ.
         registration.AddCommandConsumer<
             SnapshotNotificationBatchConsumer,
             SnapshotNotificationBatchV1,

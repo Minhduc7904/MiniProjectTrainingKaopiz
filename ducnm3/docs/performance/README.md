@@ -132,6 +132,26 @@ Smoke dùng dataset nhỏ để kiểm tra Gateway, route, Docker stats và outp
 khi chạy hàng trăm nghìn bản ghi. Vì parser hiện chỉ nhận các kích thước benchmark
 đã khóa, smoke dùng kích thước nhỏ nhất được hỗ trợ.
 
+### Actor cho Batch Notification
+
+Batch endpoint yêu cầu actor `ADMIN`. Trước khi chạy lệnh `batch`, export UUID
+của Admin từ environment. Runner ưu tiên `PERFORMANCE_ACTOR_ID`, rồi fallback
+sang `ADMIN_ID`; cả hai phải là UUID khác rỗng. Runner tự gửi:
+
+```text
+X-Actor-Type: ADMIN
+X-Actor-Id: <UUID từ environment>
+```
+
+Ví dụ khi terminal chưa export các giá trị trong `.env`:
+
+```bash
+export PERFORMANCE_ACTOR_ID=00000000-0000-0000-0000-000000000001
+```
+
+Không đưa actor ID vào JSON benchmark output; đó là cấu hình chạy, không phải
+performance evidence.
+
 Batch một measured run, không warm-up:
 
 ```bash

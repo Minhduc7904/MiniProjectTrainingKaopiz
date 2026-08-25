@@ -1,19 +1,19 @@
 {
-  "timestampUtc": "2026-08-20T02:53:31.162198+00:00",
+  "timestampUtc": "2026-08-24T08:39:48.2636938+00:00",
   "options": {
-    "command": "Batch",
-    "recipientCounts": [
-      10000
+    "command": "Csv",
+    "recipientCounts": [],
+    "recordCounts": [
+      100000
     ],
-    "recordCounts": [],
     "approach": "Both",
     "gatewayUrl": "http://localhost:5100",
     "outputDirectory": "performance/results",
     "warmupRuns": 0,
-    "measuredRuns": 3,
+    "measuredRuns": 1,
     "pollIntervalMilliseconds": 500,
     "memorySampleIntervalMilliseconds": 1000,
-    "timeout": "00:30:00",
+    "timeout": "00:10:00",
     "prepareData": false,
     "confirmReset": false,
     "plainOutput": false

@@ -9,5 +9,9 @@ namespace NotificationService.Worker.Consumers.NotificationBatches;
 
 public sealed class DispatchNotificationBatchConsumer(DispatchNotificationBatchHandler handler) : IConsumer<DispatchNotificationBatchV1>
 {
+    // Đây là chặng sau snapshot: message được handler snapshot gửi vào queue dispatch.
+    // MassTransit chọn consumer này theo generic IConsumer<DispatchNotificationBatchV1>,
+    // rồi truyền toàn bộ envelope (message, correlation id, retry context, cancellation) qua ConsumeContext.
+    // Handler bên dưới claim item bằng lease, do đó nhiều dispatch message vẫn không xử lý cùng một item đồng thời.
     public Task Consume(ConsumeContext<DispatchNotificationBatchV1> context) => handler.HandleAsync(context.Message, context.CancellationToken);
 }

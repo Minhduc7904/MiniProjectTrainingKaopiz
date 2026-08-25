@@ -334,7 +334,12 @@ public static class Program
             bool succeeded,
             string? failure)
         {
-            var verb = operation == SeedSchemaOperation.Remove ? "Drop" : "Restore";
+            var verb = operation switch
+            {
+                SeedSchemaOperation.Remove => "Drop",
+                SeedSchemaOperation.Keep => "Keep",
+                _ => "Restore",
+            };
             var outcome = succeeded
                 ? "[green]OK[/]"
                 : $"[yellow]FAILED — continue[/] [grey]{Markup.Escape(failure ?? string.Empty)}[/]";

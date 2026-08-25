@@ -7,6 +7,7 @@ namespace CourseService.Application.UseCases.Courses.Export;
 
 public static class CsvRowWriter
 {
+    // CSV payload dùng UTF-8 không BOM; BOM chỉ được WritePreambleAsync ghi một lần ở đầu file để Excel nhận đúng encoding.
     private static readonly UTF8Encoding Utf8WithoutBom = new(false);
     private static readonly byte[] Comma = [(byte)','];
     private static readonly byte[] CrLf = [(byte)'\r', (byte)'\n'];
@@ -15,6 +16,7 @@ public static class CsvRowWriter
     public static async Task WritePreambleAsync(Stream stream, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(stream);
+        // Preamble không phải dữ liệu CSV; nó đánh dấu UTF-8 cho client như Excel.
         await stream.WriteAsync(Encoding.UTF8.GetPreamble(), cancellationToken);
         await WriteValueAsync(stream, Header, cancellationToken);
         await stream.WriteAsync(CrLf, cancellationToken);
@@ -25,6 +27,7 @@ public static class CsvRowWriter
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(row);
 
+        // Không ghép cả file vào StringBuilder: serialize từng field rồi ghi ngay xuống stream của caller.
         await WriteFieldAsync(stream, row.Id.ToString(), cancellationToken);
         await stream.WriteAsync(Comma, cancellationToken);
         await WriteFieldAsync(stream, row.Name, cancellationToken);
@@ -44,6 +47,7 @@ public static class CsvRowWriter
     private static string Escape(string value)
     {
         ArgumentNullException.ThrowIfNull(value);
+        // RFC 4180: chỉ quote field có ký tự đặc biệt; quote bên trong field được nhân đôi.
         return value.IndexOfAny([',', '"', '\r', '\n']) < 0
             ? value
             : $"\"{value.Replace("\"", "\"\"")}\"";

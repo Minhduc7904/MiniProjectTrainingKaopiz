@@ -18,7 +18,12 @@ public static class MessagingServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration,
         string serviceName) =>
-        AddLmsMessagingCore(services, configuration, serviceName, null);
+        AddLmsMessagingCore(
+            services,
+            configuration,
+            serviceName,
+            configureConsumers: null,
+            enableWorkerConsumeLogging: false);
 
     /// <summary>Đăng ký messaging foundation và cho caller tùy biến MassTransit registration.</summary>
     public static IServiceCollection AddLmsMessaging(
@@ -32,7 +37,8 @@ public static class MessagingServiceCollectionExtensions
             services,
             configuration,
             serviceName,
-            configureRegistration);
+            configureRegistration,
+            enableWorkerConsumeLogging: false);
     }
 
     /// <summary>Đăng ký messaging foundation và callback chuyên dùng để thêm command/event consumer.</summary>
@@ -47,7 +53,8 @@ public static class MessagingServiceCollectionExtensions
             services,
             configuration,
             serviceName,
-            configureConsumers);
+            configureConsumers,
+            enableWorkerConsumeLogging: true);
     }
 
     /// <summary>Triển khai chung: validate config, đăng ký dependency và cấu hình RabbitMQ topology.</summary>
@@ -55,7 +62,8 @@ public static class MessagingServiceCollectionExtensions
         IServiceCollection services,
         IConfiguration configuration,
         string serviceName,
-        Action<IBusRegistrationConfigurator>? configureConsumers)
+        Action<IBusRegistrationConfigurator>? configureConsumers,
+        bool enableWorkerConsumeLogging)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(serviceName);
 
@@ -74,6 +82,11 @@ public static class MessagingServiceCollectionExtensions
         services.AddScoped<ICommandSender, MassTransitCommandSender>();
         services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
         services.AddSingleton<IMessagingHealthProbe, MassTransitMessagingHealthProbe>();
+        if (enableWorkerConsumeLogging)
+        {
+            // Observer chỉ được gắn ở Worker có consumer để log start/success/failure của mọi message một cách thống nhất.
+            services.AddSingleton<WorkerConsumeLoggingObserver>();
+        }
         services.Configure<MassTransitHostOptions>(host =>
         {
             host.WaitUntilStarted = true;
@@ -86,13 +99,20 @@ public static class MessagingServiceCollectionExtensions
             registration.SetKebabCaseEndpointNameFormatter();
             configureConsumers?.Invoke(registration);
             // Retry, concurrency và prefetch được đặt một nơi để consumer không có policy lệch nhau.
-            registration.AddConfigureEndpointsCallback((_, _, endpoint) =>
+            registration.AddConfigureEndpointsCallback((registrationContext, _, endpoint) =>
             {
                 endpoint.ConcurrentMessageLimit = options.Consumer.ConcurrencyLimit;
                 endpoint.UseMessageRetry(retry => retry.Incremental(
                     options.Retry.RetryCount,
                     TimeSpan.FromSeconds(options.Retry.InitialIntervalSeconds),
                     TimeSpan.FromSeconds(options.Retry.IntervalIncrementSeconds)));
+
+                if (enableWorkerConsumeLogging)
+                {
+                    endpoint.UseConsumeFilter(
+                        typeof(WorkerAttemptLoggingFilter<>),
+                        registrationContext);
+                }
 
                 if (endpoint is IRabbitMqReceiveEndpointConfigurator rabbitMqEndpoint)
                 {
@@ -111,6 +131,14 @@ public static class MessagingServiceCollectionExtensions
                         host.Username(options.RabbitMq.Username);
                         host.Password(options.RabbitMq.Password);
                     });
+
+                if (enableWorkerConsumeLogging)
+                {
+                    var workerLoggingObserver =
+                        context.GetRequiredService<WorkerConsumeLoggingObserver>();
+                    rabbitMq.ConnectConsumeObserver(workerLoggingObserver);
+                }
+
                 rabbitMq.ConfigureEndpoints(context);
             });
         });

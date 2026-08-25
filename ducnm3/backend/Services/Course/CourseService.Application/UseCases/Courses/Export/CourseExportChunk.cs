@@ -9,6 +9,7 @@ public sealed record CourseExportChunk
     {
         ArgumentNullException.ThrowIfNull(rows);
         ArgumentOutOfRangeException.ThrowIfNegative(readCountBefore);
+        // Bảo vệ invariant giữa Infrastructure và Endpoint: một chunk không được âm thầm vượt giới hạn memory đã chọn.
         if (rows.Count > ExportCoursesQuery.ChunkSize)
         {
             throw new ArgumentOutOfRangeException(nameof(rows), $"An export chunk cannot contain more than {ExportCoursesQuery.ChunkSize} rows.");
@@ -21,6 +22,7 @@ public sealed record CourseExportChunk
     public IReadOnlyList<CourseExportRow> Rows { get; }
     public int ReadCountBefore { get; }
 
+    // Cursor vòng sau luôn lấy row cuối của thứ tự DESC. ReadCount mới là tổng row đã xuất, không chỉ row của chunk này.
     public CourseExportPosition? NextPosition => Rows.Count == 0
         ? null
         : new CourseExportPosition(

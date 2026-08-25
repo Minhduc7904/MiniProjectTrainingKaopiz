@@ -21,6 +21,10 @@ flowchart LR
 ## Đã triển khai hiện tại
 
 Có `SnapshotNotificationBatchConsumer` và `DispatchNotificationBatchConsumer`.
+Mỗi command snapshot/dispatch đều được shared `WorkerConsumeLoggingObserver` ghi
+`Received`, `Completed` hoặc `Failed` với queue, correlation và retry metadata;
+operator không cần thêm log thủ công vào từng consumer để biết message đã vào hay
+đã kết thúc. Payload recipient/content không được ghi vào log.
 
 ## Định hướng/chưa triển khai
 
@@ -31,3 +35,4 @@ Scheduler không sở hữu recipient/content và không thay Worker dispatch.
 | Hiện tượng | Cách xử lý |
 | --- | --- |
 | Batch kẹt | Kiểm tra RabbitMQ consumer, lease/repository state và retry logs. |
+| Snapshot/dispatch lỗi | Lọc `WorkerEvent=Failed` theo `CorrelationId` hoặc `MessageId`, xem exception và `RetryAttempt/RetryLimit`, rồi đối chiếu batch/lease trong database. |

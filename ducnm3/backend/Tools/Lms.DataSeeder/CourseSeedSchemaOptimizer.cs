@@ -7,7 +7,6 @@ internal sealed class CourseSeedSchemaOptimizer(
     MySqlConnection connection,
     ISeedProgress progress)
 {
-    private readonly List<ForeignKeyDefinition> removedForeignKeys = [];
     private readonly List<IndexDefinition> removedIndexes = [];
     private readonly List<PrimaryKeyDefinition> removedPrimaryKeys = [];
 
@@ -37,15 +36,12 @@ internal sealed class CourseSeedSchemaOptimizer(
 
         foreach (var foreignKey in snapshot.ForeignKeys)
         {
-            if (await ExecuteAsync(
-                    SeedSchemaOperation.Remove,
-                    "foreign key",
-                    foreignKey.Name,
-                    $"ALTER TABLE {Quote(foreignKey.Table)} DROP FOREIGN KEY {Quote(foreignKey.Name)};",
-                    cancellationToken))
-            {
-                removedForeignKeys.Add(foreignKey);
-            }
+            progress.SchemaActionCompleted(
+                SeedSchemaOperation.Keep,
+                "foreign key",
+                foreignKey.Name,
+                true,
+                "Retained for referential integrity.");
         }
 
         foreach (var index in snapshot.Indexes)
@@ -80,7 +76,6 @@ internal sealed class CourseSeedSchemaOptimizer(
         var restored = true;
         restored &= await RestorePrimaryKeysAsync(cancellationToken);
         restored &= await RestoreIndexesAsync(cancellationToken);
-        restored &= await RestoreForeignKeysAsync(cancellationToken);
         return restored;
     }
 
@@ -132,35 +127,6 @@ internal sealed class CourseSeedSchemaOptimizer(
         return restored;
     }
 
-    private async Task<bool> RestoreForeignKeysAsync(CancellationToken cancellationToken)
-    {
-        var restored = true;
-        for (var index = removedForeignKeys.Count - 1; index >= 0; index--)
-        {
-            var foreignKey = removedForeignKeys[index];
-            var sql =
-                $"ALTER TABLE {Quote(foreignKey.Table)} ADD CONSTRAINT {Quote(foreignKey.Name)} " +
-                $"FOREIGN KEY ({Columns(foreignKey.Columns)}) " +
-                $"REFERENCES {Quote(foreignKey.ReferencedTable)} ({Columns(foreignKey.ReferencedColumns)}) " +
-                $"ON DELETE {foreignKey.DeleteRule} ON UPDATE {foreignKey.UpdateRule};";
-            if (await ExecuteAsync(
-                    SeedSchemaOperation.Restore,
-                    "foreign key",
-                    foreignKey.Name,
-                    sql,
-                    cancellationToken))
-            {
-                removedForeignKeys.RemoveAt(index);
-            }
-            else
-            {
-                restored = false;
-            }
-        }
-
-        return restored;
-    }
-
     private async Task<SchemaSnapshot> ReadSnapshotAsync(CancellationToken cancellationToken)
     {
         var foreignKeys = await ReadForeignKeysAsync(cancellationToken);
@@ -169,13 +135,22 @@ internal sealed class CourseSeedSchemaOptimizer(
 
         return new SchemaSnapshot(
             foreignKeys,
-            indexes.Select(item => new IndexDefinition(
-                item.Table,
-                item.Name,
-                item.NonUnique,
-                item.Type,
-                item.Columns)).ToArray(),
-            primaryKeys.Select(item => new PrimaryKeyDefinition(item.Table, item.Columns)).ToArray());
+            indexes
+                .Where(index => !IsRequiredForForeignKey(index.Table, index.Columns, foreignKeys))
+                .Select(item => new IndexDefinition(
+                    item.Table,
+                    item.Name,
+                    item.NonUnique,
+                    item.Type,
+                    item.Columns))
+                .ToArray(),
+            primaryKeys
+                .Where(primaryKey => !IsRequiredForForeignKey(
+                    primaryKey.Table,
+                    primaryKey.Columns,
+                    foreignKeys))
+                .Select(item => new PrimaryKeyDefinition(item.Table, item.Columns))
+                .ToArray());
     }
 
     private async Task<IReadOnlyList<ForeignKeyDefinition>> ReadForeignKeysAsync(
@@ -320,6 +295,25 @@ internal sealed class CourseSeedSchemaOptimizer(
                 : string.Empty;
             return $"{Quote(column.Name)}{prefix}{direction}";
         }));
+
+    private static bool IsRequiredForForeignKey(
+        string table,
+        IReadOnlyList<IndexColumn> indexColumns,
+        IReadOnlyList<ForeignKeyDefinition> foreignKeys) =>
+        foreignKeys.Any(foreignKey =>
+            (string.Equals(foreignKey.Table, table, StringComparison.Ordinal) &&
+             StartsWithColumns(indexColumns, foreignKey.Columns)) ||
+            (string.Equals(foreignKey.ReferencedTable, table, StringComparison.Ordinal) &&
+             StartsWithColumns(indexColumns, foreignKey.ReferencedColumns)));
+
+    private static bool StartsWithColumns(
+        IReadOnlyList<IndexColumn> indexColumns,
+        IReadOnlyList<string> foreignKeyColumns) =>
+        indexColumns.Count >= foreignKeyColumns.Count &&
+        indexColumns
+            .Take(foreignKeyColumns.Count)
+            .Select(column => column.Name)
+            .SequenceEqual(foreignKeyColumns, StringComparer.Ordinal);
 
     private static string Quote(string identifier) =>
         $"`{identifier.Replace("`", "``", StringComparison.Ordinal)}`";

@@ -3,293 +3,181 @@
     "datasetCount": 10000,
     "run": 1,
     "result": {
-      "batchId": "6fabe654-bf0f-4f8d-9802-27bc2f9adc6e",
-      "postLatency": "00:00:00.0790088",
-      "totalDuration": "00:00:53.6790205",
-      "snapshotDuration": "00:00:20.6460626",
+      "batchId": "15095417-cac5-41fd-8e8f-957f80555747",
+      "postLatency": "00:00:00.0868389",
+      "totalDuration": "00:00:25.3102392",
+      "snapshotDuration": "00:00:16.1540544",
       "snapshotTimingErrorMilliseconds": 500,
-      "dispatchDurationMilliseconds": 32640,
+      "dispatchDurationMilliseconds": 8803,
       "finalStatus": "COMPLETED",
       "totalCount": 10000,
       "processedCount": 10000,
       "successCount": 10000,
       "failedCount": 0,
-      "endToEndThroughput": 186.29374370149003,
-      "dispatchThroughput": 306.37254901960785
+      "endToEndThroughput": 395.102789428064,
+      "dispatchThroughput": 1135.9763716914688
     },
     "memory": {
-      "baselineBytes": 132015718,
-      "peakBytes": 133483724,
-      "averageBytes": 131606118.0625,
-      "deltaBytes": 1468006,
-      "sampleCount": 32,
-      "baselineMegabytes": 125.89999961853027,
-      "peakMegabytes": 127.29999923706055,
-      "averageMegabytes": 125.50937467813492,
-      "deltaMegabytes": 1.3999996185302734
+      "baselineBytes": 100180951,
+      "peakBytes": 143969484,
+      "averageBytes": 118973762.72222222,
+      "deltaBytes": 43788533,
+      "sampleCount": 18,
+      "baselineMegabytes": 95.53999996185303,
+      "peakMegabytes": 137.29999923706055,
+      "averageMegabytes": 113.46222183439467,
+      "deltaMegabytes": 41.75999927520752
     },
     "resources": {
-      "currentCpuPercent": 0.01,
-      "peakCpuPercent": 45.47,
-      "averageCpuPercent": 10.451249999999998,
-      "sampleCount": 32
+      "currentCpuPercent": 0.43,
+      "peakCpuPercent": 94.65,
+      "averageCpuPercent": 19.52722222222222,
+      "sampleCount": 18
     },
     "samples": [
       {
-        "timestampUtc": "2026-08-20T02:53:32.3511397+00:00",
-        "elapsed": "00:00:00.0000019",
+        "timestampUtc": "2026-08-24T08:35:18.4532341+00:00",
+        "elapsed": "00:00:00.0000023",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 100180951,
+        "cpuPercent": 0.03
       },
       {
-        "timestampUtc": "2026-08-20T02:53:34.3728469+00:00",
-        "elapsed": "00:00:02.0247972",
+        "timestampUtc": "2026-08-24T08:35:20.4739104+00:00",
+        "elapsed": "00:00:02.0181485",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 100180951,
+        "cpuPercent": 0.06
       },
       {
-        "timestampUtc": "2026-08-20T02:53:36.4034913+00:00",
-        "elapsed": "00:00:04.0407749",
+        "timestampUtc": "2026-08-24T08:35:22.5174979+00:00",
+        "elapsed": "00:00:04.0369833",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 100180951,
+        "cpuPercent": 0.07
       },
       {
-        "timestampUtc": "2026-08-20T02:53:38.4456962+00:00",
-        "elapsed": "00:00:06.0717493",
+        "timestampUtc": "2026-08-24T08:35:24.5518855+00:00",
+        "elapsed": "00:00:06.0803755",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 0.4
+        "containerId": "634781b10116",
+        "memoryBytes": 100243865,
+        "cpuPercent": 0.07
       },
       {
-        "timestampUtc": "2026-08-20T02:53:40.4896056+00:00",
-        "elapsed": "00:00:08.1136557",
+        "timestampUtc": "2026-08-24T08:35:26.5912314+00:00",
+        "elapsed": "00:00:08.1146823",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 100243865,
+        "cpuPercent": 0.07
       },
       {
-        "timestampUtc": "2026-08-20T02:53:42.5081495+00:00",
-        "elapsed": "00:00:10.1605881",
+        "timestampUtc": "2026-08-24T08:35:28.6071885+00:00",
+        "elapsed": "00:00:10.1569533",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 133483724,
-        "cpuPercent": 1.24
+        "containerId": "634781b10116",
+        "memoryBytes": 111778201,
+        "cpuPercent": 20.6
       },
       {
-        "timestampUtc": "2026-08-20T02:53:44.5256431+00:00",
-        "elapsed": "00:00:12.1755631",
+        "timestampUtc": "2026-08-24T08:35:30.620106+00:00",
+        "elapsed": "00:00:12.1697979",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132644864,
-        "cpuPercent": 1.08
+        "containerId": "634781b10116",
+        "memoryBytes": 112931635,
+        "cpuPercent": 10.92
       },
       {
-        "timestampUtc": "2026-08-20T02:53:46.5414782+00:00",
-        "elapsed": "00:00:14.1928698",
+        "timestampUtc": "2026-08-24T08:35:32.6334228+00:00",
+        "elapsed": "00:00:14.1829503",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132644864,
-        "cpuPercent": 1.15
+        "containerId": "634781b10116",
+        "memoryBytes": 115343360,
+        "cpuPercent": 20.67
       },
       {
-        "timestampUtc": "2026-08-20T02:53:48.5737508+00:00",
-        "elapsed": "00:00:16.2085823",
+        "timestampUtc": "2026-08-24T08:35:34.6481752+00:00",
+        "elapsed": "00:00:16.1959472",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132644864,
-        "cpuPercent": 1.24
+        "containerId": "634781b10116",
+        "memoryBytes": 118069657,
+        "cpuPercent": 2.62
       },
       {
-        "timestampUtc": "2026-08-20T02:53:50.5909247+00:00",
-        "elapsed": "00:00:18.2417595",
+        "timestampUtc": "2026-08-24T08:35:36.6602821+00:00",
+        "elapsed": "00:00:18.2107428",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 133169152,
-        "cpuPercent": 1.36
+        "containerId": "634781b10116",
+        "memoryBytes": 121110528,
+        "cpuPercent": 5.78
       },
       {
-        "timestampUtc": "2026-08-20T02:53:52.6140136+00:00",
-        "elapsed": "00:00:20.2588577",
+        "timestampUtc": "2026-08-24T08:35:38.6726293+00:00",
+        "elapsed": "00:00:20.2225201",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132225433,
-        "cpuPercent": 1.12
+        "containerId": "634781b10116",
+        "memoryBytes": 121425100,
+        "cpuPercent": 1.5
       },
       {
-        "timestampUtc": "2026-08-20T02:53:54.6310348+00:00",
-        "elapsed": "00:00:22.2824758",
+        "timestampUtc": "2026-08-24T08:35:40.6857514+00:00",
+        "elapsed": "00:00:22.2356787",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 133169152,
-        "cpuPercent": 1.38
+        "containerId": "634781b10116",
+        "memoryBytes": 121425100,
+        "cpuPercent": 1.76
       },
       {
-        "timestampUtc": "2026-08-20T02:53:56.646055+00:00",
-        "elapsed": "00:00:24.2993340",
+        "timestampUtc": "2026-08-24T08:35:42.7009548+00:00",
+        "elapsed": "00:00:24.2490836",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132959436,
-        "cpuPercent": 1.66
+        "containerId": "634781b10116",
+        "memoryBytes": 121005670,
+        "cpuPercent": 1.7
       },
       {
-        "timestampUtc": "2026-08-20T02:53:58.6642118+00:00",
-        "elapsed": "00:00:26.3138314",
+        "timestampUtc": "2026-08-24T08:35:44.7149978+00:00",
+        "elapsed": "00:00:26.2637134",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 133274009,
-        "cpuPercent": 1.13
+        "containerId": "634781b10116",
+        "memoryBytes": 134532300,
+        "cpuPercent": 83.17
       },
       {
-        "timestampUtc": "2026-08-20T02:54:00.6938602+00:00",
-        "elapsed": "00:00:28.3318812",
+        "timestampUtc": "2026-08-24T08:35:46.7471607+00:00",
+        "elapsed": "00:00:28.2779892",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132540006,
-        "cpuPercent": 0.96
+        "containerId": "634781b10116",
+        "memoryBytes": 136734310,
+        "cpuPercent": 52.48
       },
       {
-        "timestampUtc": "2026-08-20T02:54:03.2079329+00:00",
-        "elapsed": "00:00:30.3654877",
+        "timestampUtc": "2026-08-24T08:35:48.7809715+00:00",
+        "elapsed": "00:00:30.3095374",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130233139,
-        "cpuPercent": 29.85
+        "containerId": "634781b10116",
+        "memoryBytes": 139670323,
+        "cpuPercent": 54.91
       },
       {
-        "timestampUtc": "2026-08-20T02:54:05.6432636+00:00",
-        "elapsed": "00:00:32.8765467",
+        "timestampUtc": "2026-08-24T08:35:50.7975596+00:00",
+        "elapsed": "00:00:32.3437935",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130023424,
-        "cpuPercent": 4.53
+        "containerId": "634781b10116",
+        "memoryBytes": 142501478,
+        "cpuPercent": 94.65
       },
       {
-        "timestampUtc": "2026-08-20T02:54:07.6659049+00:00",
-        "elapsed": "00:00:35.3108370",
+        "timestampUtc": "2026-08-24T08:35:53.8386406+00:00",
+        "elapsed": "00:00:34.4855376",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130233139,
-        "cpuPercent": 18.11
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:09.6969088+00:00",
-        "elapsed": "00:00:37.3340807",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130652569,
-        "cpuPercent": 11.07
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:11.7261078+00:00",
-        "elapsed": "00:00:39.3652053",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131281715,
-        "cpuPercent": 6.23
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:13.7539088+00:00",
-        "elapsed": "00:00:41.3940587",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130128281,
-        "cpuPercent": 6.11
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:15.7900319+00:00",
-        "elapsed": "00:00:43.4225403",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131386572,
-        "cpuPercent": 6.95
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:17.8104336+00:00",
-        "elapsed": "00:00:45.4584778",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130547712,
-        "cpuPercent": 19.99
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:19.8496818+00:00",
-        "elapsed": "00:00:47.4782194",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130967142,
-        "cpuPercent": 38.23
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:21.877584+00:00",
-        "elapsed": "00:00:49.5179828",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128974848,
-        "cpuPercent": 16.54
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:23.9221234+00:00",
-        "elapsed": "00:00:51.5448122",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 129603993,
-        "cpuPercent": 24.71
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:25.9547098+00:00",
-        "elapsed": "00:00:53.5898609",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130757427,
-        "cpuPercent": 31.56
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:27.9736326+00:00",
-        "elapsed": "00:00:55.6226057",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131910860,
-        "cpuPercent": 16.05
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:30.0094636+00:00",
-        "elapsed": "00:00:57.6415533",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131806003,
-        "cpuPercent": 45.47
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:32.0489757+00:00",
-        "elapsed": "00:00:59.6773796",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132120576,
-        "cpuPercent": 19.45
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:34.0858978+00:00",
-        "elapsed": "00:01:01.7166631",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131281715,
-        "cpuPercent": 26.82
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:36.0920143+00:00",
-        "elapsed": "00:01:02.8528231",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130652569,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 143969484,
+        "cpuPercent": 0.43
       }
     ]
   },
@@ -297,277 +185,181 @@
     "datasetCount": 10000,
     "run": 2,
     "result": {
-      "batchId": "4250f10e-cbf8-4665-beba-673b366c9a93",
-      "postLatency": "00:00:00.0256911",
-      "totalDuration": "00:00:51.1881239",
-      "snapshotDuration": "00:00:19.3195185",
+      "batchId": "4ea8e16f-eedf-45c9-87e6-48204fb66f87",
+      "postLatency": "00:00:00.0169754",
+      "totalDuration": "00:00:24.7066739",
+      "snapshotDuration": "00:00:16.1169990",
       "snapshotTimingErrorMilliseconds": 500,
-      "dispatchDurationMilliseconds": 31928,
+      "dispatchDurationMilliseconds": 8815,
       "finalStatus": "COMPLETED",
       "totalCount": 10000,
       "processedCount": 10000,
       "successCount": 10000,
       "failedCount": 0,
-      "endToEndThroughput": 195.3578180535313,
-      "dispatchThroughput": 313.2047105988474
+      "endToEndThroughput": 404.74897312858207,
+      "dispatchThroughput": 1134.4299489506523
     },
     "memory": {
-      "baselineBytes": 130652569,
-      "peakBytes": 132644864,
-      "averageBytes": 129642440.9,
-      "deltaBytes": 1992295,
-      "sampleCount": 30,
-      "baselineMegabytes": 124.59999942779541,
-      "peakMegabytes": 126.5,
-      "averageMegabytes": 123.63666620254517,
-      "deltaMegabytes": 1.9000005722045898
+      "baselineBytes": 141138329,
+      "peakBytes": 151624089,
+      "averageBytes": 144045214.8888889,
+      "deltaBytes": 10485760,
+      "sampleCount": 18,
+      "baselineMegabytes": 134.5999994277954,
+      "peakMegabytes": 144.5999994277954,
+      "averageMegabytes": 137.3722218407525,
+      "deltaMegabytes": 10
     },
     "resources": {
-      "currentCpuPercent": 0.17,
-      "peakCpuPercent": 44.23,
-      "averageCpuPercent": 11.773333333333333,
-      "sampleCount": 30
+      "currentCpuPercent": 0.01,
+      "peakCpuPercent": 71.45,
+      "averageCpuPercent": 14.855555555555554,
+      "sampleCount": 18
     },
     "samples": [
       {
-        "timestampUtc": "2026-08-20T02:54:38.0942367+00:00",
+        "timestampUtc": "2026-08-24T08:35:55.8484388+00:00",
         "elapsed": "00:00:00.0000005",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130967142,
-        "cpuPercent": 0.37
+        "containerId": "634781b10116",
+        "memoryBytes": 143654912,
+        "cpuPercent": 0
       },
       {
-        "timestampUtc": "2026-08-20T02:54:40.1172797+00:00",
-        "elapsed": "00:00:02.8985829",
+        "timestampUtc": "2026-08-24T08:35:57.8727174+00:00",
+        "elapsed": "00:00:02.9114251",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130967142,
+        "containerId": "634781b10116",
+        "memoryBytes": 143654912,
+        "cpuPercent": 0.08
+      },
+      {
+        "timestampUtc": "2026-08-24T08:35:59.9095867+00:00",
+        "elapsed": "00:00:04.9360537",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 141138329,
+        "cpuPercent": 0
+      },
+      {
+        "timestampUtc": "2026-08-24T08:36:01.9295064+00:00",
+        "elapsed": "00:00:06.9728573",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 141138329,
         "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-20T02:54:42.1485856+00:00",
-        "elapsed": "00:00:04.9219264",
+        "timestampUtc": "2026-08-24T08:36:03.9618345+00:00",
+        "elapsed": "00:00:08.9928224",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130652569,
-        "cpuPercent": 0.04
+        "containerId": "634781b10116",
+        "memoryBytes": 141138329,
+        "cpuPercent": 0.14
       },
       {
-        "timestampUtc": "2026-08-20T02:54:44.1706159+00:00",
-        "elapsed": "00:00:06.9529198",
+        "timestampUtc": "2026-08-24T08:36:05.9747764+00:00",
+        "elapsed": "00:00:11.0252745",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130652569,
-        "cpuPercent": 0.02
+        "containerId": "634781b10116",
+        "memoryBytes": 141662617,
+        "cpuPercent": 1.37
       },
       {
-        "timestampUtc": "2026-08-20T02:54:46.2006889+00:00",
-        "elapsed": "00:00:08.9762393",
+        "timestampUtc": "2026-08-24T08:36:07.9888747+00:00",
+        "elapsed": "00:00:13.0380709",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130652569,
-        "cpuPercent": 0.04
+        "containerId": "634781b10116",
+        "memoryBytes": 141872332,
+        "cpuPercent": 1.59
       },
       {
-        "timestampUtc": "2026-08-20T02:54:48.2223936+00:00",
-        "elapsed": "00:00:11.0068891",
+        "timestampUtc": "2026-08-24T08:36:10.0027485+00:00",
+        "elapsed": "00:00:15.0520959",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131596288,
-        "cpuPercent": 1.24
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:50.2350063+00:00",
-        "elapsed": "00:00:13.0264576",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131910860,
-        "cpuPercent": 1.35
-      },
-      {
-        "timestampUtc": "2026-08-20T02:54:52.2474698+00:00",
-        "elapsed": "00:00:15.0394725",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131596288,
+        "containerId": "634781b10116",
+        "memoryBytes": 141872332,
         "cpuPercent": 1.55
       },
       {
-        "timestampUtc": "2026-08-20T02:54:54.2605828+00:00",
-        "elapsed": "00:00:17.0510699",
+        "timestampUtc": "2026-08-24T08:36:12.0164289+00:00",
+        "elapsed": "00:00:17.0662382",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131281715,
-        "cpuPercent": 1.17
+        "containerId": "634781b10116",
+        "memoryBytes": 141452902,
+        "cpuPercent": 1.23
       },
       {
-        "timestampUtc": "2026-08-20T02:54:56.2740907+00:00",
-        "elapsed": "00:00:19.0640074",
+        "timestampUtc": "2026-08-24T08:36:14.0283372+00:00",
+        "elapsed": "00:00:19.0789941",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131281715,
-        "cpuPercent": 2.35
+        "containerId": "634781b10116",
+        "memoryBytes": 142186905,
+        "cpuPercent": 1.6
       },
       {
-        "timestampUtc": "2026-08-20T02:54:58.3042775+00:00",
-        "elapsed": "00:00:21.0787166",
+        "timestampUtc": "2026-08-24T08:36:16.0402506+00:00",
+        "elapsed": "00:00:21.0916465",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 1.48
+        "containerId": "634781b10116",
+        "memoryBytes": 141557760,
+        "cpuPercent": 1.4
       },
       {
-        "timestampUtc": "2026-08-20T02:55:00.3170805+00:00",
-        "elapsed": "00:00:23.1080188",
+        "timestampUtc": "2026-08-24T08:36:18.0519155+00:00",
+        "elapsed": "00:00:23.1030272",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131910860,
-        "cpuPercent": 1.15
+        "containerId": "634781b10116",
+        "memoryBytes": 142291763,
+        "cpuPercent": 1.35
       },
       {
-        "timestampUtc": "2026-08-20T02:55:02.3308709+00:00",
-        "elapsed": "00:00:25.1214087",
+        "timestampUtc": "2026-08-24T08:36:20.0721778+00:00",
+        "elapsed": "00:00:25.1156355",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132015718,
-        "cpuPercent": 1.27
+        "containerId": "634781b10116",
+        "memoryBytes": 142711193,
+        "cpuPercent": 11.06
       },
       {
-        "timestampUtc": "2026-08-20T02:55:04.3454263+00:00",
-        "elapsed": "00:00:27.1357382",
+        "timestampUtc": "2026-08-24T08:36:22.1040986+00:00",
+        "elapsed": "00:00:27.1352782",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131701145,
-        "cpuPercent": 1.3
+        "containerId": "634781b10116",
+        "memoryBytes": 145227776,
+        "cpuPercent": 52.41
       },
       {
-        "timestampUtc": "2026-08-20T02:55:06.3743766+00:00",
-        "elapsed": "00:00:29.1490655",
+        "timestampUtc": "2026-08-24T08:36:24.13153+00:00",
+        "elapsed": "00:00:29.1675790",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131910860,
-        "cpuPercent": 14.13
+        "containerId": "634781b10116",
+        "memoryBytes": 148583219,
+        "cpuPercent": 55.1
       },
       {
-        "timestampUtc": "2026-08-20T02:55:08.4182232+00:00",
-        "elapsed": "00:00:31.1787008",
+        "timestampUtc": "2026-08-24T08:36:26.179375+00:00",
+        "elapsed": "00:00:31.1944466",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131910860,
-        "cpuPercent": 8.32
+        "containerId": "634781b10116",
+        "memoryBytes": 149946368,
+        "cpuPercent": 71.45
       },
       {
-        "timestampUtc": "2026-08-20T02:55:10.4528842+00:00",
-        "elapsed": "00:00:33.2220906",
+        "timestampUtc": "2026-08-24T08:36:28.2166472+00:00",
+        "elapsed": "00:00:33.2422866",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 119957094,
-        "cpuPercent": 21.71
+        "containerId": "634781b10116",
+        "memoryBytes": 151099801,
+        "cpuPercent": 67.05
       },
       {
-        "timestampUtc": "2026-08-20T02:55:12.4950409+00:00",
-        "elapsed": "00:00:35.2572637",
+        "timestampUtc": "2026-08-24T08:36:30.2229446+00:00",
+        "elapsed": "00:00:34.7322648",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 127506841,
-        "cpuPercent": 33.6
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:14.5350352+00:00",
-        "elapsed": "00:00:37.2997167",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128345702,
-        "cpuPercent": 36.96
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:17.2225608+00:00",
-        "elapsed": "00:00:39.3399824",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126353408,
-        "cpuPercent": 16.75
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:19.2624275+00:00",
-        "elapsed": "00:00:42.0269578",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126353408,
-        "cpuPercent": 5.18
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:21.2849658+00:00",
-        "elapsed": "00:00:44.0663752",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126143692,
-        "cpuPercent": 23.99
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:23.3241241+00:00",
-        "elapsed": "00:00:46.0894450",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126667980,
-        "cpuPercent": 44.23
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:25.3715648+00:00",
-        "elapsed": "00:00:48.1281708",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 129603993,
-        "cpuPercent": 21.24
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:27.3986052+00:00",
-        "elapsed": "00:00:50.1751383",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 132644864,
-        "cpuPercent": 12.61
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:29.4309179+00:00",
-        "elapsed": "00:00:52.2027067",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130128281,
-        "cpuPercent": 31.47
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:31.4783683+00:00",
-        "elapsed": "00:00:54.2351060",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 129813708,
-        "cpuPercent": 18.07
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:33.5033594+00:00",
-        "elapsed": "00:00:56.2829136",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 125933977,
-        "cpuPercent": 25.32
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:35.5497383+00:00",
-        "elapsed": "00:00:58.3072123",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 129813708,
-        "cpuPercent": 26.11
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:38.5938831+00:00",
-        "elapsed": "00:01:01.1935318",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126982553,
-        "cpuPercent": 0.17
+        "containerId": "634781b10116",
+        "memoryBytes": 151624089,
+        "cpuPercent": 0.01
       }
     ]
   },
@@ -575,277 +367,181 @@
     "datasetCount": 10000,
     "run": 3,
     "result": {
-      "batchId": "2a263e19-d228-435e-90a2-187be3f02abb",
-      "postLatency": "00:00:00.0142856",
-      "totalDuration": "00:00:49.5296083",
-      "snapshotDuration": "00:00:17.7501634",
+      "batchId": "aa2f0867-1ee8-481d-bfd5-c251dd175900",
+      "postLatency": "00:00:00.0202596",
+      "totalDuration": "00:00:25.7035070",
+      "snapshotDuration": "00:00:16.1037533",
       "snapshotTimingErrorMilliseconds": 500,
-      "dispatchDurationMilliseconds": 31713,
+      "dispatchDurationMilliseconds": 9529,
       "finalStatus": "COMPLETED",
       "totalCount": 10000,
       "processedCount": 10000,
       "successCount": 10000,
       "failedCount": 0,
-      "endToEndThroughput": 201.89944371958617,
-      "dispatchThroughput": 315.3280988868918
+      "endToEndThroughput": 389.051992884986,
+      "dispatchThroughput": 1049.42806170637
     },
     "memory": {
-      "baselineBytes": 126982553,
-      "peakBytes": 131910860,
-      "averageBytes": 128765132.46666667,
-      "deltaBytes": 4928307,
-      "sampleCount": 30,
-      "baselineMegabytes": 121.09999942779541,
-      "peakMegabytes": 125.79999923706055,
-      "averageMegabytes": 122.79999968210856,
-      "deltaMegabytes": 4.699999809265137
+      "baselineBytes": 151728947,
+      "peakBytes": 154350387,
+      "averageBytes": 151140579.2777778,
+      "deltaBytes": 2621440,
+      "sampleCount": 18,
+      "baselineMegabytes": 144.69999980926514,
+      "peakMegabytes": 147.19999980926514,
+      "averageMegabytes": 144.13888862397937,
+      "deltaMegabytes": 2.5
     },
     "resources": {
-      "currentCpuPercent": 0.07,
-      "peakCpuPercent": 43.62,
-      "averageCpuPercent": 11.972000000000001,
-      "sampleCount": 30
+      "currentCpuPercent": 0.01,
+      "peakCpuPercent": 74.37,
+      "averageCpuPercent": 14.33888888888889,
+      "sampleCount": 18
     },
     "samples": [
       {
-        "timestampUtc": "2026-08-20T02:55:40.6040271+00:00",
-        "elapsed": "00:00:00.0000003",
+        "timestampUtc": "2026-08-24T08:36:32.229183+00:00",
+        "elapsed": "00:00:00.0000004",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126982553,
-        "cpuPercent": 0.06
-      },
-      {
-        "timestampUtc": "2026-08-20T02:55:42.6477257+00:00",
-        "elapsed": "00:00:02.9247729",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 127087411,
+        "containerId": "634781b10116",
+        "memoryBytes": 151728947,
         "cpuPercent": 0.01
       },
       {
-        "timestampUtc": "2026-08-20T02:55:44.6643821+00:00",
-        "elapsed": "00:00:04.9686461",
+        "timestampUtc": "2026-08-24T08:36:34.2687808+00:00",
+        "elapsed": "00:00:02.9097046",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126982553,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 151938662,
+        "cpuPercent": 0.97
       },
       {
-        "timestampUtc": "2026-08-20T02:55:46.7058687+00:00",
-        "elapsed": "00:00:06.9853691",
+        "timestampUtc": "2026-08-24T08:36:36.3004987+00:00",
+        "elapsed": "00:00:04.9493249",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126982553,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 151728947,
+        "cpuPercent": 0.08
       },
       {
-        "timestampUtc": "2026-08-20T02:55:48.7429449+00:00",
-        "elapsed": "00:00:09.0271924",
+        "timestampUtc": "2026-08-24T08:36:38.3404359+00:00",
+        "elapsed": "00:00:06.9810292",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 127297126,
-        "cpuPercent": 0.01
+        "containerId": "634781b10116",
+        "memoryBytes": 151624089,
+        "cpuPercent": 0.03
       },
       {
-        "timestampUtc": "2026-08-20T02:55:50.7572103+00:00",
-        "elapsed": "00:00:11.0640458",
+        "timestampUtc": "2026-08-24T08:36:40.3655111+00:00",
+        "elapsed": "00:00:09.0209054",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128450560,
-        "cpuPercent": 1.46
+        "containerId": "634781b10116",
+        "memoryBytes": 151519232,
+        "cpuPercent": 0.09
       },
       {
-        "timestampUtc": "2026-08-20T02:55:52.7738583+00:00",
-        "elapsed": "00:00:13.0784334",
+        "timestampUtc": "2026-08-24T08:36:42.3769512+00:00",
+        "elapsed": "00:00:11.0457234",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128450560,
-        "cpuPercent": 1.18
+        "containerId": "634781b10116",
+        "memoryBytes": 152253235,
+        "cpuPercent": 5.59
       },
       {
-        "timestampUtc": "2026-08-20T02:55:54.7876143+00:00",
-        "elapsed": "00:00:15.0954929",
+        "timestampUtc": "2026-08-24T08:36:44.3932115+00:00",
+        "elapsed": "00:00:13.0571598",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 127926272,
+        "containerId": "634781b10116",
+        "memoryBytes": 152777523,
+        "cpuPercent": 1.3
+      },
+      {
+        "timestampUtc": "2026-08-24T08:36:46.4068597+00:00",
+        "elapsed": "00:00:15.0731283",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 152672665,
+        "cpuPercent": 1.96
+      },
+      {
+        "timestampUtc": "2026-08-24T08:36:48.4200275+00:00",
+        "elapsed": "00:00:17.0872994",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 147534643,
+        "cpuPercent": 1.79
+      },
+      {
+        "timestampUtc": "2026-08-24T08:36:50.4318466+00:00",
+        "elapsed": "00:00:19.1005482",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 149422080,
+        "cpuPercent": 1.5
+      },
+      {
+        "timestampUtc": "2026-08-24T08:36:52.4440399+00:00",
+        "elapsed": "00:00:21.1128354",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 149526937,
+        "cpuPercent": 1.42
+      },
+      {
+        "timestampUtc": "2026-08-24T08:36:54.4565508+00:00",
+        "elapsed": "00:00:23.1242946",
+        "service": "notification-worker",
+        "containerId": "634781b10116",
+        "memoryBytes": 149946368,
         "cpuPercent": 1.37
       },
       {
-        "timestampUtc": "2026-08-20T02:55:56.7997177+00:00",
-        "elapsed": "00:00:17.1085208",
+        "timestampUtc": "2026-08-24T08:36:56.4742232+00:00",
+        "elapsed": "00:00:25.1369088",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128135987,
-        "cpuPercent": 1.34
+        "containerId": "634781b10116",
+        "memoryBytes": 150365798,
+        "cpuPercent": 9.75
       },
       {
-        "timestampUtc": "2026-08-20T02:55:58.8129155+00:00",
-        "elapsed": "00:00:19.1214460",
+        "timestampUtc": "2026-08-24T08:36:58.5081039+00:00",
+        "elapsed": "00:00:27.1541757",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 127716556,
-        "cpuPercent": 1.15
+        "containerId": "634781b10116",
+        "memoryBytes": 151099801,
+        "cpuPercent": 58.16
       },
       {
-        "timestampUtc": "2026-08-20T02:56:00.8275868+00:00",
-        "elapsed": "00:00:21.1343527",
+        "timestampUtc": "2026-08-24T08:37:00.5579356+00:00",
+        "elapsed": "00:00:29.1881035",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128660275,
-        "cpuPercent": 1.28
+        "containerId": "634781b10116",
+        "memoryBytes": 152253235,
+        "cpuPercent": 44.26
       },
       {
-        "timestampUtc": "2026-08-20T02:56:02.8389053+00:00",
-        "elapsed": "00:00:23.1484895",
+        "timestampUtc": "2026-08-24T08:37:02.5967842+00:00",
+        "elapsed": "00:00:31.2385377",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128135987,
-        "cpuPercent": 1.34
+        "containerId": "634781b10116",
+        "memoryBytes": 149422080,
+        "cpuPercent": 55.44
       },
       {
-        "timestampUtc": "2026-08-20T02:56:04.8507463+00:00",
-        "elapsed": "00:00:25.1602147",
+        "timestampUtc": "2026-08-24T08:37:04.6289349+00:00",
+        "elapsed": "00:00:33.2771788",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128660275,
-        "cpuPercent": 1.39
+        "containerId": "634781b10116",
+        "memoryBytes": 150365798,
+        "cpuPercent": 74.37
       },
       {
-        "timestampUtc": "2026-08-20T02:56:06.8702551+00:00",
-        "elapsed": "00:00:27.1723194",
+        "timestampUtc": "2026-08-24T08:37:07.6478053+00:00",
+        "elapsed": "00:00:35.7513992",
         "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128555417,
-        "cpuPercent": 11.61
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:08.9015294+00:00",
-        "elapsed": "00:00:29.1907592",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128450560,
-        "cpuPercent": 16.21
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:10.9379484+00:00",
-        "elapsed": "00:00:31.2226969",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128869990,
-        "cpuPercent": 10.42
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:12.9556404+00:00",
-        "elapsed": "00:00:33.2589215",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130442854,
-        "cpuPercent": 19.69
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:14.9897568+00:00",
-        "elapsed": "00:00:35.2765999",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130023424,
-        "cpuPercent": 7.3
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:17.0094641+00:00",
-        "elapsed": "00:00:37.3109678",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130442854,
-        "cpuPercent": 12.5
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:19.0458474+00:00",
-        "elapsed": "00:00:39.3304601",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131910860,
-        "cpuPercent": 31.96
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:21.0912568+00:00",
-        "elapsed": "00:00:41.3671602",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 126982553,
-        "cpuPercent": 32.34
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:23.1345819+00:00",
-        "elapsed": "00:00:43.4119679",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128974848,
-        "cpuPercent": 15.35
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:25.1640125+00:00",
-        "elapsed": "00:00:45.4547086",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 131281715,
-        "cpuPercent": 32.32
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:27.2124036+00:00",
-        "elapsed": "00:00:47.4853576",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 129079705,
-        "cpuPercent": 22.71
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:29.2410352+00:00",
-        "elapsed": "00:00:49.5326744",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128869990,
-        "cpuPercent": 12.95
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:31.2761574+00:00",
-        "elapsed": "00:00:51.5624488",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130652569,
-        "cpuPercent": 36.58
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:33.3123087+00:00",
-        "elapsed": "00:00:53.5970081",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130442854,
-        "cpuPercent": 19.85
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:35.3284199+00:00",
-        "elapsed": "00:00:55.6331700",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 130547712,
-        "cpuPercent": 43.62
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:37.3621052+00:00",
-        "elapsed": "00:00:57.6493998",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 128135987,
-        "cpuPercent": 23.07
-      },
-      {
-        "timestampUtc": "2026-08-20T02:56:39.3660157+00:00",
-        "elapsed": "00:00:59.5937032",
-        "service": "notification-worker",
-        "containerId": "857f06eca684",
-        "memoryBytes": 127821414,
-        "cpuPercent": 0.07
+        "containerId": "634781b10116",
+        "memoryBytes": 154350387,
+        "cpuPercent": 0.01
       }
     ]
   }

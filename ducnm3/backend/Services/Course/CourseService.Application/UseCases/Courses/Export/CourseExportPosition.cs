@@ -3,4 +3,6 @@
 
 namespace CourseService.Application.UseCases.Courses.Export;
 
+// Cursor nội bộ, không trả ra API: cặp (CreatedAtUtc, Id) tạo total order cho keyset pagination;
+// ReadCount giúp áp dụng limit cho cả file khi export chạy qua nhiều chunk.
 public sealed record CourseExportPosition(DateTime CreatedAtUtc, Guid Id, int ReadCount = 0);

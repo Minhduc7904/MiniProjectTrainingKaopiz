@@ -54,7 +54,8 @@ public class MySqlSeedRunnerTests
     public async Task RunAsyncSeedsRelationshipsAndResumeIsIdempotent()
     {
         var options = CreateOptions(resume: false);
-        var runner = new MySqlSeedRunner(options);
+        var progress = new RecordingSeedProgress();
+        var runner = new MySqlSeedRunner(options, progress);
 
         var firstRun = await runner.RunAsync("Development");
 
@@ -127,6 +128,16 @@ public class MySqlSeedRunnerTests
             Assert.That(uniqueConstraintCount, Is.EqualTo(3));
             Assert.That(foreignKeyCount, Is.EqualTo(3));
             Assert.That(secondaryIndexCount, Is.EqualTo(6));
+            Assert.That(
+                progress.SchemaActions.Any(action =>
+                    action.Operation == SeedSchemaOperation.Remove &&
+                    action.ObjectType == "foreign key"),
+                Is.False);
+            Assert.That(
+                progress.SchemaActions.Count(action =>
+                    action.Operation == SeedSchemaOperation.Keep &&
+                    action.ObjectType == "foreign key"),
+                Is.EqualTo(3));
         });
 
         var resumeOptions = options with { Resume = true };
@@ -228,4 +239,47 @@ public class MySqlSeedRunnerTests
             connection);
         await command.ExecuteNonQueryAsync();
     }
+
+    private sealed class RecordingSeedProgress : ISeedProgress
+    {
+        public List<SchemaAction> SchemaActions { get; } = [];
+
+        public void PhaseStarted(SeedPhase phase, long totalRows)
+        {
+        }
+
+        public void PhaseAdvanced(
+            SeedPhase phase,
+            long processedRows,
+            long totalRows,
+            long insertedRows,
+            long skippedRows)
+        {
+        }
+
+        public void PhaseCompleted(
+            SeedPhase phase,
+            long totalRows,
+            long insertedRows,
+            long skippedRows,
+            TimeSpan elapsed)
+        {
+        }
+
+        public void SchemaActionCompleted(
+            SeedSchemaOperation operation,
+            string objectType,
+            string name,
+            bool succeeded,
+            string? failure)
+        {
+            SchemaActions.Add(new SchemaAction(operation, objectType, name, succeeded));
+        }
+    }
+
+    private sealed record SchemaAction(
+        SeedSchemaOperation Operation,
+        string ObjectType,
+        string Name,
+        bool Succeeded);
 }

@@ -8,6 +8,7 @@ namespace CourseService.Api.Endpoints.Courses.Export;
 
 public static class ExportCoursesEndpoint
 {
+    // Trình duyệt dùng header này để tải file thay vì hiển thị body CSV như text trên tab hiện tại.
     private const string ContentDisposition = "attachment; filename=\"courses.csv\"";
 
     public static RouteHandlerBuilder MapExportCourses(this IEndpointRouteBuilder endpoints) =>
@@ -18,27 +19,39 @@ public static class ExportCoursesEndpoint
                 ExportCoursesHandler handler,
                 CancellationToken cancellationToken) =>
             {
+                // Parse/validate status và limit trước khi bắt đầu ghi response. Nếu query không hợp lệ,
+                // endpoint trả lỗi bình thường vì chưa có byte CSV nào được gửi cho client.
                 var query = ExportCoursesQuery.Create(status, limit);
+
+                // Khai báo response streaming. Không tạo byte[] hoặc MemoryStream chứa toàn bộ file ở endpoint này.
                 context.Response.StatusCode = StatusCodes.Status200OK;
                 context.Response.ContentType = "text/csv; charset=utf-8";
                 context.Response.Headers.ContentDisposition = ContentDisposition;
                 context.Response.Headers.CacheControl = "no-store";
 
+                // Ghi BOM UTF-8 và header đúng một lần trực tiếp vào HTTP response stream.
+                // Client có thể bắt đầu tải/hiển thị phần đầu file ngay khi các chunk sau còn đang được đọc.
                 await CsvRowWriter.WritePreambleAsync(context.Response.Body, cancellationToken);
+
+                // position là cursor nội bộ của keyset pagination, ban đầu null nghĩa là đọc từ Course mới nhất.
                 CourseExportPosition? position = null;
                 while (true)
                 {
+                    // Mỗi vòng chỉ yêu cầu Infrastructure đọc một chunk (tối đa 500 rows), không load toàn bộ Course.
                     var chunk = await handler.HandleAsync(query, position, cancellationToken);
                     foreach (var row in chunk.Rows)
                     {
+                        // Row được serialize và ghi thẳng xuống network stream, sau đó có thể được GC.
                         await CsvRowWriter.WriteRowAsync(context.Response.Body, row, cancellationToken);
                     }
 
+                    // Một chunk ngắn hơn ChunkSize là trang cuối. Điều kiện này cũng xử lý kết quả rỗng.
                     if (chunk.Rows.Count < ExportCoursesQuery.ChunkSize)
                     {
                         break;
                     }
 
+                    // Cursor lấy từ row cuối: vòng sau dùng predicate keyset để không lặp lại các row đã xuất.
                     position = chunk.NextPosition;
                 }
             })

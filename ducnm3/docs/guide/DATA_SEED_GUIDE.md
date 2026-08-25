@@ -134,15 +134,18 @@ giữ toàn bộ tập dữ liệu trong RAM.
 
 ### Tối ưu schema tạm thời cho database seed
 
-Fresh run ghi vào `lms_course_seed_db` tự động gỡ tạm thời toàn bộ foreign key,
-secondary index, unique index và primary key của `courses`, `lessons`,
-`enrollments`, `lesson_progresses`. Terminal hiển thị từng thao tác `Drop` và
+Fresh run ghi vào `lms_course_seed_db` chỉ gỡ tạm thời index và primary key
+không tham gia foreign key của `courses`, `lessons`, `enrollments`,
+`lesson_progresses`. Ba foreign key `fk_lessons_course_id`,
+`fk_enrollments_course_id`, `fk_lesson_progresses_lesson_id` và các
+primary/unique index nền của chúng luôn được giữ lại để không phải quét hàng
+triệu bản ghi khi tạo lại FK. Terminal hiển thị từng thao tác `Drop`, `Keep` và
 `Restore`; lỗi khi gỡ một mục được đánh dấu `FAILED — continue` và seed vẫn tiếp
-tục. Chỉ constraint/index thực sự gỡ thành công mới được khôi phục sau seed.
+tục. Chỉ index/primary key thực sự gỡ thành công mới được khôi phục sau seed.
 
-Trước khi validation kết quả chạy, tool dựng lại primary key, index/unique index,
-rồi foreign key theo thứ tự này. Nếu một mục đã gỡ không thể khôi phục, tool kết
-thúc với lỗi để database không bị dùng khi schema còn thiếu.
+Trước khi validation kết quả chạy, tool dựng lại primary key và index theo thứ
+tự này. Nếu một mục đã gỡ không thể khôi phục, tool kết thúc với lỗi để database
+không bị dùng khi schema còn thiếu.
 
 `lms_course_db`, `--dry-run`, `--resume` và `--students-only` không áp dụng tối
 ưu này. `--resume` giữ nguyên schema để bảo toàn idempotency của insert; chỉ dùng

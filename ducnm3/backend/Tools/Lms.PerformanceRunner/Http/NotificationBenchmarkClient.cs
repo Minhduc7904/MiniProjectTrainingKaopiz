@@ -6,10 +6,19 @@ using Lms.PerformanceRunner.Models;
 
 namespace Lms.PerformanceRunner.Http;
 
-public sealed class NotificationBenchmarkClient(HttpClient httpClient)
+public sealed class NotificationBenchmarkClient
 {
-    private static readonly Guid BenchmarkCreatedBy =
-        Guid.Parse("00000000-0000-0000-0000-000000000305");
+    private const string PerformanceActorIdEnvironmentVariable = "PERFORMANCE_ACTOR_ID";
+    private const string AdminIdEnvironmentVariable = "ADMIN_ID";
+    private readonly HttpClient httpClient;
+
+    public NotificationBenchmarkClient(HttpClient httpClient)
+    {
+        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        var actorId = ReadAdminActorId();
+        this.httpClient.DefaultRequestHeaders.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
+        this.httpClient.DefaultRequestHeaders.Add(ApiHeaderNames.ActorId, actorId.ToString());
+    }
 
     public async Task<BatchBenchmarkResult> RunAsync(
         int recipientCount,
@@ -25,7 +34,6 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
                 title = $"Performance benchmark {recipientCount}",
                 bodyMarkdown = "Performance benchmark notification.",
                 targetScope = "ALL_STUDENTS",
-                createdBy = BenchmarkCreatedBy,
                 batchSize = 500,
                 requestedCount = recipientCount,
                 courseId = (Guid?)null,
@@ -135,6 +143,19 @@ public sealed class NotificationBenchmarkClient(HttpClient httpClient)
 
     private Task<HttpResponseMessage> GetStatusAsync(string path, CancellationToken cancellationToken) =>
         httpClient.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+    private static Guid ReadAdminActorId()
+    {
+        var rawActorId = Environment.GetEnvironmentVariable(PerformanceActorIdEnvironmentVariable)
+            ?? Environment.GetEnvironmentVariable(AdminIdEnvironmentVariable);
+        if (!Guid.TryParse(rawActorId, out var actorId) || actorId == Guid.Empty)
+        {
+            throw new InvalidOperationException(
+                $"Set {PerformanceActorIdEnvironmentVariable} or {AdminIdEnvironmentVariable} to a non-empty Admin UUID before running batch benchmark.");
+        }
+
+        return actorId;
+    }
 
     private static uint GetUInt32(JsonElement element, string propertyName) =>
         element.TryGetProperty(propertyName, out var property) && property.ValueKind != JsonValueKind.Null

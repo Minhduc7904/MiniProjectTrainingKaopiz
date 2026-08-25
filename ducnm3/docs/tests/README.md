@@ -49,6 +49,11 @@ Danh mục communication foundation:
 - [`communication/unit.md`](communication/unit.md)
 - [`communication/integration.md`](communication/integration.md)
 
+Danh mục Performance Runner:
+
+- [`performance-runner/unit.md`](performance-runner/unit.md): CLI parsing,
+  metric parsing và actor header bắt buộc của Batch Notification.
+
 Danh mục Media Service:
 
 - [`media-service/unit.md`](media-service/unit.md): storage validation, trình tự

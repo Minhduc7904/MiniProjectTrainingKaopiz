@@ -46,6 +46,27 @@ endpoint formatter, registration extension cho command/event consumer,
 và integration test RabbitMQ bằng Testcontainers cho command, event, retry và
 correlation.
 
+## Quan sát Worker
+
+`AddLmsMessagingWithConsumers` tự đăng ký `WorkerConsumeLoggingObserver` cho mọi
+consumer của Worker. Mỗi lần một message được Worker xử lý có ba log lifecycle:
+
+- `WorkerEvent=Received`: MassTransit đã nhận message và sắp dispatch vào consumer.
+- `WorkerEvent=Completed`: toàn bộ consumer của message đã kết thúc thành công.
+- `WorkerEvent=Failed`: consumer ném exception; log giữ exception để điều tra và
+  cho biết attempt/retry state tại thời điểm lỗi.
+
+Log luôn có `MessageType`, `Queue`, `MessageId`, `CorrelationId`,
+`ConversationId`, `SourceService`, `RetryAttempt`, `RetryLimit` và
+`RedeliveryCount`. `RetryAttempt=0` là lần xử lý đầu tiên; `RetryLimit` là
+`Messaging:Retry:RetryCount` đang cấu hình. Chỉ metadata an toàn được ghi, không
+ghi message payload, URL ký, chữ ký MinIO, access key hoặc token.
+
+`AddLmsMessaging` không gắn observer này vì host đó không đăng ký consumer. Ví dụ
+Scheduler Worker hiện chỉ host messaging mà chưa có job/consumer runtime, nên sẽ
+chỉ có log lifecycle khi sau này nó đăng ký consumer qua
+`AddLmsMessagingWithConsumers`.
+
 ## Định hướng/chưa triển khai
 
 Không có inbox/outbox dùng chung trong BuildingBlocks, message schema registry,
@@ -60,3 +81,4 @@ consumer thực hiện.
 | Consumer không nhận message | service name, endpoint formatter, registration | Đăng ký đúng `AddCommandConsumer`/`AddEventConsumer` tại Worker/API host. |
 | Correlation bị mất | sender/publisher bypass adapter | Inject `ICommandSender`/`IEventPublisher`, không publish trực tiếp tùy tiện. |
 | Health không healthy | RabbitMQ options và kết nối broker | Kiểm tra `Messaging:RabbitMq` và service host trước khi thay retry. |
+| Consumer lỗi hoặc retry | Lọc `WorkerEvent=Failed` theo `MessageId`/`CorrelationId`; đối chiếu `RetryAttempt` và exception | Sửa nguyên nhân ở consumer/dependency; không tự thêm retry riêng vào consumer. |

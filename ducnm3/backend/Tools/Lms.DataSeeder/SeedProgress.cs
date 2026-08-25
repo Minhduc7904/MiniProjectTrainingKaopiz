@@ -29,6 +29,7 @@ public interface ISeedProgress
 public enum SeedSchemaOperation
 {
     Remove,
+    Keep,
     Restore,
 }
 

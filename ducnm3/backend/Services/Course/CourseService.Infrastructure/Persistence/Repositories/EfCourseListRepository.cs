@@ -47,17 +47,22 @@ public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseL
         CourseExportPosition? position,
         CancellationToken cancellationToken)
     {
+        // AsNoTracking giảm memory/change tracking vì export chỉ đọc và không sửa Course.
         var source = dbContext.Courses.AsNoTracking();
         if (query.Status is not null) source = source.Where(course => course.Status == query.Status);
         if (position is not null)
         {
+            // Keyset predicate cho thứ tự CreatedAt DESC, Id DESC: chỉ lấy các row "sau" row cuối của chunk trước.
+            // Khác OFFSET, database không phải bỏ qua ngày càng nhiều row khi file export lớn.
             source = source.Where(course => course.CreatedAt < position.CreatedAtUtc ||
                 (course.CreatedAt == position.CreatedAtUtc && course.Id.CompareTo(position.Id) < 0));
         }
 
+        // remaining biến limit tổng của file thành giới hạn cho chunk hiện tại.
         var remaining = query.Limit is int limit ? limit - (position?.ReadCount ?? 0) : ExportCoursesQuery.ChunkSize;
         if (remaining <= 0) return new CourseExportChunk([], position?.ReadCount ?? 0);
 
+        // EF Core dịch đoạn này thành một SELECT có WHERE/ORDER BY/LIMIT. Projection chỉ lấy cột cần cho CSV.
         var rows = await source
             .OrderByDescending(course => course.CreatedAt)
             .ThenByDescending(course => course.Id)
@@ -76,6 +81,8 @@ public sealed class EfCourseListRepository(CourseDbContext dbContext) : ICourseL
         ExportCoursesQuery query,
         CancellationToken cancellationToken)
     {
+        // Đây là đường benchmark buffered, không dùng cho endpoint export streaming:
+        // ToListAsync materialize toàn bộ kết quả (hoặc limit) trước khi caller ghi một byte response nào.
         var source = dbContext.Courses.AsNoTracking();
         if (query.Status is not null) source = source.Where(course => course.Status == query.Status);
 
