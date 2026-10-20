@@ -36,6 +36,18 @@ public static class ApiRoutes
         public const string StudentCourseCatalog = "/api/student/courses";
         public const string StudentEnrollmentDetailTemplate = "/api/student/enrollments/{courseId}";
         public const string StudentLessonDetailTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}";
+        public const string QuizzesTemplate = "/api/courses/{courseId}/lessons/{lessonId}/quizzes";
+        public const string QuizByIdTemplate = "/api/courses/{courseId}/lessons/{lessonId}/quizzes/{quizId}";
+        public const string StudentQuizzesTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes";
+        public const string StudentQuizByIdTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes/{quizId}";
+        public const string StudentQuizAttemptsTemplate =
+            "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes/{quizId}/attempts";
+        public const string StudentQuizAttemptByIdTemplate =
+            "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes/{quizId}/attempts/{attemptId}";
+        public const string StudentQuizAttemptAnswersTemplate =
+            "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes/{quizId}/attempts/{attemptId}/answers";
+        public const string StudentQuizAttemptSubmitTemplate =
+            "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes/{quizId}/attempts/{attemptId}/submit";
         public const string MyProgressTemplate = "/api/courses/{courseId}/my-progress";
         public const string CompleteLessonProgressTemplate =
             "/api/courses/{courseId}/lessons/{lessonId}/progress/complete";
@@ -99,6 +111,23 @@ public static class ApiRoutes
 
         public static string StudentLessonDetailPublicPath(Guid courseId, Guid lessonId) =>
             BuildPublicPath(GatewayRoutePrefixes.Course, FormatGuidRoute(FormatGuidRoute(StudentLessonDetailTemplate, "courseId", courseId), "lessonId", lessonId));
+
+        public static string QuizByIdServicePath(Guid courseId, Guid lessonId, Guid quizId) =>
+            BuildServicePath(FormatQuizRoute(QuizByIdTemplate, courseId, lessonId, quizId));
+
+        public static string QuizByIdPublicPath(Guid courseId, Guid lessonId, Guid quizId) =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, FormatQuizRoute(QuizByIdTemplate, courseId, lessonId, quizId));
+
+        public static string StudentQuizAttemptByIdPublicPath(Guid courseId, Guid lessonId, Guid quizId, Guid attemptId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(FormatQuizRoute(StudentQuizAttemptByIdTemplate, courseId, lessonId, quizId), "attemptId", attemptId));
+
+        private static string FormatQuizRoute(string template, Guid courseId, Guid lessonId, Guid quizId) =>
+            FormatGuidRoute(
+                FormatGuidRoute(FormatGuidRoute(template, "courseId", courseId), "lessonId", lessonId),
+                "quizId",
+                quizId);
 
         public static string MyProgressServicePath(Guid courseId) =>
             BuildServicePath(FormatGuidRoute(MyProgressTemplate, "courseId", courseId));
@@ -348,6 +377,73 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Notification,
                 FormatGuidRoute(ItemByIdTemplate, "notificationId", notificationId));
+    }
+
+    /// <summary>Route contract do AI Service sở hữu.</summary>
+    public static class Ai
+    {
+        public const string Providers = "/api/ai/providers";
+        public const string ProviderByIdTemplate = "/api/ai/providers/{providerId}";
+        public const string Models = "/api/ai/models";
+        public const string ModelByIdTemplate = "/api/ai/models/{modelId}";
+        public const string ServiceBindings = "/api/ai/service-bindings";
+        public const string ServiceBindingByServiceNameTemplate = "/api/ai/service-bindings/{serviceName}";
+        public const string Options = "/api/ai/options";
+
+        public static string ProvidersServicePath() =>
+            BuildServicePath(Providers);
+
+        public static string ProvidersPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, Providers);
+
+        public static string ProviderByIdServicePath(Guid providerId) =>
+            BuildServicePath(FormatGuidRoute(ProviderByIdTemplate, "providerId", providerId));
+
+        public static string ProviderByIdPublicPath(Guid providerId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Ai,
+                FormatGuidRoute(ProviderByIdTemplate, "providerId", providerId));
+
+        public static string ModelsServicePath() =>
+            BuildServicePath(Models);
+
+        public static string ModelsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, Models);
+
+        public static string ModelByIdServicePath(Guid modelId) =>
+            BuildServicePath(FormatGuidRoute(ModelByIdTemplate, "modelId", modelId));
+
+        public static string ModelByIdPublicPath(Guid modelId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Ai,
+                FormatGuidRoute(ModelByIdTemplate, "modelId", modelId));
+
+        public static string ServiceBindingsServicePath() =>
+            BuildServicePath(ServiceBindings);
+
+        public static string ServiceBindingsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, ServiceBindings);
+
+        public static string ServiceBindingByServiceNameServicePath(string serviceName) =>
+            BuildServicePath(FormatServiceNameRoute(serviceName));
+
+        public static string ServiceBindingByServiceNamePublicPath(string serviceName) =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, FormatServiceNameRoute(serviceName));
+
+        public static string OptionsServicePath() =>
+            BuildServicePath(Options);
+
+        public static string OptionsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, Options);
+
+        private static string FormatServiceNameRoute(string serviceName)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(serviceName);
+            return ServiceBindingByServiceNameTemplate.Replace(
+                "{serviceName}",
+                Uri.EscapeDataString(serviceName),
+                StringComparison.Ordinal);
+        }
     }
 
     /// <summary>Chuẩn hóa route thành path không có dấu <c>/</c> đầu, phù hợp cấu hình downstream/YARP.</summary>

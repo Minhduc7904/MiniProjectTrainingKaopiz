@@ -12,5 +12,6 @@ public static class MediaOwnerTypes
     public const string NotificationBody = "NOTIFICATION_BODY";
     public const string LessonContent = "LESSON_CONTENT";
     public const string LessonAttachment = "LESSON_ATTACHMENT";
+    public const string QuizContent = "QUIZ_CONTENT";
     public const string StudentAvatar = "STUDENT_AVATAR";
 }

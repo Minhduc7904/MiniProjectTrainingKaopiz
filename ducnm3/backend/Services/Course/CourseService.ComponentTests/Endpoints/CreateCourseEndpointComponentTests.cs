@@ -55,6 +55,7 @@ public sealed class CreateCourseEndpointComponentTests
                 status = CourseStatuses.Published,
             }),
         };
+        request.Headers.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
         request.Headers.Add(ApiHeaderNames.ActorId, ActorId.ToString());
 
         using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);

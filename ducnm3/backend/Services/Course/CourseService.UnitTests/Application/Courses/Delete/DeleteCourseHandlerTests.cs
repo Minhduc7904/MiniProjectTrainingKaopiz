@@ -2,6 +2,7 @@ using BuildingBlocks.Messaging.Abstractions;
 using CourseService.Application.Repositories;
 using CourseService.Application.Services.Media;
 using CourseService.Application.UseCases.Courses.Delete;
+using CourseService.UnitTests.Support;
 using MediaService.Contracts.Messaging;
 
 namespace CourseService.UnitTests.Application.Courses.Delete;
@@ -13,14 +14,17 @@ public sealed class DeleteCourseHandlerTests
     private static readonly Guid ActorId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid CourseUsageId = Guid.Parse("33333333-3333-3333-3333-333333333333");
     private static readonly Guid LessonUsageId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+    private static readonly Guid QuizUsageId = Guid.Parse("55555555-5555-5555-5555-555555555555");
 
     [Test]
     public async Task HandleAsync_ExistingCourse_DeletesAggregateAndQueuesEveryUsageId()
     {
         var repository = new StubCourseCommandRepository(CourseId, [LessonId]);
-        var mediaReader = new StubCourseMediaReader([CourseUsageId, LessonUsageId]);
+        var quizStore = new InMemoryQuizStore();
+        var quiz = await quizStore.CreateAsync(quizStore.LessonId, new QuizDraft("Quiz", null, "DRAFT", []), CancellationToken.None);
+        var mediaReader = new StubCourseMediaReader([CourseUsageId, LessonUsageId, QuizUsageId]);
         var commandSender = new StubCommandSender();
-        var handler = new DeleteCourseHandler(repository, mediaReader, commandSender);
+        var handler = new DeleteCourseHandler(repository, quizStore, mediaReader, commandSender);
 
         await handler.HandleAsync(CourseId, ActorId, CancellationToken.None);
 
@@ -34,8 +38,9 @@ public sealed class DeleteCourseHandlerTests
                 new CourseMediaUsageOwnerScope("COURSE", MarkdownMediaUsageOwnerTypes.CourseGallery, CourseId),
                 new CourseMediaUsageOwnerScope("COURSE", MarkdownMediaUsageOwnerTypes.LessonContent, LessonId),
                 new CourseMediaUsageOwnerScope("COURSE", MarkdownMediaUsageOwnerTypes.LessonAttachment, LessonId),
+                new CourseMediaUsageOwnerScope("COURSE", MarkdownMediaUsageOwnerTypes.QuizContent, quiz.Id),
             ]));
-            Assert.That(command?.UsageIds, Is.EquivalentTo([CourseUsageId, LessonUsageId]));
+            Assert.That(command?.UsageIds, Is.EquivalentTo([CourseUsageId, LessonUsageId, QuizUsageId]));
         });
     }
 

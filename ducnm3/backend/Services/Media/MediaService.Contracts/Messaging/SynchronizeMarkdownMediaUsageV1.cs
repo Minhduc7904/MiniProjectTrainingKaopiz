@@ -31,6 +31,7 @@ public static class MarkdownMediaUsageOwnerTypes
     public const string CourseDescription = "COURSE_DESCRIPTION";
     public const string LessonContent = "LESSON_CONTENT";
     public const string LessonAttachment = "LESSON_ATTACHMENT";
+    public const string QuizContent = "QUIZ_CONTENT";
 }
 
 public static class MarkdownMediaUsageTypes

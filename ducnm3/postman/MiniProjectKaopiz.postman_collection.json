@@ -32,6 +32,31 @@
       "type": "string"
     },
     {
+      "key": "lessonId",
+      "value": "00000000-0000-0000-0000-000000000002",
+      "type": "string"
+    },
+    {
+      "key": "quizId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "quizAttemptId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "quizQuestionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "quizOptionId",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "studentStatus",
       "value": "ACTIVE",
       "type": "string"
@@ -74,6 +99,26 @@
     {
       "key": "notificationCreatedBy",
       "value": "00007b9a-b898-5c29-8bcd-4fb33555a48d",
+      "type": "string"
+    },
+    {
+      "key": "aiProviderId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "aiModelId",
+      "value": "00000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "aiServiceName",
+      "value": "course-service",
+      "type": "string"
+    },
+    {
+      "key": "aiApiKey",
+      "value": "",
       "type": "string"
     }
   ],
@@ -233,6 +278,78 @@
             },
             "description": "Business flow: docs/business-flows/courses/get-courses-export.md"
           },
+          "response": []
+        },
+        {
+          "name": "POST Create quiz",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz is created\", function () { pm.response.to.have.status(201); const body = pm.response.json(); pm.expect(body.data.totalPoints).to.eql(5.5); pm.collectionVariables.set(\"quizId\", body.data.id); pm.collectionVariables.set(\"quizQuestionId\", body.data.questions[0].id); pm.collectionVariables.set(\"quizOptionId\", body.data.questions[0].options[0].id); });"]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json", "type": "text"}, {"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "body": {"mode": "raw", "raw": "{\n  \"title\": \"Kiểm tra cuối bài\",\n  \"descriptionMarkdown\": \"Làm **cẩn thận**, công thức $x^2$.\",\n  \"status\": \"PUBLISHED\",\n  \"questions\": [\n    {\n      \"questionMarkdown\": \"Thủ đô của Việt Nam?\",\n      \"questionType\": \"SINGLE_CHOICE\",\n      \"points\": 2,\n      \"options\": [\n        {\n          \"optionMarkdown\": \"Hà Nội\",\n          \"isCorrect\": true\n        },\n        {\n          \"optionMarkdown\": \"Huế\",\n          \"isCorrect\": false\n        }\n      ]\n    },\n    {\n      \"questionMarkdown\": \"Chọn các số chẵn\",\n      \"questionType\": \"MULTIPLE_CHOICE\",\n      \"points\": 3.5,\n      \"options\": [\n        {\n          \"optionMarkdown\": \"2\",\n          \"isCorrect\": true\n        },\n        {\n          \"optionMarkdown\": \"3\",\n          \"isCorrect\": false\n        },\n        {\n          \"optionMarkdown\": \"4\",\n          \"isCorrect\": true\n        }\n      ]\n    }\n  ]\n}", "options": {"raw": {"language": "json"}}}, "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/quizzes", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes"]}, "description": "Business flow: docs/business-flows/course-learning/post-course-lesson-quizzes.md"},
+          "response": []
+        },
+        {
+          "name": "GET Quizzes of lesson",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz list OK\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data).to.be.an(\"array\"); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/quizzes", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes"]}, "description": "Business flow: docs/business-flows/course-learning/get-course-lesson-quizzes.md"},
+          "response": []
+        },
+        {
+          "name": "GET Quiz detail",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz detail OK\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.questions).to.be.an(\"array\"); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}"]}, "description": "Business flow: docs/business-flows/course-learning/get-course-lesson-quiz-by-id.md"},
+          "response": []
+        },
+        {
+          "name": "PUT Update quiz",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz updated\", function () { pm.response.to.have.status(200); });"]}}],
+          "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json", "type": "text"}, {"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "body": {"mode": "raw", "raw": "{\n  \"title\": \"Kiểm tra cuối bài (đã sửa)\",\n  \"descriptionMarkdown\": \"Làm **cẩn thận**, công thức $x^2$.\",\n  \"status\": \"PUBLISHED\"\n}", "options": {"raw": {"language": "json"}}}, "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}"]}, "description": "Business flow: docs/business-flows/course-learning/put-course-lesson-quiz.md"},
+          "response": []
+        },
+        {
+          "name": "GET Student lesson quizzes",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Student quiz list OK\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data).to.be.an(\"array\"); pm.expect(pm.response.headers.get(\"Cache-Control\")).to.include(\"no-store\"); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes"]}, "description": "Business flow: docs/business-flows/course-learning/get-student-lesson-quizzes.md"},
+          "response": []
+        },
+        {
+          "name": "GET Student quiz detail",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz hides correct answers\", function () { pm.response.to.have.status(200); pm.expect(pm.response.text()).to.not.include(\"isCorrect\"); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}"]}, "description": "Business flow: docs/business-flows/course-learning/get-student-lesson-quiz-detail.md"},
+          "response": []
+        },
+        {
+          "name": "POST Start or resume quiz attempt",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Attempt started or resumed\", function () { pm.expect([200, 201]).to.include(pm.response.code); pm.collectionVariables.set(\"quizAttemptId\", pm.response.json().data.id); });"]}}],
+          "request": {"method": "POST", "header": [{"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}/attempts", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}", "attempts"]}, "description": "Business flow: docs/business-flows/course-learning/post-student-quiz-attempts.md"},
+          "response": []
+        },
+        {
+          "name": "PUT Save quiz answers draft",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Draft saved\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql(\"IN_PROGRESS\"); });"]}}],
+          "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json", "type": "text"}, {"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "body": {"mode": "raw", "raw": "{\n  \"answers\": [\n    {\n      \"questionId\": \"{{quizQuestionId}}\",\n      \"optionIds\": [\n        \"{{quizOptionId}}\"\n      ]\n    }\n  ]\n}", "options": {"raw": {"language": "json"}}}, "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}/attempts/{{quizAttemptId}}/answers", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}", "attempts", "{{quizAttemptId}}", "answers"]}, "description": "Business flow: docs/business-flows/course-learning/put-student-quiz-attempt-answers.md"},
+          "response": []
+        },
+        {
+          "name": "POST Submit quiz attempt",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz graded\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data.attempt.status).to.eql(\"SUBMITTED\"); pm.expect(body.data.result.maxScore).to.eql(5.5); });"]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json", "type": "text"}, {"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "body": {"mode": "raw", "raw": "{\n  \"answers\": null\n}", "options": {"raw": {"language": "json"}}}, "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}/attempts/{{quizAttemptId}}/submit", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}", "attempts", "{{quizAttemptId}}", "submit"]}, "description": "Business flow: docs/business-flows/course-learning/post-student-quiz-attempt-submit.md"},
+          "response": []
+        },
+        {
+          "name": "GET Quiz attempts",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Attempt history OK\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data).to.be.an(\"array\"); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}/attempts", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}", "attempts"]}, "description": "Business flow: docs/business-flows/course-learning/get-student-quiz-attempts.md"},
+          "response": []
+        },
+        {
+          "name": "GET Quiz attempt detail",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Attempt detail OK\", function () { pm.response.to.have.status(200); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "STUDENT", "type": "text"}, {"key": "X-Actor-Id", "value": "{{studentId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/student/enrollments/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}/attempts/{{quizAttemptId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "student", "enrollments", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}", "attempts", "{{quizAttemptId}}"]}, "description": "Business flow: docs/business-flows/course-learning/get-student-quiz-attempt-detail.md"},
+          "response": []
+        },
+        {
+          "name": "DELETE Quiz",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz delete accepted\", function () { pm.response.to.have.status(202); pm.expect(pm.response.text()).to.eql(\"\"); });"]}}],
+          "request": {"method": "DELETE", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}"]}, "description": "Business flow: docs/business-flows/course-learning/delete-course-lesson-quiz.md"},
           "response": []
         }
       ]
@@ -1161,6 +1278,834 @@
     {
       "name": "SchedulerService",
       "item": []
+    },
+    {
+      "name": "AiService",
+      "item": [
+        {
+          "name": "GET AI options",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI options OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/options",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "options"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-options.md"
+          },
+          "response": []
+        },
+        {
+          "name": "POST AI provider",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"POST AI provider OK\", function () { pm.response.to.have.status(201); const body = pm.response.json(); pm.expect(body.data).to.not.have.property(\"apiKey\"); pm.collectionVariables.set(\"aiProviderId\", body.data.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/post-providers.md",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"OpenAI production\",\n  \"providerType\": \"OPENAI\",\n  \"apiKey\": \"{{aiApiKey}}\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET AI providers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI providers OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers?page=1&pageSize=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-providers.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET AI provider by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI provider by id OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers/{{aiProviderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers",
+                "{{aiProviderId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-provider-by-id.md"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT AI provider",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"PUT AI provider OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers/{{aiProviderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers",
+                "{{aiProviderId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/put-provider.md",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"OpenAI production\",\n  \"providerType\": \"OPENAI\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST AI model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"POST AI model OK\", function () { pm.response.to.have.status(201); const body = pm.response.json(); pm.collectionVariables.set(\"aiModelId\", body.data.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/models",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "models"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/post-models.md",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": \"{{aiProviderId}}\",\n  \"modelName\": \"gpt-4o\",\n  \"displayName\": \"GPT-4o\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET AI models",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI models OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/models?providerId={{aiProviderId}}&page=1&pageSize=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "models"
+              ],
+              "query": [
+                {
+                  "key": "providerId",
+                  "value": "{{aiProviderId}}"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-models.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET AI model by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI model by id OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/models/{{aiModelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "models",
+                "{{aiModelId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-model-by-id.md"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT AI model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"PUT AI model OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/models/{{aiModelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "models",
+                "{{aiModelId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/put-model.md",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelName\": \"gpt-4o\",\n  \"displayName\": \"GPT-4o\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT AI service binding",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"PUT AI service binding OK\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/service-bindings/{{aiServiceName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "service-bindings",
+                "{{aiServiceName}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/put-service-binding.md",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelId\": \"{{aiModelId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET AI service bindings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI service bindings OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/service-bindings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "service-bindings"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-service-bindings.md"
+          },
+          "response": []
+        },
+        {
+          "name": "GET AI service binding",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET AI service binding OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/service-bindings/{{aiServiceName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "service-bindings",
+                "{{aiServiceName}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/get-service-binding.md"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE AI service binding",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"DELETE AI service binding OK\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/service-bindings/{{aiServiceName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "service-bindings",
+                "{{aiServiceName}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/delete-service-binding.md"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE AI model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"DELETE AI model OK\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/models/{{aiModelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "models",
+                "{{aiModelId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/delete-model.md"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE AI provider",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"DELETE AI provider OK\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers/{{aiProviderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers",
+                "{{aiProviderId}}"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/delete-provider.md"
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

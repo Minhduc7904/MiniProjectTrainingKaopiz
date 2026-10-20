@@ -21,6 +21,7 @@ RegisterServiceHttpClient(builder, ServiceNames.Student);
 RegisterServiceHttpClient(builder, ServiceNames.Media);
 RegisterServiceHttpClient(builder, ServiceNames.Notification);
 RegisterServiceHttpClient(builder, ServiceNames.Scheduler);
+RegisterServiceHttpClient(builder, ServiceNames.Ai);
 builder.Services.AddLmsCors(builder.Configuration);
 
 var app = builder.Build();
@@ -48,6 +49,8 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
             new SwaggerUiRoute(
                 "Scheduler Service",
                 $"{GatewayRoutePrefixes.Scheduler}{ApiPaths.OpenApiDocument}"));
+        settings.SwaggerRoutes.Add(
+            new SwaggerUiRoute("AI Service", $"{GatewayRoutePrefixes.Ai}{ApiPaths.OpenApiDocument}"));
     });
 }
 
@@ -74,6 +77,7 @@ app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Student, ServiceNames.Student
 app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Media, ServiceNames.Media);
 app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Notification, ServiceNames.Notification);
 app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Scheduler, ServiceNames.Scheduler);
+app.MapGatewaySwaggerDocument(GatewayRoutePrefixes.Ai, ServiceNames.Ai);
 
 app.MapReverseProxy(proxyPipeline =>
 {

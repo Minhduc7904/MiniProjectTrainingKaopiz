@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-service="${1:?Usage: migrate.sh <course|student|media|notification|scheduler> [--env-file <path>]}"
+service="${1:?Usage: migrate.sh <course|student|media|notification|scheduler|ai> [--env-file <path>]}"
 project_root="$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)"
 backend_root="$project_root/backend"
 env_file="$project_root/.env"
@@ -29,6 +29,10 @@ case "$service" in
   scheduler)
     connection_string="$(environment_value SCHEDULER_DB_LOCAL_CONNECTION_STRING)"
     project="Services/Scheduler/SchedulerService.Api/SchedulerService.Api.csproj"
+    ;;
+  ai)
+    connection_string="$(environment_value AI_DB_LOCAL_CONNECTION_STRING)"
+    project="Services/Ai/AiService.Api/AiService.Api.csproj"
     ;;
   *)
     echo "Unknown service: $service" >&2

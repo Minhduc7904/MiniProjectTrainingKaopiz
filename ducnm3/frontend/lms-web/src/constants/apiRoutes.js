@@ -4,6 +4,7 @@ const GATEWAY_PREFIXES = {
   media: '/media',
   notification: '/notification',
   scheduler: '/scheduler',
+  ai: '/ai',
 }
 
 function joinPath(...parts) {
@@ -28,6 +29,7 @@ export const API_ROUTES = {
     media: joinPath(GATEWAY_PREFIXES.media, '/health'),
     notification: joinPath(GATEWAY_PREFIXES.notification, '/health'),
     scheduler: joinPath(GATEWAY_PREFIXES.scheduler, '/health'),
+    ai: joinPath(GATEWAY_PREFIXES.ai, '/health'),
   },
   courses: {
     list: joinPath(GATEWAY_PREFIXES.course, '/api/courses'),
@@ -37,6 +39,8 @@ export const API_ROUTES = {
     lessons: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons'),
     lessonById: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId),
     lessonReorder: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', 'reorder'),
+    quizzes: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'quizzes'),
+    quizById: (courseId, lessonId, quizId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'quizzes', quizId),
     export: joinPath(GATEWAY_PREFIXES.course, '/api/courses/export'),
   },
   students: {
@@ -51,6 +55,12 @@ export const API_ROUTES = {
     enrollmentDetail: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId),
     lessonDetail: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId),
     enroll: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'enrollments'),
+    quizzes: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId, 'quizzes'),
+    quizById: (courseId, lessonId, quizId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId, 'quizzes', quizId),
+    quizAttempts: (courseId, lessonId, quizId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId, 'quizzes', quizId, 'attempts'),
+    quizAttemptById: (courseId, lessonId, quizId, attemptId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId, 'quizzes', quizId, 'attempts', attemptId),
+    quizAttemptAnswers: (courseId, lessonId, quizId, attemptId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId, 'quizzes', quizId, 'attempts', attemptId, 'answers'),
+    quizAttemptSubmit: (courseId, lessonId, quizId, attemptId) => joinPath(GATEWAY_PREFIXES.course, '/api/student/enrollments', courseId, 'lessons', lessonId, 'quizzes', quizId, 'attempts', attemptId, 'submit'),
     progress: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'my-progress'),
     completeLesson: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'progress', 'complete'),
   },
@@ -110,5 +120,17 @@ export const API_ROUTES = {
         batchId,
         'delivery-status',
       ),
+  },
+  ai: {
+    options: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/options'),
+    providers: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/providers'),
+    providerById: (providerId) =>
+      joinPath(GATEWAY_PREFIXES.ai, '/api/ai/providers', providerId),
+    models: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/models'),
+    modelById: (modelId) =>
+      joinPath(GATEWAY_PREFIXES.ai, '/api/ai/models', modelId),
+    bindings: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/service-bindings'),
+    bindingByService: (serviceName) =>
+      joinPath(GATEWAY_PREFIXES.ai, '/api/ai/service-bindings', encodeURIComponent(serviceName)),
   },
 }

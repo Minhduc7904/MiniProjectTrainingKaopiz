@@ -1,6 +1,6 @@
 export const APP_ROUTES = {
   home: '/', admin: '/admin', adminDashboard: '/admin/dashboard',
-  students: '/admin/student/students', courses: '/admin/course/courses', courseDetails: '/admin/course/courses/:courseId', courseExport: '/admin/course/courses/export', mediaLibrary: '/admin/media/library', mediaUpload: '/admin/media/upload', mediaUploadDirect: '/admin/media/upload-direct', mediaJobs: '/admin/media/jobs', notificationSend: '/admin/notification/batches/send', notificationBatches: '/admin/notification/batches', notificationProgress: '/admin/notification/batches/progress', notificationProgressDetail: '/admin/notification/batches/:batchId/progress', schedulerJobs: '/admin/scheduler/jobs',
+  students: '/admin/student/students', courses: '/admin/course/courses', courseDetails: '/admin/course/courses/:courseId', courseExport: '/admin/course/courses/export', courseLessonQuizzes: '/admin/course/courses/:courseId/lessons/:lessonId/quizzes', mediaLibrary: '/admin/media/library', mediaUpload: '/admin/media/upload', mediaUploadDirect: '/admin/media/upload-direct', mediaJobs: '/admin/media/jobs', notificationSend: '/admin/notification/batches/send', notificationBatches: '/admin/notification/batches', notificationProgress: '/admin/notification/batches/progress', notificationProgressDetail: '/admin/notification/batches/:batchId/progress', schedulerJobs: '/admin/scheduler/jobs', aiProviders: '/admin/ai/providers', aiModels: '/admin/ai/models', aiBindings: '/admin/ai/bindings',
   studentRegister: '/student/register', studentLogin: '/student/login', studentLoading: '/student/loading', studentLogout: '/student/logout', studentHome: '/student/home', studentCourses: '/student/courses', studentCourseDetail: '/student/courses/:courseId', studentCourseLearn: '/student/courses/:courseId/learn/:lessonId', studentProfile: '/student/profile',
 }
 
@@ -10,6 +10,7 @@ export const SERVICE_IDS = {
   media: 'media',
   notification: 'notification',
   scheduler: 'scheduler',
+  ai: 'ai',
 }
 
 export const SERVICES = [
@@ -126,6 +127,31 @@ export const SERVICES = [
         label: 'Job',
         icon: 'jobs',
         ready: false,
+      },
+    ],
+  },
+  {
+    id: SERVICE_IDS.ai,
+    label: 'AI',
+    icon: 'ai',
+    menus: [
+      {
+        to: APP_ROUTES.aiProviders,
+        label: 'Provider & API key',
+        icon: 'aiProviders',
+        ready: true,
+      },
+      {
+        to: APP_ROUTES.aiModels,
+        label: 'Model',
+        icon: 'aiModels',
+        ready: true,
+      },
+      {
+        to: APP_ROUTES.aiBindings,
+        label: 'Gán cho service',
+        icon: 'aiBindings',
+        ready: true,
       },
     ],
   },

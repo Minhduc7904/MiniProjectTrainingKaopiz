@@ -1,5 +1,9 @@
 import {
   Bell,
+  Bot,
+  Cpu,
+  KeyRound,
+  Link2,
   BookOpen,
   CalendarClock,
   GraduationCap,
@@ -39,6 +43,7 @@ const serviceIcons = {
   media: Images,
   notification: Bell,
   scheduler: CalendarClock,
+  ai: Bot,
 }
 
 const menuIcons = {
@@ -54,6 +59,9 @@ const menuIcons = {
   jobs: Timer,
   mediaJobs: ListChecks,
   mediaLibrary: Images,
+  aiProviders: KeyRound,
+  aiModels: Cpu,
+  aiBindings: Link2,
 }
 
 export function Sidebar() {

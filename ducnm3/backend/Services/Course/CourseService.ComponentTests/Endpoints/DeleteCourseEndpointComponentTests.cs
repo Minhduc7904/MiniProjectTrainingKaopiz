@@ -6,6 +6,7 @@ using CourseService.Api.Endpoints.Courses.DeleteCourse;
 using CourseService.Application;
 using CourseService.Application.Repositories;
 using CourseService.Application.Services.Media;
+using CourseService.ComponentTests.Support;
 using MediaService.Contracts.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -33,6 +34,7 @@ public sealed class DeleteCourseEndpointComponentTests
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<ICourseCommandRepository>(repository);
+        builder.Services.AddSingleton<IQuizCommandRepository>(new InMemoryQuizStore());
         builder.Services.AddSingleton<ICourseMediaReader>(new StubCourseMediaReader());
         builder.Services.AddSingleton<ICommandSender>(commandSender);
         builder.Services.AddCourseApplication();
@@ -47,6 +49,7 @@ public sealed class DeleteCourseEndpointComponentTests
     public async Task Delete_ExistingCourse_ReturnsAcceptedAndQueuesUsageCleanup()
     {
         using var request = new HttpRequestMessage(HttpMethod.Delete, ApiRoutes.Courses.ByIdServicePath(CourseId));
+        request.Headers.Add(ApiHeaderNames.ActorType, ActorHeaderTypes.Admin);
         request.Headers.Add(ApiHeaderNames.ActorId, ActorId.ToString("D"));
 
         using var response = await client.SendAsync(request, TestContext.CurrentContext.CancellationToken);

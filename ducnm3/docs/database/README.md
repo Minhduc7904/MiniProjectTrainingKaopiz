@@ -9,6 +9,7 @@ lẫn giữa các service:
 - [Media Service](media-service/data-model.md)
 - [Notification Service](notification-service/data-model.md)
 - [Scheduler Service](scheduler-service/data-model.md)
+- [AI Service](ai-service/data-model.md)
 
 Tài liệu từng service ghi bảng nghiệp vụ, kiểu cột, ràng buộc, chỉ mục, ERD và
 trạng thái `InboxState`/`OutboxState`/`OutboxMessage` nếu service đó có dùng

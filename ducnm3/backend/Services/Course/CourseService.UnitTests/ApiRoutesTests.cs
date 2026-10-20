@@ -38,4 +38,24 @@ public sealed class ApiRoutesTests
                 Is.EqualTo("/course/api/courses/11111111-1111-1111-1111-111111111111/my-progress"));
         });
     }
+
+    [Test]
+    public void QuizPathsUseServiceAndGatewayShapes()
+    {
+        var quizId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        var attemptId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                ApiRoutes.Courses.QuizByIdServicePath(CourseId, LessonId, quizId),
+                Is.EqualTo("api/courses/11111111-1111-1111-1111-111111111111/lessons/22222222-2222-2222-2222-222222222222/quizzes/33333333-3333-3333-3333-333333333333"));
+            Assert.That(
+                ApiRoutes.Courses.QuizByIdPublicPath(CourseId, LessonId, quizId),
+                Is.EqualTo("/course/api/courses/11111111-1111-1111-1111-111111111111/lessons/22222222-2222-2222-2222-222222222222/quizzes/33333333-3333-3333-3333-333333333333"));
+            Assert.That(
+                ApiRoutes.Courses.StudentQuizAttemptByIdPublicPath(CourseId, LessonId, quizId, attemptId),
+                Is.EqualTo("/course/api/student/enrollments/11111111-1111-1111-1111-111111111111/lessons/22222222-2222-2222-2222-222222222222/quizzes/33333333-3333-3333-3333-333333333333/attempts/44444444-4444-4444-4444-444444444444"));
+        });
+    }
 }

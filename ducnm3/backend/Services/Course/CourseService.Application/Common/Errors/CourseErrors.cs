@@ -23,4 +23,19 @@ public static class CourseErrors
 
     public static CourseApplicationException LessonOrderConflict() =>
         new(CourseErrorCodes.LessonOrderConflict, "Lesson displayOrder already exists.", 409);
+
+    public static CourseApplicationException QuizNotFound() =>
+        new(CourseErrorCodes.QuizNotFound, "Quiz was not found.", 404);
+
+    public static CourseApplicationException QuizHasAttempts() =>
+        new(CourseErrorCodes.QuizHasAttempts, "Quiz already has attempts; its questions can no longer be changed.", 409);
+
+    public static CourseApplicationException QuizAttemptNotFound() =>
+        new(CourseErrorCodes.QuizAttemptNotFound, "Quiz attempt was not found.", 404);
+
+    public static CourseApplicationException QuizAttemptAlreadySubmitted() =>
+        new(CourseErrorCodes.QuizAttemptAlreadySubmitted, "Quiz attempt was already submitted.", 409);
+
+    public static CourseApplicationException StudentNotEnrolled() =>
+        new(CourseErrorCodes.StudentNotEnrolled, "Student is not enrolled in this course.", 403);
 }

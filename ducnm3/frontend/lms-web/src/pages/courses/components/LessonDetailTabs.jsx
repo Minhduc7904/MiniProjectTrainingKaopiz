@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { File, FileText, Image, ImagePlus, Music2, Pencil, Trash2, Video } from 'lucide-react'
+import { File, FileText, Image, ImagePlus, ListChecks, Music2, Pencil, Trash2, Video } from 'lucide-react'
 import { RenderedMarkdown } from '@/components/markdown/RenderedMarkdown'
 import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
 import { Button } from '@/components/ui/admin/Button'
@@ -22,6 +22,7 @@ export function LessonDetailTabs({
   onDelete,
   onEdit,
   onOpenLibrary,
+  onOpenQuizzes,
   onOpenUpload,
   onPreviewMedia,
   onRemoveMedia,
@@ -41,6 +42,7 @@ export function LessonDetailTabs({
           <h3 className={`mt-1 font-display text-[20px] font-semibold ${adminUi.title}`}>{lesson.title}</h3>
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          {onOpenQuizzes ? <Button type="button" size="sm" variant="ghost" onClick={() => onOpenQuizzes(lesson.id)}><Icon icon={ListChecks} size={15} />Quiz</Button> : null}
           <Button type="button" size="sm" variant="ghost" onClick={() => onEdit(lesson.id)}><Icon icon={Pencil} size={15} />Sửa</Button>
           <Button type="button" size="sm" variant="danger" onClick={() => onDelete(lesson)}><Icon icon={Trash2} size={15} />Xóa lesson</Button>
         </div>

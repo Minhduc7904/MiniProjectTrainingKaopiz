@@ -20,8 +20,11 @@ docs/tests/
     ├── unit.md
     ├── component.md
     └── integration.md
-└── scheduler-service/
-    └── unit.md
+├── scheduler-service/
+│   └── unit.md
+└── ai-service/
+    ├── unit.md
+    └── component.md
 ```
 
 Mỗi tài liệu chỉ liệt kê kiểm thử hiện có trong mã nguồn, mục đích, dữ liệu hoặc

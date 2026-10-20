@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-service="${1:?Usage: scaffold.sh <course|student|media|notification|scheduler> [--env-file <path>]}"
+service="${1:?Usage: scaffold.sh <course|student|media|notification|scheduler|ai> [--env-file <path>]}"
 project_root="$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)"
 backend_root="$project_root/backend"
 env_file="$project_root/.env"
@@ -17,7 +17,7 @@ case "$service" in
     context_name="CourseDbContext"
     namespace="CourseService.Infrastructure.Persistence.Scaffolded"
     context_namespace="CourseService.Infrastructure.Persistence"
-    table_args="--table courses --table lessons --table enrollments --table lesson_progresses"
+    table_args="--table courses --table lessons --table enrollments --table lesson_progresses --table quizzes --table quiz_questions --table quiz_options --table quiz_attempts --table quiz_attempt_answers"
     ;;
   student)
     connection_string="$(environment_value STUDENT_DB_LOCAL_CONNECTION_STRING)"
@@ -54,6 +54,15 @@ case "$service" in
     namespace="SchedulerService.Infrastructure.Persistence.Scaffolded"
     context_namespace="SchedulerService.Infrastructure.Persistence"
     table_args="--table background_jobs --table background_job_runs"
+    ;;
+  ai)
+    connection_string="$(environment_value AI_DB_LOCAL_CONNECTION_STRING)"
+    infrastructure_project="Services/Ai/AiService.Infrastructure/AiService.Infrastructure.csproj"
+    startup_project="Services/Ai/AiService.Api/AiService.Api.csproj"
+    context_name="AiDbContext"
+    namespace="AiService.Infrastructure.Persistence.Scaffolded"
+    context_namespace="AiService.Infrastructure.Persistence"
+    table_args="--table ai_providers --table ai_models --table ai_service_bindings"
     ;;
   *)
     echo "Unknown service: $service" >&2

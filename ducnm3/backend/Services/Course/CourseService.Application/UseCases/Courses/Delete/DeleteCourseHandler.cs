@@ -9,6 +9,7 @@ namespace CourseService.Application.UseCases.Courses.Delete;
 
 public sealed class DeleteCourseHandler(
     ICourseCommandRepository repository,
+    IQuizCommandRepository quizRepository,
     ICourseMediaReader mediaReader,
     ICommandSender commandSender)
 {
@@ -25,8 +26,9 @@ public sealed class DeleteCourseHandler(
         var course = await repository.GetAsync(courseId, cancellationToken)
             ?? throw CourseErrors.CourseNotFound();
         var lessonIds = await repository.GetLessonIdsAsync(course.Id, cancellationToken);
+        var quizIds = await quizRepository.GetQuizIdsByCourseAsync(course.Id, cancellationToken);
         var usageIds = await mediaReader.GetActiveUsageIdsAsync(
-            CourseMediaUsageScopes.ForCourse(course.Id, lessonIds),
+            CourseMediaUsageScopes.ForCourse(course.Id, lessonIds, quizIds),
             cancellationToken);
 
         var deleted = await repository.DeleteAsync(course.Id, cancellationToken);

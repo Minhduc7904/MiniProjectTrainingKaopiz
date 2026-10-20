@@ -23,7 +23,7 @@ export function InputPanel({ guided, manual, actions }) {
         </p>
         <div className="flex items-center gap-2">
           {actions}
-          <Tabs tabs={TABS} value={tab} onChange={setTab} />
+          {manual ? <Tabs tabs={TABS} value={tab} onChange={setTab} /> : null}
         </div>
       </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -36,15 +36,17 @@ export function InputPanel({ guided, manual, actions }) {
         >
           {guided}
         </div>
-        <div
-          className={
-            tab === INPUT_TABS.manual
-              ? 'flex min-h-0 flex-1 flex-col overflow-hidden'
-              : 'hidden'
-          }
-        >
-          {manual}
-        </div>
+        {manual ? (
+          <div
+            className={
+              tab === INPUT_TABS.manual
+                ? 'flex min-h-0 flex-1 flex-col overflow-hidden'
+                : 'hidden'
+            }
+          >
+            {manual}
+          </div>
+        ) : null}
       </div>
     </>
   )

@@ -32,3 +32,24 @@ dotnet test backend/Services/Course/CourseService.ComponentTests/CourseService.C
 | `Delete_ExistingCourse_ReturnsAcceptedAndQueuesUsageCleanup` | `DELETE /course/api/courses/{courseId}` với admin actor và các boundary double. | Trả `202` body rỗng, Course bị xóa và command dọn usage được gửi sau đó. |
 | `ExportCoursesEndpointComponentTests` | `GET /course/api/courses/export` với status hợp lệ/sai. | CSV có UTF-8 BOM, attachment/no-store và escaping đúng; status sai trả JSON `400` trước stream. |
 | `StudentLearningEndpointsComponentTests` | GET list enrollment/catalog (bao gồm `search` tên Course), Student lesson detail và GET progress với actor không hợp lệ. | List trả `200`, catalog trim `search`, offset envelope, thumbnail, `no-store`; Student lesson detail trả envelope có attachment/content HTML; Admin bị `403 FORBIDDEN`. |
+
+## Quiz (`QuizEndpointsComponentTests`)
+
+Dùng `TestServer`, kho Quiz trong bộ nhớ dùng chung cho cổng admin và học viên, và `ICommandSender` ghi lại.
+
+| Kiểm thử | Request | Đạt khi |
+| --- | --- | --- |
+| `Create_ValidQuiz_ReturnsCreatedWithRenderedHtmlTotalPointsAndLocation` | `POST …/quizzes` actor ADMIN với 2 câu (chọn 1, chọn nhiều). | `201`, có `Location`, `totalPoints = 5`, `descriptionHtml` có `<strong>`, đáp án đúng được trả cho Admin. |
+| `Create_InvalidQuiz_ReturnsValidationFailedWithFieldDetails` | Tiêu đề rỗng, xuất bản không có câu. | `400 VALIDATION_FAILED`, không ghi Quiz. |
+| `Create_AsStudent_ReturnsForbidden` / `Create_UnknownLesson_ReturnsNotFound` | Actor STUDENT; Lesson lạ. | `403`; `404 LESSON_NOT_FOUND`. |
+| `List_…`, `Detail_UnknownQuiz_ReturnsNotFound` | `GET` danh sách và chi tiết. | Tóm tắt có `questionCount`/`totalPoints`; Quiz lạ trả `404 QUIZ_NOT_FOUND`. |
+| `Update_MetadataOnly_KeepsQuestions` / `Update_ReplacingQuestionsAfterAttempt_ReturnsConflict` | `PUT` không có `questions`; `PUT` thay câu hỏi sau khi có bài làm. | `200` giữ nguyên cây; `409 QUIZ_HAS_ATTEMPTS`. |
+| `Delete_ExistingQuiz_ReturnsAcceptedAndRemovesIt` | `DELETE`. | `202`, Quiz bị xóa. |
+| `StudentDetail_NeverExposesCorrectAnswersOrMarkdownSource` | `GET` đề thi bằng actor STUDENT. | `200`, `no-store`, response không chứa `isCorrect` hay `*Markdown`. |
+| `StudentDetail_DraftQuiz_ReturnsNotFound` / `Student_NotEnrolled_ReturnsForbidden` | Quiz `DRAFT`; học viên chưa ghi danh. | `404`; `403 STUDENT_NOT_ENROLLED`. |
+| `Student_FullFlow_StartSaveResumeSubmitRetake` | Start → lưu nháp → Start lại → nộp → Start → danh sách. | `201`, `200` cùng attempt với đáp án đã lưu, điểm `5/5` đúng luật, lần mới `201` với id khác, lịch sử có 2 lần. |
+| `Submit_Twice_ReturnsConflict`, `SaveAnswers_ForeignOption_ReturnsValidationFailed` | Nộp hai lần; lưu lựa chọn không thuộc câu. | `409 QUIZ_ATTEMPT_ALREADY_SUBMITTED`; `400`. |
+| `AttemptDetail_OfAnotherStudent_ReturnsNotFound` | Học viên khác đã ghi danh đọc attempt. | `404 QUIZ_ATTEMPT_NOT_FOUND`. |
+
+`CreateCourseEndpointComponentTests` và `DeleteCourseEndpointComponentTests` gửi thêm `X-Actor-Type: ADMIN`; `DeleteCourseEndpointComponentTests` đăng ký thêm kho Quiz.
+

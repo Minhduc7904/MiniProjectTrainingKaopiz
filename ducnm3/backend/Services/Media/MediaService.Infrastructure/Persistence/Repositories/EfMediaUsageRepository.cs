@@ -298,7 +298,7 @@ public sealed class EfMediaUsageRepository(
         }
 
         var usages = await dbContext.MediaUsages
-            .Where(item => distinctUsageIds.Contains(item.Id) && item.DeletedAt == null)
+            .Where(item => Enumerable.Contains(distinctUsageIds, item.Id) && item.DeletedAt == null)
             .ToListAsync(cancellationToken);
         if (usages.Count == 0)
         {
@@ -313,8 +313,8 @@ public sealed class EfMediaUsageRepository(
 
         var mediaIds = usages.Select(item => item.MediaId).Distinct().ToArray();
         var mediaIdsWithOtherActiveUsage = await dbContext.MediaUsages.AsNoTracking()
-            .Where(item => mediaIds.Contains(item.MediaId) && item.DeletedAt == null &&
-                !distinctUsageIds.Contains(item.Id))
+            .Where(item => Enumerable.Contains(mediaIds, item.MediaId) && item.DeletedAt == null &&
+                !Enumerable.Contains(distinctUsageIds, item.Id))
             .Select(item => item.MediaId)
             .Distinct()
             .ToListAsync(cancellationToken);
@@ -322,7 +322,7 @@ public sealed class EfMediaUsageRepository(
         if (orphanedMediaIds.Length > 0)
         {
             var media = await dbContext.MediaObjects
-                .Where(item => orphanedMediaIds.Contains(item.Id) && item.DeletedAt == null)
+                .Where(item => Enumerable.Contains(orphanedMediaIds, item.Id) && item.DeletedAt == null)
                 .ToListAsync(cancellationToken);
             foreach (var item in media)
             {

@@ -9,9 +9,13 @@ import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage'
 import { StudentsPage } from '@/pages/students/StudentsPage'
 import { CourseExportPage } from '@/pages/courses/CourseExportPage'
 import { CourseDetailPage, CoursesPage } from '@/pages/courses/CourseDetailPage'
+import { QuizManagePage } from '@/pages/courses/quiz/QuizManagePage'
 import { NotificationBatchCreatePage } from '@/pages/notifications/NotificationBatchCreatePage'
 import { NotificationBatchProgressPage } from '@/pages/notifications/NotificationBatchProgressPage'
 import { NotificationBatchListPage } from '@/pages/notifications/NotificationBatchListPage'
+import { AiProvidersPage } from '@/pages/ai/AiProvidersPage'
+import { AiModelsPage } from '@/pages/ai/AiModelsPage'
+import { AiBindingsPage } from '@/pages/ai/AiBindingsPage'
 import { StudentRouteGuard } from '@/auth/StudentRouteGuard'
 import { AdminDashboardPage } from '@/pages/dashboard/AdminDashboardPage'
 import { StudentCourseDetailPage, StudentCourseLearnPage, StudentCoursesPage, StudentHomePage, StudentLoadingPage, StudentLoginPage, StudentLogoutPage, StudentProfilePage, StudentRegisterPage } from '@/pages/student-auth/StudentAuthPages'
@@ -29,6 +33,7 @@ export function AppRouter() {
         <Route path={APP_ROUTES.students} element={<StudentsPage />} />
         <Route path={APP_ROUTES.courses} element={<CoursesPage />} />
         <Route path={APP_ROUTES.courseDetails} element={<CourseDetailPage />} />
+        <Route path={APP_ROUTES.courseLessonQuizzes} element={<QuizManagePage />} />
         <Route path={APP_ROUTES.courseExport} element={<CourseExportPage />} />
         <Route path={APP_ROUTES.mediaLibrary} element={<MediaLibraryPage />} />
         <Route path={APP_ROUTES.mediaUpload} element={<MediaUploadPage />} />
@@ -39,6 +44,9 @@ export function AppRouter() {
         <Route path={APP_ROUTES.notificationProgress} element={<NotificationBatchProgressPage />} />
         <Route path={APP_ROUTES.notificationProgressDetail} element={<NotificationBatchProgressPage />} />
         <Route path={APP_ROUTES.schedulerJobs} element={<PlaceholderPage />} />
+        <Route path={APP_ROUTES.aiProviders} element={<AiProvidersPage />} />
+        <Route path={APP_ROUTES.aiModels} element={<AiModelsPage />} />
+        <Route path={APP_ROUTES.aiBindings} element={<AiBindingsPage />} />
       </Route>
       <Route path={APP_ROUTES.studentRegister} element={<StudentRegisterPage />} />
       <Route path={APP_ROUTES.studentLogin} element={<StudentLoginPage />} />

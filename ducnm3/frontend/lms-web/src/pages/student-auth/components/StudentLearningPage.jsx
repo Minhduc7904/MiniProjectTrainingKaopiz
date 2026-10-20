@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Circle, FileText } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Circle, FileText, ListChecks } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,7 +7,11 @@ import { RenderedMarkdown } from '@/components/markdown/RenderedMarkdown'
 import { StudentCourseThumbnail } from '@/components/ui/student'
 import { APP_ROUTES } from '@/constants/appRoutes'
 import { completeStudentLesson, fetchStudentEnrollmentDetail, fetchStudentLessonDetail } from '@/features/studentLearning/studentLearningSlice'
+import { useStudentLessonQuizzes } from '@/hooks/quizzes/useStudentQuizData'
 import { studentUi } from '@/theme/student'
+import { LessonQuizCard } from './quiz/LessonQuizCard'
+import { quizStatusOf } from './quiz/quizStatus'
+import { StudentQuizPanel } from './quiz/StudentQuizPanel'
 import { StudentLessonMediaPreview } from './StudentLessonMediaPreview'
 
 function completed(lesson) {
@@ -28,6 +32,8 @@ export function StudentLearningPage() {
   const currentLesson = lessons[lessonIndex]
   const attachments = lessonRequest.data?.attachments ?? []
   const activeMedia = attachments.find((item) => item.usageId === activeMediaId) ?? null
+  const { quizzes, reload: reloadQuizzes } = useStudentLessonQuizzes(courseId, lessonId)
+  const activeQuizId = activeMediaId.startsWith('quiz:') ? activeMediaId.slice('quiz:'.length) : null
   const completedLessons = lessons.filter(completed).length
   const progressPercent = lessons.length ? Math.round((completedLessons * 10000) / lessons.length) / 100 : 0
 
@@ -58,15 +64,17 @@ export function StudentLearningPage() {
 
       <section className={studentUi.learningContent} aria-label="Nội dung bài học">
         <div className="mx-auto min-h-full w-full max-w-5xl p-5 sm:p-8 lg:p-12">
-          {lessonRequest.loading ? <p className={studentUi.body}>Đang tải nội dung bài học...</p> : null}
-          {lessonRequest.error ? <p className={studentUi.error}>{lessonRequest.error.message}</p> : null}
-          {!lessonRequest.loading && !lessonRequest.error && activeMediaId === 'content' && lessonRequest.data ? <article><p className={studentUi.eyebrow}>Bài {lessonRequest.data.displayOrder}</p><h1 className={`mt-2 ${studentUi.title}`}>{lessonRequest.data.title}</h1><RenderedMarkdown className={`mt-8 ${studentUi.learningMarkdown}`} html={lessonRequest.data.contentHtml} emptyLabel="Bài học chưa có nội dung." />{currentLesson ? <div className="mt-10 border-t border-student-line pt-6"><button type="button" disabled={completion.loading || completed(currentLesson)} onClick={() => void dispatch(completeStudentLesson({ courseId, lessonId }))} className={`student-press inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-2xl px-4 font-bold outline-none focus-visible:ring-4 focus-visible:ring-student-primary/20 disabled:cursor-not-allowed disabled:opacity-55 ${studentUi.buttonPrimary}`}><CheckCircle2 size={18} />{completed(currentLesson) ? 'Đã hoàn thành' : completion.loading ? 'Đang lưu...' : 'Hoàn thành bài học'}</button>{completion.error ? <p className={`mt-3 ${studentUi.error}`}>{completion.error.message}</p> : null}</div> : null}</article> : null}
-          {!lessonRequest.loading && !lessonRequest.error && activeMedia ? <StudentLessonMediaPreview media={activeMedia} /> : null}
+          {!activeQuizId && lessonRequest.loading ? <p className={studentUi.body}>Đang tải nội dung bài học...</p> : null}
+          {!activeQuizId && lessonRequest.error ? <p className={studentUi.error}>{lessonRequest.error.message}</p> : null}
+          {activeQuizId ? <StudentQuizPanel key={activeQuizId} courseId={courseId} lessonId={lessonId} quizId={activeQuizId} onChanged={reloadQuizzes} onNextLesson={lessonIndex >= 0 && lessonIndex < lessons.length - 1 ? goNext : null} /> : null}
+          {!activeQuizId && !lessonRequest.loading && !lessonRequest.error && activeMediaId === 'content' && lessonRequest.data ? <article><p className={studentUi.eyebrow}>Bài {lessonRequest.data.displayOrder}</p><h1 className={`mt-2 ${studentUi.title}`}>{lessonRequest.data.title}</h1><RenderedMarkdown className={`mt-8 ${studentUi.learningMarkdown}`} html={lessonRequest.data.contentHtml} emptyLabel="Bài học chưa có nội dung." />{currentLesson ? <div className="mt-10 border-t border-student-line pt-6"><button type="button" disabled={completion.loading || completed(currentLesson)} onClick={() => void dispatch(completeStudentLesson({ courseId, lessonId }))} className={`student-press inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-2xl px-4 font-bold outline-none focus-visible:ring-4 focus-visible:ring-student-primary/20 disabled:cursor-not-allowed disabled:opacity-55 ${studentUi.buttonPrimary}`}><CheckCircle2 size={18} />{completed(currentLesson) ? 'Đã hoàn thành' : completion.loading ? 'Đang lưu...' : 'Hoàn thành bài học'}</button>{completion.error ? <p className={`mt-3 ${studentUi.error}`}>{completion.error.message}</p> : null}</div> : null}<LessonQuizCard quizzes={quizzes} onOpen={(quizId) => setActiveMediaId(`quiz:${quizId}`)} /></article> : null}
+          {!activeQuizId && !lessonRequest.loading && !lessonRequest.error && activeMedia ? <StudentLessonMediaPreview media={activeMedia} /> : null}
         </div>
       </section>
 
       <aside className={studentUi.learningRail} aria-label="Media bài học">
         <button type="button" aria-label="Nội dung" aria-pressed={activeMediaId === 'content'} onClick={() => setActiveMediaId('content')} className={`${studentUi.learningRailButton} ${activeMediaId === 'content' ? studentUi.learningRailButtonActive : ''}`}><FileText size={22} /><span>Nội dung</span></button>
+        {quizzes.map((quiz) => { const selected = activeMediaId === `quiz:${quiz.id}`; return <button key={quiz.id} type="button" aria-label={`Làm quiz ${quiz.title}`} aria-pressed={selected} onClick={() => setActiveMediaId(`quiz:${quiz.id}`)} className={`${studentUi.learningRailButton} mt-2 ${selected ? studentUi.learningRailButtonActive : ''}`}><span className="relative grid h-12 w-full place-items-center rounded-xl bg-student-primary/10 text-student-primary"><ListChecks size={22} />{quiz.inProgressAttemptId ? <span aria-hidden="true" className="absolute top-1 right-1 size-2.5 rounded-full bg-student-bookmark" /> : quiz.submittedAttempts > 0 ? <span aria-hidden="true" className="absolute top-1 right-1 size-2.5 rounded-full bg-student-complete" /> : null}</span><span className="line-clamp-2" title={quizStatusOf(quiz).label}>{quiz.title}</span></button> })}
         {attachments.map((media) => { const MediaIcon = getMediaTypeIcon(media.mediaType); const selected = activeMediaId === media.usageId; return <button key={media.usageId} type="button" aria-label={`Xem ${media.originalFileName}`} aria-pressed={selected} onClick={() => setActiveMediaId(media.usageId)} className={`${studentUi.learningRailButton} mt-2 ${selected ? studentUi.learningRailButtonActive : ''}`}>{media.thumbnailUrl ? <span className="h-12 w-full overflow-hidden rounded-xl"><StudentCourseThumbnail className="rounded-xl" alt="" contentUrl={media.thumbnailUrl} /></span> : <span className="grid h-12 w-full place-items-center rounded-xl bg-student-surface-muted"><MediaIcon size={22} /></span>}<span className="line-clamp-2">{media.originalFileName || media.mediaType}</span></button> })}
       </aside>
     </div>

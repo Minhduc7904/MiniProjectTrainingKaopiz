@@ -8,6 +8,7 @@ import { StudentLearningPage } from './StudentLearningPage'
 import { studentLearningReducer } from '@/features/studentLearning/studentLearningSlice'
 import { fetchStudentEnrollmentDetailRequest, fetchStudentLessonDetailRequest } from '@/api/studentLearningApi'
 
+vi.mock('@/api/studentQuizApi', () => ({ fetchStudentQuizzesRequest: vi.fn().mockResolvedValue({ data: [], meta: {} }) }))
 vi.mock('@/api/studentLearningApi', () => ({
   completeStudentLessonRequest: vi.fn().mockResolvedValue({ data: { lessonId: 'lesson-1', progressPercent: 100, completedAtUtc: '2026-08-22T00:00:00Z' }, meta: { traceId: 'trace-complete' } }),
   fetchStudentEnrollmentDetailRequest: vi.fn(),

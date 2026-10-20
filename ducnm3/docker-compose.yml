@@ -59,6 +59,9 @@ services:
       SCHEDULER_DB_NAME: ${SCHEDULER_DB_NAME:?SCHEDULER_DB_NAME must be set}
       SCHEDULER_DB_USER: ${SCHEDULER_DB_USER:?SCHEDULER_DB_USER must be set}
       SCHEDULER_DB_PASSWORD: ${SCHEDULER_DB_PASSWORD:?SCHEDULER_DB_PASSWORD must be set}
+      AI_DB_NAME: ${AI_DB_NAME:?AI_DB_NAME must be set}
+      AI_DB_USER: ${AI_DB_USER:?AI_DB_USER must be set}
+      AI_DB_PASSWORD: ${AI_DB_PASSWORD:?AI_DB_PASSWORD must be set}
     volumes:
       - ./scripts/database/bootstrap/init-databases.sh:/bootstrap/init-databases.sh:ro
     entrypoint: ["/bin/sh", "/bootstrap/init-databases.sh"]
@@ -94,8 +97,8 @@ services:
       - seq-data:/data
 
   minio:
-    image: quay.io/minio/minio:latest
-    command: server /data --console-address ":9001"
+    image: bitnamilegacy/minio:latest
+    command: ["minio", "server", "/bitnami/minio/data", "--console-address", ":9001"]
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
@@ -109,10 +112,10 @@ services:
       retries: 20
       start_period: 10s
     volumes:
-      - minio-data:/data
+      - minio-data:/bitnami/minio/data
 
   minio-init:
-    image: quay.io/minio/mc:latest
+    image: bitnamilegacy/minio-client:latest
     depends_on:
       minio:
         condition: service_healthy
@@ -388,6 +391,28 @@ services:
       COURSE_DB_CONNECTION_STRING: ${COURSE_DB_CONNECTION_STRING:?COURSE_DB_CONNECTION_STRING must be set}
     restart: "no"
 
+  ai-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PROJECT_PATH: Services/Ai/AiService.Api/AiService.Api.csproj
+    command: AiService.Api.dll
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      <<: [*messaging-environment, *observability-environment]
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      Swagger__Enabled: ${Swagger__Enabled:-true}
+      ConnectionStrings__Database: ${AI_DB_CONNECTION_STRING:?AI_DB_CONNECTION_STRING must be set}
+      Ai__Encryption__Key: ${AI_ENCRYPTION_KEY:?AI_ENCRYPTION_KEY must be set}
+    ports:
+      - "5107:8080"
+
   api-gateway:
     build:
       context: ./backend
@@ -406,6 +431,7 @@ services:
       ServiceEndpoints__notification-service: http://notification-service:8080/
       ServiceEndpoints__scheduler-service: http://scheduler-service:8080/
       ServiceEndpoints__admin-service: http://admin-service:8080/
+      ServiceEndpoints__ai-service: http://ai-service:8080/
       Proxy__MaxRequestBodySize: ${MEDIA_UPLOAD_REQUEST_MAX_BYTES:-550502400}
       Cors__AllowedOrigins__0: ${GATEWAY_CORS_LOCAL_ORIGIN:?GATEWAY_CORS_LOCAL_ORIGIN must be set}
       Cors__AllowedOrigins__1: ${GATEWAY_CORS_LOOPBACK_ORIGIN:?GATEWAY_CORS_LOOPBACK_ORIGIN must be set}

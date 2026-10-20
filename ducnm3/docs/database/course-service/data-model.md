@@ -75,6 +75,50 @@ Lesson. `chk_lesson_progresses_progress_percent` giới hạn `0..100`;
 `ix_lesson_progresses_student_id_updated_at(student_id, updated_at DESC)` phục
 vụ trang tiến độ gần đây.
 
+## Quiz trắc nghiệm (`V002__create_quiz_tables.sql`)
+
+Quan hệ: `lessons` 1–N `quizzes` 1–N `quiz_questions` 1–N `quiz_options`; `quizzes` 1–N `quiz_attempts` 1–N `quiz_attempt_answers`. Mọi FK nội bộ dùng `ON DELETE CASCADE` nên xóa Lesson/Course kéo theo Quiz và bài làm (Course Service phải tự báo Media dọn usage vì FK không báo được). `student_id` là logical reference, không có FK xuyên database.
+
+### `quizzes`
+
+| Cột | Kiểu / null / mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `id` | `CHAR(36)`, PK | UUID Quiz. |
+| `lesson_id` | `CHAR(36)`, `NOT NULL`, FK | `lessons.id`. |
+| `title` | `VARCHAR(200)`, `NOT NULL` | Tiêu đề. |
+| `description_markdown` | `MEDIUMTEXT`, `NULL` | Mô tả Markdown, server render HTML đã sanitize. |
+| `display_order` | `INT UNSIGNED`, `NOT NULL` | Thứ tự trong Lesson; `uq(lesson_id, display_order)`. |
+| `status` | `VARCHAR(20)`, `NOT NULL` | `DRAFT` hoặc `PUBLISHED` (`chk_quizzes_status`); Student chỉ thấy `PUBLISHED`. |
+| `created_at`, `updated_at` | `DATETIME(6)` | UTC. |
+
+### `quiz_questions`
+
+`question_markdown` (`MEDIUMTEXT`, bắt buộc), `question_type` (`SINGLE_CHOICE` | `MULTIPLE_CHOICE`), `points` (`DECIMAL(6,2)`, CHECK `> 0` và `<= 100`), `display_order` với `uq(quiz_id, display_order)`. Tổng điểm Quiz không lưu cột mà tính `SUM(points)` khi đọc để không lệch dữ liệu.
+
+### `quiz_options`
+
+`option_markdown` (`TEXT`, bắt buộc), `is_correct` (`TINYINT(1)`), `display_order` với `uq(question_id, display_order)`.
+
+### `quiz_attempts`
+
+| Cột | Ý nghĩa |
+| --- | --- |
+| `student_id` | UUID Student (logical reference). |
+| `status` | `IN_PROGRESS` hoặc `SUBMITTED`. |
+| `started_at`, `updated_at`, `submitted_at` | UTC; `submitted_at` chỉ có khi đã nộp. |
+| `score`, `max_score` | `DECIMAL(8,2)`, `NULL` cho đến khi nộp; `max_score` là snapshot tổng điểm lúc nộp. CHECK bảo đảm nhất quán với `status`. |
+| `open_marker` | Cột sinh `STORED`: `IF(status = 'IN_PROGRESS', student_id, NULL)`. |
+
+`uq(quiz_id, open_marker)` thay cho partial unique index (MySQL không có): mỗi học viên chỉ có tối đa một lần `IN_PROGRESS` trên mỗi Quiz, còn lần `SUBMITTED` không giới hạn (làm lại). Chỉ mục `(quiz_id, student_id, started_at DESC)` phục vụ lịch sử.
+
+### `quiz_attempt_answers`
+
+Mỗi dòng là một lựa chọn học viên đang chọn: `id` (PK), `attempt_id`, `question_id`, `selected_option_id` (đều FK cascade), `uq(attempt_id, question_id, selected_option_id)`. Khi `IN_PROGRESS` là bản nháp; khi `SUBMITTED` là đáp án chính thức, bất biến.
+
+### Media usage của Quiz
+
+Markdown của mô tả, câu hỏi và lựa chọn dùng cùng pipeline với Lesson. Usage được đồng bộ với owner `COURSE` / `QUIZ_CONTENT` / `quiz_id` (tập tham chiếu là hợp của mọi Markdown trong Quiz). Media Service cho phép owner này bằng migration Media `V011`.
+
 ## Chỉ mục cho yêu cầu hiệu năng
 
 | Use case | Chỉ mục | Trạng thái |
@@ -91,7 +135,7 @@ database vừa publish `CoursePublishedV1`, phải thêm `OutboxState` và
 
 ## Seed và migration
 
-`V001__create_learning_tables.sql` là migration nguồn sự thật. Seeder tạo 100k
+`V001__create_learning_tables.sql` và `V002__create_quiz_tables.sql` là migration nguồn sự thật. Seeder tạo 100k
 Course, 1–5 Lesson/Course và Enrollment sử dụng `student_id` xác định được từ
 Student seed; không seed `lesson_progresses`. Seed không thuộc migration và
 không ghi `schema_migrations`.

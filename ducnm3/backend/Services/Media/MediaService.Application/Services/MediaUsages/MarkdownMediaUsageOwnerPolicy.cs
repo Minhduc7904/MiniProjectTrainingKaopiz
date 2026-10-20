@@ -12,7 +12,7 @@ public static class MarkdownMediaUsageOwnerPolicy
     public static void Validate(string ownerService, string ownerType)
     {
         if (ownerService != MediaOwnerServices.Course ||
-            ownerType is not (MediaOwnerTypes.CourseDescription or MediaOwnerTypes.LessonContent))
+            ownerType is not (MediaOwnerTypes.CourseDescription or MediaOwnerTypes.LessonContent or MediaOwnerTypes.QuizContent))
         {
             throw MediaErrors.InvalidMedia("The Markdown media usage owner is not supported.");
         }

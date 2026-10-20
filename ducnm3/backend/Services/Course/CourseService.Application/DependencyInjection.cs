@@ -15,6 +15,12 @@ using CourseService.Application.Services.Content;
 using CourseService.Application.UseCases.Courses.Delete;
 using CourseService.Application.UseCases.Lessons.Delete;
 using CourseService.Application.UseCases.Learning;
+using CourseService.Application.UseCases.Learning.Quizzes;
+using CourseService.Application.UseCases.Quizzes.Create;
+using CourseService.Application.UseCases.Quizzes.Delete;
+using CourseService.Application.UseCases.Quizzes.GetDetail;
+using CourseService.Application.UseCases.Quizzes.GetList;
+using CourseService.Application.UseCases.Quizzes.Update;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CourseService.Application;
@@ -44,6 +50,19 @@ public static class DependencyInjection
         services.AddScoped<GetStudentEnrollmentDetailHandler>();
         services.AddScoped<GetStudentLessonDetailHandler>();
         services.AddScoped<GetMyCourseProgressHandler>();
+        services.AddScoped<CreateQuizHandler>();
+        services.AddScoped<UpdateQuizHandler>();
+        services.AddScoped<DeleteQuizHandler>();
+        services.AddScoped<GetQuizDetailHandler>();
+        services.AddScoped<GetQuizzesHandler>();
+        services.AddScoped<StudentQuizAccess>();
+        services.AddScoped<GetStudentQuizzesHandler>();
+        services.AddScoped<GetStudentQuizDetailHandler>();
+        services.AddScoped<StartQuizAttemptHandler>();
+        services.AddScoped<SaveQuizAnswersHandler>();
+        services.AddScoped<SubmitQuizAttemptHandler>();
+        services.AddScoped<GetQuizAttemptsHandler>();
+        services.AddScoped<GetQuizAttemptDetailHandler>();
         return services;
     }
 }

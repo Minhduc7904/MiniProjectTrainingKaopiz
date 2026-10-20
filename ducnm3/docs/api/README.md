@@ -21,7 +21,10 @@ api/
 ├── notification-service/
 │   ├── README.md
 │   └── endpoints/
-└── scheduler-service/
+├── scheduler-service/
+│   ├── README.md
+│   └── endpoints/
+└── ai-service/
     ├── README.md
     └── endpoints/
 ```

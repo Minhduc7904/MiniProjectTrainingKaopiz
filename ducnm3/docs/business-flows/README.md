@@ -9,7 +9,8 @@ và API doc phải liên kết qua lại.
 business-flows/
 ├── course-learning/
 │   ├── course-management.md
-│   └── enrollment-and-learning-progress.md
+│   ├── enrollment-and-learning-progress.md
+│   └── quiz-authoring-and-taking.md
 ├── media/
 │   ├── post-media.md
 │   ├── post-media-usages.md
@@ -22,14 +23,17 @@ business-flows/
 │   ├── get-notification-by-id.md
 │   ├── bulk-notification.md
 │   └── notification-media-content.md
-└── scheduler/
-    └── media-cleanup.md
+├── scheduler/
+│   └── media-cleanup.md
+└── ai/
+    └── <method>-<resource>.md
 ```
 
-- `course-learning/`: quản lý Khóa học/Bài học, ghi danh và tiến độ học.
+- `course-learning/`: quản lý Khóa học/Bài học, ghi danh, tiến độ học và Quiz trắc nghiệm.
 - `media/`: tải media lên, tạo lượt sử dụng và nhúng media vào Markdown.
 - `students/`: query và quản lý Học viên.
 - `notifications/`: gửi đơn lẻ, gửi hàng loạt, hộp thư đến và Markdown có media.
+- `ai/`: cấu hình AI (provider, model, gán cho service) do Admin quản lý.
 - `scheduler/`: luồng chạy nền dùng chung dự kiến; hiện chỉ có phần nền tảng, chưa có phần thực thi.
 
 Khi thêm endpoint mới, sao chép

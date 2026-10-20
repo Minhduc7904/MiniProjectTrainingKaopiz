@@ -72,7 +72,7 @@ Direct flow dùng staging object, kiểm tra ETag rồi promotion sang unique fi
 `(status, updated_at)`, `(job_type, subject_type, subject_id)`, correlation,
 `(updated_at DESC, id DESC)` và `(job_type, status, updated_at DESC, id DESC)`
 phục vụ retry và danh sách vận hành ổn định. Migration V009 thay hai bảng job cũ;
-V010 bổ sung index cho `GET /api/media/jobs`.
+V010 bổ sung index cho `GET /api/media/jobs`. V011 nới `chk_media_usages_owner_type` để cho phép owner `QUIZ_CONTENT` (ảnh nhúng trong Markdown của Quiz do Course Service quản lý).
 
 `MARKDOWN_USAGE_SYNC` dùng `subject_type` là Markdown owner type và `subject_id`
 là owner ID; `MEDIA_USAGE_DELETE` dùng `MEDIA_USAGE_BATCH` cùng Job ID làm
@@ -86,7 +86,7 @@ quản trị job phân biệt được completion và fault sau retry.
 | `id` | `CHAR(36)`, PK | UUID usage. |
 | `media_id` | `CHAR(36)`, `NOT NULL`, FK | `media_objects.id`, `ON DELETE RESTRICT`. |
 | `owner_service` | `VARCHAR(20)`, `NOT NULL` | `COURSE`, `NOTIFICATION`, `STUDENT`, `MEDIA`. |
-| `owner_type` | `VARCHAR(30)`, `NOT NULL` | `COURSE_THUMBNAIL`, `COURSE_DESCRIPTION`, `LESSON_CONTENT`, `NOTIFICATION_BODY`, `STUDENT_AVATAR`, `MEDIA_THUMBNAIL`. |
+| `owner_type` | `VARCHAR(30)`, `NOT NULL` | `COURSE_THUMBNAIL`, `COURSE_DESCRIPTION`, `LESSON_CONTENT`, `QUIZ_CONTENT`, `NOTIFICATION_BODY`, `STUDENT_AVATAR`, `MEDIA_THUMBNAIL`. |
 | `owner_id` | `CHAR(36)`, `NOT NULL` | ID owner; logical reference nếu ngoài Media. |
 | `usage_type` | `VARCHAR(20)`, `NOT NULL` | `THUMBNAIL`, `EMBED`, `ATTACHMENT`, `AVATAR`. |
 | `display_order` | `INT UNSIGNED`, `NOT NULL`, `0` | Vị trí render. |

@@ -75,6 +75,7 @@ public static class ServiceNames
     public const string Media = "media-service";
     public const string Notification = "notification-service";
     public const string Scheduler = "scheduler-service";
+    public const string Ai = "ai-service";
     public const string Gateway = "lms-api-gateway";
 }
 
@@ -87,6 +88,7 @@ public static class GatewayRoutePrefixes
     public const string Media = "/media";
     public const string Notification = "/notification";
     public const string Scheduler = "/scheduler";
+    public const string Ai = "/ai";
 }
 
 /// <summary>Tên các section cấu hình hạ tầng được BuildingBlocks đọc.</summary>
