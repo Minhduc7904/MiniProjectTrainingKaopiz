@@ -26,6 +26,35 @@ flowchart LR
 thư viện còn lại. Ba project test chỉ kiểm tra boundary, không được tham chiếu
 từ runtime.
 
+## Cấu trúc thư mục
+
+```text
+backend/BuildingBlocks/
+├── BuildingBlocks.Contracts/
+│   ├── Api/                        # Route, header, response contract dùng chung
+│   ├── Health/                     # Health response contract
+│   └── Students/                   # Contract query Student liên service
+├── BuildingBlocks.DatabaseMigration/ # SQL migration runner và schema history
+├── BuildingBlocks.Http/            # Typed HTTP client, correlation, resilience
+├── BuildingBlocks.Messaging.Abstractions/ # ICommand/IEvent và sender abstraction
+├── BuildingBlocks.Messaging/       # MassTransit/RabbitMQ adapter
+├── BuildingBlocks.Presentation/
+│   ├── Api/                        # Response factory
+│   ├── Cors/                       # CORS policy
+│   ├── Extensions/                 # DI/endpoint registration
+│   └── Middleware/                 # Error/correlation/request pipeline
+├── BuildingBlocks.Shared/          # Primitive/helper không mang business rule
+├── BuildingBlocks.Communication.UnitTests/
+├── BuildingBlocks.Messaging.IntegrationTests/
+└── BuildingBlocks.Presentation.Tests/
+    ├── Endpoints/
+    ├── Gateway/
+    └── Middleware/
+```
+
+Tên project thể hiện dependency boundary; không tạo một project tổng hợp
+`BuildingBlocks` và không đặt Domain model của service vào thư mục này.
+
 ## Tài liệu theo nhóm
 
 - [Contracts](details/contracts.md)

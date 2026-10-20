@@ -10,6 +10,34 @@ flowchart LR
   App --> Infra[Infrastructure] --> Db[(Student database)]
 ~~~
 
+## Cấu trúc thư mục
+
+```text
+backend/Services/Student/
+├── StudentService.Api/
+│   └── Endpoints/                  # GET list/detail và health mapping
+├── StudentService.Application/
+│   └── Features/
+│       └── Students/
+│           ├── GetById/
+│           └── GetList/
+├── StudentService.Domain/          # Student model và trạng thái
+├── StudentService.Infrastructure/
+│   ├── Database/
+│   │   └── Migrations/
+│   ├── Health/
+│   └── Persistence/
+│       └── Scaffolded/
+├── StudentService.UnitTests/
+├── StudentService.ComponentTests/
+│   └── Endpoints/
+└── StudentService.IntegrationTests/
+    └── Persistence/
+```
+
+Feature folder nằm trong Application; API chỉ bind/map request, còn
+Infrastructure implement persistence và database boundary.
+
 ## Các tầng
 
 - **Domain:** model Student và trạng thái.
