@@ -17,3 +17,12 @@ Phase 4.
 > [!NOTE]
 > Phase 3 mô tả hệ thống **phải làm gì**. API, database, sequence chi tiết và
 > testcase bước-đến-bước thuộc Phase 4 — Design + Testcase.
+
+
+> [!NOTE]
+> Tài liệu chỉ khẳng định capability có evidence trong repository; benchmark,
+> Course CRUD và Scheduler execution được đánh dấu Planned khi chưa có runtime
+> evidence.
+>
+> G1 chỉ được coi là Approved sau khi Lead review và sign-off checklist trong
+> Phase 2; việc hoàn thiện artefact không tự động thay thế approval.
