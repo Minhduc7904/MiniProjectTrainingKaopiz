@@ -28,3 +28,7 @@ Swagger của service nằm trong Swagger tổng của Gateway (`ai-service`).
 ## Seed/reset
 
 `lms_ai_db` không nằm trong `reset-databases.sh`, `restore-seed-from-backup.sh`, `backup-runtime-to-seed.sh`: đó là cấu hình mã hóa, không phải dữ liệu mẫu. Reset thủ công bằng cách drop/tạo lại database rồi để migration chạy lại, và nhập lại API key.
+
+## Kiểm tra kết nối provider
+
+`POST /ai/api/ai/providers/health-checks` (tất cả) và `POST /ai/api/ai/providers/{providerId}/health-check` (một provider) gọi thử `GET {baseUrl}/models` bằng API key đã lưu, timeout 6 giây. Trang **AI provider** và **Dashboard** gọi endpoint đầu tiên mỗi lần mở trang. Kết quả `AUTH_FAILED` nghĩa là key bị từ chối (nhập lại key), `UNREACHABLE` nghĩa là container `ai-service` không ra được tới base URL (kiểm tra DNS/mạng/proxy); kết quả không được lưu vào database.

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
+  fetchAiProvidersHealthRequest,
   fetchCoursesSummaryRequest,
   fetchHealthRequest,
   fetchMediaSummaryRequest,
@@ -20,6 +21,7 @@ const initialState = {
     lessons: createRequestState(),
   },
   health: Object.fromEntries(DASHBOARD_HEALTH_SERVICES.map(({ id }) => [id, createRequestState()])),
+  aiProviders: createRequestState(),
 }
 
 async function capture(id, request) {
@@ -35,10 +37,15 @@ export const refreshDashboard = createAsyncThunk('dashboard/refresh', async () =
     capture('students', fetchStudentSummaryRequest),
     capture('media', fetchMediaSummaryRequest),
     capture('courses', fetchCoursesSummaryRequest),
+    capture('aiProviders', fetchAiProvidersHealthRequest),
     ...DASHBOARD_HEALTH_SERVICES.map((service) => capture(`health:${service.id}`, () => fetchHealthRequest(service.route))),
   ]
   return Promise.all(requests)
 })
+
+export const refreshAiProviders = createAsyncThunk('dashboard/refreshAiProviders', () =>
+  capture('aiProviders', fetchAiProvidersHealthRequest),
+)
 
 export const refreshHealth = createAsyncThunk('dashboard/refreshHealth', async (serviceId, { rejectWithValue }) => {
   const service = DASHBOARD_HEALTH_SERVICES.find((item) => item.id === serviceId)
@@ -70,6 +77,7 @@ const dashboardSlice = createSlice({
       .addCase(refreshDashboard.pending, (state) => {
         Object.values(state.metrics).forEach(setLoading)
         Object.values(state.health).forEach(setLoading)
+        setLoading(state.aiProviders)
       })
       .addCase(refreshDashboard.fulfilled, (state, action) => {
         action.payload.forEach((outcome) => {
@@ -80,11 +88,15 @@ const dashboardSlice = createSlice({
           } else if (outcome.id === 'courses') {
             setResult(state.metrics.courses, outcome)
             setResult(state.metrics.lessons, outcome)
+          } else if (outcome.id === 'aiProviders') {
+            setResult(state.aiProviders, outcome)
           } else if (outcome.id.startsWith('health:')) {
             setResult(state.health[outcome.id.replace('health:', '')], outcome)
           }
         })
       })
+      .addCase(refreshAiProviders.pending, (state) => setLoading(state.aiProviders))
+      .addCase(refreshAiProviders.fulfilled, (state, action) => setResult(state.aiProviders, action.payload))
       .addCase(refreshHealth.pending, (state, action) => setLoading(state.health[action.meta.arg]))
       .addCase(refreshHealth.fulfilled, (state, action) => setResult(state.health[action.payload.id], action.payload))
       .addCase(refreshHealth.rejected, (state, action) => {

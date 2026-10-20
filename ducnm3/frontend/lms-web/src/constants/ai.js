@@ -10,6 +10,30 @@ export const AI_STATUS_LABELS = {
   [AI_STATUS.inactive]: 'Đã tắt',
 }
 
+export const AI_HEALTH_STATUS = {
+  online: 'ONLINE',
+  authFailed: 'AUTH_FAILED',
+  unreachable: 'UNREACHABLE',
+  error: 'ERROR',
+  disabled: 'DISABLED',
+}
+
+export const AI_HEALTH_LABELS = {
+  [AI_HEALTH_STATUS.online]: 'Hoạt động',
+  [AI_HEALTH_STATUS.authFailed]: 'Key bị từ chối',
+  [AI_HEALTH_STATUS.unreachable]: 'Không kết nối được',
+  [AI_HEALTH_STATUS.error]: 'Lỗi',
+  [AI_HEALTH_STATUS.disabled]: 'Đã tắt',
+}
+
+export const AI_HEALTH_HINTS = {
+  [AI_HEALTH_STATUS.online]: 'Provider phản hồi bình thường.',
+  [AI_HEALTH_STATUS.authFailed]: 'Provider từ chối API key đang lưu. Nhập lại key.',
+  [AI_HEALTH_STATUS.unreachable]: 'Không kết nối được tới base URL hoặc quá thời gian chờ.',
+  [AI_HEALTH_STATUS.error]: 'Provider trả lỗi hoặc cấu hình không dùng được.',
+  [AI_HEALTH_STATUS.disabled]: 'Provider đang tắt nên không được thử kết nối.',
+}
+
 export const AI_PROVIDER_TYPE = {
   openai: 'OPENAI',
   gemini: 'GEMINI',
@@ -62,6 +86,10 @@ export const AI_COPY = {
   cancelEdit: 'Hủy sửa',
   assign: 'Gán model',
   edit: 'Sửa',
+  connection: 'Kết nối',
+  recheck: 'Kiểm tra lại',
+  recheckAll: 'Kiểm tra kết nối',
+  checking: 'Đang thử…',
   remove: 'Xóa',
 }
 

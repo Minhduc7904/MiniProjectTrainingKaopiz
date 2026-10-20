@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  checkAiProviderHealthRequest,
+  checkAiProvidersHealthRequest,
   createAiProviderRequest,
   deleteAiBindingRequest,
   deleteAiProviderRequest,
@@ -69,5 +71,20 @@ describe('AI model and binding requests', () => {
 
     expect(put).toHaveBeenCalledWith('/ai/api/ai/service-bindings/course-service', { modelId: 'm1' })
     expect(remove).toHaveBeenCalledWith('/ai/api/ai/service-bindings/course-service')
+  })
+})
+
+describe('AI provider health requests', () => {
+  it('posts one request for every provider and one for a single provider', async () => {
+    const post = vi.spyOn(httpClient, 'post').mockResolvedValue({ data: { data: [{ providerId: 'p1', healthStatus: 'ONLINE' }], meta: {} } })
+
+    const all = await checkAiProvidersHealthRequest()
+    await checkAiProviderHealthRequest('p1')
+
+    expect(API_ROUTES.ai.providerHealthChecks).toBe('/ai/api/ai/providers/health-checks')
+    expect(API_ROUTES.ai.providerHealthCheckById('p1')).toBe('/ai/api/ai/providers/p1/health-check')
+    expect(post).toHaveBeenNthCalledWith(1, '/ai/api/ai/providers/health-checks')
+    expect(post).toHaveBeenNthCalledWith(2, '/ai/api/ai/providers/p1/health-check')
+    expect(all.data[0].healthStatus).toBe('ONLINE')
   })
 })

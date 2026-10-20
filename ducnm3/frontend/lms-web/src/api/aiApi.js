@@ -36,6 +36,17 @@ export async function fetchAiProvidersRequest(query = {}) {
   return unwrapEnvelope(response)
 }
 
+// Server gọi thử API của provider; mỗi lần mở trang gọi một request cho toàn bộ provider.
+export async function checkAiProvidersHealthRequest() {
+  const response = await httpClient.post(API_ROUTES.ai.providerHealthChecks)
+  return unwrapEnvelope(response)
+}
+
+export async function checkAiProviderHealthRequest(providerId) {
+  const response = await httpClient.post(API_ROUTES.ai.providerHealthCheckById(providerId))
+  return unwrapEnvelope(response)
+}
+
 export async function createAiProviderRequest(payload) {
   const response = await httpClient.post(API_ROUTES.ai.providers, payload)
   return unwrapEnvelope(response)

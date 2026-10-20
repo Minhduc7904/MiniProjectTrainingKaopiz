@@ -15,6 +15,7 @@ using AiService.Api.Endpoints.Providers.CreateProvider;
 using AiService.Api.Endpoints.Providers.DeleteProvider;
 using AiService.Api.Endpoints.Providers.GetProviderDetail;
 using AiService.Api.Endpoints.Providers.GetProviders;
+using AiService.Api.Endpoints.Providers.HealthCheck;
 using AiService.Api.Endpoints.Providers.UpdateProvider;
 using AiService.Application;
 using AiService.Application.Common.Errors;
@@ -39,17 +40,20 @@ public sealed class AiConfigurationEndpointsComponentTests
     private WebApplication app = null!;
     private HttpClient client = null!;
     private InMemoryAiStore store = null!;
+    private FakeAiProviderProbe probe = null!;
 
     [SetUp]
     public async Task SetUpAsync()
     {
         store = new InMemoryAiStore();
+        probe = new FakeAiProviderProbe();
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton<IAiProviderRepository>(store.ProviderRepository);
         builder.Services.AddSingleton<IAiModelRepository>(store.ModelRepository);
         builder.Services.AddSingleton<IAiServiceBindingRepository>(store.BindingRepository);
         builder.Services.AddSingleton<ISecretProtector, FakeSecretProtector>();
+        builder.Services.AddSingleton<IAiProviderProbe>(probe);
         builder.Services.AddAiApplication();
         app = builder.Build();
         app.UseSharedApiMiddleware();
@@ -59,6 +63,8 @@ public sealed class AiConfigurationEndpointsComponentTests
         app.MapGetAiProviderDetail();
         app.MapUpdateAiProvider();
         app.MapDeleteAiProvider();
+        app.MapCheckAiProvidersHealth();
+        app.MapCheckAiProviderHealth();
         app.MapCreateAiModel();
         app.MapGetAiModels();
         app.MapGetAiModelDetail();
@@ -103,6 +109,56 @@ public sealed class AiConfigurationEndpointsComponentTests
             Assert.That(data.TryGetProperty("apiKey", out _), Is.False);
             Assert.That(data.TryGetProperty("apiKeyEncrypted", out _), Is.False);
             Assert.That(store.Providers[id].ApiKeyEncrypted, Is.EqualTo(FakeSecretProtector.Prefix + SecretKey));
+        });
+    }
+
+    [Test]
+    public async Task HealthChecksReportEveryProviderWithoutLeakingTheKey()
+    {
+        var online = store.AddProvider("Online");
+        var inactive = store.AddProvider("Off", status: "INACTIVE");
+        var rejected = store.AddProvider("Rejected");
+        store.Providers[rejected.Id] = store.Providers[rejected.Id] with { Record = rejected with { BaseUrl = "https://rejected.example.test/v1" } };
+        probe.Setup("https://rejected.example.test/v1", new AiProviderProbeResult("AUTH_FAILED", 401, 90, "Provider rejected the API key."));
+
+        using var response = await SendAsync(HttpMethod.Post, ApiRoutes.Ai.ProviderHealthChecksServicePath());
+        var body = await response.Content.ReadAsStringAsync(TestContext.CurrentContext.CancellationToken);
+        using var document = JsonDocument.Parse(body);
+        var items = document.RootElement.GetProperty("data").EnumerateArray().ToDictionary(item => item.GetProperty("providerId").GetGuid());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers.CacheControl?.NoStore, Is.True);
+            Assert.That(items, Has.Count.EqualTo(3));
+            Assert.That(items[online.Id].GetProperty("healthStatus").GetString(), Is.EqualTo("ONLINE"));
+            Assert.That(items[online.Id].GetProperty("name").GetString(), Is.EqualTo("Online"));
+            Assert.That(items[inactive.Id].GetProperty("healthStatus").GetString(), Is.EqualTo("DISABLED"));
+            Assert.That(items[rejected.Id].GetProperty("healthStatus").GetString(), Is.EqualTo("AUTH_FAILED"));
+            Assert.That(items[rejected.Id].GetProperty("httpStatus").GetInt32(), Is.EqualTo(401));
+            Assert.That(body, Does.Not.Contain("sk-original").And.Not.Contain("apiKeyEncrypted"));
+        });
+    }
+
+    [Test]
+    public async Task HealthCheckOfOneProviderReturnsItsStatusOr404()
+    {
+        var provider = store.AddProvider();
+
+        using var ok = await SendAsync(HttpMethod.Post, ApiRoutes.Ai.ProviderHealthCheckByIdServicePath(provider.Id));
+        using var missing = await SendAsync(HttpMethod.Post, ApiRoutes.Ai.ProviderHealthCheckByIdServicePath(Guid.NewGuid()));
+        using var student = await SendAsync(HttpMethod.Post, ApiRoutes.Ai.ProviderHealthChecksServicePath(), actorType: ActorHeaderTypes.Student);
+        using var document = JsonDocument.Parse(await ok.Content.ReadAsStringAsync(TestContext.CurrentContext.CancellationToken));
+        var data = document.RootElement.GetProperty("data");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(data.GetProperty("healthStatus").GetString(), Is.EqualTo("ONLINE"));
+            Assert.That(data.GetProperty("providerStatus").GetString(), Is.EqualTo("ACTIVE"));
+            Assert.That(data.GetProperty("latencyMs").GetInt64(), Is.EqualTo(12));
+            Assert.That(missing.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(student.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
         });
     }
 

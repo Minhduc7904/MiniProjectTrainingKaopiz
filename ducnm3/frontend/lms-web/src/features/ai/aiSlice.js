@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
+  checkAiProviderHealthRequest,
+  checkAiProvidersHealthRequest,
   createAiModelRequest,
   createAiProviderRequest,
   deleteAiBindingRequest,
@@ -55,6 +57,24 @@ export const fetchAiModels = createReadThunk('ai/fetchModels', fetchAiModelsRequ
 export const fetchAiModelChoices = createReadThunk('ai/fetchModelChoices', fetchAiModelsRequest)
 export const fetchAiBindings = createReadThunk('ai/fetchBindings', fetchAiBindingsRequest)
 
+export const checkAiProvidersHealth = createAsyncThunk('ai/checkProvidersHealth', async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await checkAiProvidersHealthRequest()
+    return { items: data ?? [] }
+  } catch (error) {
+    return rejectWithValue(toApiError(error))
+  }
+})
+
+export const checkAiProviderHealth = createAsyncThunk('ai/checkProviderHealth', async (providerId, { rejectWithValue }) => {
+  try {
+    const { data } = await checkAiProviderHealthRequest(providerId)
+    return { items: [data] }
+  } catch (error) {
+    return rejectWithValue(toApiError(error))
+  }
+})
+
 export const saveAiProvider = createMutationThunk('saveProvider', ({ id, payload }) =>
   id ? updateAiProviderRequest(id, payload) : createAiProviderRequest(payload),
 )
@@ -88,6 +108,8 @@ const aiSlice = createSlice({
     bindings: createInitialListState({}),
     providerChoices: createChoicesState(),
     modelChoices: createChoicesState(),
+    // Kết quả thử kết nối theo providerId; không lưu DB nên mỗi lần mở trang được thử lại.
+    health: { byId: {}, loadingAll: false, checkingIds: [], error: null },
     mutation: { loading: false, success: false, error: null, traceId: null },
   },
   reducers: {
@@ -121,6 +143,29 @@ const aiSlice = createSlice({
       .addCase(fetchAiBindings.pending, (state, action) => listRequestPending(state.bindings, action))
       .addCase(fetchAiBindings.fulfilled, (state, action) => listRequestFulfilled(state.bindings, action))
       .addCase(fetchAiBindings.rejected, (state, action) => listRequestRejected(state.bindings, action))
+      .addCase(checkAiProvidersHealth.pending, (state) => {
+        state.health.loadingAll = true
+        state.health.error = null
+      })
+      .addCase(checkAiProvidersHealth.fulfilled, (state, action) => {
+        state.health.loadingAll = false
+        state.health.byId = Object.fromEntries(action.payload.items.map((item) => [item.providerId, item]))
+      })
+      .addCase(checkAiProvidersHealth.rejected, (state, action) => {
+        state.health.loadingAll = false
+        state.health.error = action.payload ?? { code: API_ERROR_CODES.unexpectedError }
+      })
+      .addCase(checkAiProviderHealth.pending, (state, action) => {
+        state.health.checkingIds.push(action.meta.arg)
+      })
+      .addCase(checkAiProviderHealth.fulfilled, (state, action) => {
+        state.health.checkingIds = state.health.checkingIds.filter((id) => id !== action.meta.arg)
+        for (const item of action.payload.items) state.health.byId[item.providerId] = item
+      })
+      .addCase(checkAiProviderHealth.rejected, (state, action) => {
+        state.health.checkingIds = state.health.checkingIds.filter((id) => id !== action.meta.arg)
+        state.health.error = action.payload ?? { code: API_ERROR_CODES.unexpectedError }
+      })
       .addCase(fetchAiProviderChoices.pending, (state) => {
         state.providerChoices.loading = true
       })

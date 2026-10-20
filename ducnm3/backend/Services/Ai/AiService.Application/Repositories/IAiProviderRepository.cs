@@ -12,6 +12,12 @@ public interface IAiProviderRepository
 
     Task<AiProviderRecord?> GetAsync(Guid providerId, CancellationToken cancellationToken);
 
+    /// <summary>Lấy provider kèm API key đã mã hóa để thử kết nối; không dùng cho response.</summary>
+    Task<AiProviderCredentialRecord?> GetCredentialAsync(Guid providerId, CancellationToken cancellationToken);
+
+    /// <summary>Lấy mọi provider kèm API key đã mã hóa, mới tạo trước, để thử kết nối hàng loạt.</summary>
+    Task<IReadOnlyList<AiProviderCredentialRecord>> GetAllCredentialsAsync(CancellationToken cancellationToken);
+
     Task<bool> NameExistsAsync(string name, Guid? excludeProviderId, CancellationToken cancellationToken);
 
     Task<bool> HasModelsAsync(Guid providerId, CancellationToken cancellationToken);

@@ -7,6 +7,7 @@ using AiService.Api.Contracts.Options;
 using AiService.Api.Contracts.Providers;
 using AiService.Application.Repositories;
 using AiService.Application.UseCases.Options;
+using AiService.Application.UseCases.Providers.HealthCheck;
 
 namespace AiService.Api.Mappers;
 
@@ -25,6 +26,22 @@ public static class AiResponseMapper
 
     public static IReadOnlyList<AiProviderResponse> ToResponse(IReadOnlyList<AiProviderRecord> records) =>
         records.Select(ToResponse).ToArray();
+
+    public static AiProviderHealthResponse ToResponse(AiProviderHealthResult result) =>
+        new(
+            result.Provider.Id,
+            result.Provider.Name,
+            result.Provider.ProviderType,
+            result.Provider.BaseUrl,
+            result.Provider.Status,
+            result.HealthStatus,
+            result.HttpStatus,
+            result.LatencyMs,
+            result.Message,
+            result.CheckedAtUtc);
+
+    public static IReadOnlyList<AiProviderHealthResponse> ToResponse(IReadOnlyList<AiProviderHealthResult> results) =>
+        results.Select(ToResponse).ToArray();
 
     public static AiModelResponse ToResponse(AiModelRecord record) =>
         new(

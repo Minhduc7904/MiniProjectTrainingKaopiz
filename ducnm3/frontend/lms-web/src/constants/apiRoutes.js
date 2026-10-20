@@ -126,6 +126,9 @@ export const API_ROUTES = {
     providers: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/providers'),
     providerById: (providerId) =>
       joinPath(GATEWAY_PREFIXES.ai, '/api/ai/providers', providerId),
+    providerHealthChecks: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/providers/health-checks'),
+    providerHealthCheckById: (providerId) =>
+      joinPath(GATEWAY_PREFIXES.ai, '/api/ai/providers', providerId, 'health-check'),
     models: joinPath(GATEWAY_PREFIXES.ai, '/api/ai/models'),
     modelById: (modelId) =>
       joinPath(GATEWAY_PREFIXES.ai, '/api/ai/models', modelId),

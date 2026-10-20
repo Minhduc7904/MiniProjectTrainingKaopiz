@@ -4,6 +4,7 @@
 using AiService.Application.Repositories;
 using AiService.Application.Services;
 using AiService.Infrastructure.Health;
+using AiService.Infrastructure.Probe;
 using AiService.Infrastructure.Persistence;
 using AiService.Infrastructure.Persistence.Repositories;
 using AiService.Infrastructure.Security;
@@ -32,6 +33,17 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(AiEncryptionOptions.SectionName))
             .ValidateOnStart();
         services.AddSingleton<ISecretProtector, AesGcmSecretProtector>();
+
+        // HttpClient dùng chung; không theo redirect để Authorization không bị gửi sang host khác.
+        services.AddSingleton<IAiProviderProbe>(_ => new HttpAiProviderProbe(new HttpClient(new SocketsHttpHandler
+        {
+            AllowAutoRedirect = false,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2),
+            ConnectTimeout = HttpAiProviderProbe.Timeout,
+        })
+        {
+            Timeout = Timeout.InfiniteTimeSpan,
+        }));
 
         services.AddSingleton<IDatabaseHealthProbe>(provider => new AiDatabaseHealthProbe(connectionString, provider.GetRequiredService<ILogger<AiDatabaseHealthProbe>>()));
         return services;

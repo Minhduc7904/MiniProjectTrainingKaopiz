@@ -40,6 +40,24 @@ public sealed class EfAiProviderRepository(AiDbContext db) : IAiProviderReposito
         return row is null ? null : MapRow(row);
     }
 
+    public async Task<AiProviderCredentialRecord?> GetCredentialAsync(Guid providerId, CancellationToken cancellationToken)
+    {
+        var row = await db.AiProviders.AsNoTracking()
+            .Where(provider => provider.Id == providerId)
+            .Select(provider => new AiProviderCredentialRow(provider.Id, provider.Name, provider.ProviderType, provider.BaseUrl, provider.ApiKeyHint, provider.Status, provider.CreatedAt, provider.UpdatedAt, provider.ApiKeyEncrypted))
+            .SingleOrDefaultAsync(cancellationToken);
+        return row is null ? null : ToCredential(row);
+    }
+
+    public async Task<IReadOnlyList<AiProviderCredentialRecord>> GetAllCredentialsAsync(CancellationToken cancellationToken)
+    {
+        var rows = await db.AiProviders.AsNoTracking()
+            .OrderByDescending(provider => provider.CreatedAt).ThenByDescending(provider => provider.Id)
+            .Select(provider => new AiProviderCredentialRow(provider.Id, provider.Name, provider.ProviderType, provider.BaseUrl, provider.ApiKeyHint, provider.Status, provider.CreatedAt, provider.UpdatedAt, provider.ApiKeyEncrypted))
+            .ToListAsync(cancellationToken);
+        return rows.Select(row => ToCredential(row)).ToArray();
+    }
+
     public Task<bool> NameExistsAsync(string name, Guid? excludeProviderId, CancellationToken cancellationToken) =>
         db.AiProviders.AsNoTracking()
             .AnyAsync(provider => provider.Name == name && (excludeProviderId == null || provider.Id != excludeProviderId), cancellationToken);
@@ -133,6 +151,11 @@ public sealed class EfAiProviderRepository(AiDbContext db) : IAiProviderReposito
     private static AiProviderRecord MapEntity(AiProvider provider) =>
         MapRow(new AiProviderRow(provider.Id, provider.Name, provider.ProviderType, provider.BaseUrl, provider.ApiKeyHint, provider.Status, provider.CreatedAt, provider.UpdatedAt));
 
+    private static AiProviderCredentialRecord ToCredential(AiProviderCredentialRow row) =>
+        new(
+            MapRow(new AiProviderRow(row.Id, row.Name, row.ProviderType, row.BaseUrl, row.ApiKeyHint, row.Status, row.CreatedAt, row.UpdatedAt)),
+            row.ApiKeyEncrypted);
+
     private static AiProviderRecord MapRow(AiProviderRow row) =>
         new(
             row.Id,
@@ -153,4 +176,15 @@ public sealed class EfAiProviderRepository(AiDbContext db) : IAiProviderReposito
         string Status,
         DateTime CreatedAt,
         DateTime UpdatedAt);
+
+    private sealed record AiProviderCredentialRow(
+        Guid Id,
+        string Name,
+        string ProviderType,
+        string BaseUrl,
+        string ApiKeyHint,
+        string Status,
+        DateTime CreatedAt,
+        DateTime UpdatedAt,
+        string ApiKeyEncrypted);
 }

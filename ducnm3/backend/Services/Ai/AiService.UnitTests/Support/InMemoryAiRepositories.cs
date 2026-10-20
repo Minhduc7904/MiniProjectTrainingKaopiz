@@ -46,6 +46,17 @@ internal sealed class InMemoryAiProviderRepository(InMemoryAiStore store) : IAiP
     public Task<AiProviderRecord?> GetAsync(Guid providerId, CancellationToken cancellationToken) =>
         Task.FromResult(store.Providers.TryGetValue(providerId, out var stored) ? stored.Record : null);
 
+    public Task<AiProviderCredentialRecord?> GetCredentialAsync(Guid providerId, CancellationToken cancellationToken) =>
+        Task.FromResult(store.Providers.TryGetValue(providerId, out var stored)
+            ? new AiProviderCredentialRecord(stored.Record, stored.ApiKeyEncrypted)
+            : null);
+
+    public Task<IReadOnlyList<AiProviderCredentialRecord>> GetAllCredentialsAsync(CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<AiProviderCredentialRecord>>(store.Providers.Values
+            .OrderByDescending(item => item.Record.CreatedAtUtc)
+            .Select(item => new AiProviderCredentialRecord(item.Record, item.ApiKeyEncrypted))
+            .ToArray());
+
     public Task<bool> NameExistsAsync(string name, Guid? excludeProviderId, CancellationToken cancellationToken) =>
         Task.FromResult(store.Providers.Values.Any(item =>
             string.Equals(item.Record.Name, name, StringComparison.OrdinalIgnoreCase) && item.Record.Id != excludeProviderId));

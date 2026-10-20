@@ -15,6 +15,7 @@ using AiService.Application.UseCases.Providers.Create;
 using AiService.Application.UseCases.Providers.Delete;
 using AiService.Application.UseCases.Providers.GetDetail;
 using AiService.Application.UseCases.Providers.GetList;
+using AiService.Application.UseCases.Providers.HealthCheck;
 using AiService.Application.UseCases.Providers.Update;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<DeleteAiProviderHandler>();
         services.AddScoped<GetAiProviderDetailHandler>();
         services.AddScoped<GetAiProvidersHandler>();
+        services.AddScoped<CheckAiProviderHealthHandler>();
         services.AddScoped<CreateAiModelHandler>();
         services.AddScoped<UpdateAiModelHandler>();
         services.AddScoped<DeleteAiModelHandler>();

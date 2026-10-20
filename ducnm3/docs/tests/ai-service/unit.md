@@ -25,6 +25,12 @@
 
 `UpsertAiServiceBindingHandlerTests`: tạo rồi thay binding cho cùng service (`Created` đúng); từ chối `ai-service`, `lms-api-gateway`, service lạ, rỗng; từ chối `modelId` thiếu/rỗng; `AI_REFERENCE_INACTIVE` khi model hoặc provider `INACTIVE`; xóa binding và từ chối binding không tồn tại.
 
+## Thử kết nối (`Application/Providers`, `Infrastructure`)
+
+`CheckAiProviderHealthHandlerTests`: provider bật được giải mã key rồi gọi probe; provider `INACTIVE` trả `DISABLED` và không gọi ra ngoài; kết quả lỗi của probe được giữ nguyên; key không giải mã được trả `ERROR` và không gọi ra ngoài; provider không tồn tại `404`, ID rỗng `400`; thử tất cả vẫn liệt kê provider tắt.
+
+`HttpAiProviderProbeTests`: gọi `{baseUrl}/models` với `Authorization: Bearer`; `ANTHROPIC` gửi thêm `x-api-key` và `anthropic-version`; 401/403 → `AUTH_FAILED`, 404/500 → `ERROR`; lỗi mạng → `UNREACHABLE` và không lộ message của exception; base URL không phải http(s) → `ERROR` không gọi ra ngoài; hủy từ phía caller được truyền lên.
+
 ## Mã hóa (`Security/AesGcmSecretProtectorTests`)
 
 Round-trip kể cả ký tự non-ASCII; nonce mới mỗi lần; ciphertext bị sửa hoặc key khác/payload hỏng làm `Unprotect` lỗi; `Mask` chỉ lộ 4 ký tự cuối; validator từ chối key thiếu hoặc sai kích thước.

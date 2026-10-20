@@ -2,7 +2,7 @@
 
 ## Dự án
 
-`backend/Services/Ai/AiService.ComponentTests/AiService.ComponentTests.csproj`. Dùng `TestServer` với kho giả trong bộ nhớ và `FakeSecretProtector`, đi qua pipeline HTTP thật (middleware, actor, envelope).
+`backend/Services/Ai/AiService.ComponentTests/AiService.ComponentTests.csproj`. Dùng `TestServer` với kho giả trong bộ nhớ và `FakeSecretProtector` và `FakeAiProviderProbe`, đi qua pipeline HTTP thật (middleware, actor, envelope).
 
 `Endpoints/AiConfigurationEndpointsComponentTests.cs`:
 
@@ -20,6 +20,8 @@
 | `CreateModelForUnknownProviderReturnsNotFound` | `404 AI_PROVIDER_NOT_FOUND`. |
 | `BindingLifecycleUpsertCreatedThenReplacedThenBlockedModelDeleteAndRemoval` | PUT `201` rồi `200`; xóa model đang gán `409`; xóa binding `204`. |
 | `UpsertBindingRejectsUnsupportedServiceAndInactiveModel` | `400` service lạ; `409 AI_REFERENCE_INACTIVE`. |
+| `HealthChecksReportEveryProviderWithoutLeakingTheKey` | `POST …/providers/health-checks`: `200`, `no-store`, trạng thái `ONLINE`/`AUTH_FAILED`/`DISABLED` đúng từng provider, không lộ API key. |
+| `HealthCheckOfOneProviderReturnsItsStatusOr404` | Thử một provider trả trạng thái và độ trễ; `404` khi không tồn tại; Student bị `403`. |
 | `GetOptionsListsProviderTypesWithDefaultBaseUrlsAndBindableServices` | Trả loại AI kèm base URL mặc định và service được phép gán. |
 
 Chạy:

@@ -384,6 +384,8 @@ public static class ApiRoutes
     {
         public const string Providers = "/api/ai/providers";
         public const string ProviderByIdTemplate = "/api/ai/providers/{providerId}";
+        public const string ProviderHealthChecks = "/api/ai/providers/health-checks";
+        public const string ProviderHealthCheckByIdTemplate = "/api/ai/providers/{providerId}/health-check";
         public const string Models = "/api/ai/models";
         public const string ModelByIdTemplate = "/api/ai/models/{modelId}";
         public const string ServiceBindings = "/api/ai/service-bindings";
@@ -403,6 +405,20 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Ai,
                 FormatGuidRoute(ProviderByIdTemplate, "providerId", providerId));
+
+        public static string ProviderHealthChecksServicePath() =>
+            BuildServicePath(ProviderHealthChecks);
+
+        public static string ProviderHealthChecksPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, ProviderHealthChecks);
+
+        public static string ProviderHealthCheckByIdServicePath(Guid providerId) =>
+            BuildServicePath(FormatGuidRoute(ProviderHealthCheckByIdTemplate, "providerId", providerId));
+
+        public static string ProviderHealthCheckByIdPublicPath(Guid providerId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Ai,
+                FormatGuidRoute(ProviderHealthCheckByIdTemplate, "providerId", providerId));
 
         public static string ModelsServicePath() =>
             BuildServicePath(Models);

@@ -1,6 +1,7 @@
 import {
   Activity,
   Bell,
+  Bot,
   BookOpen,
   ChevronRight,
   Database,
@@ -19,16 +20,18 @@ import { readAdmin } from '@/auth/actorStorage'
 import { APP_ROUTES } from '@/constants/appRoutes'
 import { DASHBOARD_HEALTH_SERVICES, DASHBOARD_METRICS } from '@/constants/dashboard'
 import { useAdminDashboard } from '@/hooks/dashboard/useAdminDashboard'
+import { AiProvidersSection } from './AiProvidersSection'
 import { adminUi } from '@/theme/admin'
 
 const metricIcons = { students: Users, media: Images, courses: BookOpen, lessons: GraduationCap }
-const serviceIcons = { student: GraduationCap, course: BookOpen, media: Images, notification: Bell, scheduler: Timer }
+const serviceIcons = { student: GraduationCap, course: BookOpen, media: Images, notification: Bell, scheduler: Timer, ai: Bot }
 const managementServices = [
   { id: 'student', label: 'Student', description: 'Danh sách học viên', to: APP_ROUTES.students },
   { id: 'course', label: 'Course', description: 'Danh sách khóa học', to: APP_ROUTES.courses },
   { id: 'media', label: 'Media', description: 'Upload và quản lý media', to: APP_ROUTES.mediaUpload },
   { id: 'notification', label: 'Notification', description: 'Quản lý notification batch', to: APP_ROUTES.notificationBatches },
   { id: 'scheduler', label: 'Scheduler', description: 'Màn hình quản lý đang được phát triển', disabled: true },
+  { id: 'ai', label: 'AI', description: 'Provider, model và gán service', to: APP_ROUTES.aiProviders },
 ]
 
 function metricValue(metricId, request) {
@@ -72,7 +75,7 @@ function HealthCard({ service, request, onRefresh }) {
 
 export function AdminDashboardPage() {
   const admin = readAdmin()
-  const { metrics, health, refresh, refreshHealth } = useAdminDashboard()
+  const { metrics, health, aiProviders, refresh, refreshHealth, refreshAiProviders } = useAdminDashboard()
   return (
     <main className={adminUi.dashboardPage}>
       <header className={adminUi.dashboardHeader}><div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-5 py-4 sm:px-8"><div><p className={`text-[11px] font-medium tracking-[0.2em] uppercase ${adminUi.eyebrow}`}>Sổ lớp</p><h1 className={`mt-1 font-display text-[22px] font-semibold ${adminUi.title}`}>Dashboard quản trị</h1></div><div className="text-right"><p className={`text-[13px] font-medium ${adminUi.title}`}>{admin.displayName}</p><p className={`mt-1 font-mono text-[10px] ${adminUi.caption}`}>{admin.type} · {admin.id}</p></div></div></header>
@@ -80,7 +83,8 @@ export function AdminDashboardPage() {
         <section className={`rounded-lg p-6 sm:p-7 ${adminUi.dashboardHero}`}><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className={`text-[11px] font-medium tracking-[0.2em] uppercase ${adminUi.eyebrow}`}>Tổng quan vận hành</p><h2 className={`mt-2 font-display text-[28px] leading-tight font-semibold ${adminUi.title}`}>Nắm tình trạng lớp học trong một lần xem</h2><p className={`mt-2 max-w-[62ch] text-[14px] ${adminUi.body}`}>Theo dõi dữ liệu sở hữu bởi từng service, trạng thái kết nối và đi thẳng đến khu vực quản lý.</p></div><Button disabled={Object.values(health).some((request) => request.loading)} onClick={refresh}><Icon icon={RefreshCw} />Kiểm tra lại toàn bộ</Button></div></section>
         <section className="mt-8"><div className="flex items-center gap-2"><Icon icon={Database} className={adminUi.brand} /><h2 className={`font-display text-[19px] font-semibold ${adminUi.title}`}>Dữ liệu hệ thống</h2></div><div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{DASHBOARD_METRICS.map((metric) => <MetricCard key={metric.id} metric={metric} request={metrics[metric.id]} />)}</div></section>
         <section className="mt-10"><div className="flex items-center gap-2"><Icon icon={Activity} className={adminUi.brand} /><div><h2 className={`font-display text-[19px] font-semibold ${adminUi.title}`}>Tình trạng service</h2><p className={`mt-1 text-[12px] ${adminUi.caption}`}>Mỗi card gọi health endpoint riêng và hiển thị dependency trả về.</p></div></div><div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{DASHBOARD_HEALTH_SERVICES.map((service) => <HealthCard key={service.id} service={service} request={health[service.id]} onRefresh={refreshHealth} />)}</div></section>
-        <section className="mt-10 pb-10"><div className="flex items-center gap-2"><Icon icon={ServerCog} className={adminUi.brand} /><div><h2 className={`font-display text-[19px] font-semibold ${adminUi.title}`}>Quản lý service</h2><p className={`mt-1 text-[12px] ${adminUi.caption}`}>Chọn service để tiếp tục thao tác quản trị.</p></div></div><div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">{managementServices.map((service) => { const ServiceIcon = serviceIcons[service.id]; const content = <><Icon icon={ServiceIcon} size={22} className={service.disabled ? adminUi.caption : adminUi.brand} /><div className="min-w-0 flex-1"><h3 className={`text-[14px] font-semibold ${adminUi.title}`}>{service.label}</h3><p className={`mt-1 text-[12px] ${adminUi.body}`}>{service.description}</p></div>{service.disabled ? <TriangleAlert size={17} className={adminUi.caption} /> : <ChevronRight size={18} className={adminUi.caption} />}</>; return service.disabled ? <div key={service.id} aria-disabled="true" className={`flex cursor-not-allowed items-start gap-3 rounded-lg p-4 opacity-65 ${adminUi.dashboardManagement}`}>{content}</div> : <Link key={service.id} to={service.to} className={`flex cursor-pointer items-start gap-3 rounded-lg p-4 transition-colors duration-150 ${adminUi.dashboardManagement}`}>{content}</Link> })}</div></section>
+        <AiProvidersSection request={aiProviders} onRefresh={refreshAiProviders} />
+        <section className="mt-10 pb-10"><div className="flex items-center gap-2"><Icon icon={ServerCog} className={adminUi.brand} /><div><h2 className={`font-display text-[19px] font-semibold ${adminUi.title}`}>Quản lý service</h2><p className={`mt-1 text-[12px] ${adminUi.caption}`}>Chọn service để tiếp tục thao tác quản trị.</p></div></div><div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-6">{managementServices.map((service) => { const ServiceIcon = serviceIcons[service.id]; const content = <><Icon icon={ServiceIcon} size={22} className={service.disabled ? adminUi.caption : adminUi.brand} /><div className="min-w-0 flex-1"><h3 className={`text-[14px] font-semibold ${adminUi.title}`}>{service.label}</h3><p className={`mt-1 text-[12px] ${adminUi.body}`}>{service.description}</p></div>{service.disabled ? <TriangleAlert size={17} className={adminUi.caption} /> : <ChevronRight size={18} className={adminUi.caption} />}</>; return service.disabled ? <div key={service.id} aria-disabled="true" className={`flex cursor-not-allowed items-start gap-3 rounded-lg p-4 opacity-65 ${adminUi.dashboardManagement}`}>{content}</div> : <Link key={service.id} to={service.to} className={`flex cursor-pointer items-start gap-3 rounded-lg p-4 transition-colors duration-150 ${adminUi.dashboardManagement}`}>{content}</Link> })}</div></section>
       </div>
     </main>
   )

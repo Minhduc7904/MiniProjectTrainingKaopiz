@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { RotateCcw } from 'lucide-react'
+import { Activity, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/admin/Button'
 import { ConfirmModal } from '@/components/ui/admin/ConfirmModal'
 import { EmptyState } from '@/components/ui/admin/EmptyState'
@@ -31,6 +31,9 @@ export function AiProvidersPage() {
     traceId,
     options,
     mutation,
+    health,
+    recheck,
+    recheckAll,
     setQuery,
     load,
     reset,
@@ -65,10 +68,16 @@ export function AiProvidersPage() {
         input={
           <InputPanel
             actions={
-              <Button variant="ghost" disabled={loading} onClick={reset}>
-                <Icon icon={RotateCcw} />
-                {UI_LABELS.reset}
-              </Button>
+              <>
+                <Button variant="ghost" disabled={health.loadingAll} onClick={recheckAll}>
+                  <Icon icon={Activity} />
+                  {AI_COPY.recheckAll}
+                </Button>
+                <Button variant="ghost" disabled={loading} onClick={reset}>
+                  <Icon icon={RotateCcw} />
+                  {UI_LABELS.reset}
+                </Button>
+              </>
             }
             guided={
               <div className="flex h-full min-h-0 flex-col">
@@ -122,8 +131,10 @@ export function AiProvidersPage() {
               <AiProvidersTable
                 rows={data}
                 busy={mutation.loading}
+                health={health}
                 onEdit={setEditing}
                 onDelete={setDeleting}
+                onRecheck={recheck}
               />
             ) : null}
             {!error && loading && data.length > 0 ? (

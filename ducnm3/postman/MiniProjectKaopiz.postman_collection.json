@@ -1500,6 +1500,105 @@
           "response": []
         },
         {
+          "name": "POST AI providers health checks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"POST AI providers health checks OK\", function () { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.data).to.be.an(\"array\"); body.data.forEach(function (item) { pm.expect(item.healthStatus).to.be.oneOf([\"ONLINE\", \"AUTH_FAILED\", \"UNREACHABLE\", \"ERROR\", \"DISABLED\"]); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers/health-checks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers",
+                "health-checks"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/post-provider-health-checks.md"
+          },
+          "response": []
+        },
+        {
+          "name": "POST AI provider health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"POST AI provider health check OK\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.healthStatus).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/providers/{{aiProviderId}}/health-check",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "providers",
+                "{{aiProviderId}}",
+                "health-check"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/post-provider-health-check.md"
+          },
+          "response": []
+        },
+        {
           "name": "PUT AI provider",
           "event": [
             {

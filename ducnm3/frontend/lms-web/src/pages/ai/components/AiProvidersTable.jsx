@@ -1,10 +1,14 @@
-import { AI_PROVIDER_TYPE_LABELS } from '@/constants/ai'
+import { RefreshCw } from 'lucide-react'
+import { AiHealthBadge } from '@/components/ai/AiHealthBadge'
+import { Button } from '@/components/ui/admin/Button'
+import { Icon } from '@/components/ui/admin/Icon'
+import { AI_COPY, AI_PROVIDER_TYPE_LABELS } from '@/constants/ai'
 import { adminUi } from '@/theme/admin'
 import { formatAiDate } from '../aiOutput'
 import { AiRowActions } from './AiRowActions'
 import { AiStatusBadge } from './AiStatusBadge'
 
-export function AiProvidersTable({ rows, busy, onEdit, onDelete }) {
+export function AiProvidersTable({ rows, busy, health, onEdit, onDelete, onRecheck }) {
   return (
     <div className={`overflow-x-auto rounded-lg ${adminUi.card}`}>
       <table className="w-full border-collapse text-left text-[14px]">
@@ -15,6 +19,7 @@ export function AiProvidersTable({ rows, busy, onEdit, onDelete }) {
             <th className="px-4 py-3">Base URL</th>
             <th className="px-4 py-3">API key</th>
             <th className="px-4 py-3">Trạng thái</th>
+            <th className="px-4 py-3">{AI_COPY.connection}</th>
             <th className="px-4 py-3">Cập nhật</th>
             <th className="px-4 py-3" />
           </tr>
@@ -32,6 +37,23 @@ export function AiProvidersTable({ rows, busy, onEdit, onDelete }) {
               <td className={`px-4 py-3 font-mono text-[12px] ${adminUi.tableCell}`}>{provider.apiKeyHint}</td>
               <td className="px-4 py-3">
                 <AiStatusBadge status={provider.status} />
+              </td>
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <AiHealthBadge
+                    check={health.byId[provider.id]}
+                    loading={health.loadingAll || health.checkingIds.includes(provider.id)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={health.loadingAll || health.checkingIds.includes(provider.id)}
+                    aria-label={`${AI_COPY.recheck} ${provider.name}`}
+                    onClick={() => onRecheck(provider.id)}
+                  >
+                    <Icon icon={RefreshCw} />
+                  </Button>
+                </div>
               </td>
               <td className={`px-4 py-3 ${adminUi.tableCell}`}>{formatAiDate(provider.updatedAtUtc)}</td>
               <td className="px-4 py-3">

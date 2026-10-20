@@ -11,6 +11,8 @@ Phase 1 chỉ có cấu hình. Gọi LLM bằng OpenAI SDK và pipeline RabbitMQ
 - [`GET /ai/api/ai/providers/{providerId}` — Xem chi tiết AI provider](endpoints/get-provider-by-id.md)
 - [`PUT /ai/api/ai/providers/{providerId}` — Cập nhật AI provider](endpoints/put-provider.md)
 - [`DELETE /ai/api/ai/providers/{providerId}` — Xóa AI provider](endpoints/delete-provider.md)
+- [`POST /ai/api/ai/providers/health-checks` — Thử kết nối tất cả AI provider](endpoints/post-provider-health-checks.md)
+- [`POST /ai/api/ai/providers/{providerId}/health-check` — Thử kết nối một AI provider](endpoints/post-provider-health-check.md)
 
 ## Model
 

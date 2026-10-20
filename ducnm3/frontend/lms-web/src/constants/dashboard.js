@@ -7,6 +7,7 @@ export const DASHBOARD_HEALTH_SERVICES = [
   { id: 'media', label: 'Media Service', route: API_ROUTES.health.media },
   { id: 'notification', label: 'Notification Service', route: API_ROUTES.health.notification },
   { id: 'scheduler', label: 'Scheduler Service', route: API_ROUTES.health.scheduler },
+  { id: 'ai', label: 'AI Service', route: API_ROUTES.health.ai },
 ]
 
 export const DASHBOARD_METRICS = [

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { refreshDashboard, refreshHealth } from '@/features/dashboard/dashboardSlice'
+import { refreshAiProviders, refreshDashboard, refreshHealth } from '@/features/dashboard/dashboardSlice'
 
 export function useAdminDashboard() {
   const dispatch = useDispatch()
@@ -17,6 +17,7 @@ export function useAdminDashboard() {
   return {
     ...dashboard,
     refresh: useCallback(() => dispatch(refreshDashboard()), [dispatch]),
+    refreshAiProviders: useCallback(() => dispatch(refreshAiProviders()), [dispatch]),
     refreshHealth: useCallback((serviceId) => dispatch(refreshHealth(serviceId)), [dispatch]),
   }
 }
