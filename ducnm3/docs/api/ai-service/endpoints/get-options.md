@@ -55,7 +55,10 @@ Dùng cấu trúc bao trong [`../../shared/response-format.md`](../../shared/res
       "media-service",
       "notification-service",
       "scheduler-service",
-      "admin-service"
+      "admin-service",
+      "document-extraction",
+      "lesson-synthesis",
+      "quiz-authoring"
     ]
   },
   "meta": {

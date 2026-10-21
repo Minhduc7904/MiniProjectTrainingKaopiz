@@ -13,4 +13,8 @@ public static class CourseErrorCodes
     public const string QuizAttemptNotFound = "QUIZ_ATTEMPT_NOT_FOUND";
     public const string QuizAttemptAlreadySubmitted = "QUIZ_ATTEMPT_ALREADY_SUBMITTED";
     public const string StudentNotEnrolled = "STUDENT_NOT_ENROLLED";
+    public const string LessonAiJobNotFound = "LESSON_AI_JOB_NOT_FOUND";
+    public const string LessonAiJobActive = "LESSON_AI_JOB_ACTIVE";
+    public const string LessonAiDocumentNotReady = "LESSON_AI_DOCUMENT_NOT_READY";
+    public const string LessonContentExists = "LESSON_CONTENT_EXISTS";
 }

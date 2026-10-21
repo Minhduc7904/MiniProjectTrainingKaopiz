@@ -14,6 +14,9 @@ using CourseService.Application.UseCases.Courses.Update;
 using CourseService.Application.Services.Content;
 using CourseService.Application.UseCases.Courses.Delete;
 using CourseService.Application.UseCases.Lessons.Delete;
+using CourseService.Application.UseCases.LessonAi.Documents;
+using CourseService.Application.UseCases.LessonAi.Jobs;
+using CourseService.Application.UseCases.LessonAi.Processing;
 using CourseService.Application.UseCases.Learning;
 using CourseService.Application.UseCases.Learning.Quizzes;
 using CourseService.Application.UseCases.Quizzes.Create;
@@ -63,6 +66,14 @@ public static class DependencyInjection
         services.AddScoped<SubmitQuizAttemptHandler>();
         services.AddScoped<GetQuizAttemptsHandler>();
         services.AddScoped<GetQuizAttemptDetailHandler>();
+        services.AddScoped<GetLessonAiDocumentsHandler>();
+        services.AddScoped<SyncLessonAiDocumentsHandler>();
+        services.AddScoped<CreateLessonAiJobHandler>();
+        services.AddScoped<GetLessonAiJobsHandler>();
+        services.AddScoped<DocumentExtractionProcessor>();
+        services.AddScoped<LessonAiAgentLoop>();
+        services.AddScoped<LessonAiJobProcessor>();
+        services.AddScoped<LessonAiWorkRunner>();
         return services;
     }
 }

@@ -42,6 +42,10 @@ public partial class Lesson
 
     public virtual Course Course { get; set; } = null!;
 
+    public virtual ICollection<LessonAiJob> LessonAiJobs { get; set; } = new List<LessonAiJob>();
+
+    public virtual ICollection<LessonAttachmentText> LessonAttachmentTexts { get; set; } = new List<LessonAttachmentText>();
+
     public virtual ICollection<LessonProgress> LessonProgresses { get; set; } = new List<LessonProgress>();
 
     public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();

@@ -41,6 +41,10 @@ export const API_ROUTES = {
     lessonReorder: (courseId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', 'reorder'),
     quizzes: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'quizzes'),
     quizById: (courseId, lessonId, quizId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'quizzes', quizId),
+    lessonAiDocuments: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'ai-documents'),
+    lessonAiDocumentsSync: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'ai-documents', 'sync'),
+    lessonAiJobs: (courseId, lessonId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'ai-jobs'),
+    lessonAiJobById: (courseId, lessonId, jobId) => joinPath(GATEWAY_PREFIXES.course, '/api/courses', courseId, 'lessons', lessonId, 'ai-jobs', jobId),
     export: joinPath(GATEWAY_PREFIXES.course, '/api/courses/export'),
   },
   students: {

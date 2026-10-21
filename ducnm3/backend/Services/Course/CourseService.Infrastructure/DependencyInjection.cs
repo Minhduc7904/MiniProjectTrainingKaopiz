@@ -9,10 +9,14 @@ using CourseService.Infrastructure.Health;
 using CourseService.Infrastructure.Persistence;
 using CourseService.Infrastructure.Persistence.Repositories;
 using CourseService.Application.Services.Media;
+using CourseService.Application.Services.Ai;
+using CourseService.Infrastructure.Clients.Ai;
 using CourseService.Infrastructure.Clients.Media;
+using CourseService.Infrastructure.Workers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using CourseService.Application.UseCases.Learning;
 
@@ -35,7 +39,40 @@ public static class DependencyInjection
         services.AddScoped<IStudentLearningRepository, EfStudentLearningRepository>();
         services.AddScoped<IQuizCommandRepository, EfQuizCommandRepository>();
         services.AddScoped<IStudentQuizRepository, EfStudentQuizRepository>();
+        services.AddScoped<ILessonAiRepository, EfLessonAiRepository>();
+        AddLongRunningClient<IMediaContentReader, MediaContentReader>(services, configuration, ServiceNames.Media, TimeSpan.FromMinutes(2));
+        AddLongRunningClient<IAiCompletionClient, AiServiceCompletionClient>(services, configuration, ServiceNames.Ai, TimeSpan.FromMinutes(5));
+        services.AddHostedService<LessonAiBackgroundService>();
         services.AddSingleton<IDatabaseHealthProbe>(provider => new CourseDatabaseHealthProbe(connectionString, provider.GetRequiredService<ILogger<CourseDatabaseHealthProbe>>()));
         return services;
+    }
+
+    /// <summary>
+    /// Typed client cho lời gọi chạy lâu (tải tệp lớn, LLM): timeout dài, không retry để không lặp lời gọi LLM tốn phí;
+    /// việc chạy lại do worker quyết định dựa trên trạng thái trong DB.
+    /// </summary>
+    private static void AddLongRunningClient<TClient, TImplementation>(
+        IServiceCollection services,
+        IConfiguration configuration,
+        string destinationService,
+        TimeSpan timeout)
+        where TClient : class
+        where TImplementation : class, TClient
+    {
+        var endpoint = configuration[$"{ConfigurationSectionNames.ServiceEndpoints}:{destinationService}"];
+        if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var baseAddress) || baseAddress.Scheme is not ("http" or "https"))
+        {
+            throw new InvalidOperationException($"A valid HTTP(S) ServiceEndpoints:{destinationService} value is required.");
+        }
+
+        services.AddHttpContextAccessor();
+        services.AddTransient<CorrelationIdDelegatingHandler>();
+        services
+            .AddHttpClient<TClient, TImplementation>(client =>
+            {
+                client.BaseAddress = baseAddress;
+                client.Timeout = timeout;
+            })
+            .AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
     }
 }

@@ -5,6 +5,7 @@ using AiService.Api.Endpoints.Bindings.DeleteBinding;
 using AiService.Api.Endpoints.Bindings.GetBinding;
 using AiService.Api.Endpoints.Bindings.GetBindings;
 using AiService.Api.Endpoints.Bindings.UpsertBinding;
+using AiService.Api.Endpoints.Completions.CreateCompletion;
 using AiService.Api.Endpoints.Models.CreateModel;
 using AiService.Api.Endpoints.Models.DeleteModel;
 using AiService.Api.Endpoints.Models.GetModelDetail;
@@ -84,6 +85,7 @@ if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 app.MapServiceInfoEndpoint(ServiceNames.Ai);
 app.MapDatabaseHealthEndpoint(ServiceNames.Ai);
 app.MapGetAiOptions();
+app.MapCreateAiCompletion();
 app.MapCreateAiProvider();
 app.MapGetAiProviders();
 app.MapGetAiProviderDetail();

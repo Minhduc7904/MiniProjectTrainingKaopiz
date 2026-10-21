@@ -53,3 +53,23 @@ Dùng `TestServer`, kho Quiz trong bộ nhớ dùng chung cho cổng admin và h
 
 `CreateCourseEndpointComponentTests` và `DeleteCourseEndpointComponentTests` gửi thêm `X-Actor-Type: ADMIN`; `DeleteCourseEndpointComponentTests` đăng ký thêm kho Quiz.
 
+## Soạn nội dung Lesson bằng AI
+
+`Endpoints/LessonAiEndpointsComponentTests.cs` dùng `TestServer`, kho trạng thái trong bộ nhớ, Media reader giả và model giả; test gọi `LessonAiWorkRunner` thật để chạy worker đến khi hết việc.
+
+| Kiểm thử | Mục đích / điều kiện đạt |
+| --- | --- |
+| `SyncQueuesAttachmentsAndTheWorkerExtractsThemIntoTheDocumentList` | `POST …/ai-documents/sync` trả `PENDING`; sau khi worker chạy, `GET …/ai-documents` trả `EXTRACTED` kèm `textLength`, video là `UNSUPPORTED`, `no-store`, không lộ văn bản. |
+| `SyncWithRetryFailedRequeuesFailedDocuments` | `?retryFailed=true` đưa tài liệu `FAILED` về `PENDING`. |
+| `CreateLessonJobReturnsAcceptedAndTheWorkerWritesTheLessonContent` | `202` kèm `Location`; worker gọi task `lesson-synthesis` và ghi Markdown vào Lesson; job `COMPLETED`. |
+| `CreateQuizJobProducesADraftQuizLinkedFromTheJob` | Job `GENERATE_QUIZ` tạo Quiz `DRAFT`, `resultQuizId` trỏ đúng Quiz. |
+| `FailedJobExposesTheErrorCodeWithoutLeakingInternals` | Lỗi AI Service được lưu thành `errorCode` của job `FAILED`; Lesson không bị ghi. |
+| `CreateJobReturnsConflictWhenOverwriteIsNotConfirmed` | `409 LESSON_CONTENT_EXISTS`, không tạo job. |
+| `CreateJobReturnsConflictForDocumentsThatAreNotExtracted` | `409 LESSON_AI_DOCUMENT_NOT_READY`. |
+| `CreateJobValidatesTheRequestBody` | `400 VALIDATION_FAILED` với `details` cho `jobType` và `mediaIds`. |
+| `SecondActiveJobOfTheSameTypeIsRejected` | `409 LESSON_AI_JOB_ACTIVE`. |
+| `UnknownJobAndUnknownLessonReturnNotFound` | `404 LESSON_AI_JOB_NOT_FOUND` / `404 LESSON_NOT_FOUND`. |
+| `InvalidRouteIdsReturnValidationFailed` | UUID sai trên route trả `400 VALIDATION_FAILED`. |
+| `EveryEndpointRequiresAnAdminActor` | Cả 5 endpoint trả `403` cho Student và `400` khi thiếu header actor; không tạo job. |
+
+Frontend: `frontend/lms-web/src/api/lessonAiApi.test.js`, `src/pages/courses/components/LessonAiPanel.test.jsx` (checkbox mặc định không chọn, chỉ tài liệu `EXTRACTED` chọn được, payload job, hộp xác nhận ghi đè, poll im lặng, báo tải lại Lesson khi job tổng hợp xong, hiển thị lỗi) và `LessonDetailTabs.test.jsx` (panel chỉ mount ở tab Tài liệu).

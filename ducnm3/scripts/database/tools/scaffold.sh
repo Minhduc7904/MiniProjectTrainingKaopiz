@@ -17,7 +17,7 @@ case "$service" in
     context_name="CourseDbContext"
     namespace="CourseService.Infrastructure.Persistence.Scaffolded"
     context_namespace="CourseService.Infrastructure.Persistence"
-    table_args="--table courses --table lessons --table enrollments --table lesson_progresses --table quizzes --table quiz_questions --table quiz_options --table quiz_attempts --table quiz_attempt_answers"
+    table_args="--table courses --table lessons --table enrollments --table lesson_progresses --table quizzes --table quiz_questions --table quiz_options --table quiz_attempts --table quiz_attempt_answers --table lesson_attachment_texts --table lesson_ai_jobs"
     ;;
   student)
     connection_string="$(environment_value STUDENT_DB_LOCAL_CONNECTION_STRING)"
@@ -62,7 +62,7 @@ case "$service" in
     context_name="AiDbContext"
     namespace="AiService.Infrastructure.Persistence.Scaffolded"
     context_namespace="AiService.Infrastructure.Persistence"
-    table_args="--table ai_providers --table ai_models --table ai_service_bindings"
+    table_args="--table ai_providers --table ai_models --table ai_service_bindings --table ai_invocations"
     ;;
   *)
     echo "Unknown service: $service" >&2

@@ -58,4 +58,21 @@ public sealed class ApiRoutesTests
                 Is.EqualTo("/course/api/student/enrollments/11111111-1111-1111-1111-111111111111/lessons/22222222-2222-2222-2222-222222222222/quizzes/33333333-3333-3333-3333-333333333333/attempts/44444444-4444-4444-4444-444444444444"));
         });
     }
+
+    [Test]
+    public void LessonAiPathsUseServiceAndGatewayShapes()
+    {
+        var jobId = Guid.Parse("55555555-5555-5555-5555-555555555555");
+        const string lesson = "api/courses/11111111-1111-1111-1111-111111111111/lessons/22222222-2222-2222-2222-222222222222";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ApiRoutes.Courses.LessonAiDocumentsServicePath(CourseId, LessonId), Is.EqualTo($"{lesson}/ai-documents"));
+            Assert.That(ApiRoutes.Courses.LessonAiDocumentsPublicPath(CourseId, LessonId), Is.EqualTo($"/course/{lesson}/ai-documents"));
+            Assert.That(ApiRoutes.Courses.LessonAiDocumentsSyncServicePath(CourseId, LessonId), Is.EqualTo($"{lesson}/ai-documents/sync"));
+            Assert.That(ApiRoutes.Courses.LessonAiJobsServicePath(CourseId, LessonId), Is.EqualTo($"{lesson}/ai-jobs"));
+            Assert.That(ApiRoutes.Courses.LessonAiJobByIdServicePath(CourseId, LessonId, jobId), Is.EqualTo($"{lesson}/ai-jobs/55555555-5555-5555-5555-555555555555"));
+            Assert.That(ApiRoutes.Courses.LessonAiJobByIdPublicPath(CourseId, LessonId, jobId), Is.EqualTo($"/course/{lesson}/ai-jobs/55555555-5555-5555-5555-555555555555"));
+        });
+    }
 }

@@ -10,7 +10,8 @@ business-flows/
 ├── course-learning/
 │   ├── course-management.md
 │   ├── enrollment-and-learning-progress.md
-│   └── quiz-authoring-and-taking.md
+│   ├── quiz-authoring-and-taking.md
+│   └── lesson-ai-authoring.md
 ├── media/
 │   ├── post-media.md
 │   ├── post-media-usages.md
@@ -29,7 +30,7 @@ business-flows/
     └── <method>-<resource>.md
 ```
 
-- `course-learning/`: quản lý Khóa học/Bài học, ghi danh, tiến độ học và Quiz trắc nghiệm.
+- `course-learning/`: quản lý Khóa học/Bài học, ghi danh, tiến độ học, Quiz trắc nghiệm và soạn nội dung Lesson bằng AI.
 - `media/`: tải media lên, tạo lượt sử dụng và nhúng media vào Markdown.
 - `students/`: query và quản lý Học viên.
 - `notifications/`: gửi đơn lẻ, gửi hàng loạt, hộp thư đến và Markdown có media.

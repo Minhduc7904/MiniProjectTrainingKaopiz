@@ -13,4 +13,12 @@ public static class AiErrorCodes
     public const string ModelInUse = "AI_MODEL_IN_USE";
     public const string BindingNotFound = "AI_SERVICE_BINDING_NOT_FOUND";
     public const string ReferenceInactive = "AI_REFERENCE_INACTIVE";
+    public const string TaskNotConfigured = "AI_TASK_NOT_CONFIGURED";
+    public const string ProviderKeyUnreadable = "AI_PROVIDER_KEY_UNREADABLE";
+    public const string ProviderAuthFailed = "AI_PROVIDER_AUTH_FAILED";
+    public const string ProviderRateLimited = "AI_PROVIDER_RATE_LIMITED";
+    public const string ProviderTimeout = "AI_PROVIDER_TIMEOUT";
+    public const string ProviderUnreachable = "AI_PROVIDER_UNREACHABLE";
+    public const string ProviderRejectedRequest = "AI_PROVIDER_REJECTED_REQUEST";
+    public const string ProviderInvalidResponse = "AI_PROVIDER_INVALID_RESPONSE";
 }

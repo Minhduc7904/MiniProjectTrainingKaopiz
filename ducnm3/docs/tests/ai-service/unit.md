@@ -25,6 +25,36 @@
 
 `UpsertAiServiceBindingHandlerTests`: tạo rồi thay binding cho cùng service (`Created` đúng); từ chối `ai-service`, `lms-api-gateway`, service lạ, rỗng; từ chối `modelId` thiếu/rỗng; `AI_REFERENCE_INACTIVE` khi model hoặc provider `INACTIVE`; xóa binding và từ chối binding không tồn tại.
 
+## Chat completion (`Application/Completions`, `Infrastructure`)
+
+`CreateAiCompletionHandlerTests` (kho giả + `FakeAiChatClient` trong `Support/`):
+
+| Kiểm thử | Mục đích / điều kiện đạt |
+| --- | --- |
+| `BoundTaskCallsTheBoundModelWithTheDecryptedKeyAndLogsTheInvocation` | Gọi đúng model theo binding bằng key đã giải mã, trả text/tool call/token và ghi một dòng `ai_invocations` `SUCCESS`. |
+| `TaskWithoutBindingIsAConflictAndDoesNotCallTheProvider` | `409 AI_TASK_NOT_CONFIGURED`, không gọi provider. |
+| `InactiveModelIsRejected` | `409 AI_REFERENCE_INACTIVE`, không gọi provider. |
+| `UnsupportedTaskFailsValidation` (2 case) | `task` rỗng hoặc lạ trả `VALIDATION_FAILED` trước khi tra binding. |
+| `MalformedMessagesAndToolsAreListedTogether` | Role sai, message rỗng, tool trùng tên/thiếu schema… được liệt kê chung trong `error.details`. |
+| `ProviderFailureIsMappedAndLoggedAsFailed` (6 case) | Mỗi loại lỗi provider ra đúng mã/HTTP status (`502`/`429`/`504`) và ghi `ai_invocations` `FAILED`. |
+| `FailureToWriteTheLogDoesNotLoseTheModelResult` | Ghi nhật ký lỗi không làm mất kết quả model. |
+
+`HttpAiChatClientTests` (`HttpMessageHandler` giả):
+
+| Kiểm thử | Mục đích / điều kiện đạt |
+| --- | --- |
+| `SendsBearerKeyToChatCompletionsWithModelMessagesAndTools` | `POST {baseUrl}/chat/completions` với `Authorization: Bearer`, model, messages, tools. |
+| `OmitsToolsPropertyWhenThereAreNoTools` | Không gửi `tools` rỗng. |
+| `AnthropicAlsoSendsNativeHeaders` | Thêm `x-api-key` và `anthropic-version`. |
+| `ImageFilePartsAndToolMessagesAreSerializedInOpenAiShape` | Ảnh qua `image_url`, PDF qua phần `file`, message `tool` có `tool_call_id`. |
+| `ToolCallsAreParsedAndEmptyIdsAreReplaced` | Parse `tool_calls`; id rỗng được thay bằng id sinh sẵn. |
+| `HttpFailureIsClassified` | 401/403, 429, 5xx, 400… phân loại đúng `AiChatFailureKind`. |
+| `RejectedRequestKeepsAShortProviderMessageButMasksTheKey` | Giữ phần rút gọn lỗi provider nhưng che API key. |
+| `UnreadableSuccessBodyIsInvalidResponse` | Body không đọc được → `InvalidResponse`. |
+| `NetworkFailureIsUnreachableAndDoesNotLeakTheException` | Lỗi mạng → `Unreachable`, không lộ message exception. |
+| `InvalidBaseUrlFailsWithoutCallingOut` | Base URL không hợp lệ không gọi ra ngoài. |
+| `CallerCancellationPropagates` | Hủy từ caller được truyền lên, không đổi thành timeout. |
+
 ## Thử kết nối (`Application/Providers`, `Infrastructure`)
 
 `CheckAiProviderHealthHandlerTests`: provider bật được giải mã key rồi gọi probe; provider `INACTIVE` trả `DISABLED` và không gọi ra ngoài; kết quả lỗi của probe được giữ nguyên; key không giải mã được trả `ERROR` và không gọi ra ngoài; provider không tồn tại `404`, ID rỗng `400`; thử tất cả vẫn liệt kê provider tắt.

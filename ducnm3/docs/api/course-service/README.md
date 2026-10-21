@@ -31,3 +31,8 @@
 - [Nộp bài và chấm điểm](endpoints/post-student-quiz-attempt-submit.md)
 - [Các lần làm Quiz](endpoints/get-student-quiz-attempts.md)
 - [Xem lại một lần làm](endpoints/get-student-quiz-attempt-detail.md)
+- [Đồng bộ tài liệu AI của Lesson](endpoints/post-course-lesson-ai-documents-sync.md)
+- [Trạng thái trích xuất tài liệu AI của Lesson](endpoints/get-course-lesson-ai-documents.md)
+- [Tạo job AI cho Lesson (tổng hợp bài học / soạn quiz)](endpoints/post-course-lesson-ai-jobs.md)
+- [Các job AI của Lesson](endpoints/get-course-lesson-ai-jobs.md)
+- [Chi tiết job AI của Lesson](endpoints/get-course-lesson-ai-job-by-id.md)

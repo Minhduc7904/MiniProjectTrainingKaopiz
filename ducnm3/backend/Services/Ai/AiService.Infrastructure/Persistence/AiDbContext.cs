@@ -12,6 +12,8 @@ public partial class AiDbContext : DbContext
     {
     }
 
+    public virtual DbSet<AiInvocation> AiInvocations { get; set; }
+
     public virtual DbSet<AiModel> AiModels { get; set; }
 
     public virtual DbSet<AiProvider> AiProviders { get; set; }
@@ -23,6 +25,73 @@ public partial class AiDbContext : DbContext
         modelBuilder
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
+
+        modelBuilder.Entity<AiInvocation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("ai_invocations");
+
+            entity.HasIndex(e => e.CreatedAt, "ix_ai_invocations_created_at").IsDescending();
+
+            entity.HasIndex(e => new { e.TaskName, e.CreatedAt }, "ix_ai_invocations_task_name_created_at").IsDescending(false, true);
+
+            entity.Property(e => e.Id)
+                .HasComment("UUID định danh lần gọi model")
+                .HasColumnName("id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.CompletionTokens)
+                .HasComment("Số token đầu ra provider báo; 0 khi lỗi hoặc provider không báo")
+                .HasColumnName("completion_tokens");
+            entity.Property(e => e.CreatedAt)
+                .HasMaxLength(6)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasComment("Thời điểm gọi, UTC")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ErrorCode)
+                .HasMaxLength(60)
+                .HasComment("Mã lỗi AI_PROVIDER_* khi FAILED, NULL khi SUCCESS")
+                .HasColumnName("error_code")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.LatencyMs)
+                .HasComment("Thời gian gọi provider tính bằng mili giây")
+                .HasColumnName("latency_ms");
+            entity.Property(e => e.ModelId)
+                .HasComment("UUID AI model đã dùng; logical reference, không có khóa ngoại để model xóa được mà vẫn giữ nhật ký")
+                .HasColumnName("model_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ModelName)
+                .HasMaxLength(100)
+                .HasComment("Tên model gửi cho provider tại thời điểm gọi")
+                .HasColumnName("model_name");
+            entity.Property(e => e.PromptTokens)
+                .HasComment("Số token đầu vào provider báo; 0 khi lỗi hoặc provider không báo")
+                .HasColumnName("prompt_tokens");
+            entity.Property(e => e.ProviderType)
+                .HasMaxLength(20)
+                .HasComment("Loại provider tại thời điểm gọi: OPENAI | GEMINI | ANTHROPIC | MISTRAL | CUSTOM")
+                .HasColumnName("provider_type")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasComment("SUCCESS | FAILED")
+                .HasColumnName("status")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.TaskName)
+                .HasMaxLength(50)
+                .HasComment("Khóa binding đã gọi, ví dụ document-extraction; logical reference tới ai_service_bindings.service_name")
+                .HasColumnName("task_name")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ToolCallCount)
+                .HasComment("Số tool call model yêu cầu trong lượt này")
+                .HasColumnName("tool_call_count");
+        });
 
         modelBuilder.Entity<AiModel>(entity =>
         {

@@ -24,6 +24,15 @@
 | `HealthCheckOfOneProviderReturnsItsStatusOr404` | Thử một provider trả trạng thái và độ trễ; `404` khi không tồn tại; Student bị `403`. |
 | `GetOptionsListsProviderTypesWithDefaultBaseUrlsAndBindableServices` | Trả loại AI kèm base URL mặc định và service được phép gán. |
 
+`Endpoints/AiCompletionEndpointComponentTests.cs` (dùng `FakeAiChatClient`):
+
+| Kiểm thử | Mục đích / điều kiện đạt |
+| --- | --- |
+| `CompletionReturnsToolCallsAndUsageWithoutLeakingTheKey` | `POST /api/ai/completions` trả `200`, `no-store`, `toolCalls`, token, độ trễ; response không chứa API key. |
+| `MissingBindingReturnsConflictEnvelope` | `409 AI_TASK_NOT_CONFIGURED` trong envelope lỗi chuẩn. |
+| `InvalidPayloadReturnsValidationDetails` | `400 VALIDATION_FAILED` kèm `error.details` theo field. |
+| `StudentActorIsForbidden` | Actor Student bị `403`. |
+
 Chạy:
 
 ```bash

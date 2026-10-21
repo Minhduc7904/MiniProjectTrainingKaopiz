@@ -1,6 +1,7 @@
 // File: backend/Services/Ai/AiService.Application/Common/AiBindableServices.cs
-// Mục đích: Danh sách service được phép gán AI model (loại trừ chính AI service và Gateway).
+// Mục đích: Danh sách khóa được phép gán AI model: các service (loại trừ chính AI service và Gateway) và các tác vụ AI.
 
+using AiService.Domain.Constants;
 using BuildingBlocks.Contracts.Api;
 
 namespace AiService.Application.Common;
@@ -15,6 +16,9 @@ public static class AiBindableServices
         ServiceNames.Notification,
         ServiceNames.Scheduler,
         ServiceNames.Admin,
+        AiTaskNames.DocumentExtraction,
+        AiTaskNames.LessonSynthesis,
+        AiTaskNames.QuizAuthoring,
     ];
 
     public static bool IsSupported(string value) => All.Contains(value, StringComparer.Ordinal);

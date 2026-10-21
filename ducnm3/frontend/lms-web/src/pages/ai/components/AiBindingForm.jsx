@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Dropdown } from '@/components/ui/admin/Dropdown'
-import { AI_COPY, AI_PAGES } from '@/constants/ai'
+import { AI_COPY, AI_PAGES, AI_TASK_LABELS } from '@/constants/ai'
 import { adminUi } from '@/theme/admin'
 import { AiFormShell } from './AiFormShell'
 
@@ -9,7 +9,7 @@ export function AiBindingForm({ binding, services, models, saving, onSubmit, onC
   const editing = Boolean(binding)
   const [serviceName, setServiceName] = useState(binding?.serviceName ?? '')
   const [modelId, setModelId] = useState(binding?.modelId ?? '')
-  const serviceOptions = services.map((name) => ({ value: name, label: name }))
+  const serviceOptions = services.map((name) => ({ value: name, label: AI_TASK_LABELS[name] ? `${AI_TASK_LABELS[name]} (${name})` : name }))
   const modelOptions = models.map((model) => ({
     value: model.id,
     label: `${model.providerName} · ${model.displayName}`,

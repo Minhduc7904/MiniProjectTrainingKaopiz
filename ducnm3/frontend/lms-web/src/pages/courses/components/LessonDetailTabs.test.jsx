@@ -1,10 +1,16 @@
 // @vitest-environment jsdom
-import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { LessonDetailTabs } from './LessonDetailTabs'
 
 vi.mock('@/components/markdown/RenderedMarkdown', () => ({
   RenderedMarkdown: ({ html }) => <div data-testid="lesson-content">{html}</div>,
+}))
+
+vi.mock('@/pages/courses/components/LessonAiPanel', () => ({
+  LessonAiPanel: ({ courseId, lessonId, attachmentKey, lessonHasContent }) => (
+    <div data-testid="lesson-ai-panel">{[courseId, lessonId, attachmentKey, String(lessonHasContent)].join('|')}</div>
+  ),
 }))
 
 vi.mock('@/pages/media/components/MediaImagePreview', () => ({
@@ -24,6 +30,8 @@ const lesson = {
     thumbnailUrl: null,
   }],
 }
+
+afterEach(cleanup)
 
 describe('LessonDetailTabs', () => {
   it('shows lesson content first and keeps media actions in the documents tab', () => {
@@ -61,5 +69,15 @@ describe('LessonDetailTabs', () => {
     expect(onOpenUpload).toHaveBeenCalledOnce()
     expect(onRemoveMedia).toHaveBeenCalledWith('usage-1')
     expect(onPreviewMedia).not.toHaveBeenCalled()
+  })
+
+  it('mounts the AI panel only in the documents tab with the lesson identity and the attachment set', () => {
+    const withContent = { ...lesson, courseId: 'course-1', contentMarkdown: '# Có nội dung', attachments: [{ ...lesson.attachments[0], mediaId: 'media-1' }] }
+    render(<LessonDetailTabs lesson={withContent} lessonNumber={1} mediaSaving={false} onEdit={vi.fn()} onDelete={vi.fn()} />)
+
+    expect(screen.queryByTestId('lesson-ai-panel')).toBeNull()
+    fireEvent.click(screen.getByRole('tab', { name: 'Tài liệu (1)' }))
+
+    expect(screen.getByTestId('lesson-ai-panel').textContent).toBe('course-1|lesson-1|media-1|true')
   })
 })

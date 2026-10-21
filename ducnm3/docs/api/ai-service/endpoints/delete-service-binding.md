@@ -16,7 +16,7 @@ Admin gỡ model AI đã gán cho service. Service sở hữu: AI Service. Đư�
 
 ### Tham số đường dẫn
 
-- `serviceName` (string, bắt buộc): một trong `course-service`, `student-service`, `media-service`, `notification-service`, `scheduler-service`, `admin-service`. `ai-service` và gateway không được gán.
+- `serviceName` (string, bắt buộc): một trong `course-service`, `student-service`, `media-service`, `notification-service`, `scheduler-service`, `admin-service`, `document-extraction`, `lesson-synthesis`, `quiz-authoring`. Ba khóa cuối là khóa tác vụ AI của tính năng soạn nội dung Lesson (xem [`post-completions.md`](post-completions.md)). `ai-service` và gateway không được gán.
 
 Không có nội dung yêu cầu (body).
 

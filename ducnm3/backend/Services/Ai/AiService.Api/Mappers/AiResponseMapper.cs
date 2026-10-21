@@ -2,10 +2,12 @@
 // Mục đích: Chuyển record của use case AI thành HTTP contract công khai.
 
 using AiService.Api.Contracts.Bindings;
+using AiService.Api.Contracts.Completions;
 using AiService.Api.Contracts.Models;
 using AiService.Api.Contracts.Options;
 using AiService.Api.Contracts.Providers;
 using AiService.Application.Repositories;
+using AiService.Application.UseCases.Completions.Create;
 using AiService.Application.UseCases.Options;
 using AiService.Application.UseCases.Providers.HealthCheck;
 
@@ -80,4 +82,16 @@ public static class AiResponseMapper
         new(
             result.ProviderTypes.Select(option => new AiProviderTypeOptionResponse(option.ProviderType, option.DefaultBaseUrl)).ToArray(),
             result.BindableServices);
+
+    public static AiCompletionResponse ToResponse(CreateAiCompletionResult result) =>
+        new(
+            result.Task,
+            result.ProviderType,
+            result.ModelName,
+            result.Text,
+            result.ToolCalls.Select(call => new AiCompletionToolCallResponse(call.Id, call.Name, call.ArgumentsJson)).ToArray(),
+            result.FinishReason,
+            result.PromptTokens,
+            result.CompletionTokens,
+            result.LatencyMs);
 }

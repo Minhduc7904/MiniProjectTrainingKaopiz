@@ -64,11 +64,31 @@ Ràng buộc: unique `(provider_id, model_name)`; index `(status, created_at DES
 | Cột | Kiểu / null / mặc định | Ý nghĩa |
 | --- | --- | --- |
 | `id` | `CHAR(36)`, PK | UUID binding. |
-| `service_name` | `VARCHAR(50)`, `NOT NULL`, unique | Tên service được dùng AI, ví dụ `course-service`. Mỗi service một binding. |
+| `service_name` | `VARCHAR(50)`, `NOT NULL`, unique | Tên service được dùng AI, ví dụ `course-service`. Mỗi khóa một binding; khóa có thể là tên service hoặc khóa tác vụ AI (`document-extraction`, `lesson-synthesis`, `quiz-authoring`). |
 | `model_id` | `CHAR(36)`, `NOT NULL`, FK | `ai_models.id`, `ON DELETE RESTRICT`. |
 | `created_at`, `updated_at` | `DATETIME(6)`, `NOT NULL` | Tạo / sửa cuối (UTC). |
 
 Ràng buộc: unique `service_name`; index `model_id`. Xóa model còn binding bị chặn (`409 AI_MODEL_IN_USE`).
+
+## `ai_invocations`
+
+Nhật ký mỗi lần AI Service gọi provider (migration `V002__create_ai_invocations.sql`). Chỉ ghi để theo dõi chi phí/độ trễ và phục vụ đánh giá sau này; **không** lưu nội dung message, tài liệu hay API key.
+
+| Cột | Kiểu / null / mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `id` | `CHAR(36)`, PK | UUID lần gọi. |
+| `task_name` | `VARCHAR(50)`, `NOT NULL` | Khóa binding đã gọi, ví dụ `document-extraction`. Logical reference tới `ai_service_bindings.service_name`. |
+| `model_id` | `CHAR(36)`, `NOT NULL` | Model đã dùng. Logical reference, không có FK để xóa được model mà vẫn giữ nhật ký. |
+| `provider_type` | `VARCHAR(20)`, `NOT NULL` | Loại provider tại thời điểm gọi. |
+| `model_name` | `VARCHAR(100)`, `NOT NULL` | Tên model gửi cho provider tại thời điểm gọi. |
+| `status` | `VARCHAR(20)`, `NOT NULL` | `SUCCESS` hoặc `FAILED` (CHECK). |
+| `error_code` | `VARCHAR(60)`, `NULL` | Mã `AI_PROVIDER_*` khi `FAILED`. |
+| `prompt_tokens`, `completion_tokens` | `INT`, `NOT NULL`, mặc định `0` | Token provider báo; `0` khi lỗi hoặc provider không báo. |
+| `tool_call_count` | `INT`, `NOT NULL`, mặc định `0` | Số tool call model yêu cầu trong lượt. |
+| `latency_ms` | `BIGINT`, `NOT NULL` | Thời gian gọi provider (ms). |
+| `created_at` | `DATETIME(6)`, `NOT NULL` | Thời điểm gọi (UTC). |
+
+Index `(task_name, created_at DESC)` và `(created_at DESC)`.
 
 ## Bảo mật và vận hành
 

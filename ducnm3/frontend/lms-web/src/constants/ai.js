@@ -50,6 +50,13 @@ export const AI_PROVIDER_TYPE_LABELS = {
   [AI_PROVIDER_TYPE.custom]: 'Tùy chỉnh (OpenAI-compatible)',
 }
 
+// Khóa binding theo tác vụ của tính năng soạn nội dung bằng AI trong Lesson; khóa khác là tên service.
+export const AI_TASK_LABELS = {
+  'document-extraction': 'Trích xuất tài liệu (PDF/ảnh → văn bản)',
+  'lesson-synthesis': 'Tổng hợp bài học',
+  'quiz-authoring': 'Soạn quiz',
+}
+
 export const AI_LIST_DEFAULT_QUERY = {
   page: PAGINATION.defaults.page,
   pageSize: PAGINATION.defaults.pageSize,

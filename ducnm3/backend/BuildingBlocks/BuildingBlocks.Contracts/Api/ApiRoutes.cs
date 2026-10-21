@@ -38,6 +38,10 @@ public static class ApiRoutes
         public const string StudentLessonDetailTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}";
         public const string QuizzesTemplate = "/api/courses/{courseId}/lessons/{lessonId}/quizzes";
         public const string QuizByIdTemplate = "/api/courses/{courseId}/lessons/{lessonId}/quizzes/{quizId}";
+        public const string LessonAiDocumentsTemplate = "/api/courses/{courseId}/lessons/{lessonId}/ai-documents";
+        public const string LessonAiDocumentsSyncTemplate = "/api/courses/{courseId}/lessons/{lessonId}/ai-documents/sync";
+        public const string LessonAiJobsTemplate = "/api/courses/{courseId}/lessons/{lessonId}/ai-jobs";
+        public const string LessonAiJobByIdTemplate = "/api/courses/{courseId}/lessons/{lessonId}/ai-jobs/{jobId}";
         public const string StudentQuizzesTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes";
         public const string StudentQuizByIdTemplate = "/api/student/enrollments/{courseId}/lessons/{lessonId}/quizzes/{quizId}";
         public const string StudentQuizAttemptsTemplate =
@@ -122,6 +126,29 @@ public static class ApiRoutes
             BuildPublicPath(
                 GatewayRoutePrefixes.Course,
                 FormatGuidRoute(FormatQuizRoute(StudentQuizAttemptByIdTemplate, courseId, lessonId, quizId), "attemptId", attemptId));
+
+        public static string LessonAiDocumentsServicePath(Guid courseId, Guid lessonId) =>
+            BuildServicePath(FormatLessonRoute(LessonAiDocumentsTemplate, courseId, lessonId));
+
+        public static string LessonAiDocumentsPublicPath(Guid courseId, Guid lessonId) =>
+            BuildPublicPath(GatewayRoutePrefixes.Course, FormatLessonRoute(LessonAiDocumentsTemplate, courseId, lessonId));
+
+        public static string LessonAiDocumentsSyncServicePath(Guid courseId, Guid lessonId) =>
+            BuildServicePath(FormatLessonRoute(LessonAiDocumentsSyncTemplate, courseId, lessonId));
+
+        public static string LessonAiJobsServicePath(Guid courseId, Guid lessonId) =>
+            BuildServicePath(FormatLessonRoute(LessonAiJobsTemplate, courseId, lessonId));
+
+        public static string LessonAiJobByIdServicePath(Guid courseId, Guid lessonId, Guid jobId) =>
+            BuildServicePath(FormatGuidRoute(FormatLessonRoute(LessonAiJobByIdTemplate, courseId, lessonId), "jobId", jobId));
+
+        public static string LessonAiJobByIdPublicPath(Guid courseId, Guid lessonId, Guid jobId) =>
+            BuildPublicPath(
+                GatewayRoutePrefixes.Course,
+                FormatGuidRoute(FormatLessonRoute(LessonAiJobByIdTemplate, courseId, lessonId), "jobId", jobId));
+
+        private static string FormatLessonRoute(string template, Guid courseId, Guid lessonId) =>
+            FormatGuidRoute(FormatGuidRoute(template, "courseId", courseId), "lessonId", lessonId);
 
         private static string FormatQuizRoute(string template, Guid courseId, Guid lessonId, Guid quizId) =>
             FormatGuidRoute(
@@ -391,6 +418,7 @@ public static class ApiRoutes
         public const string ServiceBindings = "/api/ai/service-bindings";
         public const string ServiceBindingByServiceNameTemplate = "/api/ai/service-bindings/{serviceName}";
         public const string Options = "/api/ai/options";
+        public const string Completions = "/api/ai/completions";
 
         public static string ProvidersServicePath() =>
             BuildServicePath(Providers);
@@ -451,6 +479,12 @@ public static class ApiRoutes
 
         public static string OptionsPublicPath() =>
             BuildPublicPath(GatewayRoutePrefixes.Ai, Options);
+
+        public static string CompletionsServicePath() =>
+            BuildServicePath(Completions);
+
+        public static string CompletionsPublicPath() =>
+            BuildPublicPath(GatewayRoutePrefixes.Ai, Completions);
 
         private static string FormatServiceNameRoute(string serviceName)
         {

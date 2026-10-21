@@ -1,4 +1,4 @@
-import { AI_PROVIDER_TYPE_LABELS } from '@/constants/ai'
+import { AI_PROVIDER_TYPE_LABELS, AI_TASK_LABELS } from '@/constants/ai'
 import { adminUi } from '@/theme/admin'
 import { formatAiDate } from '../aiOutput'
 import { AiRowActions } from './AiRowActions'
@@ -21,7 +21,7 @@ export function AiBindingsTable({ rows, busy, onEdit, onDelete }) {
         <tbody>
           {rows.map((binding) => (
             <tr key={binding.id} className={`${adminUi.rail} ${adminUi.tableRow}`}>
-              <td className={`px-4 py-3 font-medium ${adminUi.tableCellStrong}`}>{binding.serviceName}</td>
+              <td className={`px-4 py-3 font-medium ${adminUi.tableCellStrong}`}>{binding.serviceName}{AI_TASK_LABELS[binding.serviceName] ? <span className={`ml-1.5 text-[12px] font-normal ${adminUi.caption}`}>{AI_TASK_LABELS[binding.serviceName]}</span> : null}</td>
               <td className={`px-4 py-3 ${adminUi.tableCell}`}>
                 {binding.modelDisplayName}
                 <span className={`ml-1.5 font-mono text-[12px] ${adminUi.caption}`}>{binding.modelName}</span>

@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IAiProviderRepository, EfAiProviderRepository>();
         services.AddScoped<IAiModelRepository, EfAiModelRepository>();
         services.AddScoped<IAiServiceBindingRepository, EfAiServiceBindingRepository>();
+        services.AddScoped<IAiInvocationRepository, EfAiInvocationRepository>();
 
         services.AddSingleton<IValidateOptions<AiEncryptionOptions>, AiEncryptionOptionsValidator>();
         services
@@ -36,6 +37,17 @@ public static class DependencyInjection
 
         // HttpClient dùng chung; không theo redirect để Authorization không bị gửi sang host khác.
         services.AddSingleton<IAiProviderProbe>(_ => new HttpAiProviderProbe(new HttpClient(new SocketsHttpHandler
+        {
+            AllowAutoRedirect = false,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2),
+            ConnectTimeout = HttpAiProviderProbe.Timeout,
+        })
+        {
+            Timeout = Timeout.InfiniteTimeSpan,
+        }));
+
+        // Lượt gọi model có thể kéo dài nhiều chục giây; timeout do HttpAiChatClient tự áp, không retry tự động để tránh gọi (và tính tiền) hai lần.
+        services.AddSingleton<IAiChatClient>(_ => new HttpAiChatClient(new HttpClient(new SocketsHttpHandler
         {
             AllowAutoRedirect = false,
             PooledConnectionLifetime = TimeSpan.FromMinutes(2),

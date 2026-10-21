@@ -369,6 +369,7 @@ public sealed class AiConfigurationEndpointsComponentTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(types, Is.EquivalentTo(ExpectedProviderTypes));
             Assert.That(services, Does.Contain(ServiceNames.Course));
+            Assert.That(services, Does.Contain("document-extraction").And.Contain("lesson-synthesis").And.Contain("quiz-authoring"));
             Assert.That(services, Does.Not.Contain(ServiceNames.Ai));
         });
     }

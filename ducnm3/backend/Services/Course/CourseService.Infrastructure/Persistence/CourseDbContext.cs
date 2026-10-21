@@ -18,6 +18,10 @@ public partial class CourseDbContext : DbContext
 
     public virtual DbSet<Lesson> Lessons { get; set; }
 
+    public virtual DbSet<LessonAiJob> LessonAiJobs { get; set; }
+
+    public virtual DbSet<LessonAttachmentText> LessonAttachmentTexts { get; set; }
+
     public virtual DbSet<LessonProgress> LessonProgresses { get; set; }
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
@@ -156,6 +160,193 @@ public partial class CourseDbContext : DbContext
             entity.HasOne(d => d.Course).WithMany(p => p.Lessons)
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("fk_lessons_course_id");
+        });
+
+        modelBuilder.Entity<LessonAiJob>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("lesson_ai_jobs");
+
+            entity.HasIndex(e => new { e.LessonId, e.CreatedAt }, "ix_lesson_ai_jobs_lesson_id_created_at").IsDescending(false, true);
+
+            entity.HasIndex(e => new { e.Status, e.CreatedAt }, "ix_lesson_ai_jobs_status_created_at");
+
+            entity.Property(e => e.Id)
+                .HasComment("UUID định danh job AI")
+                .HasColumnName("id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.CourseId)
+                .HasComment("UUID Course của Lesson, dùng khi gọi handler cập nhật Lesson")
+                .HasColumnName("course_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.CreatedAt)
+                .HasMaxLength(6)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasComment("Thời điểm tạo job, UTC")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy)
+                .HasComment("UUID admin tạo job; dùng làm actor khi gọi AI Service và ghi dữ liệu")
+                .HasColumnName("created_by")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ErrorCode)
+                .HasMaxLength(60)
+                .HasComment("Mã lỗi an toàn khi FAILED")
+                .HasColumnName("error_code")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ErrorMessage)
+                .HasMaxLength(500)
+                .HasComment("Thông báo lỗi an toàn hiển thị cho admin")
+                .HasColumnName("error_message");
+            entity.Property(e => e.FinishedAt)
+                .HasMaxLength(6)
+                .HasComment("Thời điểm job kết thúc (COMPLETED hoặc FAILED), UTC")
+                .HasColumnName("finished_at");
+            entity.Property(e => e.JobType)
+                .HasMaxLength(30)
+                .HasComment("SYNTHESIZE_LESSON | GENERATE_QUIZ")
+                .HasColumnName("job_type")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.LessonId)
+                .HasComment("UUID Lesson mà job ghi kết quả vào")
+                .HasColumnName("lesson_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.LockedUntil)
+                .HasMaxLength(6)
+                .HasComment("Hạn lease của worker đang chạy job, UTC; quá hạn thì worker khác nhận lại")
+                .HasColumnName("locked_until");
+            entity.Property(e => e.MediaIdsJson)
+                .HasComment("Mảng UUID media (tài liệu) mà admin đã chọn làm nguồn")
+                .HasColumnType("json")
+                .HasColumnName("media_ids_json");
+            entity.Property(e => e.OverwriteContent)
+                .HasComment("Admin đã xác nhận cho ghi đè nội dung Lesson đang có")
+                .HasColumnName("overwrite_content");
+            entity.Property(e => e.PreviousContentMarkdown)
+                .HasComment("Nội dung Lesson trước khi job ghi đè, để khôi phục")
+                .HasColumnType("mediumtext")
+                .HasColumnName("previous_content_markdown");
+            entity.Property(e => e.QuestionCount)
+                .HasComment("Số câu hỏi yêu cầu khi GENERATE_QUIZ; NULL với SYNTHESIZE_LESSON")
+                .HasColumnName("question_count");
+            entity.Property(e => e.ResultQuizId)
+                .HasComment("UUID Quiz DRAFT do job tạo; chỉ có khi GENERATE_QUIZ hoàn tất")
+                .HasColumnName("result_quiz_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.StartedAt)
+                .HasMaxLength(6)
+                .HasComment("Thời điểm worker bắt đầu chạy, UTC")
+                .HasColumnName("started_at");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasComment("PENDING | RUNNING | COMPLETED | FAILED")
+                .HasColumnName("status")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.StepCount)
+                .HasComment("Số lượt gọi model của job")
+                .HasColumnName("step_count");
+            entity.Property(e => e.UpdatedAt)
+                .HasMaxLength(6)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasComment("Thời điểm cập nhật gần nhất, UTC")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.LessonAiJobs)
+                .HasForeignKey(d => d.LessonId)
+                .HasConstraintName("fk_lesson_ai_jobs_lesson_id");
+        });
+
+        modelBuilder.Entity<LessonAttachmentText>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("lesson_attachment_texts");
+
+            entity.HasIndex(e => new { e.Status, e.CreatedAt }, "ix_lesson_attachment_texts_status_created_at");
+
+            entity.HasIndex(e => new { e.LessonId, e.MediaId }, "uq_lesson_attachment_texts_lesson_id_media_id").IsUnique();
+
+            entity.Property(e => e.Id)
+                .HasComment("UUID định danh bản trích xuất")
+                .HasColumnName("id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.Attempts)
+                .HasComment("Số lần worker đã nhận trích xuất tài liệu này")
+                .HasColumnName("attempts");
+            entity.Property(e => e.ContentType)
+                .HasMaxLength(150)
+                .HasComment("MIME type của tệp tại lúc đưa vào hàng chờ")
+                .HasColumnName("content_type")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.CreatedAt)
+                .HasMaxLength(6)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasComment("Thời điểm vào hàng chờ, UTC")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ErrorCode)
+                .HasMaxLength(60)
+                .HasComment("Mã lỗi an toàn khi FAILED hoặc UNSUPPORTED")
+                .HasColumnName("error_code")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.ErrorMessage)
+                .HasMaxLength(500)
+                .HasComment("Thông báo lỗi an toàn hiển thị cho admin")
+                .HasColumnName("error_message");
+            entity.Property(e => e.ExtractedText)
+                .HasComment("Văn bản (Markdown) đã trích xuất; chỉ có khi EXTRACTED")
+                .HasColumnType("mediumtext")
+                .HasColumnName("extracted_text");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(255)
+                .HasComment("Tên tệp gốc tại lúc đưa vào hàng chờ, để hiển thị")
+                .HasColumnName("file_name");
+            entity.Property(e => e.LessonId)
+                .HasComment("UUID Lesson sở hữu tài liệu")
+                .HasColumnName("lesson_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.LockedUntil)
+                .HasMaxLength(6)
+                .HasComment("Hạn lease của worker đang trích xuất, UTC; quá hạn thì worker khác nhận lại")
+                .HasColumnName("locked_until");
+            entity.Property(e => e.MediaId)
+                .HasComment("UUID media đính kèm từ Media Service; logical reference")
+                .HasColumnName("media_id")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.RequestedBy)
+                .HasComment("UUID admin đã yêu cầu; dùng làm actor khi gọi AI Service")
+                .HasColumnName("requested_by")
+                .UseCollation("ascii_bin")
+                .HasCharSet("ascii");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasComment("PENDING | EXTRACTING | EXTRACTED | FAILED | UNSUPPORTED")
+                .HasColumnName("status")
+                .UseCollation("ascii_general_ci")
+                .HasCharSet("ascii");
+            entity.Property(e => e.UpdatedAt)
+                .HasMaxLength(6)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                .HasComment("Thời điểm cập nhật gần nhất, UTC")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.LessonAttachmentTexts)
+                .HasForeignKey(d => d.LessonId)
+                .HasConstraintName("fk_lesson_attachment_texts_lesson_id");
         });
 
         modelBuilder.Entity<LessonProgress>(entity =>

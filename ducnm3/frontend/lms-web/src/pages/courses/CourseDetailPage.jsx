@@ -303,6 +303,15 @@ export function CourseDetailPage() {
       setLessonMediaSaving(false)
     }
   }
+  const reloadSelectedLesson = async () => {
+    if (!selectedLessonId) return
+    try {
+      const { data } = await fetchCourseLessonDetailRequest(courseId, selectedLessonId)
+      setSelectedLessonDetail(data)
+    } catch {
+      // Lỗi tải lại đã hiện qua toast toàn cục; nội dung cũ vẫn hiển thị.
+    }
+  }
   const removeLessonMedia = async (usageId) => {
     setLessonMediaSaving(true)
     setLessonMediaError(null)
@@ -380,7 +389,7 @@ export function CourseDetailPage() {
                   </aside>
                   <div className={`min-h-[360px] rounded-lg p-5 ${adminUi.card}`}>
                     {selectedLessonLoading ? <LoadingState label="Đang tải nội dung lesson..." /> : null}
-                    {!selectedLessonLoading && selectedLessonDetail ? <LessonDetailTabs lesson={selectedLessonDetail} lessonNumber={course.lessons.findIndex((lesson) => lesson.id === selectedLessonId) + 1} mediaError={lessonMediaError} mediaSaving={lessonMediaSaving} onEdit={(lessonId) => void openLessonEditor(lessonId)} onDelete={(lesson) => setConfirm(createLessonDeleteConfirmation(lesson))} onOpenQuizzes={(lessonId) => navigate(APP_ROUTES.courseLessonQuizzes.replace(':courseId', courseId).replace(':lessonId', lessonId))} onOpenLibrary={() => openLessonMedia('library')} onOpenUpload={() => openLessonMedia('upload')} onPreviewMedia={setPreviewMedia} onRemoveMedia={(usageId) => void removeLessonMedia(usageId)} /> : null}
+                    {!selectedLessonLoading && selectedLessonDetail ? <LessonDetailTabs lesson={selectedLessonDetail} lessonNumber={course.lessons.findIndex((lesson) => lesson.id === selectedLessonId) + 1} mediaError={lessonMediaError} mediaSaving={lessonMediaSaving} onEdit={(lessonId) => void openLessonEditor(lessonId)} onDelete={(lesson) => setConfirm(createLessonDeleteConfirmation(lesson))} onOpenQuizzes={(lessonId) => navigate(APP_ROUTES.courseLessonQuizzes.replace(':courseId', courseId).replace(':lessonId', lessonId))} onLessonContentChanged={() => void reloadSelectedLesson()} onOpenLibrary={() => openLessonMedia('library')} onOpenUpload={() => openLessonMedia('upload')} onPreviewMedia={setPreviewMedia} onRemoveMedia={(usageId) => void removeLessonMedia(usageId)} /> : null}
                     {!selectedLessonLoading && !selectedLessonDetail ? <EmptyState title="Chọn một lesson" description="Nội dung và tài liệu đính kèm sẽ hiển thị tại đây." /> : null}
                   </div>
                 </div>

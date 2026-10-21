@@ -5,6 +5,7 @@ using AiService.Application.UseCases.Bindings.Delete;
 using AiService.Application.UseCases.Bindings.GetDetail;
 using AiService.Application.UseCases.Bindings.GetList;
 using AiService.Application.UseCases.Bindings.Upsert;
+using AiService.Application.UseCases.Completions.Create;
 using AiService.Application.UseCases.Models.Create;
 using AiService.Application.UseCases.Models.Delete;
 using AiService.Application.UseCases.Models.GetDetail;
@@ -40,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<DeleteAiServiceBindingHandler>();
         services.AddScoped<GetAiServiceBindingHandler>();
         services.AddScoped<GetAiServiceBindingsHandler>();
+        services.AddScoped<CreateAiCompletionHandler>();
         services.AddSingleton<GetAiOptionsHandler>();
         return services;
     }

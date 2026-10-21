@@ -120,6 +120,16 @@
       "key": "aiApiKey",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "lessonAiMediaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "lessonAiJobId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -350,6 +360,36 @@
           "name": "DELETE Quiz",
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Quiz delete accepted\", function () { pm.response.to.have.status(202); pm.expect(pm.response.text()).to.eql(\"\"); });"]}}],
           "request": {"method": "DELETE", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/quizzes/{{quizId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "quizzes", "{{quizId}}"]}, "description": "Business flow: docs/business-flows/course-learning/delete-course-lesson-quiz.md"},
+          "response": []
+        },
+        {
+          "name": "POST Sync lesson AI documents",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Lesson AI documents synced\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.items).to.be.an(\"array\"); });"]}}],
+          "request": {"method": "POST", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/ai-documents/sync", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "ai-documents", "sync"]}, "description": "Business flow: docs/business-flows/course-learning/post-course-lesson-ai-documents-sync.md"},
+          "response": []
+        },
+        {
+          "name": "GET Lesson AI documents",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Lesson AI documents listed\", function () { pm.response.to.have.status(200); const items = pm.response.json().data.items; pm.expect(items).to.be.an(\"array\"); const ready = items.find(function (item) { return item.status === \"EXTRACTED\"; }); if (ready) { pm.collectionVariables.set(\"lessonAiMediaId\", ready.mediaId); } });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/ai-documents", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "ai-documents"]}, "description": "Business flow: docs/business-flows/course-learning/get-course-lesson-ai-documents.md"},
+          "response": []
+        },
+        {
+          "name": "POST Create lesson AI job",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Lesson AI job accepted\", function () { pm.response.to.have.status(202); const body = pm.response.json(); pm.expect(body.data.status).to.eql(\"PENDING\"); pm.collectionVariables.set(\"lessonAiJobId\", body.data.id); });"]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json", "type": "text"}, {"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "body": {"mode": "raw", "raw": "{\n  \"jobType\": \"GENERATE_QUIZ\",\n  \"mediaIds\": [\"{{lessonAiMediaId}}\"],\n  \"questionCount\": 5\n}"}, "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/ai-jobs", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "ai-jobs"]}, "description": "Business flow: docs/business-flows/course-learning/post-course-lesson-ai-jobs.md"},
+          "response": []
+        },
+        {
+          "name": "GET Lesson AI jobs",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Lesson AI jobs listed\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.items).to.be.an(\"array\"); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/ai-jobs", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "ai-jobs"]}, "description": "Business flow: docs/business-flows/course-learning/get-course-lesson-ai-jobs.md"},
+          "response": []
+        },
+        {
+          "name": "GET Lesson AI job detail",
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test(\"Lesson AI job detail\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.job.id).to.eql(pm.collectionVariables.get(\"lessonAiJobId\")); });"]}}],
+          "request": {"method": "GET", "header": [{"key": "X-Actor-Type", "value": "ADMIN", "type": "text"}, {"key": "X-Actor-Id", "value": "{{ownerId}}", "type": "text"}, {"key": "X-Correlation-ID", "value": "{{$guid}}", "type": "text"}], "url": {"raw": "{{baseUrl}}/course/api/courses/{{courseId}}/lessons/{{lessonId}}/ai-jobs/{{lessonAiJobId}}", "host": ["{{baseUrl}}"], "path": ["course", "api", "courses", "{{courseId}}", "lessons", "{{lessonId}}", "ai-jobs", "{{lessonAiJobId}}"]}, "description": "Business flow: docs/business-flows/course-learning/get-course-lesson-ai-job-by-id.md"},
           "response": []
         }
       ]
@@ -2201,6 +2241,63 @@
               ]
             },
             "description": "Business flow: docs/business-flows/ai/delete-provider.md"
+          },
+          "response": []
+        },
+        {
+          "name": "POST AI completion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"POST AI completion OK\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().data.finishReason).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Type",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "X-Actor-Id",
+                "value": "{{ownerId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "{{$guid}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task\": \"lesson-synthesis\",\n  \"messages\": [\n    { \"role\": \"user\", \"text\": \"Trả lời đúng một từ: xin chào.\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/api/ai/completions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "api",
+                "ai",
+                "completions"
+              ]
+            },
+            "description": "Business flow: docs/business-flows/ai/post-completions.md. Cần đã gán model cho khóa tác vụ lesson-synthesis."
           },
           "response": []
         }

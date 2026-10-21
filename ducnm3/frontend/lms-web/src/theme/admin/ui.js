@@ -58,6 +58,7 @@ export const adminUi = {
   dropdownOptionActive: 'bg-surface-muted text-fg',
   dropdownOptionIdle: 'text-fg-muted',
   check: 'text-accent',
+  checkbox: 'h-4 w-4 shrink-0 cursor-pointer accent-accent disabled:cursor-not-allowed',
   buttonPrimary:
     'bg-accent text-on-accent hover:bg-accent-hover disabled:bg-accent/40',
   buttonGhost:

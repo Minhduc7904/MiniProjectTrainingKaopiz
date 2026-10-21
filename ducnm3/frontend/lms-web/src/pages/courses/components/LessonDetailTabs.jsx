@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { File, FileText, Image, ImagePlus, ListChecks, Music2, Pencil, Trash2, Video } from 'lucide-react'
 import { RenderedMarkdown } from '@/components/markdown/RenderedMarkdown'
+import { LessonAiPanel } from '@/pages/courses/components/LessonAiPanel'
 import { MediaImagePreview } from '@/pages/media/components/MediaImagePreview'
 import { Button } from '@/components/ui/admin/Button'
 import { Icon } from '@/components/ui/admin/Icon'
@@ -21,6 +22,7 @@ export function LessonDetailTabs({
   mediaSaving,
   onDelete,
   onEdit,
+  onLessonContentChanged,
   onOpenLibrary,
   onOpenQuizzes,
   onOpenUpload,
@@ -90,6 +92,16 @@ export function LessonDetailTabs({
             })}
           </div> : <p className={`mt-4 p-4 text-[13px] ${adminUi.emptyDropzone}`}>Chưa có tài liệu đính kèm. Chọn từ thư viện hoặc upload file mới để bắt đầu.</p>}
           {mediaError ? <p className={`mt-3 rounded-md px-3 py-2 text-[12px] ${adminUi.badgeDanger}`}>{mediaError}</p> : null}
+          {lesson.courseId ? (
+            <LessonAiPanel
+              courseId={lesson.courseId}
+              lessonId={lesson.id}
+              attachmentKey={attachments.map((media) => media.mediaId).join(',')}
+              lessonHasContent={Boolean(lesson.contentMarkdown?.trim())}
+              onLessonContentChanged={onLessonContentChanged}
+              onOpenQuizzes={onOpenQuizzes}
+            />
+          ) : null}
         </section>
       )}
     </>

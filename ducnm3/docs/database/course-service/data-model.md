@@ -119,6 +119,54 @@ Mỗi dòng là một lựa chọn học viên đang chọn: `id` (PK), `attempt
 
 Markdown của mô tả, câu hỏi và lựa chọn dùng cùng pipeline với Lesson. Usage được đồng bộ với owner `COURSE` / `QUIZ_CONTENT` / `quiz_id` (tập tham chiếu là hợp của mọi Markdown trong Quiz). Media Service cho phép owner này bằng migration Media `V011`.
 
+## Soạn nội dung Lesson bằng AI (`V003__create_lesson_ai_tables.sql`)
+
+Hai bảng phục vụ pipeline "tài liệu đính kèm → bài học / quiz" (xem [`lesson-ai-authoring.md`](../../business-flows/course-learning/lesson-ai-authoring.md)). Cả hai có FK `lesson_id → lessons.id ON DELETE CASCADE`; `media_id`, `course_id` và các cột actor là logical reference (không FK xuyên database).
+
+### `lesson_attachment_texts`
+
+Văn bản trích xuất của từng tệp đính kèm.
+
+| Cột | Kiểu / null / mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `id` | `CHAR(36)`, PK | UUID bản trích xuất. |
+| `lesson_id` | `CHAR(36)`, `NOT NULL`, FK | Lesson sở hữu tài liệu. |
+| `media_id` | `CHAR(36)`, `NOT NULL` | Media đính kèm; unique cùng `lesson_id`. |
+| `file_name`, `content_type` | `VARCHAR(255)` / `VARCHAR(150)`, `NOT NULL` | Tên tệp và MIME tại lúc đưa vào hàng chờ, để hiển thị và phân loại. |
+| `status` | `VARCHAR(20)`, `NOT NULL` | `PENDING`, `EXTRACTING`, `EXTRACTED`, `FAILED`, `UNSUPPORTED` (CHECK). |
+| `extracted_text` | `MEDIUMTEXT`, `NULL` | Markdown đã trích xuất; chỉ có khi `EXTRACTED`. Không bao giờ trả qua API. |
+| `error_code`, `error_message` | `VARCHAR(60)` / `VARCHAR(500)`, `NULL` | Lỗi an toàn khi `FAILED`/`UNSUPPORTED`. |
+| `attempts` | `INT`, `NOT NULL`, mặc định `0` | Số lần worker đã nhận; tối đa 3 lần khi worker chết giữa chừng. |
+| `locked_until` | `DATETIME(6)`, `NULL` | Hạn lease của worker (UTC). |
+| `requested_by` | `CHAR(36)`, `NOT NULL` | Admin yêu cầu; dùng làm actor khi gọi AI Service. |
+| `created_at`, `updated_at` | `DATETIME(6)`, `NOT NULL` | Tạo / sửa cuối (UTC). |
+
+Ràng buộc: `uq(lesson_id, media_id)` (đồng bộ idempotent); index `(status, created_at)` cho worker nhận việc.
+
+### `lesson_ai_jobs`
+
+Mỗi dòng là một lần admin giao việc cho AI.
+
+| Cột | Kiểu / null / mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `id` | `CHAR(36)`, PK | UUID job. |
+| `lesson_id` | `CHAR(36)`, `NOT NULL`, FK | Lesson mà job ghi kết quả vào. |
+| `course_id` | `CHAR(36)`, `NOT NULL` | Course của Lesson, dùng khi gọi handler cập nhật. |
+| `job_type` | `VARCHAR(30)`, `NOT NULL` | `SYNTHESIZE_LESSON` hoặc `GENERATE_QUIZ` (CHECK). |
+| `status` | `VARCHAR(20)`, `NOT NULL` | `PENDING`, `RUNNING`, `COMPLETED`, `FAILED` (CHECK). |
+| `media_ids_json` | `JSON`, `NOT NULL` | Mảng UUID tài liệu admin đã chọn. |
+| `question_count` | `INT`, `NULL` | Số câu yêu cầu khi `GENERATE_QUIZ`. |
+| `overwrite_content` | `TINYINT(1)`, `NOT NULL`, mặc định `0` | Admin đã xác nhận ghi đè nội dung Lesson. |
+| `previous_content_markdown` | `MEDIUMTEXT`, `NULL` | Nội dung Lesson trước khi job ghi đè, để khôi phục. |
+| `result_quiz_id` | `CHAR(36)`, `NULL` | Quiz `DRAFT` do job tạo. |
+| `step_count` | `INT`, `NOT NULL`, mặc định `0` | Số lượt gọi model. |
+| `error_code`, `error_message` | `VARCHAR(60)` / `VARCHAR(500)`, `NULL` | Lỗi an toàn khi `FAILED`. |
+| `locked_until` | `DATETIME(6)`, `NULL` | Hạn lease của worker (UTC); job `RUNNING` quá hạn bị `FAILED` (`WORKER_INTERRUPTED`) và không chạy lại. |
+| `created_by` | `CHAR(36)`, `NOT NULL` | Admin tạo job; actor khi gọi AI Service và ghi dữ liệu. |
+| `created_at`, `updated_at`, `started_at`, `finished_at` | `DATETIME(6)` | Mốc thời gian (UTC); `started_at`/`finished_at` có thể `NULL`. |
+
+Index `(lesson_id, created_at DESC)` (danh sách job của Lesson) và `(status, created_at)` (worker nhận job). "Tối đa một job đang hoạt động mỗi loại trong Lesson" được kiểm tra ở Application, không có unique index.
+
 ## Chỉ mục cho yêu cầu hiệu năng
 
 | Use case | Chỉ mục | Trạng thái |
@@ -135,7 +183,7 @@ database vừa publish `CoursePublishedV1`, phải thêm `OutboxState` và
 
 ## Seed và migration
 
-`V001__create_learning_tables.sql` và `V002__create_quiz_tables.sql` là migration nguồn sự thật. Seeder tạo 100k
+`V001__create_learning_tables.sql`, `V002__create_quiz_tables.sql` và `V003__create_lesson_ai_tables.sql` là migration nguồn sự thật. Seeder tạo 100k
 Course, 1–5 Lesson/Course và Enrollment sử dụng `student_id` xác định được từ
 Student seed; không seed `lesson_progresses`. Seed không thuộc migration và
 không ghi `schema_migrations`.

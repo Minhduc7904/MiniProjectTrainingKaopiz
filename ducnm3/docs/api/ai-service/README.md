@@ -2,7 +2,7 @@
 
 AI Service lưu cấu hình AI dùng chung: **provider** (loại AI + API key mã hóa), **model** và **binding** (service nào dùng model nào). Toàn bộ endpoint chỉ dành cho actor `ADMIN`, đi qua Gateway với tiền tố `/ai`.
 
-Phase 1 chỉ có cấu hình. Gọi LLM bằng OpenAI SDK và pipeline RabbitMQ thuộc Phase 2 và chưa được triển khai.
+Ngoài cấu hình, AI Service có endpoint gọi model (`completions`) cho các service nội bộ. Hiện Course Service dùng nó cho tính năng soạn nội dung Lesson bằng AI (trích xuất tài liệu, tổng hợp bài học, soạn quiz); mỗi tác vụ có khóa binding riêng nên có thể gán model khác nhau. Pipeline RabbitMQ chưa được triển khai.
 
 ## Provider
 
@@ -28,6 +28,10 @@ Phase 1 chỉ có cấu hình. Gọi LLM bằng OpenAI SDK và pipeline RabbitMQ
 - [`GET /ai/api/ai/service-bindings/{serviceName}` — Xem AI đã gán cho một service](endpoints/get-service-binding.md)
 - [`PUT /ai/api/ai/service-bindings/{serviceName}` — Gán (hoặc đổi) model AI cho service](endpoints/put-service-binding.md)
 - [`DELETE /ai/api/ai/service-bindings/{serviceName}` — Gỡ AI khỏi service](endpoints/delete-service-binding.md)
+
+## Gọi model
+
+- [`POST /ai/api/ai/completions` — Chạy một lượt chat completion cho một tác vụ AI](endpoints/post-completions.md)
 
 ## Lựa chọn cho UI
 
