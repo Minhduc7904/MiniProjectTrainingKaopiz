@@ -1,0 +1,396 @@
+{
+ "id": "38c44189-41c5-4911-a81a-9b67b0e86511",
+ "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+ "title": "Trung bình, trung vị, mốt cho số liệu ghép nhóm",
+ "descriptionMarkdown": "Ôn tập cách tính **số trung bình, trung vị và mốt** khi số liệu được chia thành các nhóm khoảng dạng $[a_i; a_{i+1})$.",
+ "descriptionHtml": "<p>Ôn tập cách tính <strong>số trung bình, trung vị và mốt</strong> khi số liệu được chia thành các nhóm khoảng dạng <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_i; a_{i&#x2B;1})\"></span>.</p>\n",
+ "displayOrder": 3,
+ "status": "DRAFT",
+ "questionCount": 10,
+ "totalPoints": 10.0,
+ "hasAttempts": false,
+ "createdAtUtc": "2026-10-22T06:40:40.58356",
+ "updatedAtUtc": "2026-10-22T06:40:40.599401",
+ "questions": [
+  {
+   "id": "b1d2928e-b294-4cd2-a339-2bb89f4d88e7",
+   "questionMarkdown": "Trong số liệu ghép nhóm, giá trị đại diện của nhóm $[a_i; a_{i+1})$ được xác định bằng công thức nào?",
+   "questionHtml": "<p>Trong số liệu ghép nhóm, giá trị đại diện của nhóm <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_i; a_{i&#x2B;1})\"></span> được xác định bằng công thức nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 1,
+   "options": [
+    {
+     "id": "008d9f2d-9a8d-4512-aa1a-80f0506e95c8",
+     "optionMarkdown": "$c_i=\\dfrac{a_i+a_{i+1}}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=\\dfrac{a_i&#x2B;a_{i&#x2B;1}}{2}\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "ddafc5b7-56ea-472c-a069-eec473139a3b",
+     "optionMarkdown": "$c_i=a_i+a_{i+1}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=a_i&#x2B;a_{i&#x2B;1}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "1c31e63b-0b75-45bf-bf9c-aaf11b5abd1e",
+     "optionMarkdown": "$c_i=a_{i+1}-a_i$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=a_{i&#x2B;1}-a_i\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "a18057f6-2a02-413a-9242-893529d93cac",
+     "optionMarkdown": "$c_i=\\dfrac{a_i}{a_{i+1}}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=\\dfrac{a_i}{a_{i&#x2B;1}}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "55011a03-c453-48dd-a400-9b385d2a68a2",
+   "questionMarkdown": "Tổng cỡ mẫu trong số liệu ghép nhóm được tính như thế nào từ các tần số $m_1,m_2,\\dots,m_k$?",
+   "questionHtml": "<p>Tổng cỡ mẫu trong số liệu ghép nhóm được tính như thế nào từ các tần số <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"m_1,m_2,\\dots,m_k\"></span>?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 2,
+   "options": [
+    {
+     "id": "d13db860-866f-4629-90cf-4907e2bd2d38",
+     "optionMarkdown": "$n=m_1-m_2+\\cdots+m_k$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n=m_1-m_2&#x2B;\\cdots&#x2B;m_k\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "5797eb21-ec32-4f4e-b734-692fe111b5b1",
+     "optionMarkdown": "$n=m_1+m_2+\\cdots+m_k$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n=m_1&#x2B;m_2&#x2B;\\cdots&#x2B;m_k\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "d6cf92e0-4db2-44df-86bf-79b08278905a",
+     "optionMarkdown": "$n=\\dfrac{m_1+m_2+\\cdots+m_k}{k}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n=\\dfrac{m_1&#x2B;m_2&#x2B;\\cdots&#x2B;m_k}{k}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "00df9bdf-33cc-459c-b911-a9bd1de7b972",
+     "optionMarkdown": "$n=\\sum_{i=1}^{k} \\dfrac{1}{m_i}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n=\\sum_{i=1}^{k} \\dfrac{1}{m_i}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "91af7386-cc29-4db2-83ac-0f6250ab8e93",
+   "questionMarkdown": "Công thức tính số trung bình $\n\\bar{x}$ của số liệu ghép nhóm là",
+   "questionHtml": "<p>Công thức tính số trung bình $\n\\bar$ của số liệu ghép nhóm là</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 3,
+   "options": [
+    {
+     "id": "c08de2c9-4f40-40ef-be57-c81e7d91e7eb",
+     "optionMarkdown": "$\\bar{x}=\\dfrac{m_1c_1+m_2c_2+\\cdots+m_kc_k}{n}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\bar{x}=\\dfrac{m_1c_1&#x2B;m_2c_2&#x2B;\\cdots&#x2B;m_kc_k}{n}\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "8a27917b-d659-40ab-93c9-007528c327c1",
+     "optionMarkdown": "$\\bar{x}=\\dfrac{c_1+c_2+\\cdots+c_k}{n}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\bar{x}=\\dfrac{c_1&#x2B;c_2&#x2B;\\cdots&#x2B;c_k}{n}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "3c60b30c-1cb3-46f4-9a40-5f323f2918dc",
+     "optionMarkdown": "$\\bar{x}=\\dfrac{m_1+m_2+\\cdots+m_k}{c_1+c_2+\\cdots+c_k}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\bar{x}=\\dfrac{m_1&#x2B;m_2&#x2B;\\cdots&#x2B;m_k}{c_1&#x2B;c_2&#x2B;\\cdots&#x2B;c_k}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "05ddab90-d8cd-416b-a7c1-4dba00d9b270",
+     "optionMarkdown": "$\\bar{x}=c_p$ với $p$ là nhóm có tần số tích lũy lớn nhất",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\bar{x}=c_p\"></span> với <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"p\"></span> là nhóm có tần số tích lũy lớn nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "707837a8-8bac-4e13-9055-604773bcce4d",
+   "questionMarkdown": "Muốn xác định trung vị $M_e$ theo số liệu ghép nhóm, nhóm đầu tiên có tần số tích lũy $\\ge \\dfrac{n}{2}$ là nhóm nào?",
+   "questionHtml": "<p>Muốn xác định trung vị <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e\"></span> theo số liệu ghép nhóm, nhóm đầu tiên có tần số tích lũy <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\ge \\dfrac{n}{2}\"></span> là nhóm nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 4,
+   "options": [
+    {
+     "id": "ce7b1f4b-3465-4cbe-8cad-ae9b53df6353",
+     "optionMarkdown": "Nhóm có tần số $m_i$ nhỏ nhất",
+     "optionHtml": "<p>Nhóm có tần số <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"m_i\"></span> nhỏ nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "76b72225-a1ed-47ab-9bca-1c26775c6821",
+     "optionMarkdown": "Nhóm có tần số tích lũy đạt giá trị đúng bằng $n$",
+     "optionHtml": "<p>Nhóm có tần số tích lũy đạt giá trị đúng bằng <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "b9cb37ab-4b09-43a1-b9d8-c69481a4c621",
+     "optionMarkdown": "Nhóm đầu tiên có tần số tích lũy không nhỏ hơn $\\dfrac{n}{2}$",
+     "optionHtml": "<p>Nhóm đầu tiên có tần số tích lũy không nhỏ hơn <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{n}{2}\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 3
+    },
+    {
+     "id": "e15c0f96-e56a-486a-a44c-cc87aee21435",
+     "optionMarkdown": "Nhóm có tần số đại diện $c_i$ lớn nhất",
+     "optionHtml": "<p>Nhóm có tần số đại diện <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i\"></span> lớn nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "307baa7e-82ea-412e-a598-148243bcf9e1",
+   "questionMarkdown": "Công thức tính trung vị $M_e$ của số liệu ghép nhóm có dạng nào? (Giả sử nhóm trung vị là $[a_p;a_{p+1})$ với tần số $m_p$.)",
+   "questionHtml": "<p>Công thức tính trung vị <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e\"></span> của số liệu ghép nhóm có dạng nào? (Giả sử nhóm trung vị là <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_p;a_{p&#x2B;1})\"></span> với tần số <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"m_p\"></span>.)</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 5,
+   "options": [
+    {
+     "id": "caa4def6-db1a-4e8f-b57f-b6bd3d42513f",
+     "optionMarkdown": "$M_e=a_p+\\dfrac{\\left(\\frac{n}{2}-(m_1+\\cdots+m_{p-1})\\right)}{m_p}\\cdot(a_{p+1}-a_p)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=a_p&#x2B;\\dfrac{\\left(\\frac{n}{2}-(m_1&#x2B;\\cdots&#x2B;m_{p-1})\\right)}{m_p}\\cdot(a_{p&#x2B;1}-a_p)\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "8bd56b74-0dee-431c-9bff-4225d320e5b2",
+     "optionMarkdown": "$M_e=a_{p+1}+\\dfrac{\\left(\\frac{n}{2}-(m_1+\\cdots+m_{p-1})\\right)}{m_p}\\cdot(a_{p+1}-a_p)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=a_{p&#x2B;1}&#x2B;\\dfrac{\\left(\\frac{n}{2}-(m_1&#x2B;\\cdots&#x2B;m_{p-1})\\right)}{m_p}\\cdot(a_{p&#x2B;1}-a_p)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "d097849d-1242-45ef-ae73-1479474c2fb6",
+     "optionMarkdown": "$M_e=a_p+\\dfrac{m_p}{\\frac{n}{2}-(m_1+\\cdots+m_{p-1})}\\cdot(a_{p+1}-a_p)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=a_p&#x2B;\\dfrac{m_p}{\\frac{n}{2}-(m_1&#x2B;\\cdots&#x2B;m_{p-1})}\\cdot(a_{p&#x2B;1}-a_p)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "694de9fa-fa8b-4685-8d97-6a69f16feb58",
+     "optionMarkdown": "$M_e=\\dfrac{a_p+a_{p+1}}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=\\dfrac{a_p&#x2B;a_{p&#x2B;1}}{2}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "8203bc04-f2d6-4466-ae11-b12d24e2bec0",
+   "questionMarkdown": "Đối với mốt $M_o$ của số liệu ghép nhóm, $[a_j;a_{j+1})$ là nhóm có đặc điểm nào?",
+   "questionHtml": "<p>Đối với mốt <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o\"></span> của số liệu ghép nhóm, <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_j;a_{j&#x2B;1})\"></span> là nhóm có đặc điểm nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 6,
+   "options": [
+    {
+     "id": "fca167ff-8c86-491c-b823-0e39a10d1130",
+     "optionMarkdown": "Là nhóm có tần số tích lũy nhỏ nhất",
+     "optionHtml": "<p>Là nhóm có tần số tích lũy nhỏ nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "f7d7c249-b7cb-48bf-ab0a-7fb3e538fd78",
+     "optionMarkdown": "Là nhóm có tần số lớn nhất",
+     "optionHtml": "<p>Là nhóm có tần số lớn nhất</p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "d55c0895-2981-4438-b9a9-748e54b17b1c",
+     "optionMarkdown": "Là nhóm có giá trị đại diện $c_i$ nhỏ nhất",
+     "optionHtml": "<p>Là nhóm có giá trị đại diện <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i\"></span> nhỏ nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "d754f633-b1a5-4143-b627-d104341d0b19",
+     "optionMarkdown": "Là nhóm có độ rộng nhỏ nhất (nếu các độ rộng khác nhau)",
+     "optionHtml": "<p>Là nhóm có độ rộng nhỏ nhất (nếu các độ rộng khác nhau)</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "4f50acb9-1c04-4223-a22f-d07a15a08696",
+   "questionMarkdown": "Công thức tính mốt $M_o$ (nhóm có tần số lớn nhất là $[a_j;a_{j+1})$) được cho bởi",
+   "questionHtml": "<p>Công thức tính mốt <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o\"></span> (nhóm có tần số lớn nhất là <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_j;a_{j&#x2B;1})\"></span>) được cho bởi</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 7,
+   "options": [
+    {
+     "id": "4e879afb-6982-4528-94be-56149c2057bf",
+     "optionMarkdown": "$M_o=a_j+\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})+(m_j-m_{j+1})}\\cdot(a_{j+1}-a_j)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=a_j&#x2B;\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})&#x2B;(m_j-m_{j&#x2B;1})}\\cdot(a_{j&#x2B;1}-a_j)\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "6385a8b8-54e5-4325-8939-0ec455e8ecff",
+     "optionMarkdown": "$M_o=a_j+\\dfrac{m_j}{m_{j-1}+m_{j+1}}\\cdot(a_{j+1}-a_j)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=a_j&#x2B;\\dfrac{m_j}{m_{j-1}&#x2B;m_{j&#x2B;1}}\\cdot(a_{j&#x2B;1}-a_j)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "5617cf8e-12c0-4fef-85ff-a21f68e27f81",
+     "optionMarkdown": "$M_o=\\dfrac{m_jc_j}{n}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=\\dfrac{m_jc_j}{n}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "d6add743-c5be-40d3-af88-4a93d3e6d097",
+     "optionMarkdown": "$M_o=a_{j+1}-\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})+(m_j-m_{j+1})}\\cdot(a_{j+1}-a_j)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=a_{j&#x2B;1}-\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})&#x2B;(m_j-m_{j&#x2B;1})}\\cdot(a_{j&#x2B;1}-a_j)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "3d9b601b-2f97-45da-8d2b-b7d361b97ff6",
+   "questionMarkdown": "Trong bài toán thống kê tốc độ 42 ô tô, quy định tốc độ tối đa là 60 km/h. Biết rằng nhóm $[60;65)$ có tần số 7 và nhóm $[65;70)$ có tần số 4. Số xe vi phạm là bao nhiêu?",
+   "questionHtml": "<p>Trong bài toán thống kê tốc độ 42 ô tô, quy định tốc độ tối đa là 60 km/h. Biết rằng nhóm <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[60;65)\"></span> có tần số 7 và nhóm <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[65;70)\"></span> có tần số 4. Số xe vi phạm là bao nhiêu?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 8,
+   "options": [
+    {
+     "id": "fa748465-a12a-48bb-ad08-54eb3b122dda",
+     "optionMarkdown": "7",
+     "optionHtml": "<p>7</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "eebfd830-16a7-42e7-9a9d-680e1e8657d5",
+     "optionMarkdown": "11",
+     "optionHtml": "<p>11</p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "52334b1f-2a3d-46c5-81f4-67911dd20a50",
+     "optionMarkdown": "14",
+     "optionHtml": "<p>14</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "f611d27d-cab3-440b-8fb4-ea7a50c9a325",
+     "optionMarkdown": "18",
+     "optionHtml": "<p>18</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "491eda6c-dd0d-456c-8bdf-22d11f3d5133",
+   "questionMarkdown": "Với bảng tốc độ cho $n=42$. Khi tính trung vị, $\\dfrac{n}{2}$ bằng bao nhiêu?",
+   "questionHtml": "<p>Với bảng tốc độ cho <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n=42\"></span>. Khi tính trung vị, <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{n}{2}\"></span> bằng bao nhiêu?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 9,
+   "options": [
+    {
+     "id": "16f34abc-e66e-4b8a-9daf-f7cb609abd90",
+     "optionMarkdown": "21",
+     "optionHtml": "<p>21</p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "9cb3aa4c-1b82-4837-b6e6-12a7199ddbba",
+     "optionMarkdown": "20",
+     "optionHtml": "<p>20</p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "40dacdfb-4b4b-4b97-8523-cdd9fac0ec9b",
+     "optionMarkdown": "22",
+     "optionHtml": "<p>22</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "de0b114d-3507-41f0-8539-230aa9b690ae",
+     "optionMarkdown": "42",
+     "optionHtml": "<p>42</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "88620186-4f59-4a64-8eb9-4e382d2dfbc9",
+   "questionMarkdown": "Trong các nhận xét sau, phát biểu nào đúng?",
+   "questionHtml": "<p>Trong các nhận xét sau, phát biểu nào đúng?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 10,
+   "options": [
+    {
+     "id": "a4adc38d-ad69-47aa-8539-7b776f6d8db7",
+     "optionMarkdown": "Số trung bình ít bị ảnh hưởng bởi giá trị ngoại lai, còn trung vị bị ảnh hưởng nhiều",
+     "optionHtml": "<p>Số trung bình ít bị ảnh hưởng bởi giá trị ngoại lai, còn trung vị bị ảnh hưởng nhiều</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "4840e448-0b2c-4a25-bf05-563d0e98f3bc",
+     "optionMarkdown": "Số trung bình chịu ảnh hưởng của mọi giá trị, còn trung vị ít bị ảnh hưởng bởi giá trị ngoại lai",
+     "optionHtml": "<p>Số trung bình chịu ảnh hưởng của mọi giá trị, còn trung vị ít bị ảnh hưởng bởi giá trị ngoại lai</p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "61abb7d3-7306-4a1b-acd8-d01a9d11fd75",
+     "optionMarkdown": "Khi tính trung vị và mốt không cần kiểm tra độ rộng các nhóm",
+     "optionHtml": "<p>Khi tính trung vị và mốt không cần kiểm tra độ rộng các nhóm</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "d498ee40-62bc-438f-9a96-a5650344089f",
+     "optionMarkdown": "Mốt chỉ phụ thuộc vào nhóm có tần số tích lũy đúng bằng $\\dfrac{n}{2}$",
+     "optionHtml": "<p>Mốt chỉ phụ thuộc vào nhóm có tần số tích lũy đúng bằng <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{n}{2}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  }
+ ]
+}

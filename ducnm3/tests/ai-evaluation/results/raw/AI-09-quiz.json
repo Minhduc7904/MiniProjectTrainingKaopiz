@@ -1,0 +1,206 @@
+{
+ "id": "662674c7-144f-4884-ae35-28fcee268dfe",
+ "lessonId": "752ab220-8dc4-4963-836b-795d3cc0f9af",
+ "title": "Nguyên hàm của hàm lũy thừa và các trường hợp đặc biệt",
+ "descriptionMarkdown": "Luyện tập công thức nguyên hàm của hàm lũy thừa $x^a$ và các bài áp dụng.",
+ "descriptionHtml": "<p>Luyện tập công thức nguyên hàm của hàm lũy thừa <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^a\"></span> và các bài áp dụng.</p>\n",
+ "displayOrder": 1,
+ "status": "DRAFT",
+ "questionCount": 5,
+ "totalPoints": 5.0,
+ "hasAttempts": false,
+ "createdAtUtc": "2026-10-22T06:35:57.712093",
+ "updatedAtUtc": "2026-10-22T06:35:57.715992",
+ "questions": [
+  {
+   "id": "22a33765-f144-4868-84b4-cdaa6cd82e56",
+   "questionMarkdown": "Với số thực $a\\ne -1$, công thức nguyên hàm của $x^a$ là gì?",
+   "questionHtml": "<p>Với số thực <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"a\\ne -1\"></span>, công thức nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^a\"></span> là gì?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 1,
+   "options": [
+    {
+     "id": "a98c3d9e-56ad-48cb-af0a-68e7e0782414",
+     "optionMarkdown": "$\\dfrac{x^{a+1}}{a+1}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{x^{a&#x2B;1}}{a&#x2B;1}&#x2B;C\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "312ca0a0-5506-4aec-9a85-e855356caa4e",
+     "optionMarkdown": "$x^{a+1}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^{a&#x2B;1}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "526eaa34-41e4-4bbf-9326-7110ece74059",
+     "optionMarkdown": "$\\dfrac{x^{a}}{a+1}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{x^{a}}{a&#x2B;1}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "cbc91fa1-fb0f-41b1-a352-e9c89aa0ad01",
+     "optionMarkdown": "$\\ln|x|+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\ln|x|&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "156fd6f9-d166-41ef-8061-41c449951933",
+   "questionMarkdown": "Trường hợp đặc biệt nào dẫn đến việc dùng hàm logarit khi tìm nguyên hàm?",
+   "questionHtml": "<p>Trường hợp đặc biệt nào dẫn đến việc dùng hàm logarit khi tìm nguyên hàm?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 2,
+   "options": [
+    {
+     "id": "efa7b26b-ce34-47ce-be38-4a47cf290f66",
+     "optionMarkdown": "$a=-1$ trong $x^a$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"a=-1\"></span> trong <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^a\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "81c9b71b-e5cd-4b0e-b4ef-cbb967d1011d",
+     "optionMarkdown": "$a=0$ trong $x^a$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"a=0\"></span> trong <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^a\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "07154144-5f89-4659-80eb-b41c9ed71762",
+     "optionMarkdown": "$a=1$ trong $x^a$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"a=1\"></span> trong <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^a\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "92bd4a13-6f10-48b6-bee4-498085f39fd4",
+     "optionMarkdown": "$a=2$ trong $x^a$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"a=2\"></span> trong <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^a\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "5e2d98fd-0b66-4f44-aa73-af38b279a1b1",
+   "questionMarkdown": "Nguyên hàm của $\\dfrac{1}{x^2}$ là",
+   "questionHtml": "<p>Nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{x^2}\"></span> là</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 3,
+   "options": [
+    {
+     "id": "d0861988-936d-4f42-a3e6-0dd5552c337b",
+     "optionMarkdown": "$-\\dfrac{1}{x^2}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{1}{x^2}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "3e8e7f6c-2c12-4eb3-91d2-ad7f93fafa74",
+     "optionMarkdown": "$\\dfrac{1}{x}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{x}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "ee83b427-d220-46cc-8136-f99178b4bfe9",
+     "optionMarkdown": "$\\dfrac{1}{2x^2}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{2x^2}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "6b25fb2e-5b20-4abf-a3f4-a86258686b34",
+     "optionMarkdown": "$-\\dfrac{1}{2x^2}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{1}{2x^2}&#x2B;C\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "e5b7d2e6-14d1-4539-800e-497d2b8ef080",
+   "questionMarkdown": "Một đáp án đúng cho nguyên hàm của $3x^2-2x+1$ là",
+   "questionHtml": "<p>Một đáp án đúng cho nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"3x^2-2x&#x2B;1\"></span> là</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 4,
+   "options": [
+    {
+     "id": "1a1b05b0-7e13-46ae-8b7e-98e9bdb7980d",
+     "optionMarkdown": "$x^3-x^2+x+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^3-x^2&#x2B;x&#x2B;C\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "87b44b73-26ef-43bd-afa8-f549c3ccf489",
+     "optionMarkdown": "$x^3-2x^2+x^2+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"x^3-2x^2&#x2B;x^2&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "f1f21edf-87cd-46d8-a83c-b1408e29b983",
+     "optionMarkdown": "$\\dfrac{3x^3}{3}-\\dfrac{2x^2}{2}+\\dfrac{x^2}{2}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{3x^3}{3}-\\dfrac{2x^2}{2}&#x2B;\\dfrac{x^2}{2}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "8bf82d00-ce3a-40c8-9c22-afed3a9503ea",
+     "optionMarkdown": "$\\dfrac{x^4}{4}-x^3+x+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{x^4}{4}-x^3&#x2B;x&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "8d119510-4b27-40c4-af21-b0f0e4a3b52f",
+   "questionMarkdown": "Nguyên hàm của $\\sqrt{x}$ ($=x^{1/2}$) bằng công thức nào?",
+   "questionHtml": "<p>Nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\sqrt{x}\"></span> (<span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"=x^{1/2}\"></span>) bằng công thức nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 5,
+   "options": [
+    {
+     "id": "92e7a620-faca-400e-aec6-f05c72561741",
+     "optionMarkdown": "$2x\\sqrt{x}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"2x\\sqrt{x}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "8d1e7682-71c4-4e8c-9a4e-edd36855001d",
+     "optionMarkdown": "$\\dfrac{2}{3}x\\sqrt{x}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{2}{3}x\\sqrt{x}&#x2B;C\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "11f5f510-2ba6-4665-a1e5-0d3060f29d1c",
+     "optionMarkdown": "$\\dfrac{3}{2}x\\sqrt{x}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{3}{2}x\\sqrt{x}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "338c8f46-abcc-4aa8-9d51-7f77c4f52775",
+     "optionMarkdown": "$\\dfrac{1}{2}x\\sqrt{x}+C$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{2}x\\sqrt{x}&#x2B;C\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  }
+ ]
+}

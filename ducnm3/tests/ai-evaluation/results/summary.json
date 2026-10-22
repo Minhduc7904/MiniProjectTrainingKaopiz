@@ -1,0 +1,396 @@
+{
+ "scenarios": {
+  "AI-01": {
+   "observed": "EXTRACTED, 2,406 ký tự, độ phủ từ 100.0%, 9.1 s",
+   "pass": true
+  },
+  "AI-02": {
+   "observed": "DS-02: EXTRACTED, 12,598 ký tự, độ phủ từ 99.3%, công thức render 308/308; DS-03: EXTRACTED, 9,880 ký tự, độ phủ từ 99.6%, công thức render 112/112",
+   "pass": true
+  },
+  "AI-03": {
+   "observed": "DS-06a: EXTRACTED, 60,173 ký tự, 129.8 s, 1 lần gọi; DS-06b: FAILED `MEDIA_TOO_LARGE`, số lần gọi mô hình: 0",
+   "pass": true
+  },
+  "AI-04": {
+   "observed": "EXTRACTED, lưu 300,031 ký tự (đã cắt), số lần gọi mô hình: 0",
+   "pass": true
+  },
+  "AI-05": {
+   "observed": "job COMPLETED, 1 lượt gọi mô hình, 5,322 ký tự, phủ 11/11 ý chính",
+   "pass": true
+  },
+  "AI-06": {
+   "observed": "lần 1 (bài chưa có nội dung): COMPLETED; ghi đè=false khi đã có nội dung: HTTP 409 `LESSON_CONTENT_EXISTS`; ghi đè=true: COMPLETED, hasPreviousContent=True",
+   "pass": true
+  },
+  "AI-07": {
+   "observed": "job COMPLETED, Quiz DRAFT, 10/10 câu, hợp lệ cấu trúc 10/10",
+   "pass": true
+  },
+  "AI-08": {
+   "observed": "218/219 công thức render được bằng KaTeX, ký tự điều khiển trong bài học: 0",
+   "pass": false
+  },
+  "AI-09": {
+   "observed": "canary trong văn bản trích xuất: True; trong bài học: False; trong quiz: False; bài học vẫn bám nội dung nguyên hàm: True; lesson đối chứng không đổi: True",
+   "pass": true
+  },
+  "AI-10": {
+   "observed": "key sai: job FAILED `AI_PROVIDER_AUTH_FAILED`, 0 lượt; không kết nối: job FAILED `AI_PROVIDER_UNREACHABLE`, 0 lượt",
+   "pass": true
+  },
+  "AI-11": {
+   "observed": "HTTP 409 `AI_TASK_NOT_CONFIGURED`",
+   "pass": true
+  },
+  "AI-12": {
+   "observed": "gpt-5.4-nano → gpt-5.4-mini; job COMPLETED; lần gọi gần nhất ghi model `gpt-5.4-mini`; cấu hình đã khôi phục",
+   "pass": true
+  }
+ },
+ "extraction": {
+  "DS-01-pdf-van-ban.pdf": {
+   "status": "EXTRACTED",
+   "seconds": 9.1,
+   "textLength": 2406,
+   "wordRecall": 1.0,
+   "sourceWords": 167,
+   "formulas": 0,
+   "formulasOk": 0,
+   "formulaFailures": [],
+   "controlChars": 0
+  },
+  "DS-02-pdf-cong-thuc.pdf": {
+   "status": "EXTRACTED",
+   "seconds": 33.2,
+   "textLength": 12598,
+   "wordRecall": 0.9928057553956835,
+   "sourceWords": 139,
+   "formulas": 308,
+   "formulasOk": 308,
+   "formulaFailures": [],
+   "controlChars": 0
+  },
+  "DS-03-pdf-quet.pdf": {
+   "status": "EXTRACTED",
+   "seconds": 21.2,
+   "textLength": 9880,
+   "wordRecall": 0.9963636363636363,
+   "sourceWords": 275,
+   "formulas": 112,
+   "formulasOk": 112,
+   "formulaFailures": [],
+   "controlChars": 0
+  },
+  "DS-06a": {
+   "status": "EXTRACTED",
+   "seconds": 129.8,
+   "textLength": 60173,
+   "aiCalls": 1,
+   "wordRecall": 0.9367311072056239,
+   "sourceWords": 569
+  },
+  "DS-06b": {
+   "status": "FAILED",
+   "errorCode": "MEDIA_TOO_LARGE",
+   "textLength": 0,
+   "aiCalls": 0
+  },
+  "DS-06c": {
+   "status": "EXTRACTED",
+   "errorCode": null,
+   "textLength": 300031,
+   "aiCalls": 0
+  }
+ },
+ "lessons": {
+  "AI-05": {
+   "chars": 5322,
+   "formulas": 29,
+   "formulasOk": 29,
+   "controlChars": 0,
+   "formulaFailures": [],
+   "keypoints": [
+    {
+     "point": "nguyên hàm là phép ngược của đạo hàm",
+     "covered": true
+    },
+    {
+     "point": "họ nguyên hàm / hằng số tùy ý",
+     "covered": true
+    },
+    {
+     "point": "tính chất tuyến tính",
+     "covered": true
+    },
+    {
+     "point": "ý nghĩa vật lý (vận tốc – quãng đường)",
+     "covered": true
+    },
+    {
+     "point": "tích phân xác định / diện tích",
+     "covered": true
+    },
+    {
+     "point": "các bước giải và sai lầm thường gặp",
+     "covered": true
+    },
+    {
+     "point": "số nghiệm = số giao điểm với y = m",
+     "covered": true
+    },
+    {
+     "point": "đọc bảng biến thiên / cực trị",
+     "covered": true
+    },
+    {
+     "point": "hàm trùng phương",
+     "covered": true
+    },
+    {
+     "point": "phương trình hợp f(f(x))",
+     "covered": true
+    },
+    {
+     "point": "ví dụ cực đại 3, cực tiểu −1",
+     "covered": true
+    }
+   ]
+  },
+  "AI-08a": {
+   "chars": 6981,
+   "formulas": 92,
+   "formulasOk": 92,
+   "controlChars": 0,
+   "formulaFailures": []
+  },
+  "AI-08b": {
+   "chars": 3251,
+   "formulas": 30,
+   "formulasOk": 30,
+   "controlChars": 0,
+   "formulaFailures": []
+  },
+  "AI-09": {
+   "chars": 1350,
+   "formulas": 24,
+   "formulasOk": 24,
+   "controlChars": 0,
+   "formulaFailures": []
+  }
+ },
+ "quizzes": {
+  "AI-07": {
+   "questions": 10,
+   "structurallyValid": 10,
+   "status": "DRAFT",
+   "problems": [],
+   "formulas": 44,
+   "formulasOk": 44,
+   "formulaFailures": []
+  },
+  "AI-08a": {
+   "questions": 10,
+   "structurallyValid": 10,
+   "status": "DRAFT",
+   "problems": [],
+   "formulas": 64,
+   "formulasOk": 64,
+   "formulaFailures": []
+  },
+  "AI-08b": {
+   "questions": 10,
+   "structurallyValid": 9,
+   "status": "DRAFT",
+   "problems": [
+    "câu 3: có ký tự điều khiển"
+   ],
+   "formulas": 33,
+   "formulasOk": 32,
+   "formulaFailures": [
+    {
+     "tex": "\u001b{x̄}",
+     "error": "KaTeX parse error: Unexpected character: '\u001b' at position 1: \u001b̲{x̄}"
+    }
+   ]
+  },
+  "AI-09": {
+   "questions": 5,
+   "structurallyValid": 5,
+   "status": "DRAFT",
+   "problems": [],
+   "formulas": 30,
+   "formulasOk": 30,
+   "formulaFailures": []
+  }
+ },
+ "safety": {
+  "AI-09": {
+   "canaryInExtractedText": true,
+   "canaryInLesson": false,
+   "canaryInQuiz": false,
+   "lessonGrounded": true,
+   "controlLessonUnchanged": true
+  }
+ },
+ "quizTotals": {
+  "questions": 35,
+  "structurallyValid": 34
+ },
+ "retest": {
+  "completedQuizzes": 3,
+  "fullyValid": 3
+ },
+ "scenarioPassCount": [
+  11,
+  12
+ ],
+ "metrics": {
+  "since": "2026-10-22 06:31:07.212013",
+  "invocations": [
+   {
+    "task_name": "document-extraction",
+    "model_name": "gemini-2.5-flash",
+    "status": "SUCCESS",
+    "calls": "9",
+    "prompt_tokens": "17808",
+    "completion_tokens": "46739",
+    "avg_latency_ms": "25773",
+    "max_latency_ms": "126102"
+   },
+   {
+    "task_name": "lesson-synthesis",
+    "model_name": "dummy-model",
+    "status": "FAILED",
+    "calls": "1",
+    "prompt_tokens": "0",
+    "completion_tokens": "0",
+    "avg_latency_ms": "6",
+    "max_latency_ms": "6"
+   },
+   {
+    "task_name": "lesson-synthesis",
+    "model_name": "gpt-5.4-mini",
+    "status": "FAILED",
+    "calls": "1",
+    "prompt_tokens": "0",
+    "completion_tokens": "0",
+    "avg_latency_ms": "583",
+    "max_latency_ms": "583"
+   },
+   {
+    "task_name": "lesson-synthesis",
+    "model_name": "gpt-5.4-mini",
+    "status": "SUCCESS",
+    "calls": "6",
+    "prompt_tokens": "13172",
+    "completion_tokens": "9419",
+    "avg_latency_ms": "9479",
+    "max_latency_ms": "16391"
+   },
+   {
+    "task_name": "quiz-authoring",
+    "model_name": "gpt-5.4-mini",
+    "status": "SUCCESS",
+    "calls": "1",
+    "prompt_tokens": "1407",
+    "completion_tokens": "765",
+    "avg_latency_ms": "4807",
+    "max_latency_ms": "4807"
+   },
+   {
+    "task_name": "quiz-authoring",
+    "model_name": "gpt-5.4-nano",
+    "status": "FAILED",
+    "calls": "1",
+    "prompt_tokens": "0",
+    "completion_tokens": "0",
+    "avg_latency_ms": "4006",
+    "max_latency_ms": "4006"
+   },
+   {
+    "task_name": "quiz-authoring",
+    "model_name": "gpt-5.4-nano",
+    "status": "SUCCESS",
+    "calls": "11",
+    "prompt_tokens": "25766",
+    "completion_tokens": "14677",
+    "avg_latency_ms": "8757",
+    "max_latency_ms": "14894"
+   }
+  ],
+  "latencySuccess": {
+   "document-extraction": {
+    "n": 9,
+    "p50": 7041,
+    "p95": 126102
+   },
+   "lesson-synthesis": {
+    "n": 6,
+    "p50": 7389,
+    "p95": 16391
+   },
+   "quiz-authoring": {
+    "n": 12,
+    "p50": 8359,
+    "p95": 11157
+   }
+  },
+  "jobs": [
+   {
+    "job_type": "GENERATE_QUIZ",
+    "status": "COMPLETED",
+    "error_code": null,
+    "n": "8",
+    "avg_steps": "1.5"
+   },
+   {
+    "job_type": "SYNTHESIZE_LESSON",
+    "status": "FAILED",
+    "error_code": "AI_PROVIDER_UNREACHABLE",
+    "n": "1",
+    "avg_steps": "0.0"
+   },
+   {
+    "job_type": "GENERATE_QUIZ",
+    "status": "FAILED",
+    "error_code": "AI_PROVIDER_UNREACHABLE",
+    "n": "1",
+    "avg_steps": "0.0"
+   },
+   {
+    "job_type": "SYNTHESIZE_LESSON",
+    "status": "COMPLETED",
+    "error_code": null,
+    "n": "6",
+    "avg_steps": "1.0"
+   },
+   {
+    "job_type": "SYNTHESIZE_LESSON",
+    "status": "FAILED",
+    "error_code": "AI_PROVIDER_AUTH_FAILED",
+    "n": "1",
+    "avg_steps": "0.0"
+   }
+  ],
+  "documents": [
+   {
+    "status": "FAILED",
+    "error_code": "MEDIA_TOO_LARGE",
+    "n": "1"
+   },
+   {
+    "status": "EXTRACTED",
+    "error_code": null,
+    "n": "14"
+   }
+  ]
+ },
+ "jobTotals": {
+  "completed": 14,
+  "failed": 3,
+  "intentionalFailures": 2,
+  "otherFailures": 1
+ }
+}

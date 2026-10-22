@@ -1,0 +1,396 @@
+{
+ "id": "b2290d06-b0c8-411f-aebb-3c0efda099f4",
+ "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+ "title": "Trung bình, trung vị, mốt của mẫu số liệu ghép nhóm",
+ "descriptionMarkdown": "Luyện tập công thức và cách xác định trung bình, trung vị, mốt cho số liệu ghép nhóm theo các lớp $[a_i; a_{i+1})$.",
+ "descriptionHtml": "<p>Luyện tập công thức và cách xác định trung bình, trung vị, mốt cho số liệu ghép nhóm theo các lớp <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_i; a_{i&#x2B;1})\"></span>.</p>\n",
+ "displayOrder": 4,
+ "status": "DRAFT",
+ "questionCount": 10,
+ "totalPoints": 10.0,
+ "hasAttempts": false,
+ "createdAtUtc": "2026-10-22T06:41:13.834707",
+ "updatedAtUtc": "2026-10-22T06:41:13.83806",
+ "questions": [
+  {
+   "id": "32fb5580-b923-4592-a3e0-e374188bc31c",
+   "questionMarkdown": "Trong mẫu số liệu ghép nhóm, mỗi lớp có dạng $[a_i; a_{i+1})$. Giá trị đại diện $c_i$ được tính như thế nào?",
+   "questionHtml": "<p>Trong mẫu số liệu ghép nhóm, mỗi lớp có dạng <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_i; a_{i&#x2B;1})\"></span>. Giá trị đại diện <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i\"></span> được tính như thế nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 1,
+   "options": [
+    {
+     "id": "7f35bbd8-9d2a-41d7-b1fc-9942f5405e05",
+     "optionMarkdown": "$c_i=a_i+a_{i+1}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=a_i&#x2B;a_{i&#x2B;1}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "18b453cb-6279-44af-b4b4-712d58e3e05e",
+     "optionMarkdown": "$c_i=\\\\dfrac{a_i+a_{i+1}}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=\\\\dfrac{a_i&#x2B;a_{i&#x2B;1}}{2}\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "827111c2-c46f-4183-af02-96197458a24e",
+     "optionMarkdown": "$c_i=\\\\dfrac{a_{i+1}-a_i}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=\\\\dfrac{a_{i&#x2B;1}-a_i}{2}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "f6ba5a9e-2f14-4290-904a-26d81786c0b2",
+     "optionMarkdown": "$c_i=\\\\dfrac{a_i}{a_{i+1}}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i=\\\\dfrac{a_i}{a_{i&#x2B;1}}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "4d5e2bb4-303d-40f9-9e93-60962ddd5493",
+   "questionMarkdown": "Gọi $m_i$ là tần số của lớp có giá trị đại diện $c_i$ và $n$ là tổng cỡ mẫu. Công thức trung bình $\\\\bar{x}$ của mẫu ghép nhóm là:",
+   "questionHtml": "<p>Gọi <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"m_i\"></span> là tần số của lớp có giá trị đại diện <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"c_i\"></span> và <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"n\"></span> là tổng cỡ mẫu. Công thức trung bình <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\bar{x}\"></span> của mẫu ghép nhóm là:</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 2,
+   "options": [
+    {
+     "id": "066e508e-2e27-4815-b98b-d5f4f75adc35",
+     "optionMarkdown": "$\\\\bar{x}=\\\\dfrac{m_1+m_2+\\\\cdots+m_k}{n}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\bar{x}=\\\\dfrac{m_1&#x2B;m_2&#x2B;\\\\cdots&#x2B;m_k}{n}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "77b1a35a-7d2b-497e-8f57-3c635a5a14fc",
+     "optionMarkdown": "$\\\\bar{x}=\\\\dfrac{m_1 c_1+m_2 c_2+\\\\cdots+m_k c_k}{n}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\bar{x}=\\\\dfrac{m_1 c_1&#x2B;m_2 c_2&#x2B;\\\\cdots&#x2B;m_k c_k}{n}\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "b1c5dc50-5f79-426e-90e0-47c4ecec6975",
+     "optionMarkdown": "$\\\\bar{x}=\\\\dfrac{c_1+c_2+\\\\cdots+c_k}{n}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\bar{x}=\\\\dfrac{c_1&#x2B;c_2&#x2B;\\\\cdots&#x2B;c_k}{n}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "e15a85f1-3dff-45c4-9edf-7ec8abc058ed",
+     "optionMarkdown": "$\\\\bar{x}=c_j$ với $m_j$ lớn nhất",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\bar{x}=c_j\"></span> với <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"m_j\"></span> lớn nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "905dadc7-777c-4e13-9313-876da344201b",
+   "questionMarkdown": "Muốn xác định trung vị $M_e$ cho số liệu ghép nhóm, cần tìm lớp đầu tiên có tần số tích lũy thỏa điều kiện nào?",
+   "questionHtml": "<p>Muốn xác định trung vị <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e\"></span> cho số liệu ghép nhóm, cần tìm lớp đầu tiên có tần số tích lũy thỏa điều kiện nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 3,
+   "options": [
+    {
+     "id": "579330c8-95d9-405e-b33b-fd1efff4ead1",
+     "optionMarkdown": "$\\\\text{tần số tích lũy} \\\\ge \\\\dfrac{n}{4}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\text{t&#x1EA7;n s&#x1ED1; t&#xED;ch l&#x169;y} \\\\ge \\\\dfrac{n}{4}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "76337428-50d8-417c-beaa-ac94a0fa8750",
+     "optionMarkdown": "$\\\\text{tần số tích lũy} \\\\ge \\\\dfrac{n}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\text{t&#x1EA7;n s&#x1ED1; t&#xED;ch l&#x169;y} \\\\ge \\\\dfrac{n}{2}\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "30f01cc4-3658-46aa-b0eb-734354b48a1f",
+     "optionMarkdown": "$\\\\text{tần số tích lũy} \\\\ge n$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\text{t&#x1EA7;n s&#x1ED1; t&#xED;ch l&#x169;y} \\\\ge n\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "3bd0cb2a-b2a2-47bc-b855-a13e0d202526",
+     "optionMarkdown": "$\\\\text{tần số tích lũy} = \\\\dfrac{n}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\text{t&#x1EA7;n s&#x1ED1; t&#xED;ch l&#x169;y} = \\\\dfrac{n}{2}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "a0dad559-6ff5-4b59-8f85-1e392dcec5c8",
+   "questionMarkdown": "Công thức trung vị $M_e$ (dạng xấp xỉ) được viết như sau, với lớp chứa trung vị là $[a_p; a_{p+1})$:",
+   "questionHtml": "<p>Công thức trung vị <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e\"></span> (dạng xấp xỉ) được viết như sau, với lớp chứa trung vị là <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_p; a_{p&#x2B;1})\"></span>:</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 4,
+   "options": [
+    {
+     "id": "c64796a0-a27b-4376-b8dc-2807dbe189fc",
+     "optionMarkdown": "$M_e=a_p+\\\\dfrac{\\\\left(\\\\dfrac{n}{2}-(m_1+\\\\cdots+m_{p-1})\\\\right)}{m_p}\\\\cdot (a_{p+1}-a_p)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=a_p&#x2B;\\\\dfrac{\\\\left(\\\\dfrac{n}{2}-(m_1&#x2B;\\\\cdots&#x2B;m_{p-1})\\\\right)}{m_p}\\\\cdot (a_{p&#x2B;1}-a_p)\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "b0073630-6514-494f-b0c1-a1b02c752341",
+     "optionMarkdown": "$M_e=a_p+\\\\dfrac{m_p}{\\\\left(\\\\dfrac{n}{2}-(m_1+\\\\cdots+m_{p-1})\\\\right)}\\\\cdot (a_{p+1}-a_p)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=a_p&#x2B;\\\\dfrac{m_p}{\\\\left(\\\\dfrac{n}{2}-(m_1&#x2B;\\\\cdots&#x2B;m_{p-1})\\\\right)}\\\\cdot (a_{p&#x2B;1}-a_p)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "cdb306d5-71b3-441a-8278-5fab57333861",
+     "optionMarkdown": "$M_e=a_{p+1}-\\\\dfrac{\\\\left(\\\\dfrac{n}{2}-(m_1+\\\\cdots+m_{p-1})\\\\right)}{m_p}\\\\cdot (a_{p+1}-a_p)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=a_{p&#x2B;1}-\\\\dfrac{\\\\left(\\\\dfrac{n}{2}-(m_1&#x2B;\\\\cdots&#x2B;m_{p-1})\\\\right)}{m_p}\\\\cdot (a_{p&#x2B;1}-a_p)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "5eaae48e-b30d-4fd8-acde-137f48fdc9bc",
+     "optionMarkdown": "$M_e=\\\\dfrac{a_p+a_{p+1}}{2}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e=\\\\dfrac{a_p&#x2B;a_{p&#x2B;1}}{2}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "802fa406-d194-48ca-9119-25f6b56a9256",
+   "questionMarkdown": "Trong công thức mốt $M_o$, lớp mốt là lớp có tần số như thế nào?",
+   "questionHtml": "<p>Trong công thức mốt <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o\"></span>, lớp mốt là lớp có tần số như thế nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 5,
+   "options": [
+    {
+     "id": "641fb9e3-2089-40f9-8137-71e483e2b3b5",
+     "optionMarkdown": "Nhỏ nhất",
+     "optionHtml": "<p>Nhỏ nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "7b63d0d9-06c4-4495-a014-6a8f02318cc7",
+     "optionMarkdown": "Lớn nhất",
+     "optionHtml": "<p>Lớn nhất</p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "60dfb0aa-eacd-41a6-a051-18b064628b2c",
+     "optionMarkdown": "Bằng trung vị",
+     "optionHtml": "<p>Bằng trung vị</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "b81d7ec7-4bc9-4af0-ae5f-ea0d36c6111d",
+     "optionMarkdown": "Có tần số tích lũy bằng $\\\\dfrac{n}{2}$",
+     "optionHtml": "<p>Có tần số tích lũy bằng <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\dfrac{n}{2}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "32a7fd1e-1343-4af2-93f0-352237c5395f",
+   "questionMarkdown": "Nếu lớp mốt là $[a_j; a_{j+1})$, công thức mốt xấp xỉ $M_o$ có dạng:",
+   "questionHtml": "<p>Nếu lớp mốt là <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[a_j; a_{j&#x2B;1})\"></span>, công thức mốt xấp xỉ <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o\"></span> có dạng:</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 6,
+   "options": [
+    {
+     "id": "e2bffc4d-c755-40c3-86e5-9d5908747760",
+     "optionMarkdown": "$M_o=a_j+\\\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})+(m_j-m_{j+1})}\\\\cdot (a_{j+1}-a_j)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=a_j&#x2B;\\\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})&#x2B;(m_j-m_{j&#x2B;1})}\\\\cdot (a_{j&#x2B;1}-a_j)\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "7b174fed-affe-4cfb-adc4-9db52ce7df0f",
+     "optionMarkdown": "$M_o=a_j+\\\\dfrac{m_j}{m_{j-1}+m_{j+1}}\\\\cdot (a_{j+1}-a_j)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=a_j&#x2B;\\\\dfrac{m_j}{m_{j-1}&#x2B;m_{j&#x2B;1}}\\\\cdot (a_{j&#x2B;1}-a_j)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "1a3505b8-0aa1-4130-8247-1a9ccafe517f",
+     "optionMarkdown": "$M_o=a_{j+1}-\\\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})+(m_j-m_{j+1})}\\\\cdot (a_{j+1}-a_j)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=a_{j&#x2B;1}-\\\\dfrac{m_j-m_{j-1}}{(m_j-m_{j-1})&#x2B;(m_j-m_{j&#x2B;1})}\\\\cdot (a_{j&#x2B;1}-a_j)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "2b5467b4-2b15-45c6-a4b3-f21c68c6710e",
+     "optionMarkdown": "$M_o=\\\\dfrac{a_j+a_{j+1}}{2}+\\\\dfrac{m_{j-1}}{m_j}$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_o=\\\\dfrac{a_j&#x2B;a_{j&#x2B;1}}{2}&#x2B;\\\\dfrac{m_{j-1}}{m_j}\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "778f962e-003b-4403-8b46-ab4ceb87df76",
+   "questionMarkdown": "Ví dụ có 42 ô tô, quy định tốc độ tối đa 60 km/h. Từ bảng tần số, số xe vi phạm là bao nhiêu?",
+   "questionHtml": "<p>Ví dụ có 42 ô tô, quy định tốc độ tối đa 60 km/h. Từ bảng tần số, số xe vi phạm là bao nhiêu?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 7,
+   "options": [
+    {
+     "id": "d43f547d-a9ab-42b3-bb36-fb71bb81501b",
+     "optionMarkdown": "7 xe",
+     "optionHtml": "<p>7 xe</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "458f7064-19a9-4eda-b2b2-0e429201cfcf",
+     "optionMarkdown": "9 xe",
+     "optionHtml": "<p>9 xe</p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "598f1689-b51e-494c-b344-fe002c53ce0d",
+     "optionMarkdown": "11 xe",
+     "optionHtml": "<p>11 xe</p>\n",
+     "isCorrect": true,
+     "displayOrder": 3
+    },
+    {
+     "id": "dd2fd42c-0966-43f5-a481-45a1f819a35f",
+     "optionMarkdown": "13 xe",
+     "optionHtml": "<p>13 xe</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "f32b9f16-aa9c-4813-811f-7c9ddd555532",
+   "questionMarkdown": "Trong ví dụ, số trung bình được tính và xấp xỉ bằng bao nhiêu km/h?",
+   "questionHtml": "<p>Trong ví dụ, số trung bình được tính và xấp xỉ bằng bao nhiêu km/h?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 8,
+   "options": [
+    {
+     "id": "3614b8c2-1851-4167-9721-63a126f0225b",
+     "optionMarkdown": "khoảng 50,6",
+     "optionHtml": "<p>khoảng 50,6</p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "f16e0635-d22c-474e-8613-f8f18a2ccbc9",
+     "optionMarkdown": "khoảng 54,3",
+     "optionHtml": "<p>khoảng 54,3</p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "773e7ddd-b936-4bec-b888-b982c75cee65",
+     "optionMarkdown": "khoảng 57,5",
+     "optionHtml": "<p>khoảng 57,5</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "f3ea348f-a65e-4cd2-8161-a3fdc90ec7eb",
+     "optionMarkdown": "khoảng 48,1",
+     "optionHtml": "<p>khoảng 48,1</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "1457d898-26bc-49d5-8577-e7bc235149d7",
+   "questionMarkdown": "Trong ví dụ, để tính trung vị $M_e$, ta có $\\\\dfrac{n}{2}=21$. Lớp đầu tiên có tần số tích lũy đạt/ vượt 21 là lớp nào?",
+   "questionHtml": "<p>Trong ví dụ, để tính trung vị <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"M_e\"></span>, ta có <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\\\dfrac{n}{2}=21\"></span>. Lớp đầu tiên có tần số tích lũy đạt/ vượt 21 là lớp nào?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 9,
+   "options": [
+    {
+     "id": "95727cb8-b778-4008-8ece-391052ed86d9",
+     "optionMarkdown": "$[45;50)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[45;50)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "63cf8e41-5238-4f0b-bb9a-4565878a0fe8",
+     "optionMarkdown": "$[50;55)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[50;55)\"></span></p>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "52572613-ba7f-4c29-9931-4094580fbacc",
+     "optionMarkdown": "$[55;60)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[55;60)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "de15991d-6d63-49be-b452-7574802511aa",
+     "optionMarkdown": "$[60;65)$",
+     "optionHtml": "<p><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"[60;65)\"></span></p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "d8abde2d-8f6e-4c8e-bce8-1bf965931e32",
+   "questionMarkdown": "Khi tính trung vị và mốt cho mẫu số liệu ghép nhóm, cần lưu ý điều kiện gì về các lớp?",
+   "questionHtml": "<p>Khi tính trung vị và mốt cho mẫu số liệu ghép nhóm, cần lưu ý điều kiện gì về các lớp?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 10,
+   "options": [
+    {
+     "id": "7de70103-0099-4b19-9487-762097cbc7a1",
+     "optionMarkdown": "Các lớp có độ rộng bằng nhau",
+     "optionHtml": "<p>Các lớp có độ rộng bằng nhau</p>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "c08b785c-c770-4c30-8f4b-44ce5fd2c3a2",
+     "optionMarkdown": "Các lớp có độ rộng tăng dần",
+     "optionHtml": "<p>Các lớp có độ rộng tăng dần</p>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "9ef3c981-abb9-43d4-811b-224af58ea833",
+     "optionMarkdown": "Chỉ cần lớp có tần số lớn nhất",
+     "optionHtml": "<p>Chỉ cần lớp có tần số lớn nhất</p>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "24f96519-3676-4d13-93e4-2c8d2939ac8e",
+     "optionMarkdown": "Không cần kiểm tra độ rộng các lớp",
+     "optionHtml": "<p>Không cần kiểm tra độ rộng các lớp</p>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  }
+ ]
+}

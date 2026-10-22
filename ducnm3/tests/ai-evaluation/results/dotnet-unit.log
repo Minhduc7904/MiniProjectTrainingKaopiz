@@ -1,0 +1,16 @@
+== backend/BuildingBlocks/BuildingBlocks.Communication.UnitTests
+Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 311 ms - BuildingBlocks.Communication.UnitTests.dll (net10.0)
+== backend/Services/Ai/AiService.UnitTests
+Passed!  - Failed:     0, Passed:    91, Skipped:     0, Total:    91, Duration: 218 ms - AiService.UnitTests.dll (net10.0)
+== backend/Services/Course/CourseService.UnitTests
+Failed!  - Failed:     1, Passed:   159, Skipped:     0, Total:   160, Duration: 798 ms - CourseService.UnitTests.dll (net10.0)
+== backend/Services/Media/MediaService.UnitTests
+/home/ducnm3/duck/2026/month_8/MiniProject/intern_be/ducnm3/backend/Services/Media/MediaService.UnitTests/Application/UseCases/MediaUsages/DeleteByIds/DeleteMediaUsagesByIdsHandlerTests.cs(10,23): error CA1707: Remove the underscores from member name MediaService.UnitTests.Application.UseCases.MediaUsages.DeleteByIds.DeleteMediaUsagesByIdsHandlerTests.HandleAsync_UsageIdsProvided_DelegatesBatchCleanupToRepository() (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707) [/home/ducnm3/duck/2026/month_8/MiniProject/intern_be/ducnm3/backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj]
+/home/ducnm3/duck/2026/month_8/MiniProject/intern_be/ducnm3/backend/Services/Media/MediaService.UnitTests/Application/UseCases/Media/Library/GetMediaLibraryHandlerTests.cs(15,23): error CA1707: Remove the underscores from member name MediaService.UnitTests.Application.UseCases.Media.Library.GetMediaLibraryHandlerTests.HandleAsync_StatusIsLowercase_NormalizesAndPassesFilterToRepository() (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707) [/home/ducnm3/duck/2026/month_8/MiniProject/intern_be/ducnm3/backend/Services/Media/MediaService.UnitTests/MediaService.UnitTests.csproj]
+== backend/Services/Notification/NotificationService.UnitTests
+Passed!  - Failed:     0, Passed:    49, Skipped:     0, Total:    49, Duration: 149 ms - NotificationService.UnitTests.dll (net10.0)
+== backend/Services/Scheduler/SchedulerService.UnitTests
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 14 ms - SchedulerService.UnitTests.dll (net10.0)
+== backend/Services/Student/StudentService.UnitTests
+/home/ducnm3/duck/2026/month_8/MiniProject/intern_be/ducnm3/backend/Services/Student/StudentService.UnitTests/GetStudentsSummaryHandlerTests.cs(9,23): error CA1707: Remove the underscores from member name StudentService.UnitTests.GetStudentsSummaryHandlerTests.HandleAsync_RepositoryReturnsCount_MapsTotalStudents() (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707) [/home/ducnm3/duck/2026/month_8/MiniProject/intern_be/ducnm3/backend/Services/Student/StudentService.UnitTests/StudentService.UnitTests.csproj]
+done

@@ -1,0 +1,35 @@
+# PHIẾU ÔN TẬP: TƯƠNG GIAO CỦA ĐỒ THỊ HÀM SỐ
+
+## 1. Ý tưởng chính
+
+Số nghiệm của phương trình f(x) = m bằng số giao điểm của đồ thị hàm số y = f(x) với đường thẳng nằm ngang y = m. Vì vậy mọi bài toán đếm nghiệm đều quy về việc đọc đồ thị hoặc bảng biến thiên.
+
+## 2. Cách đọc nghiệm từ bảng biến thiên
+
+- Xác định các điểm cực trị và giá trị của hàm số tại các điểm đó.
+
+- So sánh giá trị m với các giá trị cực đại, cực tiểu.
+
+- Trên mỗi khoảng đơn điệu, phương trình có tối đa một nghiệm; nghiệm tồn tại khi m nằm giữa hai giá trị hai đầu khoảng.
+
+## 3. Hàm bậc bốn trùng phương f(x) = ax⁴ + bx² + c
+
+| Tình huống của m | Số nghiệm của f(x) = m |
+| --- | --- |
+| m lớn hơn giá trị cực đại | 0 nghiệm |
+| m bằng giá trị cực đại | 2 nghiệm (nghiệm kép) |
+| m nằm giữa cực tiểu và cực đại | 4 nghiệm |
+| m bằng giá trị cực tiểu | 3 nghiệm |
+| m nhỏ hơn giá trị cực tiểu | 2 nghiệm |
+
+(Bảng trên áp dụng cho hàm có hệ số a dương và có ba cực trị.)
+
+## 4. Phương trình hợp
+
+Với phương trình dạng f(f(x)) = k, đặt t = f(x), giải f(t) = k để tìm các giá trị t, sau đó đếm số nghiệm của từng phương trình f(x) = t. Tổng số nghiệm là tổng các số nghiệm đếm được, loại bỏ các nghiệm trùng nhau.
+
+## 5. Ví dụ
+
+Ví dụ. Cho hàm số y = f(x) có hai điểm cực trị với giá trị cực đại bằng 3 và giá trị cực tiểu bằng −1. Hỏi phương trình f(x) = 2 có bao nhiêu nghiệm?
+
+Lời giải. Vì −1 < 2 < 3 nên đường thẳng y = 2 cắt đồ thị tại 3 điểm. Vậy phương trình có 3 nghiệm.

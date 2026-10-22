@@ -1,0 +1,396 @@
+{
+ "id": "a5f39e0b-4a72-41bf-bce5-a650975760f9",
+ "lessonId": "7e548e61-50fb-42e6-9b48-d7d9f2832704",
+ "title": "Nguyên hàm – Tích phân: Công thức mũ thừa, phân thức, căn bậc hai và tích phân suy ngược (10 câu)",
+ "descriptionMarkdown": "Trắc nghiệm kiểm tra kiến thức về nguyên hàm/tính tích phân theo phép thế và ghép miền, và bài toán ngược dùng đạo hàm.",
+ "descriptionHtml": "<p>Trắc nghiệm kiểm tra kiến thức về nguyên hàm/tính tích phân theo phép thế và ghép miền, và bài toán ngược dùng đạo hàm.</p>\n",
+ "displayOrder": 1,
+ "status": "DRAFT",
+ "questionCount": 10,
+ "totalPoints": 10.0,
+ "hasAttempts": false,
+ "createdAtUtc": "2026-10-22T06:34:56.760111",
+ "updatedAtUtc": "2026-10-22T06:34:56.766499",
+ "questions": [
+  {
+   "id": "0a15d8fe-c5ce-4f8a-9da7-963722a33612",
+   "questionMarkdown": "Tính nguyên hàm $\\int (2x-1)^2\\,dx$.",
+   "questionHtml": "<p>Tính nguyên hàm <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\int (2x-1)^2\\,dx\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 1,
+   "options": [
+    {
+     "id": "15227888-223b-419c-8027-ac804bc2f0e6",
+     "optionMarkdown": "A. $\\frac{1}{2}(2x-1)^3+C$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\frac{1}{2}(2x-1)^3&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "0d566f4f-0c73-47d5-af8b-f784032877d7",
+     "optionMarkdown": "B. $\\frac{1}{6}(2x-1)^3+C$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\frac{1}{6}(2x-1)^3&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "7eb6425b-ebde-49c2-a1ef-e3b9d5db7a26",
+     "optionMarkdown": "C. $\\frac{1}{3}(2x-1)^3+C$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\frac{1}{3}(2x-1)^3&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "8a6c04e7-b0c9-475f-bc10-10342298a28b",
+     "optionMarkdown": "D. $\\frac{2}{3}(2x-1)^3+C$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\frac{2}{3}(2x-1)^3&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "d5084826-5a4d-41a1-9e5b-fa4a7056f5d9",
+   "questionMarkdown": "Tìm nguyên hàm $\\int (3-5x)^4\\,dx$.",
+   "questionHtml": "<p>Tìm nguyên hàm <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\int (3-5x)^4\\,dx\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 2,
+   "options": [
+    {
+     "id": "7b12faa1-73a0-41d8-a671-d6a7db45ab72",
+     "optionMarkdown": "A. $-\\dfrac{(3-5x)^5}{5}+C$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{(3-5x)^5}{5}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "dcba2ce7-107b-4296-86aa-274c4fb56d5a",
+     "optionMarkdown": "B. $-\\dfrac{(3-5x)^5}{25}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{(3-5x)^5}{25}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "6a25dade-b24a-480c-bc7d-1b1fca3d5bc0",
+     "optionMarkdown": "C. $\\dfrac{(3-5x)^5}{25}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{(3-5x)^5}{25}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "17edd6ef-f813-4c01-ab20-dfd31aeb8a84",
+     "optionMarkdown": "D. $-20(3-5x)^3+C$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-20(3-5x)^3&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "b32abd39-1f3f-4cf1-8fbf-2481fad31941",
+   "questionMarkdown": "Cho hàm số $f(x)=\\sqrt{3x+2}$. Nguyên hàm đúng là",
+   "questionHtml": "<p>Cho hàm số <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(x)=\\sqrt{3x&#x2B;2}\"></span>. Nguyên hàm đúng là</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 3,
+   "options": [
+    {
+     "id": "e0a1db2c-3d27-49ab-a11c-a951d85f5512",
+     "optionMarkdown": "A. $\\dfrac{2}{3}(3x+2)\\sqrt{3x+2}+C$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{2}{3}(3x&#x2B;2)\\sqrt{3x&#x2B;2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 1
+    },
+    {
+     "id": "5e0b5673-c69e-4f9a-bdec-4b1cd8bc9acc",
+     "optionMarkdown": "B. $\\dfrac{1}{3}(3x+2)\\sqrt{3x+2}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{3}(3x&#x2B;2)\\sqrt{3x&#x2B;2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "d8a5a74f-16a9-4be6-8f3f-83d0632e3a4f",
+     "optionMarkdown": "C. $\\dfrac{2}{9}(3x+2)\\sqrt{3x+2}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{2}{9}(3x&#x2B;2)\\sqrt{3x&#x2B;2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "85ee2626-a47b-4103-a699-4e9fe4edc869",
+     "optionMarkdown": "D. $\\dfrac{3}{2}\\cdot\\dfrac{1}{\\sqrt{3x+2}}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{3}{2}\\cdot\\dfrac{1}{\\sqrt{3x&#x2B;2}}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "f078d2f0-9d1d-48ec-bcdc-77390d3a3090",
+   "questionMarkdown": "Tìm họ nguyên hàm $\\int \\dfrac{1}{(2x-1)^2}\\,dx$.",
+   "questionHtml": "<p>Tìm họ nguyên hàm <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\int \\dfrac{1}{(2x-1)^2}\\,dx\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 4,
+   "options": [
+    {
+     "id": "daf1cc60-3044-48c6-8726-52286eb13406",
+     "optionMarkdown": "A. $\\dfrac{-1}{4x-2}+C$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{-1}{4x-2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "f357c93b-3c60-484e-94d0-dc55893212ef",
+     "optionMarkdown": "B. $\\dfrac{1}{2x-1}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{2x-1}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "8f9df8fc-1536-4b63-91ad-82bc57460c1d",
+     "optionMarkdown": "C. $\\dfrac{-1}{2x-1}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{-1}{2x-1}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 3
+    },
+    {
+     "id": "e4a3d5de-4fa2-4e0f-90a6-b4fff1adee14",
+     "optionMarkdown": "D. $\\dfrac{1}{4x-2}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{1}{4x-2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "2f62b644-790a-422b-91d9-b21d33db3f58",
+   "questionMarkdown": "Cho $F(x)$ là một nguyên hàm của $f(x)=\\dfrac{1}{\\sqrt{x-2}}$ thỏa $F(3)=\\dfrac{7}{4}$. Tính $F(2)$ (giả sử giá trị tồn tại).",
+   "questionHtml": "<p>Cho <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(x)\"></span> là một nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(x)=\\dfrac{1}{\\sqrt{x-2}}\"></span> thỏa <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(3)=\\dfrac{7}{4}\"></span>. Tính <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(2)\"></span> (giả sử giá trị tồn tại).</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 5,
+   "options": [
+    {
+     "id": "14e0e417-637e-4e3f-a96c-9e36f002dcf1",
+     "optionMarkdown": "A. $-\\dfrac{7}{4}$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{7}{4}\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "cd37fbc9-e6cc-4e72-8d59-c25acf871971",
+     "optionMarkdown": "B. $\\dfrac{7}{4}$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{7}{4}\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "bf0c63e0-22da-42de-9564-bf327e4d7bf2",
+     "optionMarkdown": "C. $0$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"0\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 3
+    },
+    {
+     "id": "ea5d07d4-fb73-48d5-86be-e47451f35651",
+     "optionMarkdown": "D. $\\dfrac{3}{4}$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{3}{4}\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "323c1981-7bb0-4635-9fbd-f2b80a9c1d25",
+   "questionMarkdown": "Nguyên hàm của hàm số $f(x)=\\dfrac{1}{\\sqrt{3x-2}}$ là dạng nào đúng?",
+   "questionHtml": "<p>Nguyên hàm của hàm số <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(x)=\\dfrac{1}{\\sqrt{3x-2}}\"></span> là dạng nào đúng?</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 6,
+   "options": [
+    {
+     "id": "54fd687d-3268-454e-bfc1-7c0e3f5b8564",
+     "optionMarkdown": "A. $-2\\sqrt{3x-2}+C$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-2\\sqrt{3x-2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "0f0304c0-f852-49ff-baeb-0aed21d955e6",
+     "optionMarkdown": "B. $2\\sqrt{3x-2}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"2\\sqrt{3x-2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 2
+    },
+    {
+     "id": "55c6a22d-c0bc-456a-bca2-5ca071ec5706",
+     "optionMarkdown": "C. $\\dfrac{2}{3}\\sqrt{3x-2}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{2}{3}\\sqrt{3x-2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "4beb4116-04c1-4b8d-8559-06044559452d",
+     "optionMarkdown": "D. $-\\dfrac{2}{3}\\sqrt{3x-2}+C$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{2}{3}\\sqrt{3x-2}&#x2B;C\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "7c650a15-7d03-43bb-8431-d99f8a6b6b0e",
+   "questionMarkdown": "Tính $F(1)$ với $f'(x)=12x+2$, $f(1)=3$. Biết $F(x)$ là nguyên hàm của $f(x)$ và $F(0)=2$.",
+   "questionHtml": "<p>Tính <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(1)\"></span> với <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f&#x27;(x)=12x&#x2B;2\"></span>, <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(1)=3\"></span>. Biết <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(x)\"></span> là nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(x)\"></span> và <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(0)=2\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 7,
+   "options": [
+    {
+     "id": "34046892-0e30-44e0-a76a-f423213f2525",
+     "optionMarkdown": "A. $-3$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-3\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "b00171d8-44a2-452f-89b9-65a8bc172db1",
+     "optionMarkdown": "B. $1$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"1\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "e1be0b38-8f3a-4faa-aab8-d44b0459b2f7",
+     "optionMarkdown": "C. $-5$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-5\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "783b8316-41a9-466b-9ced-76c97a14dc62",
+     "optionMarkdown": "D. $2$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"2\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "f7acb271-2c23-48d4-b168-2ec1afbfaa8f",
+   "questionMarkdown": "Cho $f(x)=\\begin{cases}2x-1& x\\ge 1\\\\3x^2-2& x<1\\end{cases}$. Biết $F$ là nguyên hàm của $f$ trên $\\mathbb{R}$ và $F(0)=2$. Tính $F(-1)+2F(2)$.",
+   "questionHtml": "<p>Cho <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(x)=\\begin{cases}2x-1&amp; x\\ge 1\\\\3x^2-2&amp; x&lt;1\\end{cases}\"></span>. Biết <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F\"></span> là nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f\"></span> trên <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\mathbb{R}\"></span> và <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(0)=2\"></span>. Tính <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(-1)&#x2B;2F(2)\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 8,
+   "options": [
+    {
+     "id": "34bc545e-7106-4190-9ece-3cad63cc50ca",
+     "optionMarkdown": "A. 15",
+     "optionHtml": "<ol type=\"A\">\n<li>15</li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "614fd7a8-e2d6-4535-8e4c-9721ed3e8ff1",
+     "optionMarkdown": "B. 10",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li>10</li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "aea139f4-07dc-4351-b655-b58798d500b2",
+     "optionMarkdown": "C. 6",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li>6</li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 3
+    },
+    {
+     "id": "882958f2-87b1-442f-a288-cd5e54e23341",
+     "optionMarkdown": "D. 9",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li>9</li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "0c7900cc-e36b-4383-83eb-21b7b8ada555",
+   "questionMarkdown": "Cho $f(x)=\\begin{cases}\\sqrt{x+4}& x\\ge 1\\\\2x+3& x<1\\end{cases}$. Gọi $F$ là một nguyên hàm của $f$ trên $\\mathbb{R}$, biết $F(0)=\\dfrac{1}{4}$. Tính $F(-2)+3F(4)$.",
+   "questionHtml": "<p>Cho <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(x)=\\begin{cases}\\sqrt{x&#x2B;4}&amp; x\\ge 1\\\\2x&#x2B;3&amp; x&lt;1\\end{cases}\"></span>. Gọi <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F\"></span> là một nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f\"></span> trên <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\mathbb{R}\"></span>, biết <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(0)=\\dfrac{1}{4}\"></span>. Tính <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(-2)&#x2B;3F(4)\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 9,
+   "options": [
+    {
+     "id": "b363ffb5-307e-4c46-a418-c5bd7a0382f3",
+     "optionMarkdown": "A. 45",
+     "optionHtml": "<ol type=\"A\">\n<li>45</li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "eaf9481e-3302-4fd5-b3f4-494006af207b",
+     "optionMarkdown": "B. 62",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li>62</li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "0c49f336-5455-4d8e-9bce-29c28eee5f37",
+     "optionMarkdown": "C. 63",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li>63</li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 3
+    },
+    {
+     "id": "c9f992df-8b02-4591-b111-ac65af1e1efb",
+     "optionMarkdown": "D. 61",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li>61</li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 4
+    }
+   ]
+  },
+  {
+   "id": "b682c485-b2d5-4aed-8ad7-275ad063d87e",
+   "questionMarkdown": "Cho $f'(x)=\\begin{cases}-(x+3)(x+1),& x\\le -1\\\\2(x+1),& x>-1\\end{cases}$. Biết $F(0)-F(-3)=\\dfrac{2}{3}$, với $F$ là một nguyên hàm của $f$. Tính $f(0)$.",
+   "questionHtml": "<p>Cho <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f&#x27;(x)=\\begin{cases}-(x&#x2B;3)(x&#x2B;1),&amp; x\\le -1\\\\2(x&#x2B;1),&amp; x&gt;-1\\end{cases}\"></span>. Biết <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F(0)-F(-3)=\\dfrac{2}{3}\"></span>, với <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"F\"></span> là một nguyên hàm của <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f\"></span>. Tính <span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"f(0)\"></span>.</p>\n",
+   "questionType": "SINGLE_CHOICE",
+   "points": 1.0,
+   "displayOrder": 10,
+   "options": [
+    {
+     "id": "203eef76-2822-4854-9cea-f5a96b8df2c3",
+     "optionMarkdown": "A. $\\dfrac{14}{9}$",
+     "optionHtml": "<ol type=\"A\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"\\dfrac{14}{9}\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 1
+    },
+    {
+     "id": "67bc181f-784d-4ae3-a23f-7749bb1a98aa",
+     "optionMarkdown": "B. $2$",
+     "optionHtml": "<ol type=\"A\" start=\"2\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"2\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 2
+    },
+    {
+     "id": "3de508c5-9a30-44a8-b3cb-35153877905e",
+     "optionMarkdown": "C. $1$",
+     "optionHtml": "<ol type=\"A\" start=\"3\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"1\"></span></li>\n</ol>\n",
+     "isCorrect": true,
+     "displayOrder": 3
+    },
+    {
+     "id": "2c4a139b-1e4c-4af4-8438-f657fe9b421a",
+     "optionMarkdown": "D. $-\\dfrac{7}{9}$",
+     "optionHtml": "<ol type=\"A\" start=\"4\">\n<li><span class=\"course-math\" data-math-display=\"inline\" data-math-tex=\"-\\dfrac{7}{9}\"></span></li>\n</ol>\n",
+     "isCorrect": false,
+     "displayOrder": 4
+    }
+   ]
+  }
+ ]
+}

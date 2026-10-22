@@ -1,0 +1,45 @@
+== AI-01
+  [skip] AI-01:extract:DS-01-pdf-van-ban.pdf
+== AI-02
+  [run ] AI-02a:extract:DS-02-pdf-cong-thuc.pdf
+  [run ] AI-02b:extract:DS-03-pdf-quet.pdf
+== AI-03
+  [skip] AI-03:extract:DS-06b-pdf-vuot-gioi-han.pdf
+== AI-04
+  [skip] AI-04:extract:DS-06c-txt-qua-300k-ky-tu.txt
+== AI-05
+  [run ] AI-05:extract:DS-01-pdf-van-ban.pdf
+  [run ] AI-05:synthesize
+== AI-06
+  [run ] AI-06:extract
+  [run ] AI-06:synth-first
+  [run ] AI-06:overwrite-false
+  [run ] AI-06:overwrite-true
+== AI-07
+  [run ] AI-07:extract
+  [run ] AI-07:quiz
+== AI-08
+  [run ] AI-08a:extract
+  [run ] AI-08a:synthesize
+  [run ] AI-08a:quiz
+  [run ] AI-08b:extract
+  [run ] AI-08b:synthesize
+  [run ] AI-08b:quiz
+== AI-09
+  [run ] AI-09:extract
+  [run ] AI-09:synthesize
+  [run ] AI-09:quiz
+== AI-10
+  [run ] AI-10:extract
+  [run ] AI-10:auth
+  [restore] khôi phục binding lesson-synthesis -> 399b0681-a12f-4c31-8375-7d3cafcbe052
+  [run ] AI-10:unreachable
+  [restore] khôi phục binding lesson-synthesis -> 399b0681-a12f-4c31-8375-7d3cafcbe052
+== AI-11
+  [skip] AI-11:unconfigured-task
+== AI-12
+  [run ] AI-12:extract
+  [run ] AI-12:switch-model
+  [restore] khôi phục binding quiz-authoring -> 98e12b91-ae24-4d6c-9185-fb66835e8218
+Xong. Số liệu tổng hợp: results/metrics.json
+exit=0

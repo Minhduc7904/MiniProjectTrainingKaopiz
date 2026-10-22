@@ -1,0 +1,4 @@
+__pycache__/
+# Tài liệu lớn, sinh lại bằng generate_dataset.py
+dataset/DS-06a-*.pdf
+dataset/DS-06b-*.pdf

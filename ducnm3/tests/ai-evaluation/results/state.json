@@ -1,0 +1,1004 @@
+{
+ "started_at": "2026-10-22T06:31:07+00:00",
+ "steps": {
+  "AI-11:unconfigured-task": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:31:07+00:00",
+   "seconds": 0.1,
+   "result": {
+    "httpStatus": 409,
+    "body": {
+     "error": {
+      "code": "AI_TASK_NOT_CONFIGURED",
+      "message": "No AI model is assigned to 'course-service'. Assign one on the AI service bindings page.",
+      "details": []
+     },
+     "meta": {
+      "traceId": "746e7aac91784d1aba484efe4f1f4087"
+     }
+    }
+   }
+  },
+  "AI-03:extract:DS-06b-pdf-vuot-gioi-han.pdf": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:31:24+00:00",
+   "seconds": 0.2,
+   "result": {
+    "dataset": "DS-06b-pdf-vuot-gioi-han.pdf",
+    "mediaId": "7a4a38ca-236a-4978-a173-cd8e2d2b131a",
+    "doc": {
+     "mediaId": "7a4a38ca-236a-4978-a173-cd8e2d2b131a",
+     "fileName": "DS-06b-pdf-vuot-gioi-han.pdf",
+     "contentType": "application/pdf",
+     "mediaType": "DOCUMENT",
+     "status": "FAILED",
+     "errorCode": "MEDIA_TOO_LARGE",
+     "errorMessage": "The file is larger than the 15 MB limit for AI processing.",
+     "textLength": 0,
+     "updatedAtUtc": "2026-10-22T06:31:16.231062Z",
+     "elapsedSeconds": 0.0
+    },
+    "aiCalls": 0
+   }
+  },
+  "AI-04:extract:DS-06c-txt-qua-300k-ky-tu.txt": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:31:33+00:00",
+   "seconds": 3.3,
+   "result": {
+    "dataset": "DS-06c-txt-qua-300k-ky-tu.txt",
+    "mediaId": "8ee19320-d173-4a5a-b9e8-9e7e8a049b97",
+    "doc": {
+     "mediaId": "8ee19320-d173-4a5a-b9e8-9e7e8a049b97",
+     "fileName": "DS-06c-txt-qua-300k-ky-tu.txt",
+     "contentType": "text/plain",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 300031,
+     "updatedAtUtc": "2026-10-22T06:31:32.392104Z",
+     "elapsedSeconds": 3.0
+    },
+    "aiCalls": 0,
+    "textChars": 340731
+   }
+  },
+  "AI-01:extract:DS-01-pdf-van-ban.pdf": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:31:43+00:00",
+   "seconds": 9.3,
+   "result": {
+    "dataset": "DS-01-pdf-van-ban.pdf",
+    "mediaId": "8db9440e-36b7-4f12-83f6-ca4c64e63b40",
+    "doc": {
+     "mediaId": "8db9440e-36b7-4f12-83f6-ca4c64e63b40",
+     "fileName": "DS-01-pdf-van-ban.pdf",
+     "contentType": "application/pdf",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 2406,
+     "updatedAtUtc": "2026-10-22T06:31:40.520163Z",
+     "elapsedSeconds": 9.1
+    },
+    "aiCalls": 1,
+    "textChars": 3250
+   }
+  },
+  "AI-02a:extract:DS-02-pdf-cong-thuc.pdf": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:32:23+00:00",
+   "seconds": 33.5,
+   "result": {
+    "dataset": "DS-02-pdf-cong-thuc.pdf",
+    "mediaId": "8200af08-80f7-493f-9783-f0e53bf8dfb0",
+    "doc": {
+     "mediaId": "8200af08-80f7-493f-9783-f0e53bf8dfb0",
+     "fileName": "DS-02-pdf-cong-thuc.pdf",
+     "contentType": "application/pdf",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 12598,
+     "updatedAtUtc": "2026-10-22T06:32:20.880702Z",
+     "elapsedSeconds": 33.2
+    },
+    "aiCalls": 1,
+    "textChars": 12598
+   }
+  },
+  "AI-02b:extract:DS-03-pdf-quet.pdf": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:32:45+00:00",
+   "seconds": 21.4,
+   "result": {
+    "dataset": "DS-03-pdf-quet.pdf",
+    "mediaId": "6b6aaf52-cc28-4e29-858a-22ba899b245c",
+    "doc": {
+     "mediaId": "6b6aaf52-cc28-4e29-858a-22ba899b245c",
+     "fileName": "DS-03-pdf-quet.pdf",
+     "contentType": "application/pdf",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 9880,
+     "updatedAtUtc": "2026-10-22T06:32:43.27746Z",
+     "elapsedSeconds": 21.2
+    },
+    "aiCalls": 1,
+    "textChars": 9880
+   }
+  },
+  "AI-05:extract:DS-01-pdf-van-ban.pdf": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:32:54+00:00",
+   "seconds": 9.3,
+   "result": {
+    "dataset": "DS-01-pdf-van-ban.pdf",
+    "mediaId": "dbfc74f3-37c8-4015-aea7-998ac411b434",
+    "doc": {
+     "mediaId": "dbfc74f3-37c8-4015-aea7-998ac411b434",
+     "fileName": "DS-01-pdf-van-ban.pdf",
+     "contentType": "application/pdf",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 2407,
+     "updatedAtUtc": "2026-10-22T06:32:52.51298Z",
+     "elapsedSeconds": 9.1
+    },
+    "aiCalls": 1,
+    "textChars": 2407
+   }
+  },
+  "AI-05:synthesize": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:10+00:00",
+   "seconds": 15.5,
+   "result": {
+    "doc2": {
+     "mediaId": "c6876f87-4906-4fa0-a14c-8cfcb41672f5",
+     "fileName": "DS-04-docx.docx",
+     "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 1450,
+     "updatedAtUtc": "2026-10-22T06:32:55.362461Z",
+     "elapsedSeconds": 3.0
+    },
+    "job": {
+     "id": "90217089-526f-4d9a-a0a1-63468e399894",
+     "lessonId": "c5232332-0d8f-4fce-bc1a-714dfb7cb23d",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "dbfc74f3-37c8-4015-aea7-998ac411b434",
+      "c6876f87-4906-4fa0-a14c-8cfcb41672f5"
+     ],
+     "questionCount": null,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:32:57.927747Z",
+     "updatedAtUtc": "2026-10-22T06:33:08.65762Z",
+     "startedAtUtc": "2026-10-22T06:32:58.53874Z",
+     "finishedAtUtc": "2026-10-22T06:33:08.655942Z",
+     "elapsedSeconds": 12.0,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "contentChars": 5322
+   }
+  },
+  "AI-06:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:19+00:00",
+   "seconds": 9.1,
+   "result": {
+    "mediaId": "f197b849-1a5d-448d-9afd-c0f2512ac0be",
+    "fileName": "DS-01-pdf-van-ban.pdf",
+    "contentType": "application/pdf",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 2406,
+    "updatedAtUtc": "2026-10-22T06:33:17.248446Z",
+    "elapsedSeconds": 9.1
+   }
+  },
+  "AI-06:synth-first": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:31+00:00",
+   "seconds": 12.0,
+   "result": {
+    "id": "7770c887-850c-4b01-bbd6-dd5da1403cca",
+    "lessonId": "f4086d82-6e30-4ff2-bda6-9b7a410093cf",
+    "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+    "jobType": "SYNTHESIZE_LESSON",
+    "status": "COMPLETED",
+    "mediaIds": [
+     "f197b849-1a5d-448d-9afd-c0f2512ac0be"
+    ],
+    "questionCount": null,
+    "overwriteContent": false,
+    "hasPreviousContent": false,
+    "resultQuizId": null,
+    "stepCount": 1,
+    "errorCode": null,
+    "errorMessage": null,
+    "createdAtUtc": "2026-10-22T06:33:19.603704Z",
+    "updatedAtUtc": "2026-10-22T06:33:28.701014Z",
+    "startedAtUtc": "2026-10-22T06:33:21.272779Z",
+    "finishedAtUtc": "2026-10-22T06:33:28.700708Z",
+    "elapsedSeconds": 12.0,
+    "previousContentMarkdown": null,
+    "created": true
+   }
+  },
+  "AI-06:overwrite-false": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:31+00:00",
+   "seconds": 0.0,
+   "result": {
+    "httpStatus": 409,
+    "body": {
+     "error": {
+      "code": "LESSON_CONTENT_EXISTS",
+      "message": "Lesson already has content. Set overwriteContent to true to replace it.",
+      "details": []
+     },
+     "meta": {
+      "traceId": "1253858f46144747a84d8e36f9836ea3"
+     }
+    }
+   }
+  },
+  "AI-06:overwrite-true": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:40+00:00",
+   "seconds": 9.1,
+   "result": {
+    "job": {
+     "id": "39e4f039-8585-4381-9cea-2e4a365a4a25",
+     "lessonId": "f4086d82-6e30-4ff2-bda6-9b7a410093cf",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "f197b849-1a5d-448d-9afd-c0f2512ac0be"
+     ],
+     "questionCount": null,
+     "overwriteContent": true,
+     "hasPreviousContent": true,
+     "resultQuizId": null,
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:33:31.768306Z",
+     "updatedAtUtc": "2026-10-22T06:33:39.916931Z",
+     "startedAtUtc": "2026-10-22T06:33:32.722603Z",
+     "finishedAtUtc": "2026-10-22T06:33:39.916701Z",
+     "elapsedSeconds": 9.0,
+     "previousContentMarkdown": "# Nguyên hàm và tích phân: Tóm tắt lý thuyết\n\n## Mục tiêu bài học\nSau bài học này, người học có thể:\n- Nêu được khái niệm nguyên hàm và hiểu mối liên hệ với đạo hàm.\n- Trình bày các tính chất cơ bản của nguyên hàm.\n- Giải thích ý nghĩa thực tiễn của nguyên hàm và tích phân xác định.\n- Mô tả cách tính tích phân xác định và liên hệ với diện tích hình phẳng.\n- Thực hiện các bước cơ bản khi giải bài toán nguyên hàm và tránh những sai lầm thường gặp.\n\n## 1. Khái niệm nguyên hàm\nCho một hàm số xác định trên một khoảng. Một hàm số khác được gọi là **nguyên hàm** của hàm số đã cho nếu đạo hàm của nó tại mỗi điểm trong khoảng chính là giá trị của hàm số ban đầu.\n\nNói cách khác, tìm nguyên hàm là phép toán ngược của phép lấy đạo hàm: biết tốc độ thay đổi của một đại lượng, ta tìm lại chính đại lượng đó.\n\nNếu một hàm số có nguyên hàm thì nó có **vô số nguyên hàm**. Hai nguyên hàm bất kỳ của cùng một hàm số chỉ khác nhau một hằng số. Vì vậy khi viết kết quả, ta luôn cộng thêm một hằng số tùy ý và gọi toàn bộ tập hợp đó là **họ nguyên hàm**.\n\n## 2. Tính chất cơ bản của nguyên hàm\nCác tính chất quan trọng cần nhớ:\n\n- Nguyên hàm của một **tổng** hoặc **hiệu** bằng tổng hoặc hiệu các nguyên hàm.\n- Hằng số nhân có thể đưa ra ngoài dấu nguyên hàm.\n- Đạo hàm của một nguyên hàm trả lại đúng hàm số ban đầu.\n- Mọi hàm số liên tục trên một khoảng đều có nguyên hàm trên khoảng đó.\n\n## 3. Ý nghĩa thực tiễn\nNguyên hàm có ý nghĩa rõ ràng trong vật lý và các bài toán chuyển động.\n\n- Nếu biết **vận tốc** của một chất điểm theo thời gian thì **quãng đường đi được** là một nguyên hàm của vận tốc.\n- Tương tự, từ **gia tốc** ta tìm được **vận tốc**.\n- Điều kiện ban đầu, chẳng hạn vị trí lúc bắt đầu, được dùng để xác định hằng số còn thiếu trong họ nguyên hàm.\n\n## 4. Tích phân xác định\nTích phân xác định của một hàm số trên một đoạn là **hiệu số giữa giá trị nguyên hàm tại hai đầu mút của đoạn**.\n\n### 4.1. Liên hệ với diện tích\n- Khi hàm số **không âm**, giá trị tích phân bằng **diện tích** của hình phẳng giới hạn bởi đồ thị hàm số, trục hoành và hai đường thẳng đi qua hai đầu mút.\n- Nếu hàm số **đổi dấu**, phần diện tích nằm dưới trục hoành được tính với dấu âm.\n- Do đó, khi tính **diện tích thực**, cần chia đoạn tại các điểm hàm số đổi dấu.\n\n## 5. Các bước giải một bài toán nguyên hàm\nKhi gặp một bài toán nguyên hàm, có thể làm theo quy trình sau:\n\n1. **Xác định dạng của hàm số** cần tìm nguyên hàm, chẳng hạn hàm lũy thừa, hàm hữu tỷ hoặc hàm lượng giác.\n2. **Biến đổi** hàm số về dạng cơ bản bằng cách khai triển, chia đa thức hoặc tách thành tổng các phân thức.\n3. **Áp dụng bảng nguyên hàm cơ bản** cho từng thành phần.\n4. **Cộng hằng số tùy ý** và nếu đề bài cho điều kiện ban đầu thì tìm hằng số đó.\n5. **Kiểm tra lại** bằng cách lấy đạo hàm của kết quả và so sánh với hàm số ban đầu.\n\n## 6. Sai lầm thường gặp\nMột số lỗi học sinh hay mắc phải:\n\n- Quên hằng số tùy ý khi viết nguyên hàm.\n- Nhầm giữa nguyên hàm và đạo hàm.\n- Áp dụng quy tắc cho tích và thương như thể chúng là tổng.\n- Bỏ qua điều kiện xác định của hàm số khi tìm nguyên hàm của hàm hữu tỷ.\n\n## 7. Tóm tắt và ghi nhớ\nNguyên hàm là phép toán ngược của đạo hàm và thường xuất hiện dưới dạng một **họ nguyên hàm** khác nhau bởi một hằng số. Nguyên hàm có các tính chất tuyến tính cơ bản, mọi hàm liên tục đều có nguyên hàm, và có ý nghĩa trực tiếp trong các bài toán vật lý như vận tốc, gia tốc, quãng đường.\n\nTích phân xác định được hiểu là hiệu giá trị nguyên hàm tại hai đầu mút của đoạn và có liên hệ với diện tích hình phẳng. Khi giải bài toán nguyên hàm, cần xác định đúng dạng hàm, biến đổi về dạng cơ bản, áp dụng công thức phù hợp, chú ý hằng số và kiểm tra lại kết quả.\n\n**Key takeaways:**\n- Nguyên hàm và đạo hàm là hai phép toán ngược nhau.\n- Hai nguyên hàm của cùng một hàm chỉ khác nhau một hằng số.\n- Tích phân xác định liên hệ với giá trị nguyên hàm tại hai đầu mút và với diện tích hình phẳng.\n- Luôn kiểm tra điều kiện xác định và đừng quên hằng số tùy ý.",
+     "created": true
+    },
+    "contentChars": 3804
+   }
+  },
+  "AI-07:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:44+00:00",
+   "seconds": 3.0,
+   "result": {
+    "mediaId": "26c18d59-b3b0-4f1c-a7ef-7f4948d3c8e9",
+    "fileName": "DS-05-markdown.md",
+    "contentType": "text/markdown",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 1814,
+    "updatedAtUtc": "2026-10-22T06:33:41.536698Z",
+    "elapsedSeconds": 3.0
+   }
+  },
+  "AI-07:quiz": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:33:56+00:00",
+   "seconds": 12.2,
+   "result": {
+    "job": {
+     "id": "e5530757-93e8-4adb-af8f-d9b4e258b3a9",
+     "lessonId": "e38c7c7e-7c4d-40f6-b3a4-92b686e05a05",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "26c18d59-b3b0-4f1c-a7ef-7f4948d3c8e9"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "5652f8d1-997d-4fd6-98d5-bfc7334f228f",
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:33:44.116458Z",
+     "updatedAtUtc": "2026-10-22T06:33:55.779651Z",
+     "startedAtUtc": "2026-10-22T06:33:45.567019Z",
+     "finishedAtUtc": "2026-10-22T06:33:55.779237Z",
+     "elapsedSeconds": 12.0,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "quizStatus": "DRAFT"
+   }
+  },
+  "AI-08a:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:34:26+00:00",
+   "seconds": 30.2,
+   "result": {
+    "mediaId": "5a3b99c8-0382-4911-afa1-0b05c601f59a",
+    "fileName": "DS-02-pdf-cong-thuc.pdf",
+    "contentType": "application/pdf",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 12933,
+    "updatedAtUtc": "2026-10-22T06:34:25.570517Z",
+    "elapsedSeconds": 30.2
+   }
+  },
+  "AI-08a:synthesize": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:34:44+00:00",
+   "seconds": 18.1,
+   "result": {
+    "job": {
+     "id": "4ead762a-81cb-4653-8a25-a1cb6f9da233",
+     "lessonId": "7e548e61-50fb-42e6-9b48-d7d9f2832704",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "5a3b99c8-0382-4911-afa1-0b05c601f59a"
+     ],
+     "questionCount": null,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:34:26.653373Z",
+     "updatedAtUtc": "2026-10-22T06:34:44.038997Z",
+     "startedAtUtc": "2026-10-22T06:34:27.590935Z",
+     "finishedAtUtc": "2026-10-22T06:34:44.037765Z",
+     "elapsedSeconds": 18.0,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "contentChars": 6981
+   }
+  },
+  "AI-08a:quiz": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:34:56+00:00",
+   "seconds": 12.1,
+   "result": {
+    "job": {
+     "id": "06386258-70cb-4418-826b-a82888cf5876",
+     "lessonId": "7e548e61-50fb-42e6-9b48-d7d9f2832704",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "5a3b99c8-0382-4911-afa1-0b05c601f59a"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "a5f39e0b-4a72-41bf-bce5-a650975760f9",
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:34:44.845184Z",
+     "updatedAtUtc": "2026-10-22T06:34:56.774723Z",
+     "startedAtUtc": "2026-10-22T06:34:46.049164Z",
+     "finishedAtUtc": "2026-10-22T06:34:56.774395Z",
+     "elapsedSeconds": 12.0,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "AI-08b:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:35:00+00:00",
+   "seconds": 3.0,
+   "result": {
+    "mediaId": "83d06814-0448-468d-90bf-d326920be334",
+    "fileName": "DS-05-markdown.md",
+    "contentType": "text/markdown",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 1814,
+    "updatedAtUtc": "2026-10-22T06:34:58.159067Z",
+    "elapsedSeconds": 3.0
+   }
+  },
+  "AI-08b:synthesize": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:35:12+00:00",
+   "seconds": 12.1,
+   "result": {
+    "job": {
+     "id": "437d1806-fb4a-44f4-963d-cd557b72e0f9",
+     "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "83d06814-0448-468d-90bf-d326920be334"
+     ],
+     "questionCount": null,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:35:00.130229Z",
+     "updatedAtUtc": "2026-10-22T06:35:11.689095Z",
+     "startedAtUtc": "2026-10-22T06:35:00.176206Z",
+     "finishedAtUtc": "2026-10-22T06:35:11.688734Z",
+     "elapsedSeconds": 12.1,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "contentChars": 3251
+   }
+  },
+  "AI-08b:quiz": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:35:21+00:00",
+   "seconds": 9.0,
+   "result": {
+    "job": {
+     "id": "e21c9d7b-fc21-488f-a15e-73ad8e831e47",
+     "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "83d06814-0448-468d-90bf-d326920be334"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "e90161c0-a310-4a76-96c6-b0649583890a",
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:35:12.283705Z",
+     "updatedAtUtc": "2026-10-22T06:35:21.226928Z",
+     "startedAtUtc": "2026-10-22T06:35:12.820662Z",
+     "finishedAtUtc": "2026-10-22T06:35:21.225847Z",
+     "elapsedSeconds": 9.0,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "AI-09:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:35:30+00:00",
+   "seconds": 9.1,
+   "result": {
+    "mediaId": "635515b4-408a-4947-a186-9699ac77d072",
+    "fileName": "DS-07-pdf-chi-dan-doc-hai.pdf",
+    "contentType": "application/pdf",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 788,
+    "updatedAtUtc": "2026-10-22T06:35:27.83167Z",
+    "elapsedSeconds": 9.1
+   }
+  },
+  "AI-09:synthesize": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:35:36+00:00",
+   "seconds": 6.1,
+   "result": {
+    "job": {
+     "id": "3c1d2fd0-9235-4861-94d7-eb80d9f6555b",
+     "lessonId": "752ab220-8dc4-4963-836b-795d3cc0f9af",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "635515b4-408a-4947-a186-9699ac77d072"
+     ],
+     "questionCount": null,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:35:30.58287Z",
+     "updatedAtUtc": "2026-10-22T06:35:35.749594Z",
+     "startedAtUtc": "2026-10-22T06:35:31.264004Z",
+     "finishedAtUtc": "2026-10-22T06:35:35.748341Z",
+     "elapsedSeconds": 6.0,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "contentChars": 1350,
+    "canaryInLesson": false,
+    "controlUnchanged": true
+   }
+  },
+  "AI-09:quiz": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:35:57+00:00",
+   "seconds": 21.1,
+   "result": {
+    "job": {
+     "id": "ebccccb2-f1de-418d-8bc4-e80bc5db484b",
+     "lessonId": "752ab220-8dc4-4963-836b-795d3cc0f9af",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "635515b4-408a-4947-a186-9699ac77d072"
+     ],
+     "questionCount": 5,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "662674c7-144f-4884-ae35-28fcee268dfe",
+     "stepCount": 4,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:35:36.70945Z",
+     "updatedAtUtc": "2026-10-22T06:35:57.723591Z",
+     "startedAtUtc": "2026-10-22T06:35:37.766748Z",
+     "finishedAtUtc": "2026-10-22T06:35:57.723065Z",
+     "elapsedSeconds": 21.0,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "canaryInQuiz": false
+   }
+  },
+  "AI-10:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:36:06+00:00",
+   "seconds": 9.1,
+   "result": {
+    "mediaId": "8b100fbd-27ef-4805-9103-92b51255fb36",
+    "fileName": "DS-01-pdf-van-ban.pdf",
+    "contentType": "application/pdf",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 2442,
+    "updatedAtUtc": "2026-10-22T06:36:06.812234Z",
+    "elapsedSeconds": 9.1
+   }
+  },
+  "AI-10:auth": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:36:10+00:00",
+   "seconds": 3.3,
+   "result": {
+    "case": "auth",
+    "job": {
+     "id": "7155289b-459b-4239-8c3b-1af614737dcd",
+     "lessonId": "1382b4d9-75de-4ce3-a3bd-0cc781f58add",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "FAILED",
+     "mediaIds": [
+      "8b100fbd-27ef-4805-9103-92b51255fb36"
+     ],
+     "questionCount": null,
+     "overwriteContent": true,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 0,
+     "errorCode": "AI_PROVIDER_AUTH_FAILED",
+     "errorMessage": "AI provider rejected the API key.",
+     "createdAtUtc": "2026-10-22T06:36:07.213135Z",
+     "updatedAtUtc": "2026-10-22T06:36:08.583949Z",
+     "startedAtUtc": "2026-10-22T06:36:07.966642Z",
+     "finishedAtUtc": "2026-10-22T06:36:08.581867Z",
+     "elapsedSeconds": 3.0,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "AI-12:extract": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:36:13+00:00",
+   "seconds": 3.0,
+   "result": {
+    "mediaId": "77e2847b-9eca-4d8b-a1e5-566e959cc15b",
+    "fileName": "DS-05-markdown.md",
+    "contentType": "text/markdown",
+    "mediaType": "DOCUMENT",
+    "status": "EXTRACTED",
+    "errorCode": null,
+    "errorMessage": null,
+    "textLength": 1814,
+    "updatedAtUtc": "2026-10-22T06:36:10.835998Z",
+    "elapsedSeconds": 3.0
+   }
+  },
+  "AI-12:switch-model": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:36:19+00:00",
+   "seconds": 6.2,
+   "result": {
+    "originalModel": "gpt-5.4-nano",
+    "switchedTo": "gpt-5.4-mini",
+    "job": {
+     "id": "7784e704-efd7-447f-b1bd-5b8818a6c2e3",
+     "lessonId": "ebda1fc0-4b9c-4877-a9d2-738bdfeae7d5",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "77e2847b-9eca-4d8b-a1e5-566e959cc15b"
+     ],
+     "questionCount": 5,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "3699b401-6957-45b5-8c14-d95c97f35db1",
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:36:13.791892Z",
+     "updatedAtUtc": "2026-10-22T06:36:19.479525Z",
+     "startedAtUtc": "2026-10-22T06:36:14.615895Z",
+     "finishedAtUtc": "2026-10-22T06:36:19.478164Z",
+     "elapsedSeconds": 6.0,
+     "previousContentMarkdown": null,
+     "created": true
+    },
+    "lastInvocations": [
+     {
+      "task_name": "quiz-authoring",
+      "model_name": "gpt-5.4-mini",
+      "status": "SUCCESS"
+     },
+     {
+      "task_name": "quiz-authoring",
+      "model_name": "gpt-5.4-nano",
+      "status": "SUCCESS"
+     },
+     {
+      "task_name": "quiz-authoring",
+      "model_name": "gpt-5.4-nano",
+      "status": "SUCCESS"
+     }
+    ]
+   }
+  },
+  "AI-10:unreachable": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:36:46+00:00",
+   "seconds": 3.2,
+   "result": {
+    "case": "unreachable",
+    "job": {
+     "id": "24737f97-fb6f-4028-85c3-5c4112674b78",
+     "lessonId": "1382b4d9-75de-4ce3-a3bd-0cc781f58add",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "SYNTHESIZE_LESSON",
+     "status": "FAILED",
+     "mediaIds": [
+      "8b100fbd-27ef-4805-9103-92b51255fb36"
+     ],
+     "questionCount": null,
+     "overwriteContent": true,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 0,
+     "errorCode": "AI_PROVIDER_UNREACHABLE",
+     "errorMessage": "Cannot connect to the AI provider.",
+     "createdAtUtc": "2026-10-22T06:36:42.926897Z",
+     "updatedAtUtc": "2026-10-22T06:36:43.576155Z",
+     "startedAtUtc": "2026-10-22T06:36:43.550804Z",
+     "finishedAtUtc": "2026-10-22T06:36:43.575064Z",
+     "elapsedSeconds": 3.0,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "RETEST-08:quiz-1": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:40:10+00:00",
+   "seconds": 6.4,
+   "result": {
+    "job": {
+     "id": "29eec505-716a-4542-b647-99366bd0bd0e",
+     "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "FAILED",
+     "mediaIds": [
+      "83d06814-0448-468d-90bf-d326920be334"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": null,
+     "stepCount": 0,
+     "errorCode": "AI_PROVIDER_UNREACHABLE",
+     "errorMessage": "Cannot connect to the AI provider.",
+     "createdAtUtc": "2026-10-22T06:40:03.924339Z",
+     "updatedAtUtc": "2026-10-22T06:40:09.316537Z",
+     "startedAtUtc": "2026-10-22T06:40:05.228024Z",
+     "finishedAtUtc": "2026-10-22T06:40:09.31381Z",
+     "elapsedSeconds": 6.0,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "RETEST-08:quiz-2": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:40:28+00:00",
+   "seconds": 18.4,
+   "result": {
+    "job": {
+     "id": "5374e8fa-d9f3-4948-8da3-3274a14c7979",
+     "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "83d06814-0448-468d-90bf-d326920be334"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "27bc871c-6b12-4efa-902f-a133c5a1d358",
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:40:10.189909Z",
+     "updatedAtUtc": "2026-10-22T06:40:26.342811Z",
+     "startedAtUtc": "2026-10-22T06:40:11.268107Z",
+     "finishedAtUtc": "2026-10-22T06:40:26.341388Z",
+     "elapsedSeconds": 18.1,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "RETEST-08:quiz-3": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:40:40+00:00",
+   "seconds": 12.1,
+   "result": {
+    "job": {
+     "id": "c5a8c8c0-8604-41ad-a765-e18bf6fb06df",
+     "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "83d06814-0448-468d-90bf-d326920be334"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "38c44189-41c5-4911-a81a-9b67b0e86511",
+     "stepCount": 1,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:40:28.643517Z",
+     "updatedAtUtc": "2026-10-22T06:40:40.615976Z",
+     "startedAtUtc": "2026-10-22T06:40:29.385269Z",
+     "finishedAtUtc": "2026-10-22T06:40:40.615614Z",
+     "elapsedSeconds": 12.0,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "RETEST-08:quiz-4": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:41:15+00:00",
+   "seconds": 24.1,
+   "result": {
+    "job": {
+     "id": "c976e0bb-2bb6-4baa-8044-ea151c44e502",
+     "lessonId": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+     "courseId": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+     "jobType": "GENERATE_QUIZ",
+     "status": "COMPLETED",
+     "mediaIds": [
+      "83d06814-0448-468d-90bf-d326920be334"
+     ],
+     "questionCount": 10,
+     "overwriteContent": false,
+     "hasPreviousContent": false,
+     "resultQuizId": "b2290d06-b0c8-411f-aebb-3c0efda099f4",
+     "stepCount": 2,
+     "errorCode": null,
+     "errorMessage": null,
+     "createdAtUtc": "2026-10-22T06:40:50.995287Z",
+     "updatedAtUtc": "2026-10-22T06:41:13.851041Z",
+     "startedAtUtc": "2026-10-22T06:40:52.428966Z",
+     "finishedAtUtc": "2026-10-22T06:41:13.850303Z",
+     "elapsedSeconds": 24.1,
+     "previousContentMarkdown": null,
+     "created": true
+    }
+   }
+  },
+  "AI-03a:extract:DS-06a-pdf-lon-sat-gioi-han.pdf": {
+   "status": "done",
+   "finished_at": "2026-10-22T06:44:05+00:00",
+   "seconds": 130.5,
+   "result": {
+    "dataset": "DS-06a-pdf-lon-sat-gioi-han.pdf",
+    "mediaId": "f4df4c97-f8d3-4837-aa61-d97309057871",
+    "doc": {
+     "mediaId": "f4df4c97-f8d3-4837-aa61-d97309057871",
+     "fileName": "DS-06a-pdf-lon-sat-gioi-han.pdf",
+     "contentType": "application/pdf",
+     "mediaType": "DOCUMENT",
+     "status": "EXTRACTED",
+     "errorCode": null,
+     "errorMessage": null,
+     "textLength": 60173,
+     "updatedAtUtc": "2026-10-22T06:44:03.4157Z",
+     "elapsedSeconds": 129.8
+    },
+    "aiCalls": 1,
+    "textChars": 60173
+   }
+  }
+ },
+ "ids": {
+  "media": {
+   "AI-03|DS-06b-pdf-vuot-gioi-han.pdf": "7a4a38ca-236a-4978-a173-cd8e2d2b131a",
+   "AI-04|DS-06c-txt-qua-300k-ky-tu.txt": "8ee19320-d173-4a5a-b9e8-9e7e8a049b97",
+   "AI-01|DS-01-pdf-van-ban.pdf": "8db9440e-36b7-4f12-83f6-ca4c64e63b40",
+   "AI-02a|DS-02-pdf-cong-thuc.pdf": "8200af08-80f7-493f-9783-f0e53bf8dfb0",
+   "AI-02b|DS-03-pdf-quet.pdf": "6b6aaf52-cc28-4e29-858a-22ba899b245c",
+   "AI-05|DS-01-pdf-van-ban.pdf": "dbfc74f3-37c8-4015-aea7-998ac411b434",
+   "AI-05|DS-04-docx.docx": "c6876f87-4906-4fa0-a14c-8cfcb41672f5",
+   "AI-06|DS-01-pdf-van-ban.pdf": "f197b849-1a5d-448d-9afd-c0f2512ac0be",
+   "AI-07|DS-05-markdown.md": "26c18d59-b3b0-4f1c-a7ef-7f4948d3c8e9",
+   "AI-08a|DS-02-pdf-cong-thuc.pdf": "5a3b99c8-0382-4911-afa1-0b05c601f59a",
+   "AI-08b|DS-05-markdown.md": "83d06814-0448-468d-90bf-d326920be334",
+   "AI-09|DS-07-pdf-chi-dan-doc-hai.pdf": "635515b4-408a-4947-a186-9699ac77d072",
+   "AI-10|DS-01-pdf-van-ban.pdf": "8b100fbd-27ef-4805-9103-92b51255fb36",
+   "AI-12|DS-05-markdown.md": "77e2847b-9eca-4d8b-a1e5-566e959cc15b",
+   "AI-03a|DS-06a-pdf-lon-sat-gioi-han.pdf": "f4df4c97-f8d3-4837-aa61-d97309057871"
+  },
+  "lessons": {
+   "AI-03": "daee6654-5532-4aeb-8d65-59288b51fef2",
+   "AI-04": "59856e12-dbf2-462b-9a56-18ea5e267cfd",
+   "AI-01": "d9eea146-81c2-48ca-bf6c-9e8fbda95945",
+   "AI-02a": "32952126-db03-4b5c-bcbe-f229e2ee3df6",
+   "AI-02b": "da2ed4d1-8a27-4cf0-8615-c1112269b0de",
+   "AI-05": "c5232332-0d8f-4fce-bc1a-714dfb7cb23d",
+   "AI-06": "f4086d82-6e30-4ff2-bda6-9b7a410093cf",
+   "AI-07": "e38c7c7e-7c4d-40f6-b3a4-92b686e05a05",
+   "AI-08a": "7e548e61-50fb-42e6-9b48-d7d9f2832704",
+   "AI-08b": "5e2bb835-5ed2-4010-9583-754c6cf08465",
+   "AI-09": "752ab220-8dc4-4963-836b-795d3cc0f9af",
+   "AI-09-control": "1f2c8023-9802-48d4-af3f-48229c56f767",
+   "AI-10": "1382b4d9-75de-4ce3-a3bd-0cc781f58add",
+   "AI-12": "ebda1fc0-4b9c-4877-a9d2-738bdfeae7d5",
+   "AI-03a": "082d3a0d-5b67-4232-9706-08335c929411"
+  },
+  "course": "8e327bd4-f29d-411f-a307-81cb144f3d7c",
+  "student": "10c6902d-3f70-487e-8916-83b8ed656c09",
+  "jobs": {
+   "AI-05|SYNTHESIZE_LESSON|c6876f87-4906-4fa0-a14c-8cfcb41672f5,dbfc74f3-37c8-4015-aea7-998ac411b434|False": {
+    "httpStatus": 202,
+    "jobId": "90217089-526f-4d9a-a0a1-63468e399894"
+   },
+   "AI-06|SYNTHESIZE_LESSON|f197b849-1a5d-448d-9afd-c0f2512ac0be|False": {
+    "httpStatus": 202,
+    "jobId": "7770c887-850c-4b01-bbd6-dd5da1403cca"
+   },
+   "AI-06|SYNTHESIZE_LESSON|f197b849-1a5d-448d-9afd-c0f2512ac0be|True": {
+    "httpStatus": 202,
+    "jobId": "39e4f039-8585-4381-9cea-2e4a365a4a25"
+   },
+   "AI-07|GENERATE_QUIZ|26c18d59-b3b0-4f1c-a7ef-7f4948d3c8e9|False": {
+    "httpStatus": 202,
+    "jobId": "e5530757-93e8-4adb-af8f-d9b4e258b3a9"
+   },
+   "AI-08a|SYNTHESIZE_LESSON|5a3b99c8-0382-4911-afa1-0b05c601f59a|False": {
+    "httpStatus": 202,
+    "jobId": "4ead762a-81cb-4653-8a25-a1cb6f9da233"
+   },
+   "AI-08a|GENERATE_QUIZ|5a3b99c8-0382-4911-afa1-0b05c601f59a|False": {
+    "httpStatus": 202,
+    "jobId": "06386258-70cb-4418-826b-a82888cf5876"
+   },
+   "AI-08b|SYNTHESIZE_LESSON|83d06814-0448-468d-90bf-d326920be334|False": {
+    "httpStatus": 202,
+    "jobId": "437d1806-fb4a-44f4-963d-cd557b72e0f9"
+   },
+   "AI-08b|GENERATE_QUIZ|83d06814-0448-468d-90bf-d326920be334|False": {
+    "httpStatus": 202,
+    "jobId": "e21c9d7b-fc21-488f-a15e-73ad8e831e47"
+   },
+   "AI-09|SYNTHESIZE_LESSON|635515b4-408a-4947-a186-9699ac77d072|False": {
+    "httpStatus": 202,
+    "jobId": "3c1d2fd0-9235-4861-94d7-eb80d9f6555b"
+   },
+   "AI-09|GENERATE_QUIZ|635515b4-408a-4947-a186-9699ac77d072|False": {
+    "httpStatus": 202,
+    "jobId": "ebccccb2-f1de-418d-8bc4-e80bc5db484b"
+   },
+   "AI-10|SYNTHESIZE_LESSON|8b100fbd-27ef-4805-9103-92b51255fb36|True": {
+    "httpStatus": 202,
+    "jobId": "7155289b-459b-4239-8c3b-1af614737dcd"
+   },
+   "AI-12|GENERATE_QUIZ|77e2847b-9eca-4d8b-a1e5-566e959cc15b|False": {
+    "httpStatus": 202,
+    "jobId": "7784e704-efd7-447f-b1bd-5b8818a6c2e3"
+   },
+   "AI-10|SYNTHESIZE_LESSON|8b100fbd-27ef-4805-9103-92b51255fb36|True|unreachable": {
+    "httpStatus": 202,
+    "jobId": "24737f97-fb6f-4028-85c3-5c4112674b78"
+   },
+   "AI-08b|GENERATE_QUIZ|83d06814-0448-468d-90bf-d326920be334|False|retest-1": {
+    "httpStatus": 202,
+    "jobId": "29eec505-716a-4542-b647-99366bd0bd0e"
+   },
+   "AI-08b|GENERATE_QUIZ|83d06814-0448-468d-90bf-d326920be334|False|retest-2": {
+    "httpStatus": 202,
+    "jobId": "5374e8fa-d9f3-4948-8da3-3274a14c7979"
+   },
+   "AI-08b|GENERATE_QUIZ|83d06814-0448-468d-90bf-d326920be334|False|retest-3": {
+    "httpStatus": 202,
+    "jobId": "c5a8c8c0-8604-41ad-a765-e18bf6fb06df"
+   },
+   "AI-08b|GENERATE_QUIZ|83d06814-0448-468d-90bf-d326920be334|False|retest-4": {
+    "httpStatus": 202,
+    "jobId": "c976e0bb-2bb6-4baa-8044-ea151c44e502"
+   }
+  }
+ },
+ "pending_restore": null,
+ "intentional": false,
+ "started_at_db": "2026-10-22 06:31:07.212013",
+ "seen_failures": [
+  "055570ba-5264-4ce7-a93a-f3855e0e9f0a",
+  "37665793-b3b8-41d8-b8d7-2d02072b1122",
+  "f497f031-de8e-4105-9f9d-e456d0bda3cb"
+ ]
+}

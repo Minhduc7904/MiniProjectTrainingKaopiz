@@ -1,0 +1,141 @@
+{
+ "since": "2026-10-22 06:31:07.212013",
+ "invocations": [
+  {
+   "task_name": "document-extraction",
+   "model_name": "gemini-2.5-flash",
+   "status": "SUCCESS",
+   "calls": "9",
+   "prompt_tokens": "17808",
+   "completion_tokens": "46739",
+   "avg_latency_ms": "25773",
+   "max_latency_ms": "126102"
+  },
+  {
+   "task_name": "lesson-synthesis",
+   "model_name": "dummy-model",
+   "status": "FAILED",
+   "calls": "1",
+   "prompt_tokens": "0",
+   "completion_tokens": "0",
+   "avg_latency_ms": "6",
+   "max_latency_ms": "6"
+  },
+  {
+   "task_name": "lesson-synthesis",
+   "model_name": "gpt-5.4-mini",
+   "status": "FAILED",
+   "calls": "1",
+   "prompt_tokens": "0",
+   "completion_tokens": "0",
+   "avg_latency_ms": "583",
+   "max_latency_ms": "583"
+  },
+  {
+   "task_name": "lesson-synthesis",
+   "model_name": "gpt-5.4-mini",
+   "status": "SUCCESS",
+   "calls": "6",
+   "prompt_tokens": "13172",
+   "completion_tokens": "9419",
+   "avg_latency_ms": "9479",
+   "max_latency_ms": "16391"
+  },
+  {
+   "task_name": "quiz-authoring",
+   "model_name": "gpt-5.4-mini",
+   "status": "SUCCESS",
+   "calls": "1",
+   "prompt_tokens": "1407",
+   "completion_tokens": "765",
+   "avg_latency_ms": "4807",
+   "max_latency_ms": "4807"
+  },
+  {
+   "task_name": "quiz-authoring",
+   "model_name": "gpt-5.4-nano",
+   "status": "FAILED",
+   "calls": "1",
+   "prompt_tokens": "0",
+   "completion_tokens": "0",
+   "avg_latency_ms": "4006",
+   "max_latency_ms": "4006"
+  },
+  {
+   "task_name": "quiz-authoring",
+   "model_name": "gpt-5.4-nano",
+   "status": "SUCCESS",
+   "calls": "11",
+   "prompt_tokens": "25766",
+   "completion_tokens": "14677",
+   "avg_latency_ms": "8757",
+   "max_latency_ms": "14894"
+  }
+ ],
+ "latencySuccess": {
+  "document-extraction": {
+   "n": 9,
+   "p50": 7041,
+   "p95": 126102
+  },
+  "lesson-synthesis": {
+   "n": 6,
+   "p50": 7389,
+   "p95": 16391
+  },
+  "quiz-authoring": {
+   "n": 12,
+   "p50": 8359,
+   "p95": 11157
+  }
+ },
+ "jobs": [
+  {
+   "job_type": "GENERATE_QUIZ",
+   "status": "COMPLETED",
+   "error_code": null,
+   "n": "8",
+   "avg_steps": "1.5"
+  },
+  {
+   "job_type": "SYNTHESIZE_LESSON",
+   "status": "FAILED",
+   "error_code": "AI_PROVIDER_UNREACHABLE",
+   "n": "1",
+   "avg_steps": "0.0"
+  },
+  {
+   "job_type": "GENERATE_QUIZ",
+   "status": "FAILED",
+   "error_code": "AI_PROVIDER_UNREACHABLE",
+   "n": "1",
+   "avg_steps": "0.0"
+  },
+  {
+   "job_type": "SYNTHESIZE_LESSON",
+   "status": "COMPLETED",
+   "error_code": null,
+   "n": "6",
+   "avg_steps": "1.0"
+  },
+  {
+   "job_type": "SYNTHESIZE_LESSON",
+   "status": "FAILED",
+   "error_code": "AI_PROVIDER_AUTH_FAILED",
+   "n": "1",
+   "avg_steps": "0.0"
+  }
+ ],
+ "documents": [
+  {
+   "status": "FAILED",
+   "error_code": "MEDIA_TOO_LARGE",
+   "n": "1"
+  },
+  {
+   "status": "EXTRACTED",
+   "error_code": null,
+   "n": "14"
+  }
+ ]
+}

@@ -278,6 +278,23 @@ public sealed class LessonAiJobProcessingTests
     }
 
     [Test]
+    public async Task QuizToolRejectsQuestionsWithEscapeControlCharacter()
+    {
+        var tools = NewQuizTool(1, out _);
+        // Ký tự ESC (U+001B) lọt vào công thức trong lần đánh giá AI-08: "$\u001b{x}$".
+        var json = QuizJson(1, questionText: "Số trung bình $\u001b{x}$ là");
+
+        var response = await tools.ExecuteAsync(CreateQuizToolSet.ToolName, json, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response, Does.Contain("\"ok\":false").And.Contain("backslash"));
+            Assert.That(tools.Succeeded, Is.False);
+            Assert.That(_quizzes.Quizzes, Is.Empty);
+        });
+    }
+
+    [Test]
     public async Task QuizToolAcceptsProperlyEscapedLatex()
     {
         var tools = NewQuizTool(1, out _);
