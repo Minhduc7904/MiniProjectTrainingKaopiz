@@ -12,10 +12,11 @@ export async function fetchLessonAiDocumentsRequest(courseId, lessonId, options 
   return unwrapEnvelope(await httpClient.get(API_ROUTES.courses.lessonAiDocuments(courseId, lessonId), options.silent ? pollConfig(options) : { signal: options.signal }))
 }
 
-export async function syncLessonAiDocumentsRequest(courseId, lessonId, { retryFailed = false, signal } = {}) {
+export async function syncLessonAiDocumentsRequest(courseId, lessonId, { retryFailed = false, silent = false, signal } = {}) {
   return unwrapEnvelope(await httpClient.post(API_ROUTES.courses.lessonAiDocumentsSync(courseId, lessonId), null, {
     params: retryFailed ? { retryFailed: true } : undefined,
     signal,
+    ...(silent ? { apiToast: SILENT_TOAST_CONFIG } : {}),
   }))
 }
 

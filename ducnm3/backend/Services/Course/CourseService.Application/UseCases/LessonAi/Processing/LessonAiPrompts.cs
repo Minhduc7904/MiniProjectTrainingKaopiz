@@ -28,6 +28,7 @@ public static class LessonAiPrompts
         - End with a concise summary and key takeaways.
         - Use only facts supported by the documents; do not invent data. Merge overlapping documents and remove repetition.
         - Write in the language of the documents (Vietnamese unless the documents are clearly in another language).
+        - Write formulas in LaTeX between $ signs. The tool arguments are JSON, so double every LaTeX backslash (\\frac, \\int, \\times, \\ln); a single backslash is read as an escape and corrupts the formula.
         When the lesson is complete, call the save_lesson_content tool exactly once with the full Markdown. If the tool reports errors, fix them and call it again. Do not paste the lesson in a normal reply.
         """;
 
@@ -41,6 +42,7 @@ public static class LessonAiPrompts
         - Wrong options must be plausible but clearly wrong; avoid "all of the above" and "none of the above".
         - Every correct answer must be supported by the documents. Give each question 1 point.
         - Write in the language of the documents (Vietnamese unless the documents are clearly in another language). Markdown is allowed in text fields.
+        - Write formulas in LaTeX between $ signs. The tool arguments are JSON, so double every LaTeX backslash (\\frac, \\int, \\times, \\ln); a single backslash is read as an escape and corrupts the formula.
         When ready, call the create_quiz tool exactly once with the whole quiz. If the tool reports errors, fix them and call it again. Do not paste the quiz in a normal reply.
         """;
 

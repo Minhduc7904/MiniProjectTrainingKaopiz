@@ -26,6 +26,11 @@ public sealed class CreateAiCompletionHandler(
         new EventId(2001, "AiInvocationRecordFailed"),
         "Could not record AI invocation for task {Task}.");
 
+    private static readonly Action<ILogger, string, string, string, int?, string, Exception?> LogProviderFailed = LoggerMessage.Define<string, string, string, int?, string>(
+        LogLevel.Warning,
+        new EventId(2002, "AiProviderCallFailed"),
+        "AI provider call failed for task {Task} on model {Model}: {Kind} (HTTP {HttpStatus}) {Detail}");
+
     public async Task<CreateAiCompletionResult> HandleAsync(
         CreateAiCompletionCommand command,
         CancellationToken cancellationToken)
@@ -72,6 +77,8 @@ public sealed class CreateAiCompletionHandler(
         }
         catch (AiChatException exception)
         {
+            // Message của AiChatException đã được làm sạch; ghi lại để biết lý do thật khi API trả mã lỗi chung.
+            LogProviderFailed(logger, task, binding.ModelName, exception.Kind.ToString(), exception.HttpStatus, exception.Message, null);
             var error = AiErrors.FromChatFailure(exception);
             await RecordAsync(binding, task, AiInvocationStatuses.Failed, error.ErrorCode, 0, 0, 0, stopwatch.ElapsedMilliseconds);
             throw error;

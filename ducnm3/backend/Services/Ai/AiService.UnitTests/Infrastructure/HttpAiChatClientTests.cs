@@ -102,6 +102,31 @@ public sealed class HttpAiChatClientTests
     }
 
     [Test]
+    public async Task GeminiReceivesPdfAsImageUrlDataUriBecauseItRejectsFileParts()
+    {
+        var handler = new StubHandler(_ => Json(HttpStatusCode.OK, TextResponse));
+        var messages = new[]
+        {
+            new AiChatMessage("user", null,
+                [
+                    new AiChatContentPart("text", "Đọc tài liệu", null, null, null),
+                    new AiChatContentPart("file", null, "application/pdf", "UERG", "bai-giang.pdf"),
+                ], null, null),
+        };
+
+        await new HttpAiChatClient(new HttpClient(handler)).CompleteAsync(Request(providerType: "GEMINI", messages: messages), CancellationToken.None);
+
+        using var body = JsonDocument.Parse(handler.Bodies.Single());
+        var pdf = body.RootElement.GetProperty("messages")[0].GetProperty("content")[1];
+        Assert.Multiple(() =>
+        {
+            Assert.That(pdf.GetProperty("type").GetString(), Is.EqualTo("image_url"));
+            Assert.That(pdf.GetProperty("image_url").GetProperty("url").GetString(), Is.EqualTo("data:application/pdf;base64,UERG"));
+            Assert.That(pdf.TryGetProperty("file", out _), Is.False);
+        });
+    }
+
+    [Test]
     public async Task ToolCallsAreParsedAndEmptyIdsAreReplaced()
     {
         const string response = """

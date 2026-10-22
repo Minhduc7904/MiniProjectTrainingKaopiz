@@ -34,6 +34,14 @@ describe('lesson AI requests', () => {
     expect(post).toHaveBeenNthCalledWith(2, API_ROUTES.courses.lessonAiDocumentsSync('c1', 'l1'), null, { params: { retryFailed: true }, signal: undefined })
   })
 
+  it('syncs silently when it runs as a background refresh', async () => {
+    const post = vi.spyOn(httpClient, 'post').mockResolvedValue(envelope({ items: [] }))
+
+    await syncLessonAiDocumentsRequest('c1', 'l1', { silent: true })
+
+    expect(post).toHaveBeenCalledWith(API_ROUTES.courses.lessonAiDocumentsSync('c1', 'l1'), null, { params: undefined, signal: undefined, apiToast: SILENT_TOAST_CONFIG })
+  })
+
   it('posts the job payload to the jobs route and lists jobs from the same route', async () => {
     const post = vi.spyOn(httpClient, 'post').mockResolvedValue(envelope({ id: 'j1' }))
     const get = vi.spyOn(httpClient, 'get').mockResolvedValue(envelope({ items: [] }))

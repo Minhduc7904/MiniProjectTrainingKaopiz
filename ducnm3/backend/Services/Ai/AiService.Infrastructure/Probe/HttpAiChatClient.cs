@@ -70,7 +70,7 @@ public sealed class HttpAiChatClient(HttpClient httpClient) : IAiChatClient
             writer.WriteString("model", request.ModelName);
             writer.WritePropertyName("messages");
             writer.WriteStartArray();
-            foreach (var message in request.Messages) WriteMessage(writer, message);
+            foreach (var message in request.Messages) WriteMessage(writer, message, request.ProviderType);
             writer.WriteEndArray();
             if (request.Tools.Count > 0)
             {
@@ -99,7 +99,7 @@ public sealed class HttpAiChatClient(HttpClient httpClient) : IAiChatClient
         return stream.ToArray();
     }
 
-    private static void WriteMessage(Utf8JsonWriter writer, AiChatMessage message)
+    private static void WriteMessage(Utf8JsonWriter writer, AiChatMessage message, string providerType)
     {
         writer.WriteStartObject();
         writer.WriteString("role", message.Role);
@@ -112,7 +112,7 @@ public sealed class HttpAiChatClient(HttpClient httpClient) : IAiChatClient
         {
             writer.WritePropertyName("content");
             writer.WriteStartArray();
-            foreach (var part in message.Parts) WritePart(writer, part);
+            foreach (var part in message.Parts) WritePart(writer, part, providerType);
             writer.WriteEndArray();
         }
         else if (message.Text is not null)
@@ -147,7 +147,7 @@ public sealed class HttpAiChatClient(HttpClient httpClient) : IAiChatClient
         writer.WriteEndObject();
     }
 
-    private static void WritePart(Utf8JsonWriter writer, AiChatContentPart part)
+    private static void WritePart(Utf8JsonWriter writer, AiChatContentPart part, string providerType)
     {
         writer.WriteStartObject();
         switch (part.Type)
@@ -157,11 +157,12 @@ public sealed class HttpAiChatClient(HttpClient httpClient) : IAiChatClient
                 writer.WriteString("text", part.Text);
                 break;
             case "image":
-                writer.WriteString("type", "image_url");
-                writer.WritePropertyName("image_url");
-                writer.WriteStartObject();
-                writer.WriteString("url", $"data:{part.MediaType};base64,{part.DataBase64}");
-                writer.WriteEndObject();
+                WriteDataUriPart(writer, part);
+                break;
+            // Lớp tương thích OpenAI của Gemini từ chối part "file" (HTTP 400 "Invalid content part type: file")
+            // nhưng nhận PDF dưới dạng data URI trong "image_url", nên chuyển PDF sang dạng đó cho Gemini.
+            case "file" when providerType == AiProviderTypes.Gemini:
+                WriteDataUriPart(writer, part);
                 break;
             default:
                 writer.WriteString("type", "file");
@@ -173,6 +174,15 @@ public sealed class HttpAiChatClient(HttpClient httpClient) : IAiChatClient
                 break;
         }
 
+        writer.WriteEndObject();
+    }
+
+    private static void WriteDataUriPart(Utf8JsonWriter writer, AiChatContentPart part)
+    {
+        writer.WriteString("type", "image_url");
+        writer.WritePropertyName("image_url");
+        writer.WriteStartObject();
+        writer.WriteString("url", $"data:{part.MediaType};base64,{part.DataBase64}");
         writer.WriteEndObject();
     }
 

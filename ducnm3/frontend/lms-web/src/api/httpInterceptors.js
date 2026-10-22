@@ -13,6 +13,7 @@ import {
   TOAST_MESSAGES,
 } from '@/constants/toast'
 import {
+  toastDismissed,
   toastRequestFailed,
   toastRequestStarted,
   toastRequestSucceeded,
@@ -29,6 +30,11 @@ function toastMeta(config) {
 
 function shouldSkipToast(config) {
   return toastMeta(config)?.skip === true
+}
+
+// Request đọc dữ liệu không hiện toast "Đang gọi API"/"Thành công"; chỉ báo khi lỗi.
+function isReadRequest(method) {
+  return method === 'GET' || method === 'HEAD'
 }
 
 let attached = false
@@ -63,6 +69,8 @@ export function attachHttpInterceptors(store) {
 
     logHttpRequest(config)
 
+    if (isReadRequest(config[TOAST_CONFIG_KEY].method)) return config
+
     store.dispatch(
       toastRequestStarted({
         id,
@@ -80,7 +88,7 @@ export function attachHttpInterceptors(store) {
     (response) => {
       logHttpResponse(response)
       const meta = toastMeta(response.config)
-      if (!meta || meta.skip) {
+      if (!meta || meta.skip || isReadRequest(meta.method)) {
         return response
       }
 
@@ -98,6 +106,9 @@ export function attachHttpInterceptors(store) {
     },
     (error) => {
       if (error?.code === 'ERR_CANCELED' || error?.name === 'CanceledError') {
+        // Request bị hủy sẽ không còn response nào đóng toast, nên gỡ toast "Đang gọi API" ở đây.
+        const canceledId = toastMeta(error.config)?.id
+        if (canceledId) store.dispatch(toastDismissed(canceledId))
         return Promise.reject(error)
       }
       if (shouldSkipToast(error.config)) return Promise.reject(error)

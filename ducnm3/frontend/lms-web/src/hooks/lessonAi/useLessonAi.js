@@ -68,8 +68,8 @@ export function useLessonAi({ courseId, lessonId, attachmentKey, onContentChange
     setLoading(true)
     setError(null)
     Promise.all([
-      syncLessonAiDocumentsRequest(courseId, lessonId, { signal: controller.signal }),
-      fetchLessonAiJobsRequest(courseId, lessonId, { signal: controller.signal }),
+      syncLessonAiDocumentsRequest(courseId, lessonId, { silent: true, signal: controller.signal }),
+      fetchLessonAiJobsRequest(courseId, lessonId, { silent: true, signal: controller.signal }),
     ])
       .then(([docs, jobsResult]) => {
         applyDocuments(docs.data.items)

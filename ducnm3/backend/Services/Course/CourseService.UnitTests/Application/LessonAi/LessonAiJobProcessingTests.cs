@@ -33,11 +33,11 @@ public sealed class LessonAiJobProcessingTests
 
     private static string LongLesson => "# Bài học\n\n" + new string('a', 150);
 
-    private static string QuizJson(int questions, bool validOptions = true)
+    private static string QuizJson(int questions, bool validOptions = true, string? questionText = null)
     {
         var items = Enumerable.Range(1, questions).Select(index => new
         {
-            questionMarkdown = $"Câu hỏi {index}?",
+            questionMarkdown = questionText ?? $"Câu hỏi {index}?",
             questionType = "SINGLE_CHOICE",
             points = 1,
             options = new object[]
@@ -241,6 +241,55 @@ public sealed class LessonAiJobProcessingTests
     {
         job = NewJob(LessonAiJobTypes.GenerateQuiz, questions);
         return new CreateQuizToolSet(job, new CreateQuizHandler(_quizzes, _sender));
+    }
+
+    [Test]
+    public async Task SaveToolRejectsMarkdownWithBrokenLatexEscapes()
+    {
+        var tools = NewSaveTool(false, out _);
+        // "\times" không được nhân đôi dấu gạch chéo nên JSON hiểu "\t" là TAB.
+        var markdown = LongLesson + " $a \times b$";
+
+        var response = await tools.ExecuteAsync(SaveLessonContentToolSet.ToolName, JsonSerializer.Serialize(new { markdown }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response, Does.Contain("\"ok\":false").And.Contain("backslash"));
+            Assert.That(tools.Succeeded, Is.False);
+            Assert.That(_lessons.Content, Is.Null.Or.Empty);
+        });
+    }
+
+    [Test]
+    public async Task QuizToolRejectsQuestionsWithBrokenLatexEscapes()
+    {
+        var tools = NewQuizTool(1, out _);
+        // "\f" của \frac thành form feed khi không được nhân đôi dấu gạch chéo.
+        var json = QuizJson(1, questionText: "Tính $\frac{1}{2}$ là");
+
+        var response = await tools.ExecuteAsync(CreateQuizToolSet.ToolName, json, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response, Does.Contain("\"ok\":false").And.Contain("backslash"));
+            Assert.That(tools.Succeeded, Is.False);
+            Assert.That(_quizzes.Quizzes, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task QuizToolAcceptsProperlyEscapedLatex()
+    {
+        var tools = NewQuizTool(1, out _);
+        var json = QuizJson(1, questionText: "Tính $\\int \\frac{1}{2}\\,dx$ là");
+
+        var response = await tools.ExecuteAsync(CreateQuizToolSet.ToolName, json, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response, Does.Contain("\"ok\":true"));
+            Assert.That(_quizzes.Quizzes.Values.Single().Questions[0].QuestionMarkdown, Does.Contain("\\int \\frac{1}{2}"));
+        });
     }
 
     [Test]

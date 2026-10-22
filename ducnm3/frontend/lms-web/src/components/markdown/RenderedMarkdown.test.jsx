@@ -29,4 +29,15 @@ describe('RenderedMarkdown', () => {
       expect.objectContaining({ displayMode: true, throwOnError: false, trust: false }),
     )
   })
+
+  it('keeps rendered math when the parent re-renders with the same html', async () => {
+    const html = '<p><span class="course-math" data-math-display="inline" data-math-tex="x^2"></span></p>'
+    katex.render.mockImplementation((_tex, element) => { element.innerHTML = '<span class="katex">x2</span>' })
+    const { container, rerender } = render(<RenderedMarkdown html={html} />)
+    await waitFor(() => expect(container.querySelector('.katex')).not.toBeNull())
+
+    rerender(<RenderedMarkdown html={html} />)
+
+    expect(container.querySelector('.katex')).not.toBeNull()
+  })
 })

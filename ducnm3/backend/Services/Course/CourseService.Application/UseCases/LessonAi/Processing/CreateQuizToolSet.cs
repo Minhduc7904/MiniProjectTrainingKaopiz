@@ -76,6 +76,8 @@ public sealed class CreateQuizToolSet(LessonAiJobRecord job, CreateQuizHandler c
 
         if (arguments is null) return Error("Arguments are required.");
 
+        if (HasBrokenEscape(arguments)) return Error(BrokenEscapeGuard.Message);
+
         var expected = job.QuestionCount ?? 10;
         var count = arguments.Questions?.Count ?? 0;
         if (count != expected) return Error($"The quiz must contain exactly {expected} questions but {count} were provided.");
@@ -106,6 +108,13 @@ public sealed class CreateQuizToolSet(LessonAiJobRecord job, CreateQuizHandler c
             return Error(exception.Message, exception.Details);
         }
     }
+
+    private static bool HasBrokenEscape(QuizArguments arguments) =>
+        BrokenEscapeGuard.HasBrokenEscape(arguments.Title)
+        || BrokenEscapeGuard.HasBrokenEscape(arguments.DescriptionMarkdown)
+        || (arguments.Questions ?? []).Any(question =>
+            BrokenEscapeGuard.HasBrokenEscape(question.QuestionMarkdown)
+            || (question.Options ?? []).Any(option => BrokenEscapeGuard.HasBrokenEscape(option.OptionMarkdown)));
 
     private static string Error(string message, IReadOnlyList<ApiErrorDetail>? details = null) =>
         JsonSerializer.Serialize(new

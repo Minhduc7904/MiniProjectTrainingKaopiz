@@ -59,6 +59,7 @@ public sealed class SaveLessonContentToolSet(
         }
 
         if (markdown.Length > MaxLength) return Error($"markdown must be at most {MaxLength} characters.");
+        if (BrokenEscapeGuard.HasBrokenEscape(markdown)) return Error(BrokenEscapeGuard.Message);
 
         var current = await lessonRepository.GetAsync(job.CourseId, job.LessonId, cancellationToken);
         if (current is null) return Error("The lesson no longer exists.");
